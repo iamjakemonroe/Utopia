@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/bots/bots.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/coin_repository.dart';
@@ -17,4 +18,15 @@ final coinBalanceProvider = StreamProvider<int>((ref) {
     return const Stream.empty();
   }
   return ref.watch(coinRepositoryProvider).watchBalance(user.id);
+});
+
+/// Another player's coins, if they show them (null when hidden).
+final publicCoinsProvider = FutureProvider.autoDispose.family<int?, String>((
+  ref,
+  id,
+) async {
+  // Bots and friends on this phone have no account, and so no coins.
+  if (isOfflinePlayerId(id)) return null;
+  final coins = await ref.watch(coinRepositoryProvider).publicCoins([id]);
+  return coins[id];
 });
