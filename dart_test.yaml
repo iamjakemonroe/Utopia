@@ -1,0 +1,6 @@
+tags:
+  # Art contact sheets for looking at drawings without a device. Skipped in
+  # normal runs; render them with:
+  #   flutter test --run-skipped --update-goldens test/tool
+  sheet:
+    skip: "Art preview sheet; run with --run-skipped --update-goldens"
