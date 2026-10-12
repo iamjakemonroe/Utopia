@@ -44,7 +44,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Stakr: env / secrets
+# Utopia: env / secrets
 env/local.json
 .env
 .env.*
@@ -57,3 +57,6 @@ key.properties
 # Supabase CLI local state
 supabase/.temp/
 supabase/.branches/
+
+# Art preview sheets (rendered on demand by test/tool)
+test/tool/goldens/

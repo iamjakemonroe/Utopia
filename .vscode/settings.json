@@ -1,0 +1,3 @@
+{
+  "dart.flutterRunAdditionalArgs": ["--dart-define-from-file=env/local.json"]
+}

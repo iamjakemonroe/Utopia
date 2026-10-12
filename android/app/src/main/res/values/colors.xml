@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches AppColors.background in the Flutter app, so the native
+         launch screen hands off to the Flutter splash with no color jump. -->
+    <color name="utopia_background">#120B2E</color>
+</resources>

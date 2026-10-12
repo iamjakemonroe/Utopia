@@ -2,7 +2,7 @@
 # https://supabase.com/docs/guides/local-development/cli/config
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
-project_id = "Stakr"
+project_id = "Utopia"
 
 [api]
 enabled = true
@@ -175,7 +175,7 @@ refresh_token_reuse_interval = 10
 # Allow/disallow new user signups to your project.
 enable_signup = true
 # Allow/disallow anonymous sign-ins to your project.
-# Stakr's guest-play flow depends on this. On the hosted project, this must
+# Utopia's guest-play flow depends on this. On the hosted project, this must
 # also be enabled manually via Dashboard -> Authentication -> Providers.
 enable_anonymous_sign_ins = true
 # Allow/disallow testing manual linking of accounts
@@ -249,27 +249,27 @@ port = 587
 user = "resend"
 pass = "env(RESEND_API_KEY)"
 admin_email = "onboarding@resend.dev"
-sender_name = "Stakr"
+sender_name = "Utopia"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"
 # content_path = "./supabase/templates/invite.html"
 
-# Stakr's auth flows (splash_screen.dart / email_link_screen.dart) are all
+# Utopia's auth flows (splash_screen.dart / email_link_screen.dart) are all
 # code-entry, not deep-link based, so every template that can carry an OTP
 # must actually render {{ .Token }} as plain text -- Supabase's stock
 # templates only show a clickable link, which our UI has nowhere to handle.
 [auth.email.template.confirmation]
-subject = "Confirm your Stakr sign-up"
+subject = "Confirm your Utopia sign-up"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.magic_link]
-subject = "Your Stakr sign-in code"
+subject = "Your Utopia sign-in code"
 content_path = "./supabase/templates/magic_link.html"
 
 [auth.email.template.email_change]
-subject = "Confirm your Stakr email"
+subject = "Confirm your Utopia email"
 content_path = "./supabase/templates/email_change.html"
 
 # Uncomment to customize notification email template
