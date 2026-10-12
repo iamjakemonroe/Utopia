@@ -6,12 +6,17 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/pop_card.dart';
 import '../../domain/chess_engine.dart';
 import '../../domain/chess_types.dart';
-import 'piece_glyph.dart';
+import 'chess_piece_art.dart';
+import 'chess_piece_styles.dart';
 
 /// Bottom sheet for choosing a promotion piece. Presented modally and
 /// non-dismissible-by-tap-outside (a pending promotion is a real decision,
 /// not something to lose by fat-fingering the scrim).
-Future<PieceType?> showPromotionSheet(BuildContext context, PieceColor color) {
+Future<PieceType?> showPromotionSheet(
+  BuildContext context,
+  PieceColor color, {
+  String? pieceSet,
+}) {
   return showModalBottomSheet<PieceType>(
     context: context,
     isDismissible: false,
@@ -22,6 +27,7 @@ Future<PieceType?> showPromotionSheet(BuildContext context, PieceColor color) {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         child: PopCard(
           borderRadius: 28,
+          sheet: true,
           blur: 20,
           glow: AppColors.accentSecondary,
           child: SafeArea(
@@ -40,7 +46,8 @@ Future<PieceType?> showPromotionSheet(BuildContext context, PieceColor color) {
                     children: promotionChoices.map((type) {
                       return _PromotionOption(
                         type: type,
-                        color: color,
+                        finish: ChessPieceStyle.byId(pieceSet).of(color),
+                        character: ChessPieceStyle.byId(pieceSet).character,
                         onTap: () => Navigator.of(context).pop(type),
                       );
                     }).toList(),
@@ -58,12 +65,14 @@ Future<PieceType?> showPromotionSheet(BuildContext context, PieceColor color) {
 class _PromotionOption extends StatelessWidget {
   const _PromotionOption({
     required this.type,
-    required this.color,
+    required this.finish,
+    this.character = ChessCharacter.none,
     required this.onTap,
   });
 
   final PieceType type;
-  final PieceColor color;
+  final ChessPieceFinish finish;
+  final ChessCharacter character;
   final VoidCallback onTap;
 
   @override
@@ -80,14 +89,13 @@ class _PromotionOption extends StatelessWidget {
           width: 56,
           height: 56,
           child: Center(
-            child: Text(
-              pieceGlyph(type),
-              style: TextStyle(
-                fontSize: 40,
-                color: color == PieceColor.white
-                    ? AppColors.textPrimary
-                    : AppColors.accentSecondary,
-              ),
+            // Ready for its new job.
+            child: ChessPieceArt(
+              type: type,
+              finish: finish,
+              size: 52,
+              character: character,
+              mood: PieceMood.happy,
             ),
           ),
         ),

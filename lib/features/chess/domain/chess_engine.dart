@@ -65,6 +65,19 @@ class ChessEngine {
     }).toList();
   }
 
+  /// Legal captures (and promotions) only. Cheaper than filtering
+  /// [legalMoves], since only these are checked for legality; the bot's
+  /// search uses it to settle exchanges.
+  List<ChessMove> legalCaptures(ChessPosition position) {
+    final color = position.sideToMove;
+    return [
+      for (final move in _pseudoLegalMoves(position, color))
+        if ((move.isCapture || move.promotion != null) &&
+            !isInCheck(position.applyMove(move), color))
+          move,
+    ];
+  }
+
   bool isInCheck(ChessPosition position, PieceColor color) {
     final kingSquare = _findKing(position, color);
     if (kingSquare == null) return false; // shouldn't happen in a real game
@@ -89,10 +102,12 @@ class ChessEngine {
   /// applied — disambiguation depends on the other legal moves available
   /// at that position.
   String toSan(ChessPosition position, ChessMove move) {
-    if (move.flag == MoveFlag.castleKingside)
+    if (move.flag == MoveFlag.castleKingside) {
       return _withCheckSuffix(position, move, 'O-O');
-    if (move.flag == MoveFlag.castleQueenside)
+    }
+    if (move.flag == MoveFlag.castleQueenside) {
       return _withCheckSuffix(position, move, 'O-O-O');
+    }
 
     final buffer = StringBuffer();
     final isPawn = move.piece.type == PieceType.pawn;
@@ -123,8 +138,9 @@ class ChessEngine {
     final others = _pseudoLegalMoves(position, move.piece.color).where((m) {
       if (m.piece.type != move.piece.type ||
           m.to != move.to ||
-          m.from == move.from)
+          m.from == move.from) {
         return false;
+      }
       final next = position.applyMove(m);
       return !isInCheck(next, move.piece.color);
     });
@@ -134,8 +150,9 @@ class ChessEngine {
     final sameFile = others.any((m) => m.from.file == move.from.file);
     final sameRank = others.any((m) => m.from.rank == move.from.rank);
 
-    if (!sameFile)
+    if (!sameFile) {
       return String.fromCharCode('a'.codeUnitAt(0) + move.from.file);
+    }
     if (!sameRank) return '${move.from.rank + 1}';
     return move.from.algebraic;
   }
@@ -187,24 +204,27 @@ class ChessEngine {
       final piece = position.at(from);
       if (piece != null &&
           piece.type == PieceType.pawn &&
-          piece.color == byColor)
+          piece.color == byColor) {
         return true;
+      }
     }
 
     for (final offset in _knightOffsets) {
       final piece = position.at(square + offset);
       if (piece != null &&
           piece.type == PieceType.knight &&
-          piece.color == byColor)
+          piece.color == byColor) {
         return true;
+      }
     }
 
     for (final offset in _kingOffsets) {
       final piece = position.at(square + offset);
       if (piece != null &&
           piece.type == PieceType.king &&
-          piece.color == byColor)
+          piece.color == byColor) {
         return true;
+      }
     }
 
     for (final dir in _bishopDirs) {
@@ -407,8 +427,9 @@ class ChessEngine {
   ) {
     final moves = <ChessMove>[];
     final rank = piece.color == PieceColor.white ? 0 : 7;
-    if (from != Square(4, rank))
+    if (from != Square(4, rank)) {
       return moves; // king must be on its home square
+    }
     final opponent = piece.color.opponent;
 
     final canKingside = piece.color == PieceColor.white
@@ -418,8 +439,9 @@ class ChessEngine {
         ? position.whiteQueenside
         : position.blackQueenside;
 
-    if (isSquareAttacked(position, from, opponent))
+    if (isSquareAttacked(position, from, opponent)) {
       return moves; // can't castle out of check
+    }
 
     if (canKingside &&
         position.at(Square(5, rank)) == null &&

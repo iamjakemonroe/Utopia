@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// All chess data access: realtime streams for a live match, and the RPC
+/// All chess and checkers data access (the two share the matches, moves,
+/// queue and invite tables; checkers rows say game = 'checkers'): realtime streams for a live match, and the RPC
 /// calls that mutate matchmaking/invites/moves/settlement server-side (see
 /// `supabase/migrations/20260922120000_chess_social_schema.sql`). Like
 /// [CoinRepository], there is no client-side balance math here — every coin
@@ -53,10 +54,20 @@ class ChessRepository {
   /// immediately if this call paired with someone already waiting;
   /// otherwise null, and the caller should watch [watchQueueMatch] for a
   /// pairing that happens later from the other side.
-  Future<String?> joinMatchmakingQueue(int stake) async {
+  Future<String?> joinMatchmakingQueue(
+    int stake, {
+    int minutes = 10,
+    int increment = 0,
+    String game = 'chess',
+  }) async {
     final result = await _client.rpc(
-      'join_matchmaking_queue',
-      params: {'p_stake': stake},
+      'join_board_queue',
+      params: {
+        'p_game': game,
+        'p_stake': stake,
+        'p_minutes': minutes,
+        'p_increment': increment,
+      },
     );
     return result as String?;
   }
@@ -93,10 +104,19 @@ class ChessRepository {
   Future<String?> sendMatchInvite({
     required String toUserId,
     required int stake,
+    int minutes = 10,
+    int increment = 0,
+    String game = 'chess',
   }) async {
     final result = await _client.rpc(
-      'send_match_invite',
-      params: {'p_to_user': toUserId, 'p_stake': stake},
+      'send_board_invite',
+      params: {
+        'p_to_user': toUserId,
+        'p_game': game,
+        'p_stake': stake,
+        'p_minutes': minutes,
+        'p_increment': increment,
+      },
     );
     return result as String?;
   }
@@ -148,7 +168,44 @@ class ChessRepository {
     );
   }
 
+  /// Ends the game if the player on turn has run out of time (or never
+  /// made a first move). Returns the result it ended with, or null if
+  /// there's still time on the clock.
+  Future<String?> claimTimeout(String matchId) async {
+    final result = await _client.rpc(
+      'claim_chess_timeout',
+      params: {'p_match_id': matchId},
+    );
+    return result as String?;
+  }
+
   Future<void> resignMatch(String matchId) {
     return _client.rpc('resign_match', params: {'p_match_id': matchId});
   }
+
+  /// Tells the server this player is still at the board. A finished game
+  /// whose result only one side reported settles once the other side has
+  /// stopped checking in (see the chess_unanswered_results migration).
+  Future<void> touchMatch(String matchId) {
+    return _client.rpc('touch_chess_match', params: {'p_match_id': matchId});
+  }
+
+  /// The board game the user is in the middle of, if any (newest first):
+  /// its id and which game it is ('chess' or 'checkers').
+  Future<(String, String)?> activeMatch(String userId) async {
+    final row = await _client
+        .from('matches')
+        .select('id, game')
+        .eq('status', 'active')
+        .or('player_white.eq.$userId,player_black.eq.$userId')
+        .order('created_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
+    if (row == null) return null;
+    return (row['id'] as String, row['game'] as String? ?? 'chess');
+  }
 }
+
+/// Where a board game's match lives in the app.
+String boardMatchRoute(String? game, String matchId) =>
+    game == 'checkers' ? '/checkers/$matchId' : '/chess/$matchId';

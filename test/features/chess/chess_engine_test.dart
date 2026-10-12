@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stakr/features/chess/domain/chess_engine.dart';
-import 'package:stakr/features/chess/domain/chess_position.dart';
+import 'package:utopia/features/chess/domain/chess_engine.dart';
+import 'package:utopia/features/chess/domain/chess_position.dart';
 
 /// Perft (performance test) counts the number of leaf positions reachable
 /// at a given depth from a starting position. It's the standard way to
@@ -32,18 +32,21 @@ void main() {
     test('depth 4 = 197281', () => expect(perft(start, 4, engine), 197281));
   });
 
-  group('perft on Kiwipete (castling, en passant, promotions all reachable)', () {
-    // Standard second perft-suite position, chosen because it exercises
-    // castling both sides, en passant, and near-immediate promotions —
-    // none of which the starting position reaches within a few plies.
-    final kiwipete = ChessPosition.fromFen(
-      'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1',
-    );
+  group(
+    'perft on Kiwipete (castling, en passant, promotions all reachable)',
+    () {
+      // Standard second perft-suite position, chosen because it exercises
+      // castling both sides, en passant, and near-immediate promotions —
+      // none of which the starting position reaches within a few plies.
+      final kiwipete = ChessPosition.fromFen(
+        'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1',
+      );
 
-    test('depth 1 = 48', () => expect(perft(kiwipete, 1, engine), 48));
-    test('depth 2 = 2039', () => expect(perft(kiwipete, 2, engine), 2039));
-    test('depth 3 = 97862', () => expect(perft(kiwipete, 3, engine), 97862));
-  });
+      test('depth 1 = 48', () => expect(perft(kiwipete, 1, engine), 48));
+      test('depth 2 = 2039', () => expect(perft(kiwipete, 2, engine), 2039));
+      test('depth 3 = 97862', () => expect(perft(kiwipete, 3, engine), 97862));
+    },
+  );
 
   test('detects checkmate (fool\'s mate)', () {
     var position = ChessPosition.initial();
