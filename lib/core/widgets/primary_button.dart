@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import 'utopia_loader.dart';
 
-/// Full-width primary action button, styled as a chunky "3D press" pill —
-/// a bright fill sitting on a darker offset shadow of the same color
-/// (like a real button standing off the page), which flattens down when
-/// pressed for a satisfying tactile click. This is the signature button
-/// style of games like Duolingo/Candy Crush, and reads as "fun game" far
-/// more than a flat Material button does.
+/// Full-width primary action button, styled as a gold-rimmed 3D pill — a
+/// bright gradient fill sitting on a darker offset shadow of the same
+/// color, wrapped in a bold gold ring, flattening down when pressed for a
+/// tactile click. Matches PopCard's "royal panel" language so buttons and
+/// cards read as one coherent theme.
 class PrimaryButton extends StatefulWidget {
   const PrimaryButton({
     super.key,
@@ -40,6 +40,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
   Widget build(BuildContext context) {
     final fill = widget.color ?? AppColors.accent;
     final shade = AppColors.depthShade(fill);
+    final lighter = Color.lerp(fill, Colors.white, 0.28)!;
 
     return GestureDetector(
       onTapDown: _enabled ? (_) => setState(() => _pressed = true) : null,
@@ -58,6 +59,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: AppColors.goldBorder, width: 2.2),
             boxShadow: _pressed
                 ? null
                 : [BoxShadow(color: shade, offset: const Offset(0, _depth))],
@@ -67,24 +69,31 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             height: 52,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(26),
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [lighter, fill],
+                stops: const [0.0, 0.7],
+              ),
             ),
             child: widget.isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
+                ? const UtopiaLoader(size: 18, bubbles: false)
                 : Text(
                     widget.label,
-                    style: AppTextStyles.body(
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
+                    style:
+                        AppTextStyles.body(
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ).copyWith(
+                          shadows: const [
+                            Shadow(
+                              color: Colors.black38,
+                              blurRadius: 2,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
+                        ),
                   ),
           ),
         ),

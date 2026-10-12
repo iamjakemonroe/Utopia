@@ -1,14 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../core/audio/game_audio.dart';
+import '../../../../core/theme/theme_controller.dart';
+import '../../../store/presentation/theme_teleport.dart';
+import '../../../../core/widgets/confetti_burst.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_background.dart';
-import '../../../../core/widgets/pop_card.dart';
+import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../providers/auth_providers.dart';
+import '../widgets/auth_world.dart';
 
 class EmailLinkScreen extends ConsumerStatefulWidget {
   const EmailLinkScreen({super.key});
@@ -17,7 +27,7 @@ class EmailLinkScreen extends ConsumerStatefulWidget {
   ConsumerState<EmailLinkScreen> createState() => _EmailLinkScreenState();
 }
 
-enum _Step { enterEmail, enterCode }
+enum _Step { enterEmail, enterCode, done }
 
 class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
   final _emailController = TextEditingController();
@@ -37,6 +47,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
 
   @override
   void dispose() {
+    _cooldown?.cancel();
     _emailController.dispose();
     _codeController.dispose();
     super.dispose();
@@ -115,16 +126,19 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
         return 'That email already has an account.';
       }
       if (e.code == 'over_email_send_rate_limit') {
-        return 'Too many code requests — wait a few minutes and try again.';
+        return 'Too many code requests. Wait a few minutes and try again.';
       }
       if (e.statusCode == '500') {
         return 'We couldn\'t send that email right now. Try again shortly.';
       }
     }
-    return 'Could not send a code. Check the address and try again.';
+    return "Couldn't send a code. Check the address and try again.";
   }
 
   Future<void> _verifyCode() async {
+    // A code works once: never send it twice (the tiles auto-submit, and a
+    // second tap on Verify used to come back as "that code didn't work").
+    if (_isLoading || _step == _Step.done) return;
     final code = _codeController.text.trim();
     if (code.isEmpty) {
       setState(() => _error = 'Enter the code from your email.');
@@ -144,52 +158,161 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       } else {
         await repo.verifySignInOtp(email: email, token: code);
       }
-      // Navigation happens via the router's redirect.
+      if (!mounted) return;
+      _cooldown?.cancel();
+      HapticFeedback.mediumImpact();
+      ref.read(gameAudioProvider).play(Sfx.purchase);
+      setState(() {
+        _step = _Step.done;
+        _isLoading = false;
+      });
+      // A moment to enjoy it, then Chip carries them home through the
+      // portal, the same trip as changing worlds. Home appears under the
+      // flash.
+      final router = GoRouter.of(context);
+      Future.delayed(const Duration(milliseconds: 1300), () {
+        if (!mounted) return;
+        final teleporting = ref
+            .read(themeTeleportProvider.notifier)
+            .welcome(
+              ref.read(themeControllerProvider),
+              atFlash: () => router.go('/home'),
+            );
+        if (!teleporting) router.go('/home');
+      });
     } catch (e) {
-      setState(() => _error = 'That code didn\'t work. Try again.');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _error = 'That code didn\'t work. Try again.';
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  Timer? _cooldown;
+  int _resendIn = 0;
+
+  void _startCooldown() {
+    _cooldown?.cancel();
+    setState(() => _resendIn = 60);
+    _cooldown = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) return t.cancel();
+      setState(() => _resendIn--);
+      if (_resendIn <= 0) t.cancel();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final codeStep = _step == _Step.enterCode;
+    final done = _step == _Step.done;
     return Scaffold(
-      appBar: AppBar(title: const Text('Log In or Sign Up')),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(backgroundColor: Colors.transparent),
       body: AppBackground(
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xl),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              AppSpacing.xl,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                RiseIn(
+                  child: Center(
+                    child: AuthHero(
+                      size: 110,
+                      mood: done
+                          ? BuddyMood.happy
+                          : codeStep
+                          ? BuddyMood.excited
+                          : BuddyMood.thinking,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Text(
+                    done
+                        ? (_isLinking ? 'Account saved!' : "You're in!")
+                        : codeStep
+                        ? 'Check your email'
+                        : (ref.watch(isAnonymousProvider)
+                              ? 'Save your account'
+                              : 'Welcome to Utopia'),
+                    key: ValueKey(_step),
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.display(fontSize: 28),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  done
+                      ? (_isLinking
+                            ? 'Your coins and worlds are safe on any phone now.'
+                            : 'Signed in as ${_emailController.text.trim()}')
+                      : codeStep
+                      ? 'We sent a code to ${_emailController.text.trim()}'
+                      : "Enter your email and we'll send you a code.",
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.body(
+                    color: Colors.white.withValues(alpha: 0.85),
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.lg),
-                PopCard(
-                  borderRadius: 28,
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (_step == _Step.enterEmail) ..._buildEmailStep(),
-                      if (_step == _Step.enterCode) ..._buildCodeStep(),
-                      if (_error != null) ...[
-                        const SizedBox(height: AppSpacing.md),
-                        Text(
-                          _error!,
-                          style: const TextStyle(color: AppColors.error),
-                          textAlign: TextAlign.center,
+                RiseIn(
+                  delay: 0.2,
+                  child: GlassPanel(
+                    child: AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOutCubic,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 350),
+                        transitionBuilder: (child, animation) => FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween(
+                              begin: const Offset(0.15, 0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          ),
                         ),
-                      ],
-                      if (_emailBelongsToAnotherAccount) ...[
-                        const SizedBox(height: AppSpacing.sm),
-                        TextButton(
-                          onPressed: _isLoading
-                              ? null
-                              : _loginWithExistingAccountInstead,
-                          child: const Text('Log in with this email instead'),
+                        child: Column(
+                          key: ValueKey(_step),
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (done) const _Verified(),
+                            if (!codeStep && !done) ..._buildEmailStep(),
+                            if (codeStep) ..._buildCodeStep(),
+                            if (_error != null && !done) ...[
+                              const SizedBox(height: AppSpacing.md),
+                              Text(
+                                _error!,
+                                style: const TextStyle(color: AppColors.error),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                            if (_emailBelongsToAnotherAccount) ...[
+                              const SizedBox(height: AppSpacing.sm),
+                              TextButton(
+                                onPressed: _isLoading
+                                    ? null
+                                    : _loginWithExistingAccountInstead,
+                                child: const Text(
+                                  'Log in with this email instead',
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                      ],
-                    ],
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -202,57 +325,180 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
 
   List<Widget> _buildEmailStep() {
     return [
-      Text(
-        'Enter your email and we\'ll send you a one-time code.',
-        style: AppTextStyles.body(color: AppColors.textSecondary),
-      ),
-      const SizedBox(height: AppSpacing.lg),
-      TextField(
+      UtopiaTextField(
         controller: _emailController,
+        icon: Icons.mail_rounded,
+        hint: 'you@example.com',
         keyboardType: TextInputType.emailAddress,
         autofillHints: const [AutofillHints.email],
-        decoration: const InputDecoration(
-          labelText: 'Email',
-          border: OutlineInputBorder(),
-        ),
+        onSubmitted: (_) => _sendCode(),
       ),
       const SizedBox(height: AppSpacing.lg),
       PrimaryButton(
-        label: 'Send Code',
+        label: 'Send code',
         isLoading: _isLoading,
-        onPressed: _sendCode,
+        onPressed: () async {
+          await _sendCode();
+          if (mounted && _step == _Step.enterCode) _startCooldown();
+        },
       ),
     ];
   }
 
   List<Widget> _buildCodeStep() {
     return [
-      Text(
-        'Enter the code sent to ${_emailController.text.trim()}.',
-        style: AppTextStyles.body(color: AppColors.textSecondary),
-      ),
-      const SizedBox(height: AppSpacing.lg),
-      TextField(
+      CodeTilesInput(
         controller: _codeController,
-        keyboardType: TextInputType.number,
-        decoration: const InputDecoration(
-          labelText: 'Code',
-          border: OutlineInputBorder(),
-        ),
+        length: 8,
+        onCompleted: (_) => _verifyCode(),
       ),
       const SizedBox(height: AppSpacing.lg),
       PrimaryButton(
         label: 'Verify',
         isLoading: _isLoading,
-        onPressed: _verifyCode,
+        onPressed: _isLoading ? null : _verifyCode,
       ),
       const SizedBox(height: AppSpacing.sm),
-      TextButton(
-        onPressed: _isLoading
-            ? null
-            : () => setState(() => _step = _Step.enterEmail),
-        child: const Text('Use a different email'),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TextButton.icon(
+            onPressed: _isLoading
+                ? null
+                : () => setState(() {
+                    _codeController.clear();
+                    _step = _Step.enterEmail;
+                  }),
+            icon: const Icon(Icons.edit_rounded, size: 16),
+            label: const Text('Change email'),
+          ),
+          TextButton.icon(
+            onPressed: _isLoading || _resendIn > 0
+                ? null
+                : () async {
+                    await _sendCode();
+                    if (mounted) _startCooldown();
+                  },
+            icon: const Icon(Icons.refresh_rounded, size: 16),
+            label: Text(_resendIn > 0 ? 'Resend in ${_resendIn}s' : 'Resend'),
+          ),
+        ],
       ),
     ];
+  }
+}
+
+/// The code worked: a check pops in with a ring bursting around it,
+/// confetti falls, and a little bar fills while we head home.
+class _Verified extends StatelessWidget {
+  const _Verified();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 190,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Positioned.fill(
+            child: IgnorePointer(child: ConfettiBurst(pieces: 60)),
+          ),
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 900),
+            builder: (context, t, _) {
+              final pop = Curves.elasticOut.transform(t);
+              final ring = Curves.easeOut.transform(t);
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox.square(
+                    dimension: 110,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 70 + 40 * ring,
+                          height: 70 + 40 * ring,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.success.withValues(
+                                alpha: 1 - ring,
+                              ),
+                              width: 4,
+                            ),
+                          ),
+                        ),
+                        Transform.scale(
+                          scale: pop,
+                          child: Container(
+                            width: 76,
+                            height: 76,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                center: const Alignment(-0.3, -0.4),
+                                colors: [
+                                  Color.lerp(
+                                    AppColors.success,
+                                    Colors.white,
+                                    0.4,
+                                  )!,
+                                  AppColors.success,
+                                ],
+                              ),
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.success.withValues(
+                                    alpha: 0.6,
+                                  ),
+                                  blurRadius: 22,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.check_rounded,
+                              color: Colors.white,
+                              size: 48,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    'Opening the portal',
+                    style: AppTextStyles.body(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: SizedBox(
+                      width: 140,
+                      height: 6,
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: 1),
+                        duration: const Duration(milliseconds: 1300),
+                        builder: (context, v, _) => LinearProgressIndicator(
+                          value: v,
+                          backgroundColor: Colors.white.withValues(alpha: 0.15),
+                          color: AppColors.success,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

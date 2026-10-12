@@ -1,17 +1,54 @@
+import 'dart:async';
+
+import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/popup_tracker.dart';
+import '../../../coins/presentation/daily_reward_sheet.dart';
+import '../../../../core/audio/game_audio.dart';
+import '../../../../core/now_playing/now_playing.dart';
 import '../../../../core/profiles/profile_providers.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../core/settings/gameplay_settings.dart';
+import '../../../../core/profiles/profile_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/coin_balance_pill.dart';
+import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/app_background.dart';
+import '../../../../core/widgets/doodle_ink.dart';
+import '../../../../core/widgets/game_card_art.dart';
 import '../../../../core/widgets/pop_card.dart';
+import '../../../../core/widgets/utopia_loader.dart';
+import '../../../../core/widgets/tilt_3d.dart';
+import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/widgets/user_avatar.dart';
+import '../../../../core/widgets/utopia_icons.dart';
+import '../../../../core/widgets/utopia_toast.dart';
+import '../../../../core/theme/theme_controller.dart';
+import '../../../../core/theme/utopia_themes.dart';
+import '../../../chess/data/chess_repository.dart';
+import '../../../chess/domain/time_control.dart';
+import '../../../chess/presentation/widgets/time_control_style.dart';
+import '../../../chip/presentation/chip_chat_sheet.dart';
+import '../../../coins/presentation/providers/coin_balance_provider.dart';
+import '../../../store/presentation/coin_shop.dart';
+import '../../../store/presentation/store_controller.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../chess/presentation/controllers/chess_match_controller.dart';
 import '../../../friends/presentation/widgets/friend_icon_button.dart';
+import '../../../notifications/presentation/notification_bell.dart';
+import '../../../profile/presentation/username_dialog.dart';
+import '../../data/active_game.dart';
+import '../../domain/greeting.dart';
+import '../widgets/now_playing_widgets.dart';
+import '../widgets/side_menu.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -21,12 +58,124 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  /// Whether this run of the app has already looked for a game to go back
+  /// to. Only the first look after opening the app jumps straight in;
+  /// after that the "Rejoin" card is there instead.
+  static bool _resumeChecked = false;
+
+  /// Whether today's reward has been offered this session.
+  static bool _rewardOffered = false;
+  Timer? _rewardTimer;
+
   final Set<String> _navigatedInviteIds = {};
+  bool _invitesPrimed = false;
+  bool _adoptedWorld = false;
+  GoRouter? _router;
+  late final NowPlayingController _music;
+
+  @override
+  void initState() {
+    super.initState();
+    // Chip listens along only while home is on screen.
+    _music = ref.read(nowPlayingProvider.notifier)..setWatching(true);
+    _offerRewardSoon();
+  }
+
+  /// Once a session, a moment after landing on home (and only on home,
+  /// with nothing else popped up), offers today's daily reward. If the
+  /// server can't be asked yet, or something else is on screen, it tries
+  /// again a little later; leaving home waits until coming back.
+  void _offerRewardSoon([Duration delay = const Duration(milliseconds: 1600)]) {
+    if (_rewardOffered) return;
+    _rewardTimer?.cancel();
+    _rewardTimer = Timer(delay, () async {
+      if (!mounted || _rewardOffered) return;
+      final router = _router;
+      if (router == null || currentPath(router) != '/home') return;
+      if (PopupTracker.instance.open.value > 0) {
+        _offerRewardSoon(const Duration(seconds: 4));
+        return;
+      }
+      _rewardOffered = true;
+      final asked = await showDailyRewardIfReady(context, ref);
+      if (!asked && mounted) {
+        _rewardOffered = false;
+        _offerRewardSoon(const Duration(seconds: 15));
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final router = GoRouter.maybeOf(context);
+    if (router != _router) {
+      _router?.routerDelegate.removeListener(_onRoute);
+      _router = router?..routerDelegate.addListener(_onRoute);
+    }
+  }
+
+  @override
+  void dispose() {
+    _router?.routerDelegate.removeListener(_onRoute);
+    _rewardTimer?.cancel();
+    _music.setWatching(false);
+    super.dispose();
+  }
+
+  /// Back on home (from a game, say): check again for an unfinished game.
+  void _onRoute() {
+    final router = _router;
+    final path = router == null ? null : currentPath(router);
+    if (!mounted) return;
+    _music.setWatching(path == '/home');
+    if (path == '/home') {
+      ref.invalidate(activeGameProvider);
+      _offerRewardSoon();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isAnonymous = ref.watch(isAnonymousProvider);
     final myId = ref.watch(currentUserProvider)?.id;
+
+    // Opening the app mid-game (it closed, or they backed out) goes
+    // straight back to that game, with home underneath.
+    if (myId != null && !_resumeChecked) {
+      ref.listen(activeGameProvider, (_, next) {
+        if (_resumeChecked || !next.hasValue) return;
+        _resumeChecked = true;
+        final game = next.value;
+        if (game != null && mounted) context.push(game.route);
+      });
+    }
+
+    // Loads what the player owns and rents (which also moves them out of a
+    // rented world whose time ran out), and says so here.
+    ref.listen(storeControllerProvider.select((s) => s.message), (_, message) {
+      if (message != null && message.contains('ran out')) {
+        showUtopiaToast(context, message, icon: Icons.timer_off_rounded);
+        ref.read(storeControllerProvider.notifier).clearMessage();
+      }
+    });
+
+    // A fresh install lands in the world saved on the account.
+    if (myId != null && !_adoptedWorld) {
+      final saved = ref.watch(
+        profileByIdProvider(
+          myId,
+        ).select((p) => p.valueOrNull?['equipped_theme'] as String?),
+      );
+      if (saved != null) {
+        _adoptedWorld = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ref.read(themeControllerProvider.notifier).adoptFromAccount(saved);
+          }
+        });
+      }
+    }
 
     // The moment an invite we *sent* gets accepted, jump straight into the
     // match — the person who accepted already gets the match id back
@@ -34,12 +183,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (myId != null) {
       ref.listen(outgoingInvitesProvider(myId), (previous, next) {
         next.whenData((invites) {
-          for (final invite in invites) {
-            final matchId = invite['match_id'] as String?;
-            if (invite['status'] == 'accepted' &&
-                matchId != null &&
-                _navigatedInviteIds.add(invite['id'] as String)) {
-              context.push('/chess/$matchId');
+          final accepted = [
+            for (final invite in invites)
+              if (invite['status'] == 'accepted' && invite['match_id'] != null)
+                invite,
+          ];
+          // The first batch is history: invites accepted before we were
+          // watching (earlier games) must not reopen those games.
+          if (!_invitesPrimed) {
+            _invitesPrimed = true;
+            _navigatedInviteIds.addAll(accepted.map((i) => i['id'] as String));
+            return;
+          }
+          for (final invite in accepted) {
+            if (_navigatedInviteIds.add(invite['id'] as String)) {
+              context.push(
+                boardMatchRoute(
+                  invite['game'] as String?,
+                  invite['match_id'] as String,
+                ),
+              );
             }
           }
         });
@@ -49,48 +212,730 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Stakr'),
+        // Your picture's aura spills past the bar (a dragon's wings, flames);
+        // don't cut it off.
+        clipBehavior: Clip.none,
+        leadingWidth: 64,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: AppSpacing.md),
+          child: Center(child: _MenuAvatar(userId: myId)),
+        ),
         actions: [
-          const FriendIconButton(),
+          const NotificationBellButton(),
+          // Friends need a real account to find and add you by; guests are
+          // pointed at "save your account" instead (banner below).
+          if (!isAnonymous) const FriendIconButton(),
           const Padding(
             padding: EdgeInsets.only(right: AppSpacing.md, left: AppSpacing.xs),
             child: CoinBalancePill(),
           ),
         ],
       ),
-      body: AppBackground(
-        child: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              MediaQuery.of(context).padding.top > 0
-                  ? AppSpacing.md
-                  : AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-            ),
-            children: [
-              if (isAnonymous) ...[
-                _SaveAccountBanner(onTap: () => context.push('/auth/link')),
-                const SizedBox(height: AppSpacing.lg),
-              ],
-              if (myId != null) _UsernameBanner(myId: myId),
-              if (myId != null) _IncomingInvites(myId: myId),
-              const _ChessCard(),
-              const SizedBox(height: AppSpacing.xl),
-              OutlinedButton(
-                onPressed: () => ref.read(authRepositoryProvider).signOut(),
-                child: const SizedBox(
-                  width: double.infinity,
-                  child: Text('Sign Out', textAlign: TextAlign.center),
-                ),
+      body: DoodleInk(
+        child: AppBackground(
+          child: SafeArea(
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                MediaQuery.of(context).padding.top > 0
+                    ? AppSpacing.md
+                    : AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
               ),
-            ],
+              children: [
+                _HomeGreeting(myId: myId),
+                const SizedBox(height: AppSpacing.lg),
+                if (isAnonymous) ...[
+                  _SaveAccountBanner(onTap: () => context.push('/auth/link')),
+                  const SizedBox(height: AppSpacing.lg),
+                ],
+                if (myId != null) const _RejoinCard(),
+                if (myId != null) _UsernameBanner(myId: myId),
+                if (myId != null) _IncomingInvites(myId: myId),
+                const _GamesGrid(),
+                const SizedBox(height: AppSpacing.md),
+                const _SketchbookCard(),
+                const _StoreCard(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+class _HomeGreeting extends ConsumerStatefulWidget {
+  const _HomeGreeting({required this.myId});
+
+  final String? myId;
+
+  @override
+  ConsumerState<_HomeGreeting> createState() => _HomeGreetingState();
+}
+
+class _HomeGreetingState extends ConsumerState<_HomeGreeting> {
+  // One pick per visit to home, so it changes but doesn't flicker.
+  final _seed = math.Random().nextInt(1 << 20);
+
+  @override
+  Widget build(BuildContext context) {
+    final id = widget.myId;
+    final profile = id == null
+        ? null
+        : ref.watch(profileByIdProvider(id)).valueOrNull;
+    final greeting = pickGreeting(
+      DateTime.now(),
+      greetingName(profile),
+      math.Random(_seed),
+    );
+    final music = ref.watch(nowPlayingProvider);
+    final vibing =
+        music.listening && ref.watch(gameplaySettingsProvider).showNowPlaying;
+
+    return Row(
+      children: [
+        // Tap Chip to chat with him.
+        GestureDetector(
+          onTap: () => showChipChat(context),
+          child: AmbientTilt3D(
+            child: CoinBuddy(
+              mood: vibing ? music.chipLine.mood : greeting.mood,
+              flavor: vibing ? music.chipLine.flavor : ChipFlavor.none,
+              size: 72,
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => vibing
+                ? showNowPlaying(context, ref)
+                : _showGreeting(context, ref, greeting),
+            child: _GreetingBubble(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 420),
+                switchInCurve: Curves.easeOutBack,
+                transitionBuilder: (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(
+                    scale: Tween(begin: 0.9, end: 1.0).animate(animation),
+                    alignment: Alignment.centerLeft,
+                    child: child,
+                  ),
+                ),
+                layoutBuilder: (current, previous) => Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [...previous, ?current],
+                ),
+                child: vibing
+                    ? _MusicLine(key: const ValueKey('music'), music: music)
+                    : Column(
+                        key: const ValueKey('greeting'),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                greeting.icon,
+                                size: 16,
+                                color: AppColors.coinGold,
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  greeting.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.display(fontSize: 20),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            greeting.line,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.body(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary.withValues(
+                                alpha: 0.88,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// What Chip says while the player has music on: the song and its cover,
+/// with little bars bouncing along.
+class _MusicLine extends StatelessWidget {
+  const _MusicLine({super.key, required this.music});
+
+  final NowPlayingState music;
+
+  @override
+  Widget build(BuildContext context) {
+    final track = music.track;
+    final line = music.chipLine;
+    final by = track == null
+        ? null
+        : track.artist.isNotEmpty
+        ? track.artist
+        : (track.show ?? track.source);
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  MediaKindBadge(
+                    kind: track?.kind ?? MediaKind.unknown,
+                    playing: music.listening,
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      line.headline,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.body(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary.withValues(alpha: 0.85),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              // What's on is the star of the bubble.
+              Text(
+                track?.title ?? line.detail,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.display(fontSize: 19),
+              ),
+              if (by != null && by.isNotEmpty)
+                Text(
+                  by,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.body(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary.withValues(alpha: 0.75),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        if (track != null) ...[
+          const SizedBox(width: AppSpacing.sm),
+          TrackArt(track: track, size: 46),
+        ],
+      ],
+    );
+  }
+}
+
+/// Chip says the whole thing: the world blurs away, Chip hops in and a big
+/// bubble pops out with the full greeting, sparkles bursting round it and a
+/// shine sweeping across. Tap anywhere to let it go.
+void _showGreeting(BuildContext context, WidgetRef ref, Greeting greeting) {
+  HapticFeedback.lightImpact();
+  ref.read(gameAudioProvider).play(Sfx.reaction);
+  showGeneralDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: 'Close',
+    barrierColor: Colors.transparent,
+    transitionDuration: const Duration(milliseconds: 650),
+    pageBuilder: (context, animation, _) =>
+        _GreetingPopup(greeting: greeting, animation: animation),
+  );
+}
+
+class _GreetingPopup extends StatefulWidget {
+  const _GreetingPopup({required this.greeting, required this.animation});
+
+  final Greeting greeting;
+  final Animation<double> animation;
+
+  @override
+  State<_GreetingPopup> createState() => _GreetingPopupState();
+}
+
+class _GreetingPopupState extends State<_GreetingPopup>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shine = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2600),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _shine.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final greeting = widget.greeting;
+    return AnimatedBuilder(
+      animation: widget.animation,
+      builder: (context, _) {
+        final t = widget.animation.value;
+        final closing = widget.animation.status == AnimationStatus.reverse;
+        final fade = Curves.easeOut.transform(t);
+        final pop = closing
+            ? Curves.easeIn.transform(t)
+            : Curves.elasticOut.transform(((t - 0.12) / 0.88).clamp(0, 1));
+        final hop = closing ? t : Curves.elasticOut.transform(t);
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.of(context).pop(),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 14 * fade, sigmaY: 14 * fade),
+                child: ColoredBox(
+                  color: AppColors.background.withValues(alpha: 0.45 * fade),
+                ),
+              ),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.xl,
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                  ),
+                  child: Column(
+                    children: [
+                      Transform.translate(
+                        offset: Offset(0, -30 * (1 - hop)),
+                        child: Transform.scale(
+                          scale: 0.6 + 0.4 * hop,
+                          child: CoinBuddy(mood: greeting.mood, size: 104),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Opacity(
+                        opacity: pop.clamp(0.0, 1.0),
+                        child: Transform.scale(
+                          scale: 0.4 + 0.6 * pop,
+                          alignment: Alignment.topCenter,
+                          child: _BigBubble(
+                            greeting: greeting,
+                            shine: _shine,
+                            burst: t,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Opacity(
+                        opacity: (fade * 0.7).clamp(0.0, 1.0),
+                        child: Text(
+                          'Tap anywhere to close',
+                          style: AppTextStyles.body(
+                            fontSize: 12,
+                            color: AppColors.textPrimary.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _BigBubble extends StatelessWidget {
+  const _BigBubble({
+    required this.greeting,
+    required this.shine,
+    required this.burst,
+  });
+
+  final Greeting greeting;
+  final Animation<double> shine;
+
+  /// 0-1, how far the opening sparkle burst has flown.
+  final double burst;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      foregroundPainter: _SparkBurstPainter(progress: burst),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // The tail, pointing up at Chip.
+          Positioned(
+            top: -12,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: CustomPaint(
+                size: const Size(28, 14),
+                painter: _TailPainter(
+                  color: Color.lerp(
+                    AppColors.surfaceElevated,
+                    AppColors.glowRing,
+                    0.18,
+                  )!,
+                ),
+              ),
+            ),
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(28),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color.lerp(
+                      AppColors.surfaceElevated,
+                      AppColors.glowRing,
+                      0.18,
+                    )!,
+                    AppColors.surface,
+                  ],
+                ),
+                border: Border.all(
+                  color: AppColors.goldBorder.withValues(alpha: 0.85),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  // A shine sweeping across now and then.
+                  Positioned.fill(
+                    child: AnimatedBuilder(
+                      animation: shine,
+                      builder: (context, _) {
+                        final v = (shine.value / 0.4).clamp(0.0, 1.0);
+                        if (v <= 0 || v >= 1) return const SizedBox.shrink();
+                        return FractionalTranslation(
+                          translation: Offset(-1.2 + 2.4 * v, 0),
+                          child: Transform.rotate(
+                            angle: 0.4,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.white.withValues(alpha: 0),
+                                    Colors.white.withValues(alpha: 0.16),
+                                    Colors.white.withValues(alpha: 0),
+                                  ],
+                                  stops: const [0.35, 0.5, 0.65],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Icon(
+                              greeting.icon,
+                              size: 22,
+                              color: AppColors.coinGold,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              greeting.title,
+                              style: AppTextStyles.display(fontSize: 24),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        greeting.line,
+                        style: AppTextStyles.body(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary.withValues(alpha: 0.92),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TailPainter extends CustomPainter {
+  _TailPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(0, size.height)
+      ..quadraticBezierTo(
+        size.width / 2,
+        -size.height * 0.4,
+        size.width,
+        size.height,
+      )
+      ..close();
+    canvas.drawPath(path, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(covariant _TailPainter old) => old.color != color;
+}
+
+/// Gold sparkles bursting out from the bubble as it pops.
+class _SparkBurstPainter extends CustomPainter {
+  _SparkBurstPainter({required this.progress});
+
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0.05 || progress >= 1) return;
+    final c = size.center(Offset.zero);
+    final p = Curves.easeOutCubic.transform(progress);
+    final fade = (1 - progress).clamp(0.0, 1.0);
+    for (var i = 0; i < 14; i++) {
+      final a = i * 2 * math.pi / 14 + (i.isEven ? 0.2 : -0.1);
+      final reach = Offset(
+        math.cos(a) * size.width * (0.45 + 0.25 * p),
+        math.sin(a) * size.height * (0.55 + 0.6 * p),
+      );
+      final pos = c + reach;
+      final s = (i.isEven ? 7.0 : 4.5) * (1 - p * 0.4);
+      final star = Path()
+        ..moveTo(pos.dx, pos.dy - s)
+        ..quadraticBezierTo(pos.dx, pos.dy, pos.dx + s, pos.dy)
+        ..quadraticBezierTo(pos.dx, pos.dy, pos.dx, pos.dy + s)
+        ..quadraticBezierTo(pos.dx, pos.dy, pos.dx - s, pos.dy)
+        ..quadraticBezierTo(pos.dx, pos.dy, pos.dx, pos.dy - s);
+      canvas.drawPath(
+        star,
+        Paint()
+          ..color = (i % 3 == 0 ? Colors.white : AppColors.coinGoldBright)
+              .withValues(alpha: fade),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _SparkBurstPainter old) =>
+      old.progress != progress;
+}
+
+/// Chip's speech bubble: frosted glass with a little tail pointing at Chip,
+/// so the greeting reads clearly over any world, with a sparkle drifting
+/// around its corner.
+class _GreetingBubble extends StatefulWidget {
+  const _GreetingBubble({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_GreetingBubble> createState() => _GreetingBubbleState();
+}
+
+class _GreetingBubbleState extends State<_GreetingBubble>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _twinkle;
+
+  @override
+  void initState() {
+    super.initState();
+    _twinkle = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _twinkle.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipPath(
+          clipper: const _BubbleClipper(),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+            child: CustomPaint(
+              painter: _BubblePainter(
+                fill: AppColors.surface,
+                glow: AppColors.glowRing,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  _BubbleClipper.tail + 12,
+                  10,
+                  14,
+                  11,
+                ),
+                child: widget.child,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          right: 6,
+          top: -6,
+          child: AnimatedBuilder(
+            animation: _twinkle,
+            builder: (context, _) {
+              final t = _twinkle.value;
+              final s = math.sin(t * math.pi);
+              return Transform.rotate(
+                angle: t * math.pi,
+                child: Opacity(
+                  opacity: 0.35 + 0.65 * s,
+                  child: Icon(
+                    Icons.auto_awesome,
+                    size: 12 + 6 * s,
+                    color: AppColors.coinGoldBright,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BubbleClipper extends CustomClipper<Path> {
+  const _BubbleClipper();
+
+  static const tail = 9.0;
+
+  static Path shape(Size size) {
+    final body = Path()
+      ..addRRect(
+        RRect.fromLTRBR(
+          tail,
+          0,
+          size.width,
+          size.height,
+          const Radius.circular(20),
+        ),
+      );
+    final mid = size.height / 2;
+    final point = Path()
+      ..moveTo(tail + 2, mid - 9)
+      ..quadraticBezierTo(tail - 2, mid - 1, 0, mid + 4)
+      ..quadraticBezierTo(tail + 1, mid + 5, tail + 2, mid + 9)
+      ..close();
+    return Path.combine(PathOperation.union, body, point);
+  }
+
+  @override
+  Path getClip(Size size) => shape(size);
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
+class _BubblePainter extends CustomPainter {
+  _BubblePainter({required this.fill, required this.glow});
+
+  final Color fill;
+  final Color glow;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = _BubbleClipper.shape(size);
+    final rect = Offset.zero & size;
+    canvas.drawPath(
+      path,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            fill.withValues(alpha: 0.72),
+            Color.lerp(fill, glow, 0.25)!.withValues(alpha: 0.58),
+          ],
+        ).createShader(rect),
+    );
+    // A soft sheen along the top edge, like light on glass.
+    canvas.save();
+    canvas.clipPath(path);
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height * 0.45),
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white.withValues(alpha: 0.12),
+            Colors.white.withValues(alpha: 0),
+          ],
+        ).createShader(rect),
+    );
+    canvas.restore();
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.3
+        ..color = glow.withValues(alpha: 0.55),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _BubblePainter old) =>
+      old.fill != fill || old.glow != glow;
 }
 
 class _SaveAccountBanner extends StatelessWidget {
@@ -108,15 +953,20 @@ class _SaveAccountBanner extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(22),
-          child: const Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
-                Icon(Icons.shield_outlined, color: AppColors.accentSecondary),
-                SizedBox(width: AppSpacing.md),
+                GlossyBadge(
+                  icon: Icons.shield_rounded,
+                  color: AppColors.success,
+                  size: 38,
+                ),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
-                    'Save your account to keep your coins safe across devices.',
+                    'Save your account to keep your coins and worlds on any phone.',
+                    style: AppTextStyles.body(fontWeight: FontWeight.w600),
                   ),
                 ),
                 Icon(Icons.chevron_right, color: AppColors.textSecondary),
@@ -137,8 +987,9 @@ class _UsernameBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileByIdProvider(myId)).valueOrNull;
-    if (profile == null || profile['username'] != null)
+    if (profile == null || profile['username'] != null) {
       return const SizedBox.shrink();
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.lg),
@@ -148,17 +999,22 @@ class _UsernameBanner extends ConsumerWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => _showUsernameDialog(context, ref),
+            onTap: () => editProfileNames(context, ref),
             borderRadius: BorderRadius.circular(22),
-            child: const Padding(
-              padding: EdgeInsets.all(AppSpacing.md),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
                 children: [
-                  Icon(Icons.badge_outlined, color: AppColors.accentSecondary),
-                  SizedBox(width: AppSpacing.md),
+                  GlossyBadge(
+                    icon: Icons.alternate_email_rounded,
+                    color: AppColors.sky,
+                    size: 38,
+                  ),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
-                      'Pick a username so friends can find and add you.',
+                      'Pick a username so friends can find you.',
+                      style: AppTextStyles.body(fontWeight: FontWeight.w600),
                     ),
                   ),
                   Icon(Icons.chevron_right, color: AppColors.textSecondary),
@@ -169,48 +1025,6 @@ class _UsernameBanner extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _showUsernameDialog(BuildContext context, WidgetRef ref) async {
-    final controller = TextEditingController();
-    final username = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surfaceElevated,
-        title: const Text('Choose a username'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'lowercase, 3-20 characters',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-    if (username == null || username.isEmpty || !context.mounted) return;
-
-    try {
-      await ref
-          .read(profileRepositoryProvider)
-          .setUsername(username.toLowerCase());
-      ref.invalidate(profileByIdProvider(myId));
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not set username: $e')));
-      }
-    }
   }
 }
 
@@ -241,52 +1055,137 @@ class _InviteCard extends ConsumerWidget {
 
   final Map<String, dynamic> invite;
 
+  Future<void> _accept(BuildContext context, WidgetRef ref) async {
+    final stake = (invite['stake'] as num).toInt();
+    final balance = ref.read(coinBalanceProvider).valueOrNull ?? 0;
+    if (stake > balance) {
+      showCoinShop(context, needed: stake);
+      return;
+    }
+    final repository = ref.read(chessRepositoryProvider);
+    try {
+      final matchId = await runWithUtopiaLoader(
+        context,
+        () => repository.respondMatchInvite(
+          inviteId: invite['id'] as String,
+          accept: true,
+        ),
+      );
+      if (matchId != null && context.mounted) {
+        context.push(boardMatchRoute(invite['game'] as String?, matchId));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showUtopiaToast(
+          context,
+          friendlyError(e, fallback: 'That challenge is no longer open.'),
+          kind: ToastKind.error,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fromId = invite['from_user'] as String;
     final profile = ref.watch(profileByIdProvider(fromId)).valueOrNull;
-    final name =
-        profile?['display_name'] as String? ??
-        profile?['username'] as String? ??
-        'Someone';
+    final name = profileDisplayName(profile, fromId);
     final stake = (invite['stake'] as num).toInt();
+    final time = TimeControl(
+      (invite['minutes'] as num?)?.toInt() ?? 10,
+      (invite['increment'] as num?)?.toInt() ?? 0,
+    );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: PopCard(
-        borderRadius: 20,
+        borderRadius: 22,
         tint: AppColors.accentSecondary,
-        padding: const EdgeInsets.all(AppSpacing.md),
+        glow: AppColors.accentSecondary,
+        padding: const EdgeInsets.fromLTRB(10, 10, 6, 10),
         child: Row(
           children: [
-            const Icon(Icons.sports_esports, color: AppColors.accentSecondary),
+            UserAvatar.fromProfile(profile, fallbackInitial: name, radius: 22),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: Text(
-                '$name challenged you · $stake coins',
-                style: AppTextStyles.body(fontWeight: FontWeight.w600),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$name wants a game',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.body(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 3),
+                  Row(
+                    children: [
+                      Text(
+                        invite['game'] == 'checkers' ? 'Checkers' : 'Chess',
+                        style: AppTextStyles.body(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        speedIcon(time.speed),
+                        size: 15,
+                        color: speedColor(time.speed),
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        time.label,
+                        style: AppTextStyles.body(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      if (stake == 0) ...[
+                        Icon(
+                          Icons.favorite_rounded,
+                          size: 14,
+                          color: AppColors.coral,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          'Free',
+                          style: AppTextStyles.body(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ] else
+                        CoinAmount(
+                          stake,
+                          size: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            TextButton(
-              onPressed: () async {
-                final repository = ref.read(chessRepositoryProvider);
-                final matchId = await repository.respondMatchInvite(
-                  inviteId: invite['id'] as String,
-                  accept: true,
-                );
-                if (matchId != null && context.mounted)
-                  context.push('/chess/$matchId');
-              },
-              child: const Text('Accept'),
-            ),
             IconButton(
-              icon: const Icon(Icons.close, color: AppColors.textSecondary),
+              tooltip: 'Decline',
+              icon: Icon(Icons.close_rounded, color: AppColors.textSecondary),
               onPressed: () => ref
                   .read(chessRepositoryProvider)
                   .respondMatchInvite(
                     inviteId: invite['id'] as String,
                     accept: false,
-                  ),
+                  )
+                  .catchError((_) => null),
+            ),
+            SizedBox(
+              width: 92,
+              child: PrimaryButton(
+                label: 'Play',
+                color: AppColors.success,
+                onPressed: () => _accept(context, ref),
+              ),
             ),
           ],
         ),
@@ -295,56 +1194,582 @@ class _InviteCard extends ConsumerWidget {
   }
 }
 
-class _ChessCard extends StatelessWidget {
-  const _ChessCard();
+/// The games, two to a row (more slot in as they arrive).
+class _GamesGrid extends StatelessWidget {
+  const _GamesGrid();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: AppSpacing.sm),
+          child: Row(
+            children: [
+              Icon(
+                Icons.sports_esports_rounded,
+                size: 20,
+                color: AppColors.coinGold,
+              ),
+              const SizedBox(width: 8),
+              Text('Games', style: AppTextStyles.display(fontSize: 20)),
+            ],
+          ),
+        ),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          mainAxisSpacing: AppSpacing.md,
+          crossAxisSpacing: AppSpacing.md,
+          childAspectRatio: 0.7,
+          children: [
+            _GameTile(
+              game: GameKind.chess,
+              title: 'Chess',
+              color: AppColors.accent,
+              facts: const [
+                (Icons.timer_rounded, '1 to 30 min'),
+                (Icons.public_rounded, 'Online & friends'),
+              ],
+              onTap: () => context.push('/chess'),
+            ),
+            _GameTile(
+              game: GameKind.ludo,
+              title: 'Ludo',
+              color: AppColors.mint,
+              facts: const [
+                (Icons.groups_rounded, '2 to 6 players'),
+                (Icons.vpn_key_rounded, 'Room codes'),
+              ],
+              onTap: () => context.push('/ludo'),
+            ),
+            _GameTile(
+              game: GameKind.checkers,
+              title: 'Checkers',
+              color: AppColors.coral,
+              facts: const [
+                (Icons.bolt_rounded, 'Multi-jumps'),
+                (Icons.wifi_off_rounded, 'Play offline'),
+              ],
+              onTap: () => context.push('/checkers'),
+            ),
+            _GameTile(
+              game: GameKind.doodle,
+              title: 'Guess My Doodle',
+              color: const Color(0xFFFF5C9C),
+              facts: const [
+                (Icons.brush_rounded, 'Draw & guess'),
+                (Icons.groups_rounded, '2 to 8 players'),
+              ],
+              onTap: () => context.push('/guess-my-doodle'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// One game: its living diorama, a breathing play button, its name and a
+/// couple of facts.
+class _GameTile extends StatefulWidget {
+  const _GameTile({
+    required this.game,
+    required this.title,
+    required this.color,
+    required this.facts,
+    required this.onTap,
+  });
+
+  final GameKind game;
+  final String title;
+  final Color color;
+  final List<(IconData, String)> facts;
+  final VoidCallback onTap;
+
+  @override
+  State<_GameTile> createState() => _GameTileState();
+}
+
+class _GameTileState extends State<_GameTile> {
+  bool _down = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _down = true),
+      onTapUp: (_) => setState(() => _down = false),
+      onTapCancel: () => setState(() => _down = false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _down ? 0.96 : 1,
+        duration: const Duration(milliseconds: 120),
+        child: PopCard(
+          borderRadius: 26,
+          tint: widget.color,
+          glow: widget.color,
+          padding: EdgeInsets.zero,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(23),
+                        ),
+                        child: LayoutBuilder(
+                          builder: (context, c) => GameSceneArt(
+                            game: widget.game,
+                            height: c.maxHeight,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 8,
+                      bottom: 8,
+                      child: _PlayBubble(color: widget.color, size: 42),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 10, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.title,
+                        maxLines: 1,
+                        style: AppTextStyles.display(fontSize: 21),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    for (final (icon, label) in widget.facts)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 3),
+                        child: Row(
+                          children: [
+                            Icon(icon, size: 13, color: widget.color),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.body(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Your game is still on": shown while the player has an unfinished game,
+/// glowing gently until they jump back in.
+class _RejoinCard extends ConsumerStatefulWidget {
+  const _RejoinCard();
+
+  @override
+  ConsumerState<_RejoinCard> createState() => _RejoinCardState();
+}
+
+class _RejoinCardState extends ConsumerState<_RejoinCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final game = ref.watch(activeGameProvider).valueOrNull;
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      child: game == null
+          ? const SizedBox(width: double.infinity)
+          : Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+              child: AnimatedBuilder(
+                animation: _pulse,
+                builder: (context, child) {
+                  final v = Curves.easeInOut.transform(_pulse.value);
+                  return DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.coral.withValues(
+                            alpha: 0.25 + 0.3 * v,
+                          ),
+                          blurRadius: 10 + 12 * v,
+                        ),
+                      ],
+                    ),
+                    child: child,
+                  );
+                },
+                child: PopCard(
+                  borderRadius: 24,
+                  tint: AppColors.coral,
+                  glow: AppColors.coral,
+                  padding: EdgeInsets.zero,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(24),
+                      onTap: () => context.push(game.route),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                        child: Row(
+                          children: [
+                            GlossyBadge(
+                              icon: switch (game.kind) {
+                                GameKind.chess => Icons.extension_rounded,
+                                GameKind.checkers =>
+                                  Icons.blur_circular_rounded,
+                                GameKind.ludo => Icons.casino_rounded,
+                                GameKind.doodle => Icons.brush_rounded,
+                              },
+                              color: AppColors.coral,
+                              size: 44,
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Your game is still on',
+                                    style: AppTextStyles.display(fontSize: 17),
+                                  ),
+                                  Text(
+                                    _resumeLine(game),
+                                    style: AppTextStyles.body(
+                                      fontSize: 13,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: AppColors.coral,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Rejoin',
+                                    style: AppTextStyles.body(
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.play_arrow_rounded,
+                                    size: 18,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+}
+
+/// A round play button that breathes gently.
+class _PlayBubble extends StatefulWidget {
+  const _PlayBubble({required this.color, this.size = 58});
+
+  final Color color;
+  final double size;
+
+  @override
+  State<_PlayBubble> createState() => _PlayBubbleState();
+}
+
+class _PlayBubbleState extends State<_PlayBubble>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1600),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (context, child) {
+        final v = Curves.easeInOut.transform(_c.value);
+        return Transform.scale(
+          scale: 1 + 0.06 * v,
+          child: Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                center: const Alignment(-0.3, -0.4),
+                colors: [
+                  Color.lerp(widget.color, Colors.white, 0.5)!,
+                  widget.color,
+                ],
+              ),
+              border: Border.all(color: Colors.white, width: 2.5),
+              boxShadow: [
+                BoxShadow(
+                  color: widget.color.withValues(alpha: 0.4 + 0.3 * v),
+                  blurRadius: 12 + 10 * v,
+                ),
+              ],
+            ),
+            child: child,
+          ),
+        );
+      },
+      child: Icon(
+        Icons.play_arrow_rounded,
+        color: Colors.white,
+        size: widget.size * 0.62,
+      ),
+    );
+  }
+}
+
+/// Your avatar in the corner of home; tapping it opens the side menu.
+class _MenuAvatar extends ConsumerWidget {
+  const _MenuAvatar({required this.userId});
+
+  final String? userId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = userId;
+    final profile = id == null
+        ? null
+        : ref.watch(profileByIdProvider(id)).valueOrNull;
+    final name = id == null ? 'You' : profileDisplayName(profile, id);
+    return Semantics(
+      button: true,
+      label: 'Open menu',
+      child: GestureDetector(
+        onTap: () => showSideMenu(context, ref),
+        child: Container(
+          padding: const EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: SweepGradient(
+              colors: [
+                AppColors.goldBorder,
+                AppColors.goldBorderBright,
+                AppColors.goldBorder,
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.glowRing.withValues(alpha: 0.5),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              UserAvatar.fromProfile(
+                profile,
+                fallbackInitial: name,
+                radius: 19,
+              ),
+              Positioned(
+                right: -3,
+                bottom: -3,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.accent,
+                    border: Border.all(color: AppColors.background, width: 1.5),
+                  ),
+                  child: const Icon(
+                    Icons.menu_rounded,
+                    size: 10,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A doorway to the store: new worlds and piece sets.
+/// In the Doodle world only: the sketchbook, to draw and color.
+class _SketchbookCard extends ConsumerWidget {
+  const _SketchbookCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeControllerProvider);
+    if (UtopiaThemes.active.world.biome != WorldBiome.doodle) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: PopCard(
+        borderRadius: 26,
+        padding: EdgeInsets.zero,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(26),
+            onTap: () => context.push('/sketchbook'),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Row(
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.accent,
+                    ),
+                    child: Icon(
+                      Icons.draw_rounded,
+                      color: AppColors.onAccent,
+                      size: 32,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Sketchbook',
+                          style: AppTextStyles.display(fontSize: 18),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Draw anything or color a picture, with real art tools.',
+                          style: AppTextStyles.body(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.textSecondary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StoreCard extends StatelessWidget {
+  const _StoreCard();
 
   @override
   Widget build(BuildContext context) {
     return PopCard(
-      borderRadius: 28,
-      tint: AppColors.accent,
-      glow: AppColors.accent,
+      borderRadius: 26,
+      tint: AppColors.accentSecondary,
+      glow: AppColors.goldBorderBright,
       padding: EdgeInsets.zero,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => context.push('/chess'),
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(26),
+          onTap: () => context.push('/store'),
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    const Text(
-                      '♛',
-                      style: TextStyle(
-                        fontSize: 36,
-                        color: AppColors.accentSecondary,
+                const CoinBuddy(mood: BuddyMood.excited, size: 64),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Worlds & pieces',
+                        style: AppTextStyles.display(fontSize: 18),
                       ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        'Chess',
-                        style: AppTextStyles.display(fontSize: 26),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${UtopiaThemes.utopia.length} worlds and ${UtopiaThemes.colors.length} color themes, and pieces made of crystal, candy and starlight.',
+                        style: AppTextStyles.body(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  'Stake coins, play a random opponent or challenge a friend.',
-                  style: AppTextStyles.body(color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                OutlinedButton(
-                  onPressed: () => context.push('/chess'),
-                  child: const SizedBox(
-                    width: double.infinity,
-                    child: Text('Play', textAlign: TextAlign.center),
+                    ],
                   ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.textSecondary,
                 ),
               ],
             ),
@@ -353,4 +1778,27 @@ class _ChessCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// What the "your game is still on" card says about the game.
+String _resumeLine(ActiveGame game) {
+  final name = switch (game.kind) {
+    GameKind.chess => 'Chess',
+    GameKind.checkers => 'Checkers',
+    GameKind.ludo => 'Ludo',
+    GameKind.doodle => 'Guess My Doodle',
+  };
+  final offline = game.offline;
+  if (offline != null) {
+    final against = offline.opponent;
+    if (against == null || against == 'bots' || against == 'friends') {
+      return '$name with ${against ?? 'bots'} · pick up where you left off';
+    }
+    return '$name vs $against · pick up where you left off';
+  }
+  return switch (game.kind) {
+    GameKind.ludo => 'Ludo · the table is waiting',
+    GameKind.doodle => '$name · the game goes on without you',
+    _ => '$name · your clock may be running',
+  };
 }

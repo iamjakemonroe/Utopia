@@ -8,23 +8,24 @@ import 'app_colors.dart';
 class AppTextStyles {
   AppTextStyles._();
 
+  /// [color] defaults to the theme's text color.
   static TextStyle display({
     double fontSize = 32,
     FontWeight fontWeight = FontWeight.w800,
-    Color color = AppColors.textPrimary,
+    Color? color,
   }) => GoogleFonts.spaceGrotesk(
     fontSize: fontSize,
     fontWeight: fontWeight,
-    color: color,
+    color: color ?? AppColors.textPrimary,
   );
 
   static TextStyle body({
     double fontSize = 16,
     FontWeight fontWeight = FontWeight.w400,
-    Color color = AppColors.textPrimary,
+    Color? color,
   }) => GoogleFonts.inter(
     fontSize: fontSize,
     fontWeight: fontWeight,
-    color: color,
+    color: color ?? AppColors.textPrimary,
   );
 }
