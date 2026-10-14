@@ -28,6 +28,7 @@ class StoreState {
     this.products = const {},
     this.coinPrices = const {},
     this.storeAvailable = false,
+    this.starterOffer = false,
     this.loaded = false,
     this.busyProduct,
     this.message,
@@ -48,12 +49,16 @@ class StoreState {
     return until != null && until.isAfter(DateTime.now()) ? until : null;
   }
 
-  /// Live store listings by product id, when the store answered.
+  /// The coin packs' live store listings by product id (with the local
+  /// price), when the store answered.
   final Map<String, ProductDetails> products;
 
-  /// What each product costs in coins (while the real-money store is off).
+  /// What each product costs in coins (set on the server).
   final Map<String, int> coinPrices;
   final bool storeAvailable;
+
+  /// Whether this player can still buy the starter pack.
+  final bool starterOffer;
   final bool loaded;
 
   /// A purchase in progress.
@@ -78,11 +83,8 @@ class StoreState {
   bool isOwnedForever(StoreItem item) => item.free || owned.contains(item.id);
 
   String priceOf(StoreProduct product) {
-    if (!Env.realMoneyStore) {
-      final coins = coinPrices[product.id];
-      return coins == null ? '…' : '${formatCoins(coins)} coins';
-    }
-    return products[product.id]?.price ?? product.fallbackPrice;
+    final coins = coinPrices[product.id];
+    return coins == null ? '…' : '${formatCoins(coins)} coins';
   }
 
   StoreState copyWith({
@@ -91,6 +93,7 @@ class StoreState {
     Map<String, int>? coinPrices,
     Map<String, ProductDetails>? products,
     bool? storeAvailable,
+    bool? starterOffer,
     bool? loaded,
     String? busyProduct,
     bool clearBusy = false,
@@ -108,6 +111,7 @@ class StoreState {
       rentals: rentals ?? this.rentals,
       products: products ?? this.products,
       storeAvailable: storeAvailable ?? this.storeAvailable,
+      starterOffer: starterOffer ?? this.starterOffer,
       loaded: loaded ?? this.loaded,
       busyProduct: clearBusy ? null : (busyProduct ?? this.busyProduct),
       message: clearMessage ? null : (message ?? this.message),
@@ -120,14 +124,15 @@ class StoreState {
   }
 }
 
-/// Buying, restoring and equipping themes and piece sets.
+/// Buying and equipping worlds and piece sets, and buying coins.
 ///
-/// Purchases go through the App Store / Play Store (non-consumable
-/// products, ids in [StoreCatalog.products]); each completed purchase is
-/// reported to the backend, which records ownership. Until the products
-/// exist in App Store Connect / the Play Console the store answers with
-/// nothing to sell; debug builds then offer a test unlock instead so every
-/// item can still be tried.
+/// Worlds, color families and piece sets are bought with coins (the server
+/// checks the price and balance). Coins are bought through the App Store /
+/// Play Store (consumable products, ids in [StoreCatalog.coinPacks]), with
+/// real-money top-ups on ([Env.realMoneyStore]). Each payment goes to the
+/// verify-purchase function, which checks it with the store and adds the
+/// coins; only then is the purchase finished, so one that couldn't be
+/// checked comes back on the next launch and is tried again.
 class StoreController extends StateNotifier<StoreState> {
   StoreController(this._ref) : super(const StoreState()) {
     _purchases = InAppPurchase.instance.purchaseStream.listen(
@@ -143,6 +148,10 @@ class StoreController extends StateNotifier<StoreState> {
   /// What the player was looking at when they last tapped buy.
   String? _focus;
 
+  /// Purchases being checked right now, so one the store reports twice is
+  /// only sent once.
+  final Set<String> _checking = {};
+
   StoreRepository get _repo => _ref.read(storeRepositoryProvider);
 
   Future<void> refresh() async {
@@ -157,23 +166,25 @@ class StoreController extends StateNotifier<StoreState> {
       // Offline: keep what we knew, and never kick anyone out of a world
       // because a check failed.
     }
+    try {
+      final prices = await _repo.fetchCoinPrices();
+      if (mounted) state = state.copyWith(coinPrices: prices);
+    } catch (_) {}
     if (!Env.realMoneyStore) {
-      try {
-        final prices = await _repo.fetchCoinPrices();
-        if (mounted) state = state.copyWith(coinPrices: prices, loaded: true);
-      } catch (_) {
-        if (mounted) state = state.copyWith(loaded: true);
-      }
+      if (mounted) state = state.copyWith(loaded: true);
       return;
     }
+    try {
+      final starter = await _repo.starterOffer();
+      if (mounted) state = state.copyWith(starterOffer: starter);
+    } catch (_) {}
     try {
       final available = await InAppPurchase.instance.isAvailable();
       Map<String, ProductDetails> products = const {};
       if (available) {
-        final response = await InAppPurchase.instance.queryProductDetails({
-          for (final p in StoreCatalog.products) p.id,
-          for (final p in StoreCatalog.coinPacks) p.id,
-        });
+        final response = await InAppPurchase.instance.queryProductDetails(
+          StoreCatalog.coinProductIds,
+        );
         products = {for (final d in response.productDetails) d.id: d};
       }
       if (mounted) {
@@ -183,72 +194,62 @@ class StoreController extends StateNotifier<StoreState> {
           loaded: true,
         );
       }
+      // Google hands back coin purchases that were paid for but never
+      // finished (the app closed first) only when asked. Apple sends its
+      // own unfinished ones by itself at launch.
+      if (available && Platform.isAndroid) {
+        await InAppPurchase.instance.restorePurchases();
+      }
     } catch (_) {
       if (mounted) state = state.copyWith(loaded: true, storeAvailable: false);
     }
   }
 
-  /// Whether this build can unlock items without the real store (debug and
+  /// Whether this build can add coins without the real store (debug and
   /// tester builds, while the store products don't exist yet).
   bool get canTestUnlock =>
       Env.realMoneyStore &&
       (kDebugMode || Env.testStore) &&
       !state.storeAvailable;
 
-  /// Buys [product]. [focus] is the item on screen when they tapped buy
-  /// (one world of a pack), so the celebration can take them there.
+  /// Buys [product] with coins. [focus] is the item on screen when they
+  /// tapped buy (one world of a pack), so the celebration can take them
+  /// there.
   Future<void> buy(StoreProduct product, {String? focus}) async {
     if (state.busyProduct != null) return;
     _focus = focus;
-    if (!Env.realMoneyStore) return _buyWithCoins(product);
-    final details = state.products[product.id];
-    if (details == null) {
-      if (canTestUnlock) {
-        await _grant(
-          product,
-          transactionId: 'debug-${DateTime.now().microsecondsSinceEpoch}',
-          verification: 'debug-unlock',
-        );
-      } else {
-        state = state.copyWith(
-          message: "The store isn't available right now. Try again in a bit.",
-        );
-      }
-      return;
-    }
-    state = state.copyWith(busyProduct: product.id, clearMessage: true);
-    try {
-      final started = await InAppPurchase.instance.buyNonConsumable(
-        purchaseParam: PurchaseParam(productDetails: details),
-      );
-      if (!started) state = state.copyWith(clearBusy: true);
-    } catch (_) {
-      state = state.copyWith(
-        clearBusy: true,
-        message: "Couldn't start the purchase.",
-      );
-    }
+    return _buyWithCoins(product);
   }
+
+  /// The coin packs to show: the starter pack first while it's on.
+  List<CoinPack> get packsOnSale => [
+    if (state.starterOffer &&
+        (state.products.containsKey(StoreCatalog.starterPack.id) ||
+            canTestUnlock))
+      StoreCatalog.starterPack,
+    ...StoreCatalog.coinPacks,
+  ];
 
   String priceOfPack(CoinPack pack) =>
       state.products[pack.id]?.price ?? pack.fallbackPrice;
 
-  /// Buys a coin pack. The server credits the coins once the store
-  /// confirms the payment (see [_onPurchases]).
+  /// Buys a coin pack. The coins are added once the server has checked the
+  /// payment with the store (see [_onPurchases]).
   Future<void> buyCoins(CoinPack pack) async {
     if (state.busyProduct != null) return;
     if (!Env.realMoneyStore) {
       state = state.copyWith(message: 'Coin top-ups are coming soon.');
       return;
     }
+    final me = _ref.read(currentUserProvider)?.id;
+    if (me == null) {
+      state = state.copyWith(message: 'Sign in to buy coins.');
+      return;
+    }
     final details = state.products[pack.id];
     if (details == null) {
       if (canTestUnlock) {
-        await _creditCoins(
-          pack,
-          transactionId: 'debug-${DateTime.now().microsecondsSinceEpoch}',
-          verification: 'debug-unlock',
-        );
+        await _demoCoins(pack);
       } else {
         state = state.copyWith(
           message: "The store isn't available right now. Try again soon.",
@@ -258,8 +259,15 @@ class StoreController extends StateNotifier<StoreState> {
     }
     state = state.copyWith(busyProduct: pack.id, clearMessage: true);
     try {
+      // The account goes with the purchase (Apple's appAccountToken,
+      // Google's account id), so its coins always reach this player.
       final started = await InAppPurchase.instance.buyConsumable(
-        purchaseParam: PurchaseParam(productDetails: details),
+        purchaseParam: PurchaseParam(
+          productDetails: details,
+          applicationUserName: me,
+        ),
+        // The server uses it up once the coins are added.
+        autoConsume: !Platform.isAndroid,
       );
       if (!started) state = state.copyWith(clearBusy: true);
     } catch (_) {
@@ -270,12 +278,8 @@ class StoreController extends StateNotifier<StoreState> {
     }
   }
 
-  /// Returns whether the coins were credited.
-  Future<bool> _creditCoins(
-    CoinPack pack, {
-    required String transactionId,
-    required String verification,
-  }) async {
+  /// Test builds only: the old free top-up, while the store has no products.
+  Future<void> _demoCoins(CoinPack pack) async {
     try {
       await _ref
           .read(supabaseClientProvider)
@@ -284,127 +288,116 @@ class StoreController extends StateNotifier<StoreState> {
             params: {
               'p_platform': Platform.isIOS ? 'ios' : 'android',
               'p_product_id': pack.id,
-              'p_transaction_id': transactionId,
-              'p_verification': verification,
+              'p_transaction_id':
+                  'debug-${DateTime.now().microsecondsSinceEpoch}',
+              'p_verification': 'debug-unlock',
             },
           );
       state = state.copyWith(clearBusy: true, coinsAdded: pack.coins);
       _ref.read(gameAudioProvider).play(Sfx.purchase);
-      return true;
     } catch (_) {
       state = state.copyWith(
         clearBusy: true,
-        message:
-            "Payment received. Your coins will arrive the next time you open Utopia.",
+        message: "Test top-ups aren't available on this server.",
       );
-      return false;
     }
   }
 
   void clearCoinsAdded() => state = state.copyWith(clearCoinsAdded: true);
 
-  Future<void> restore() async {
-    state = state.copyWith(message: 'Restoring your purchases');
-    try {
-      await InAppPurchase.instance.restorePurchases();
-      await refresh();
-      if (mounted) state = state.copyWith(message: 'Purchases restored.');
-    } catch (_) {
-      if (mounted) {
-        state = state.copyWith(message: "Couldn't restore purchases.");
-      }
-    }
-  }
-
   Future<void> _onPurchases(List<PurchaseDetails> purchases) async {
     for (final p in purchases) {
-      final pack = StoreCatalog.coinPacks
-          .where((x) => x.id == p.productID)
-          .firstOrNull;
-      if (pack != null) {
-        if (p.status == PurchaseStatus.purchased) {
-          final credited = await _creditCoins(
-            pack,
-            transactionId:
-                p.purchaseID ?? '${p.productID}-${p.transactionDate}',
-            verification: p.verificationData.serverVerificationData,
-          );
-          // Left unfinished, the store hands the purchase back on the next
-          // launch and we try again.
-          if (!credited) continue;
-        } else if (p.status == PurchaseStatus.error) {
+      final pack = [
+        StoreCatalog.starterPack,
+        ...StoreCatalog.coinPacks,
+      ].where((x) => x.id == p.productID).firstOrNull;
+      switch (p.status) {
+        case PurchaseStatus.purchased || PurchaseStatus.restored:
+          // Anything else (an old world bought with money) has nothing to
+          // check here; finishing it stops the store sending it again.
+          if (pack != null && !await _check(p, pack)) continue;
+        case PurchaseStatus.pending:
           state = state.copyWith(
             clearBusy: true,
-            message: "The purchase didn't go through.",
+            message:
+                'Your payment is still going through. Your coins arrive as soon as it does.',
           );
-        } else if (p.status == PurchaseStatus.canceled) {
-          state = state.copyWith(clearBusy: true);
-        }
-        if (p.pendingCompletePurchase) {
-          await InAppPurchase.instance.completePurchase(p);
-        }
-        continue;
-      }
-      final product = StoreCatalog.products
-          .where((x) => x.id == p.productID)
-          .firstOrNull;
-      switch (p.status) {
-        case PurchaseStatus.pending:
-          break;
-        case PurchaseStatus.purchased:
-        case PurchaseStatus.restored:
-          if (product != null) {
-            await _grant(
-              product,
-              transactionId:
-                  p.purchaseID ?? '${p.productID}-${p.transactionDate}',
-              verification: p.verificationData.serverVerificationData,
-              celebrate: p.status == PurchaseStatus.purchased,
-            );
-          }
+          continue;
         case PurchaseStatus.error:
           state = state.copyWith(
             clearBusy: true,
-            message: 'The purchase didn’t go through.',
+            message: "The purchase didn't go through.",
           );
         case PurchaseStatus.canceled:
           state = state.copyWith(clearBusy: true);
       }
       if (p.pendingCompletePurchase) {
-        await InAppPurchase.instance.completePurchase(p);
+        try {
+          await InAppPurchase.instance.completePurchase(p);
+        } catch (_) {
+          // Unfinished, the store hands it back later and it's settled then.
+        }
       }
     }
   }
 
-  Future<void> _grant(
-    StoreProduct product, {
-    required String transactionId,
-    required String verification,
-    bool celebrate = true,
-  }) async {
+  /// Has the server check [p] with the store and add its coins. Returns
+  /// whether the purchase is settled (paid out, or void) and can be
+  /// finished.
+  Future<bool> _check(PurchaseDetails p, CoinPack pack) async {
+    final id = Platform.isIOS
+        ? p.purchaseID
+        : p.verificationData.serverVerificationData;
+    if (id == null || id.isEmpty || !_checking.add(id)) return false;
     try {
-      await _repo.claimPurchase(
+      final result = await _repo.verifyCoinPurchase(
         platform: Platform.isIOS ? 'ios' : 'android',
-        productId: product.id,
-        transactionId: transactionId,
-        verification: verification,
-        itemIds: product.itemIds,
+        productId: pack.id,
+        purchaseId: id,
       );
-      state = state.copyWith(
-        owned: {...state.owned, ...product.itemIds},
-        clearBusy: true,
-        justUnlocked: celebrate ? product : null,
-        unlockedFocus: celebrate && product.itemIds.contains(_focus)
-            ? _focus
-            : null,
-      );
-      if (celebrate) _ref.read(gameAudioProvider).play(Sfx.purchase);
-    } catch (_) {
-      state = state.copyWith(
-        clearBusy: true,
-        message:
-            "Payment received, but it didn't unlock yet. Tap Restore purchases.",
-      );
+      if (!mounted) return false;
+      switch (result) {
+        case CoinPurchaseCredited(:final coins, :final mine):
+          if (mine) {
+            state = state.copyWith(
+              clearBusy: true,
+              coinsAdded: coins > 0 ? coins : null,
+              starterOffer: pack.id == StoreCatalog.starterPack.id
+                  ? false
+                  : null,
+            );
+            // The balance on screen follows by itself (it's live).
+            if (coins > 0) _ref.read(gameAudioProvider).play(Sfx.purchase);
+          } else {
+            state = state.copyWith(
+              clearBusy: true,
+              message: 'Those coins went to the account that bought them.',
+            );
+          }
+          return true;
+        case CoinPurchasePending():
+          state = state.copyWith(
+            clearBusy: true,
+            message:
+                'Your payment is still going through. Your coins arrive as soon as it does.',
+          );
+          return false;
+        case CoinPurchaseVoid():
+          state = state.copyWith(
+            clearBusy: true,
+            message: 'That payment was cancelled, so no coins were added.',
+          );
+          return true;
+        case CoinPurchaseRetry():
+          state = state.copyWith(
+            clearBusy: true,
+            message:
+                'Payment received. Your coins will arrive the next time you open Utopia.',
+          );
+          return false;
+      }
+    } finally {
+      _checking.remove(id);
     }
   }
 

@@ -35,16 +35,12 @@ class StoreProduct {
     required this.id,
     required this.title,
     required this.itemIds,
-    required this.fallbackPrice,
   });
 
-  /// The App Store / Play product identifier.
+  /// The product id the server prices in coins (see store_coin_prices).
   final String id;
   final String title;
   final List<String> itemIds;
-
-  /// Shown when the store can't be reached for the localized price.
-  final String fallbackPrice;
 }
 
 /// A pack of coins (a consumable purchase). The server decides how many
@@ -57,6 +53,7 @@ class CoinPack {
     required this.coins,
     required this.bonusPercent,
     required this.fallbackPrice,
+    required this.art,
     this.badge,
   });
 
@@ -65,73 +62,111 @@ class CoinPack {
   final int coins;
   final int bonusPercent;
   final String fallbackPrice;
+
+  /// Which picture the pack shows (see CoinPackArtPainter), growing with
+  /// its size.
+  final int art;
   final String? badge;
 }
 
-/// Everything sold in Utopia. Product ids must match the in-app purchase
-/// products set up in App Store Connect and the Play Console: worlds and
-/// piece sets are non-consumable, coin packs are consumable.
+/// Everything sold in Utopia. Worlds, color families and piece sets are
+/// bought with coins (the server sets their prices, see store_coin_prices).
+/// Coin packs are the only App Store / Play products: consumables whose ids
+/// must match the products set up in App Store Connect and the Play Console.
 class StoreCatalog {
   StoreCatalog._();
 
   // ── Coins ────────────────────────────────────────────────────────────────
 
-  /// A standard ladder: about 1,000 coins per dollar, with a growing bonus
-  /// on bigger packs. Entries run 25-1,000, so the smallest pack is several
-  /// games and nobody is ever a few coins short of a pack.
+  /// About 10,000 coins per dollar, the rate the store's coin prices are set
+  /// at (a premium world is 30,000 coins, about $3), with a bonus that
+  /// grows with the pack.
   static const coinPacks = [
     CoinPack(
       id: 'utopia.coins.pouch',
       name: 'Pouch',
-      coins: 1000,
+      coins: 10000,
       bonusPercent: 0,
       fallbackPrice: r'$0.99',
+      art: 0,
     ),
     CoinPack(
       id: 'utopia.coins.sack',
       name: 'Sack',
-      coins: 3300,
+      coins: 55000,
       bonusPercent: 10,
-      fallbackPrice: r'$2.99',
+      fallbackPrice: r'$4.99',
+      art: 1,
     ),
     CoinPack(
       id: 'utopia.coins.chest',
       name: 'Chest',
-      coins: 6000,
+      coins: 120000,
       bonusPercent: 20,
-      fallbackPrice: r'$4.99',
+      fallbackPrice: r'$9.99',
+      art: 2,
       badge: 'Popular',
     ),
     CoinPack(
       id: 'utopia.coins.vault',
       name: 'Vault',
-      coins: 13000,
+      coins: 260000,
       bonusPercent: 30,
-      fallbackPrice: r'$9.99',
+      fallbackPrice: r'$19.99',
+      art: 3,
     ),
     CoinPack(
       id: 'utopia.coins.mountain',
       name: 'Mountain',
-      coins: 30000,
+      coins: 750000,
       bonusPercent: 50,
-      fallbackPrice: r'$19.99',
+      fallbackPrice: r'$49.99',
+      art: 4,
     ),
     CoinPack(
       id: 'utopia.coins.hoard',
       name: "Dragon's Hoard",
-      coins: 80000,
+      coins: 1600000,
       bonusPercent: 60,
-      fallbackPrice: r'$49.99',
+      fallbackPrice: r'$99.99',
+      art: 5,
     ),
     CoinPack(
       id: 'utopia.coins.treasury',
       name: 'Sky Treasury',
-      coins: 175000,
+      coins: 3500000,
       bonusPercent: 75,
-      fallbackPrice: r'$99.99',
+      fallbackPrice: r'$199.99',
+      art: 6,
+    ),
+    CoinPack(
+      id: 'utopia.coins.kingdom',
+      name: 'Sky Kingdom',
+      coins: 8000000,
+      bonusPercent: 100,
+      fallbackPrice: r'$399.99',
+      art: 7,
       badge: 'Best value',
     ),
   ];
+
+  /// Double coins for the smallest price, once per player (the server
+  /// says whether it's still on, see coin_shop_offers).
+  static const starterPack = CoinPack(
+    id: 'utopia.coins.starter',
+    name: 'Starter pack',
+    coins: 20000,
+    bonusPercent: 100,
+    fallbackPrice: r'$0.99',
+    art: 1,
+    badge: 'Once only',
+  );
+
+  /// Every coin product id, for asking the store for local prices.
+  static Set<String> get coinProductIds => {
+    starterPack.id,
+    for (final p in coinPacks) p.id,
+  };
 
   // ── Ludo piece sets ──────────────────────────────────────────────────────
 
@@ -272,7 +307,6 @@ class StoreCatalog {
         id: 'utopia.theme.$id',
         title: UtopiaThemes.byId(id).name,
         itemIds: [id],
-        fallbackPrice: r'$2.99',
       ),
     for (final family in _colorFamilies)
       StoreProduct(
@@ -282,13 +316,11 @@ class StoreCatalog {
           for (final t in UtopiaThemes.colors)
             if (t.id.startsWith('${family.$1}_')) t.id,
         ],
-        fallbackPrice: r'$1.99',
       ),
     StoreProduct(
       id: 'utopia.themes.all',
       title: 'Every World',
       itemIds: [for (final t in UtopiaThemes.all) t.id],
-      fallbackPrice: r'$9.99',
     ),
     for (final set in ludoPieceSets)
       if (!set.free)
@@ -296,9 +328,6 @@ class StoreCatalog {
           id: 'utopia.pieces.${set.id}',
           title: set.name,
           itemIds: [set.id],
-          fallbackPrice: set.id == 'cosmic' || set.id == 'royal'
-              ? r'$4.99'
-              : r'$3.99',
         ),
     for (final set in chessPieceSets)
       if (!set.free)
@@ -306,14 +335,6 @@ class StoreCatalog {
           id: 'utopia.chess.${set.id.replaceFirst('chess_', '')}',
           title: '${set.name} Chess',
           itemIds: [set.id],
-          fallbackPrice:
-              const {
-                'chess_royal',
-                'chess_monsters',
-                'chess_robots',
-              }.contains(set.id)
-              ? r'$4.99'
-              : r'$3.99',
         ),
   ];
 

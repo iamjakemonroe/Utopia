@@ -12,6 +12,7 @@ import '../../../core/widgets/confetti_burst.dart';
 import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/widgets/utopia_toast.dart';
+import '../../auth/presentation/providers/auth_providers.dart';
 import '../../coins/presentation/providers/coin_balance_provider.dart';
 import '../domain/store_catalog.dart';
 import 'coin_pack_art.dart';
@@ -47,6 +48,8 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
     final store = ref.watch(storeControllerProvider);
     final controller = ref.read(storeControllerProvider.notifier);
     final balance = ref.watch(coinBalanceProvider).valueOrNull;
+    final packs = controller.packsOnSale;
+    final isGuest = ref.watch(isAnonymousProvider);
 
     ref.listen(storeControllerProvider, (prev, next) {
       final added = next.coinsAdded;
@@ -127,7 +130,35 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                     ),
                   if (!Env.realMoneyStore)
                     const _ComingSoon()
-                  else
+                  else ...[
+                    if (isGuest)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          0,
+                          AppSpacing.lg,
+                          AppSpacing.sm,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.shield_rounded,
+                              size: 16,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Save your account so your coins are never lost.',
+                                style: AppTextStyles.body(
+                                  fontSize: 12,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     Flexible(
                       child: ListView.separated(
                         shrinkWrap: true,
@@ -137,14 +168,13 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                           AppSpacing.md,
                           AppSpacing.md,
                         ),
-                        itemCount: StoreCatalog.coinPacks.length,
+                        itemCount: packs.length,
                         separatorBuilder: (_, _) =>
                             const SizedBox(height: AppSpacing.sm),
                         itemBuilder: (context, i) {
-                          final pack = StoreCatalog.coinPacks[i];
+                          final pack = packs[i];
                           return _PackCard(
                             pack: pack,
-                            tier: i,
                             price: controller.priceOfPack(pack),
                             busy: store.busyProduct == pack.id,
                             onBuy: () => controller.buyCoins(pack),
@@ -152,6 +182,7 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                         },
                       ),
                     ),
+                  ],
                   const SizedBox(height: AppSpacing.md),
                 ],
               ),
@@ -264,14 +295,12 @@ class _Header extends StatelessWidget {
 class _PackCard extends StatefulWidget {
   const _PackCard({
     required this.pack,
-    required this.tier,
     required this.price,
     required this.busy,
     required this.onBuy,
   });
 
   final CoinPack pack;
-  final int tier;
   final String price;
   final bool busy;
   final VoidCallback onBuy;
@@ -299,6 +328,7 @@ class _PackCardState extends State<_PackCard>
   @override
   Widget build(BuildContext context) {
     final pack = widget.pack;
+    final tier = pack.art;
     final featured = pack.badge != null;
     final accent = featured ? AppColors.goldBorderBright : AppColors.glowRing;
 
@@ -311,7 +341,7 @@ class _PackCardState extends State<_PackCard>
         scale: _pressed ? 0.97 : 1,
         duration: const Duration(milliseconds: 120),
         child: Container(
-          height: widget.tier >= 5 ? 116 : 96,
+          height: tier >= 5 ? 116 : 96,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             gradient: LinearGradient(
@@ -342,7 +372,7 @@ class _PackCardState extends State<_PackCard>
                 Row(
                   children: [
                     SizedBox(
-                      width: widget.tier >= 5 ? 124 : 104,
+                      width: tier >= 5 ? 124 : 104,
                       // Fill the card's height: a bare CustomPaint in a Row
                       // would otherwise be given no height at all.
                       height: double.infinity,
@@ -350,7 +380,7 @@ class _PackCardState extends State<_PackCard>
                         animation: _shine,
                         builder: (context, _) => CustomPaint(
                           painter: CoinPackArtPainter(
-                            tier: widget.tier,
+                            tier: tier,
                             t: _shine.value * 3600,
                           ),
                         ),
@@ -361,9 +391,16 @@ class _PackCardState extends State<_PackCard>
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            formatCoins(pack.coins),
-                            style: AppTextStyles.display(fontSize: 24),
+                          // Up to 8,000,000: shrinks to fit a narrow phone
+                          // next to a long local price.
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              formatCoins(pack.coins),
+                              maxLines: 1,
+                              style: AppTextStyles.display(fontSize: 24),
+                            ),
                           ),
                           Wrap(
                             spacing: 8,
@@ -462,7 +499,7 @@ class _PriceButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minWidth: 84),
+      constraints: const BoxConstraints(minWidth: 84, maxWidth: 132),
       height: 42,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       alignment: Alignment.center,
@@ -483,9 +520,13 @@ class _PriceButton extends StatelessWidget {
       ),
       child: busy
           ? const SizedBox.square(dimension: 22, child: UtopiaLoader(size: 22))
-          : Text(
-              price,
-              style: AppTextStyles.display(fontSize: 16, color: Colors.white),
+          : FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                price,
+                maxLines: 1,
+                style: AppTextStyles.display(fontSize: 16, color: Colors.white),
+              ),
             ),
     );
   }

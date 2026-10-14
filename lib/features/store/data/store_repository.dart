@@ -31,24 +31,47 @@ class StoreRepository {
     return {for (final r in rows) r['item_id'] as String};
   }
 
-  /// Records a completed store purchase and grants its items.
-  Future<void> claimPurchase({
+  /// Has the server check a coin purchase with the App Store or Play Store
+  /// and add its coins (the verify-purchase function). [purchaseId] is
+  /// Apple's transaction id or Google's purchase token.
+  Future<CoinPurchaseResult> verifyCoinPurchase({
     required String platform,
     required String productId,
-    required String transactionId,
-    required String verification,
-    required List<String> itemIds,
-  }) {
-    return _client.rpc(
-      'claim_purchase',
-      params: {
-        'p_platform': platform,
-        'p_product_id': productId,
-        'p_transaction_id': transactionId,
-        'p_verification': verification,
-        'p_item_ids': itemIds,
-      },
-    );
+    required String purchaseId,
+  }) async {
+    try {
+      final res = await _client.functions.invoke(
+        'verify-purchase',
+        body: {
+          'platform': platform,
+          'product_id': productId,
+          'purchase_id': purchaseId,
+        },
+      );
+      final data = res.data;
+      if (data is Map && data['status'] == 'credited') {
+        return CoinPurchaseCredited(
+          coins: (data['coins'] as num?)?.toInt() ?? 0,
+          mine: data['mine'] != false,
+        );
+      }
+      if (data is Map && data['status'] == 'pending') {
+        return const CoinPurchasePending();
+      }
+      return const CoinPurchaseRetry();
+    } on FunctionException catch (e) {
+      return e.status == 410
+          ? const CoinPurchaseVoid()
+          : const CoinPurchaseRetry();
+    } catch (_) {
+      return const CoinPurchaseRetry();
+    }
+  }
+
+  /// Whether this player can still buy the starter pack.
+  Future<bool> starterOffer() async {
+    final offers = await _client.rpc('coin_shop_offers');
+    return offers is Map && offers['starter'] == true;
   }
 
   /// Worlds rented with coins, and when each rental runs out.
@@ -81,4 +104,34 @@ class StoreRepository {
       params: {'p_kind': kind.apiName, 'p_item_id': itemId},
     );
   }
+}
+
+/// What the server said about a coin purchase.
+sealed class CoinPurchaseResult {
+  const CoinPurchaseResult();
+}
+
+/// Paid out (now, or already before). [mine] is false when it was bought
+/// for another account signed in on this phone earlier, which got the
+/// coins instead.
+class CoinPurchaseCredited extends CoinPurchaseResult {
+  const CoinPurchaseCredited({required this.coins, required this.mine});
+
+  final int coins;
+  final bool mine;
+}
+
+/// The store is still waiting for the money (a cash or bank payment).
+class CoinPurchasePending extends CoinPurchaseResult {
+  const CoinPurchasePending();
+}
+
+/// Cancelled or refunded: no coins, and nothing more to do.
+class CoinPurchaseVoid extends CoinPurchaseResult {
+  const CoinPurchaseVoid();
+}
+
+/// Couldn't be checked right now: keep it and try again later.
+class CoinPurchaseRetry extends CoinPurchaseResult {
+  const CoinPurchaseRetry();
 }

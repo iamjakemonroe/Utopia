@@ -32,6 +32,7 @@ import '../../coins/presentation/providers/coin_balance_provider.dart';
 import 'coin_shop.dart';
 import 'store_controller.dart';
 import 'theme_teleport.dart';
+import '../../../core/widgets/ambient_tick.dart';
 
 /// The store: worlds (themes), Ludo piece sets and chess piece sets.
 class StoreScreen extends ConsumerStatefulWidget {
@@ -59,7 +60,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         _celebrate(unlocked, focus: next.unlockedFocus);
       }
     });
-    final store = ref.watch(storeControllerProvider);
     final isGuest = ref.watch(isAnonymousProvider);
 
     return DefaultTabController(
@@ -92,14 +92,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 _Banner(
                   icon: Icons.shield_rounded,
                   text: 'Save your account so your purchases are never lost.',
-                ),
-              if (store.loaded &&
-                  !store.storeAvailable &&
-                  ref.read(storeControllerProvider.notifier).canTestUnlock)
-                _Banner(
-                  icon: Icons.science_rounded,
-                  text:
-                      'Test build: “Buy” unlocks items for free so you can try everything.',
                 ),
               const Expanded(
                 child: TabBarView(
@@ -330,83 +322,108 @@ class _WorldsTab extends ConsumerWidget {
     );
     final ownsAll = StoreCatalog.themes.every(store.isOwned);
 
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      children: [
-        Text('Utopia worlds', style: AppTextStyles.display(fontSize: 20)),
-        Text(
-          'Every world has its own living sky. Changing worlds sends Chip through a portal!',
-          style: AppTextStyles.body(
-            fontSize: 13,
-            color: AppColors.textSecondary,
+    // A lazy grid: only the live worlds on screen (and a little either
+    // side) exist and animate, rather than all of them at once.
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
+          sliver: SliverList.list(
+            children: [
+              Text('Utopia worlds', style: AppTextStyles.display(fontSize: 20)),
+              Text(
+                'Every world has its own living sky. Changing worlds sends Chip through a portal!',
+                style: AppTextStyles.body(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: AppSpacing.sm),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: AppSpacing.sm,
-          crossAxisSpacing: AppSpacing.sm,
-          childAspectRatio: 0.78,
-          children: [
-            for (final t in UtopiaThemes.utopia)
-              _WorldCard(theme: t, live: true),
-          ],
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          sliver: SliverGrid.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: AppSpacing.sm,
+            crossAxisSpacing: AppSpacing.sm,
+            childAspectRatio: 0.78,
+            children: [
+              for (final t in UtopiaThemes.utopia)
+                _WorldCard(theme: t, live: true),
+            ],
+          ),
         ),
-        if (!ownsAll) ...[
-          const SizedBox(height: AppSpacing.md),
-          PopCard(
-            borderRadius: 24,
-            tint: AppColors.accentSecondary,
-            glow: AppColors.goldBorderBright,
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              children: [
-                GlossyBadge(
-                  icon: Icons.public_rounded,
-                  color: AppColors.mint,
-                  size: 46,
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.md,
+          ),
+          sliver: SliverList.list(
+            children: [
+              if (!ownsAll) ...[
+                const SizedBox(height: AppSpacing.md),
+                PopCard(
+                  borderRadius: 24,
+                  tint: AppColors.accentSecondary,
+                  glow: AppColors.goldBorderBright,
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Row(
                     children: [
-                      Text(
-                        'Every World',
-                        style: AppTextStyles.display(fontSize: 18),
+                      GlossyBadge(
+                        icon: Icons.public_rounded,
+                        color: AppColors.mint,
+                        size: 46,
                       ),
-                      Text(
-                        'All ${UtopiaThemes.all.length} worlds, now and forever.',
-                        style: AppTextStyles.body(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Every World',
+                              style: AppTextStyles.display(fontSize: 18),
+                            ),
+                            Text(
+                              'All ${UtopiaThemes.all.length} worlds, now and forever.',
+                              style: AppTextStyles.body(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      _BuyButton(product: bundle),
                     ],
                   ),
                 ),
-                _BuyButton(product: bundle),
               ],
-            ),
-          ),
-        ],
-        const SizedBox(height: AppSpacing.lg),
-        Text('Color worlds', style: AppTextStyles.display(fontSize: 20)),
-        Text(
-          '12 colors, each at dawn, dusk and midnight.',
-          style: AppTextStyles.body(
-            fontSize: 13,
-            color: AppColors.textSecondary,
+              const SizedBox(height: AppSpacing.lg),
+              Text('Color worlds', style: AppTextStyles.display(fontSize: 20)),
+              Text(
+                '12 colors, each at dawn, dusk and midnight.',
+                style: AppTextStyles.body(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              for (final family in _families())
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: _FamilyRow(family: family.$1, themes: family.$2),
+                ),
+            ],
           ),
         ),
-        const SizedBox(height: AppSpacing.sm),
-        for (final family in _families())
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: _FamilyRow(family: family.$1, themes: family.$2),
-          ),
       ],
     );
   }
@@ -1338,7 +1355,7 @@ class _LudoSetPreviewState extends State<_LudoSetPreview>
     with SingleTickerProviderStateMixin {
   final ValueNotifier<double> _t = ValueNotifier(0);
   late final Ticker _ticker = createTicker(
-    (e) => _t.value = e.inMicroseconds / 1e6,
+    ambientTick((e) => _t.value = e.inMicroseconds / 1e6),
   );
 
   @override
@@ -1411,7 +1428,7 @@ class _ChessSetPreviewState extends State<_ChessSetPreview>
     with SingleTickerProviderStateMixin {
   final _t = ValueNotifier<double>(0);
   late final Ticker _ticker = createTicker(
-    (e) => _t.value = e.inMicroseconds / 1e6,
+    ambientTick((e) => _t.value = e.inMicroseconds / 1e6),
   );
 
   ChessPieceStyle get _style => ChessPieceStyle.byId(widget.setId);

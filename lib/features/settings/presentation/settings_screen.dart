@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show SignOutScope;
 
-import '../../../core/config/env.dart';
 import '../../doodle_studio/data/art_store.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -29,7 +28,6 @@ import '../../../core/notifications/local_notifications.dart';
 import '../../../core/now_playing/now_playing.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../store/presentation/coin_shop.dart';
-import '../../store/presentation/store_controller.dart';
 
 /// "Show my coins" while the change is on its way to the server, so the
 /// switch moves at once.
@@ -247,18 +245,6 @@ class SettingsScreen extends ConsumerWidget {
                     trailing: const CoinIcon(size: 20),
                     onTap: () => showCoinShop(context),
                   ),
-                  // App stores require a way to get back worlds and piece
-                  // sets bought on another phone or after a reinstall (only
-                  // once there's anything bought with money to restore).
-                  if (Env.realMoneyStore)
-                    _LinkRow(
-                      icon: Icons.restore_rounded,
-                      color: AppColors.sky,
-                      title: 'Restore purchases',
-                      subtitle:
-                          'Bought something on another phone? Get it back here',
-                      onTap: () => _restorePurchases(context, ref),
-                    ),
                 ],
               ),
               _Section(
@@ -541,26 +527,6 @@ class _RowShell extends StatelessWidget {
 
 /// Asks the app store for everything bought on this account before, and
 /// says how it went.
-Future<void> _restorePurchases(BuildContext context, WidgetRef ref) async {
-  final store = ref.read(storeControllerProvider.notifier);
-  showUtopiaToast(
-    context,
-    'Looking for your purchases',
-    icon: Icons.restore_rounded,
-  );
-  await store.restore();
-  if (!context.mounted) return;
-  final message = ref.read(storeControllerProvider).message;
-  store.clearMessage();
-  if (message == null) return;
-  showUtopiaToast(
-    context,
-    message,
-    kind: message.startsWith("Couldn't") ? ToastKind.error : ToastKind.success,
-    icon: Icons.restore_rounded,
-  );
-}
-
 class _ToggleRow extends StatelessWidget {
   const _ToggleRow({
     required this.icon,

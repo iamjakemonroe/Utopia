@@ -18,11 +18,11 @@ class Env {
   /// testers can try everything. Never set this for a store release.
   static const bool testStore = bool.fromEnvironment('UTOPIA_TEST_STORE');
 
-  /// Real-money purchases through the App Store and Play Store (coin
-  /// top-ups, and worlds and piece sets for money). Off until those
-  /// products exist and the server verifies receipts: until then worlds and
-  /// piece sets are bought with coins, and top-ups say they're coming soon.
-  /// (`--dart-define=UTOPIA_REAL_MONEY_STORE=true` turns it on.)
+  /// Coin top-ups for real money through the App Store and Play Store
+  /// (`--dart-define=UTOPIA_REAL_MONEY_STORE=true`). Turn it on once the
+  /// coin products exist in both stores and the verify-purchase function
+  /// has the store keys; until then the coin shop says top-ups are coming
+  /// soon. Worlds and piece sets are always bought with coins.
   static const bool realMoneyStore = bool.fromEnvironment(
     'UTOPIA_REAL_MONEY_STORE',
   );

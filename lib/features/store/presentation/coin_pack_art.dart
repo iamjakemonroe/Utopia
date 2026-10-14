@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 /// The picture for each coin pack, growing with its size: a velvet pouch,
 /// a bulging sack, an open treasure chest, gold bars, a mountain of coins,
-/// a dragon's hoard, and a floating treasure island. [t] is seconds, for
-/// glints, sparkles and falling coins.
+/// a dragon's hoard, a floating treasure island, and that island crowned
+/// with a gold castle. [t] is seconds, for glints, sparkles, flags and
+/// falling coins.
 class CoinPackArtPainter extends CustomPainter {
   CoinPackArtPainter({required this.tier, required this.t});
 
@@ -39,8 +40,10 @@ class CoinPackArtPainter extends CustomPainter {
         _mountain(canvas, w, h, crown: false);
       case 5:
         _mountain(canvas, w, h, crown: true);
-      default:
+      case 6:
         _island(canvas, w, h);
+      default:
+        _island(canvas, w, h, castle: true);
     }
     canvas.restore();
     _sparkles(canvas, w, h);
@@ -494,7 +497,7 @@ class CoinPackArtPainter extends CustomPainter {
     }
   }
 
-  void _island(Canvas canvas, double w, double h) {
+  void _island(Canvas canvas, double w, double h, {bool castle = false}) {
     // Rainbow behind.
     const bands = [
       Color(0xFFFF5C6C),
@@ -558,8 +561,10 @@ class CoinPackArtPainter extends CustomPainter {
         t * 5 + i,
       );
     }
+    // The castle stands on the grass, with gold piled round its feet.
+    if (castle) _castle(canvas, Offset(c.dx, c.dy + h * 0.01), w);
     // Heap of gold on top.
-    for (var row = 0; row < 4; row++) {
+    for (var row = 0; row < (castle ? 2 : 4); row++) {
       final count = 5 - row;
       for (var i = 0; i < count; i++) {
         _coin(
@@ -569,7 +574,140 @@ class CoinPackArtPainter extends CustomPainter {
         );
       }
     }
-    _standingCoin(canvas, Offset(c.dx, c.dy - h * 0.25), w * 0.07, t * 2);
+    if (!castle) {
+      _standingCoin(canvas, Offset(c.dx, c.dy - h * 0.25), w * 0.07, t * 2);
+    }
+  }
+
+  /// A little gold castle: three pink-roofed towers with waving flags
+  /// behind a keep whose gate glows.
+  void _castle(Canvas canvas, Offset base, double w) {
+    final bounds = Rect.fromLTRB(
+      base.dx - w * 0.22,
+      base.dy - w * 0.32,
+      base.dx + w * 0.22,
+      base.dy,
+    );
+    final gold = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: _gold,
+      ).createShader(bounds);
+    final shade = Paint()..color = const Color(0x55A0660C);
+
+    void block(Rect r) {
+      canvas.drawRect(r, gold);
+      // Shadow down the right side, for a bit of depth.
+      canvas.drawRect(
+        Rect.fromLTRB(r.right - r.width * 0.28, r.top, r.right, r.bottom),
+        shade,
+      );
+    }
+
+    void tower(double dx, double width, double height, double phase) {
+      final r = Rect.fromLTWH(
+        base.dx + dx - width / 2,
+        base.dy - height,
+        width,
+        height,
+      );
+      block(r);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(
+            center: Offset(r.center.dx, r.top + height * 0.3),
+            width: width * 0.34,
+            height: height * 0.18,
+          ),
+          Radius.circular(width * 0.17),
+        ),
+        Paint()..color = const Color(0xFF6A3A0C),
+      );
+      final peak = Offset(r.center.dx, r.top - width * 1.05);
+      canvas.drawPath(
+        Path()
+          ..moveTo(r.left - width * 0.18, r.top)
+          ..lineTo(peak.dx, peak.dy)
+          ..lineTo(r.right + width * 0.18, r.top)
+          ..close(),
+        Paint()
+          ..shader = const LinearGradient(
+            colors: [Color(0xFFFF8ABE), Color(0xFFD9327A)],
+          ).createShader(Rect.fromLTRB(r.left, peak.dy, r.right, r.top)),
+      );
+      // A flag on top, waving.
+      final pole = peak.translate(0, -width * 0.55);
+      canvas.drawLine(
+        peak,
+        pole,
+        Paint()
+          ..color = const Color(0xFFFFF4C2)
+          ..strokeWidth = 1.2,
+      );
+      final wave = math.sin(t * 6 + phase) * width * 0.1;
+      canvas.drawPath(
+        Path()
+          ..moveTo(pole.dx, pole.dy)
+          ..quadraticBezierTo(
+            pole.dx + width * 0.3,
+            pole.dy + wave,
+            pole.dx + width * 0.6,
+            pole.dy + width * 0.08 + wave,
+          )
+          ..lineTo(pole.dx, pole.dy + width * 0.3)
+          ..close(),
+        Paint()..color = const Color(0xFF4DA3FF),
+      );
+    }
+
+    tower(-w * 0.15, w * 0.1, w * 0.25, 0);
+    tower(w * 0.15, w * 0.1, w * 0.25, 2);
+    tower(0, w * 0.12, w * 0.32, 4);
+
+    // The keep, with battlements.
+    final keepW = w * 0.26;
+    final keepH = w * 0.16;
+    final keep = Rect.fromLTWH(
+      base.dx - keepW / 2,
+      base.dy - keepH,
+      keepW,
+      keepH,
+    );
+    block(keep);
+    final merlon = keepW / 7;
+    for (var i = 0; i < 4; i++) {
+      canvas.drawRect(
+        Rect.fromLTWH(
+          keep.left + i * 2 * merlon,
+          keep.top - merlon * 0.9,
+          merlon,
+          merlon * 0.9,
+        ),
+        gold,
+      );
+    }
+    // An arched gate with warm light inside.
+    final half = keepW * 0.17;
+    final gate = Path()
+      ..moveTo(base.dx - half, base.dy)
+      ..lineTo(base.dx - half, base.dy - keepH * 0.5)
+      ..arcToPoint(
+        Offset(base.dx + half, base.dy - keepH * 0.5),
+        radius: Radius.circular(half),
+      )
+      ..lineTo(base.dx + half, base.dy)
+      ..close();
+    final glow = 0.5 + 0.5 * math.sin(t * 2.5);
+    canvas.drawPath(
+      gate,
+      Paint()
+        ..color = Color.lerp(
+          const Color(0xFF8A4A0A),
+          const Color(0xFFFFF4C2),
+          glow,
+        )!,
+    );
   }
 
   void _sparkles(Canvas canvas, double w, double h) {
