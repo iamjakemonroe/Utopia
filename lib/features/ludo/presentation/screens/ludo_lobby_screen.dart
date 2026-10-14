@@ -33,6 +33,7 @@ import '../controllers/ludo_match_controller.dart';
 import '../widgets/ludo_pieces.dart';
 import '../widgets/ludo_rules_sheet.dart';
 import '../widgets/ludo_setup_widgets.dart';
+import '../../../../core/widgets/ambient_tick.dart';
 
 /// Turns backend errors into something a player can act on.
 String _friendly(Object e) {
@@ -942,7 +943,9 @@ class _SearchingViewState extends State<_SearchingView>
     super.initState();
     // Started here: a lazy field would only be created (and started)
     // on first use, which for a ticker is never.
-    _ticker = createTicker((e) => _t.value = e.inMicroseconds / 1e6)..start();
+    _ticker = createTicker(
+      ambientTick((e) => _t.value = e.inMicroseconds / 1e6),
+    )..start();
   }
 
   @override

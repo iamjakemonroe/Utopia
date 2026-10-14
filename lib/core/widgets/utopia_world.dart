@@ -13,6 +13,7 @@ import 'doodle_world.dart';
 import 'heaven_world.dart';
 import 'hell_world.dart';
 import 'zombie_world.dart';
+import 'ambient_tick.dart';
 
 /// One clock shared by every copy of the world, so screens that each paint
 /// their own background (and fade or slide between each other) always
@@ -59,7 +60,9 @@ class _UtopiaWorldState extends State<UtopiaWorld>
     return box.localToGlobal(Offset.zero);
   }
 
-  late final Ticker _ticker = createTicker((_) => _time.value = worldSeconds);
+  late final Ticker _ticker = createTicker(
+    ambientTick((_) => _time.value = worldSeconds),
+  );
 
   @override
   void didChangeDependencies() {

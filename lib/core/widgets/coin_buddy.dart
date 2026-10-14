@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import '../theme/app_colors.dart';
 import 'utopia_loader.dart';
 import 'world_sets.dart';
+import 'ambient_tick.dart';
 
 enum BuddyMood {
   idle,
@@ -105,7 +106,7 @@ class _CoinBuddyState extends State<CoinBuddy>
     with SingleTickerProviderStateMixin {
   final ValueNotifier<double> _time = ValueNotifier(0);
   late final Ticker _ticker = createTicker(
-    (elapsed) => _time.value = elapsed.inMicroseconds / 1e6,
+    ambientTick((elapsed) => _time.value = elapsed.inMicroseconds / 1e6),
   );
 
   /// When the current mood started, in ticker seconds.

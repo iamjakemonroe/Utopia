@@ -8,6 +8,7 @@ import '../../../core/theme/utopia_themes.dart';
 import '../../../core/widgets/dojo_dragon.dart';
 import '../../../core/widgets/fire_dragon.dart';
 import '../../../core/widgets/utopia_world.dart' show worldSeconds;
+import '../../../core/widgets/ambient_tick.dart';
 
 /// Draws an aura around [child], an avatar of [radius]. The aura spills
 /// outside the avatar's box (flames, lightning, petals), behind and in
@@ -37,10 +38,12 @@ class _AuraFrameState extends State<AuraFrame>
   void initState() {
     super.initState();
     // Started here, not lazily: a lazy ticker would never start.
-    _ticker = createTicker((e) {
-      _t.value = e.inMicroseconds / 1e6;
-      _callDragon();
-    })..start();
+    _ticker = createTicker(
+      ambientTick((e) {
+        _t.value = e.inMicroseconds / 1e6;
+        _callDragon();
+      }),
+    )..start();
   }
 
   /// A big Dragon Coil frame in the Dojo world (a profile picture) calls

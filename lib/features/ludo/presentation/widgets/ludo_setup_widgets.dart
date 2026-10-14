@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../domain/ludo_engine.dart';
 import 'ludo_pieces.dart';
+import '../../../../core/widgets/ambient_tick.dart';
 
 /// Entry amounts offered for Ludo (0 is free).
 const List<int> kLudoEntries = [0, 25, 50, 100, 250, 500];
@@ -60,7 +61,9 @@ class _PlayerCountPickerState extends State<PlayerCountPicker>
     super.initState();
     // Started here: a lazy field would only be created (and started)
     // on first use, which for a ticker is never.
-    _ticker = createTicker((e) => _t.value = e.inMicroseconds / 1e6)..start();
+    _ticker = createTicker(
+      ambientTick((e) => _t.value = e.inMicroseconds / 1e6),
+    )..start();
   }
 
   @override

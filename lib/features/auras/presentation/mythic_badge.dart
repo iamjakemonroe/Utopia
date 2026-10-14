@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/ambient_tick.dart';
 
 const _red = Color(0xFFFF1F3D);
 
@@ -34,7 +35,9 @@ class _MythicLightningState extends State<MythicLightning>
   void initState() {
     super.initState();
     // Started here, not lazily: a lazy ticker would never start.
-    _ticker = createTicker((e) => _t.value = e.inMicroseconds / 1e6)..start();
+    _ticker = createTicker(
+      ambientTick((e) => _t.value = e.inMicroseconds / 1e6),
+    )..start();
   }
 
   @override
@@ -227,7 +230,9 @@ class _MythicChargeState extends State<MythicCharge>
   @override
   void initState() {
     super.initState();
-    _ticker = createTicker((e) => _t.value = e.inMicroseconds / 1e6);
+    _ticker = createTicker(
+      ambientTick((e) => _t.value = e.inMicroseconds / 1e6),
+    );
     if (widget.enabled) _ticker.start();
   }
 

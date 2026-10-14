@@ -37,6 +37,7 @@ import '../../../ludo/presentation/widgets/ludo_pieces.dart';
 import '../../../store/domain/store_catalog.dart';
 import '../../../store/presentation/coin_shop.dart';
 import '../username_dialog.dart';
+import '../../../../core/widgets/ambient_tick.dart';
 
 final _myStatsProvider = FutureProvider.autoDispose
     .family<Map<String, dynamic>, String>(
@@ -989,7 +990,9 @@ class _LudoTokenArtState extends State<_LudoTokenArt>
     super.initState();
     // Started here: a lazy field would only be created (and started)
     // on first use, which for a ticker is never.
-    _ticker = createTicker((e) => _t.value = e.inMicroseconds / 1e6)..start();
+    _ticker = createTicker(
+      ambientTick((e) => _t.value = e.inMicroseconds / 1e6),
+    )..start();
   }
 
   @override

@@ -10,6 +10,7 @@ import '../../features/checkers/presentation/widgets/checkers_disc.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../theme/utopia_themes.dart';
+import 'ambient_tick.dart';
 
 enum GameKind { chess, ludo, checkers, doodle }
 
@@ -35,7 +36,7 @@ class _GameSceneArtState extends State<GameSceneArt>
     with SingleTickerProviderStateMixin {
   final ValueNotifier<double> _t = ValueNotifier(0);
   late final Ticker _ticker = createTicker(
-    (elapsed) => _t.value = elapsed.inMicroseconds / 1e6,
+    ambientTick((elapsed) => _t.value = elapsed.inMicroseconds / 1e6),
   );
 
   @override
