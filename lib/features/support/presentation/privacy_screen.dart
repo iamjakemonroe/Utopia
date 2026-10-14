@@ -12,7 +12,7 @@ import '../../../core/widgets/pop_card.dart';
 class PrivacyScreen extends StatelessWidget {
   const PrivacyScreen({super.key});
 
-  static const updated = 'October 12, 2026';
+  static const updated = 'October 14, 2026';
 
   static const _sections = <(String, List<String>)>[
     (
@@ -21,10 +21,11 @@ class PrivacyScreen extends StatelessWidget {
         'Your account. When you play as a guest we create an anonymous account for you. If you save your account, we keep the email address you sign in with.',
         'Your profile. The name, username and picture you choose (a picture you upload is stored so other players can see it), the world, piece sets and aura you wear, and your coin balance.',
         "Games. The games you play and their moves and results, your coin history (coins are virtual, have no cash value and can't be cashed out), and the items you own or rent. In Guess My Doodle, what you draw is shown live to the players in that game and kept only until the turn is over; a game's chat and guesses are deleted a day after it ends.",
+        "Purchases. If you buy coins, Apple or Google take the payment, and we never see your card or bank details. We get the purchase's ID, the pack, when it was bought and whether it was refunded, so we can add your coins once and take them back if the payment is refunded.",
         'Messages. Chat messages and voice notes you send in games and to friends. Voice notes are only available to the players in that game.',
         'Friends. Friend requests and your friends list.',
         'Reports. When you report a bug or suggest a feature: what you write, an optional screenshot, an optional email for follow-up, and the app version, phone system, screen and world you were in.',
-        "Chip. When you chat with Chip, your messages and a little context (your first name, the screen and world you're on) are used to write his replies. If you let Chip see what you're playing in other apps, the title and artist of the song, video or podcast are used for his reaction to it.",
+        "Chip. When you chat with Chip, your messages and some context from the app (your first name, the time, the screen and world you're on, and your coins, worlds and aura) are used to write his replies. Your conversation is kept on your phone until you start a new chat. Chip can also keep a few short notes about things you tell him, like a plan or a favourite world, so he can follow up next time; ask him to forget and he deletes them. If you let Chip see what you're playing in other apps, the title and artist of the song, video or podcast are used for his reaction to it.",
         'Your Sketchbook drawings are kept only on your phone, unless you choose to save one to your photos.',
       ],
     ),
@@ -50,14 +51,14 @@ class PrivacyScreen extends StatelessWidget {
         "Supabase hosts Utopia's servers and stores the information above (in the European Union, Ireland).",
         'Resend delivers the sign-in codes we email you.',
         "Anthropic processes Chip's chats and what's-playing details to write his replies. It doesn't use them to train its models.",
-        'Apple and Google run the app stores Utopia comes from.',
+        'Apple and Google run the app stores Utopia comes from, and take the payment when you buy coins.',
         'We may also share information if the law requires it, or to protect players and Utopia.',
       ],
     ),
     (
       'Keeping and deleting it',
       [
-        'We keep your information while you have an account. You can delete your account at any time in Settings > Delete account. That removes your name, username, picture, friends, chat messages, notifications and sign-in for good. A small anonymous record of coin movements and finished games is kept, without anything that identifies you, because other players\' game histories and our coin records rely on it.',
+        'We keep your information while you have an account. You can delete your account at any time in Settings > Delete account. That removes your name, username, picture, friends, chat messages, Chip\'s notes about you, notifications and sign-in for good. A small anonymous record of coin movements, coin purchases and finished games is kept, without anything that identifies you, because other players\' game histories and our coin records rely on it.',
       ],
     ),
     (
