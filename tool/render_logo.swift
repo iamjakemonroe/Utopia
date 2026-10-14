@@ -1,8 +1,9 @@
 // Renders Utopia's logo mark, app icon and coin face. Run from the repo root:
 //   swiftc -O tool/render_logo.swift -o /tmp/render_logo && /tmp/render_logo
-// Writes assets/branding/logo_mark.png (the mark: a floating island with a
-// glowing gateway into a sunrise world, transparent), app_icon.png (the
-// mark in the night sky, opaque, for the launcher icons), coin_face.png
+// Writes assets/branding/logo_mark.png (the mark: a stone gateway on a
+// floating rock, a sunrise world glowing through it, transparent),
+// app_icon.png (the mark in the night sky, opaque, for the launcher
+// icons), coin_face.png
 // (the gold coin the loader flips and Chip's back), the native launch
 // images, and the landing page's logo, favicon and touch icon.
 import CoreGraphics
@@ -230,211 +231,167 @@ func arch(_ cx: CGFloat, _ baseY: CGFloat, _ archY: CGFloat, _ halfWidth: CGFloa
   return p
 }
 
-/// The mark: a floating island with a glowing gateway standing on it, a
-/// sunrise world showing through the gateway, a waterfall pouring off the
-/// edge and crystals glinting in the rock. Drawn in a 1000-unit square
-/// whose top-left is [origin], [side] pixels across.
-func drawIsland(_ ctx: CGContext, _ origin: CGPoint, _ side: CGFloat, glow: Bool) {
-  ctx.saveGState()
-  ctx.translateBy(x: origin.x, y: origin.y)
-  ctx.scaleBy(x: side / 1000, y: side / 1000)
+func poly(_ pts: [(CGFloat, CGFloat)]) -> CGPath {
+  let p = CGMutablePath(); p.move(to: CGPoint(x: pts[0].0, y: pts[0].1))
+  for (x, y) in pts.dropFirst() { p.addLine(to: CGPoint(x: x, y: y)) }
+  p.closeSubpath(); return p
+}
+func glowDot(_ ctx: CGContext, _ c: CGPoint, _ r: CGFloat, _ hex: UInt32, _ a: CGFloat) {
+  ctx.drawRadialGradient(gradient([color(hex, a), color(hex, 0)], [0, 1]), startCenter: c, startRadius: 0, endCenter: c, endRadius: r, options: [])
+}
 
-  if glow {
-    ctx.drawRadialGradient(
-      gradient([color(0xC6A2FF, 0.42), color(0xC6A2FF, 0)], [0, 1]),
-      startCenter: CGPoint(x: 500, y: 520), startRadius: 0,
-      endCenter: CGPoint(x: 500, y: 520), endRadius: 470, options: [])
-  }
-
-  // The rock beneath: jagged, layered, tapering to a point.
-  let rock = CGMutablePath()
-  let jag: [(CGFloat, CGFloat)] = [
-    (160, 668), (200, 742), (252, 762), (292, 836), (352, 856), (402, 922),
-    (462, 938), (500, 985), (540, 934), (594, 918), (644, 852), (702, 832),
-    (748, 760), (802, 744), (840, 668),
+/// A faceted floating rock: a flat top (an ellipse [rx] by [ry] around
+/// [top]) tapering to a point at [tipY]. [warm] lights the top from the
+/// gateway.
+func rock(_ ctx: CGContext, cx: CGFloat, top: CGFloat, rx: CGFloat, ry: CGFloat, tipY: CGFloat, warm: Bool) {
+  // Rim points along the front of the top ellipse.
+  let xs: [CGFloat] = [-1, -0.66, -0.33, 0, 0.33, 0.66, 1]
+  let rim = xs.map { f in CGPoint(x: cx + f * rx, y: top + ry * sqrt(max(0, 1 - f * f))) }
+  let depth = tipY - top
+  let low = [CGPoint(x: cx - rx * 0.78, y: top + depth * 0.36), CGPoint(x: cx - rx * 0.42, y: top + depth * 0.66),
+             CGPoint(x: cx, y: tipY), CGPoint(x: cx + rx * 0.44, y: top + depth * 0.62), CGPoint(x: cx + rx * 0.8, y: top + depth * 0.32)]
+  // Facets, lit from the upper left and from the portal above.
+  let facets: [([CGPoint], UInt32, UInt32)] = [
+    ([rim[0], rim[1], low[0]], 0x7C62C9, 0x5A41A6),
+    ([rim[1], low[1], low[0]], 0x5B42A8, 0x3D2884),
+    ([rim[1], rim[2], low[1]], 0x6A50B8, 0x4A3196),
+    ([rim[2], rim[3], low[2], low[1]], 0x54399E, 0x2E1C6E),
+    ([rim[3], rim[4], low[3], low[2]], 0x3E2884, 0x231457),
+    ([rim[4], low[4], low[3]], 0x33206F, 0x1C0F48),
+    ([rim[4], rim[5], low[4]], 0x2E1C68, 0x190D42),
+    ([rim[5], rim[6], low[4]], 0x251658, 0x150B38),
   ]
-  rock.move(to: CGPoint(x: jag[0].0, y: jag[0].1))
-  for (x, y) in jag.dropFirst() { rock.addLine(to: CGPoint(x: x, y: y)) }
-  rock.closeSubpath()
-  fill(ctx, rock, [color(0x9A74E0), color(0x6440B0), color(0x2C1766)], [0, 0.45, 1],
-       from: CGPoint(x: 500, y: 660), to: CGPoint(x: 500, y: 985))
-  // Strata.
-  ctx.saveGState()
-  ctx.addPath(rock)
-  ctx.clip()
-  ctx.setStrokeColor(color(0xC9B4FF, 0.32))
-  ctx.setLineWidth(7)
-  ctx.setLineCap(.round)
-  for (y, w) in [(752, 270), (828, 190), (900, 100)] as [(CGFloat, CGFloat)] {
-    ctx.move(to: CGPoint(x: 500 - w, y: y))
-    ctx.addQuadCurve(to: CGPoint(x: 500 + w, y: y - 6), control: CGPoint(x: 500, y: y + 26))
+  for (pts, a, b) in facets {
+    let p = CGMutablePath(); p.addLines(between: pts); p.closeSubpath()
+    let ys = pts.map(\.y)
+    fill(ctx, p, [color(a), color(b)], [0, 1], from: CGPoint(x: cx, y: ys.min()!), to: CGPoint(x: cx, y: ys.max()!))
+    ctx.addPath(p); ctx.setStrokeColor(color(0xB9A6FF, 0.10)); ctx.setLineWidth(1.5); ctx.strokePath()
   }
-  ctx.strokePath()
-  // Shade down the right-hand side.
-  ctx.setFillColor(color(0x1A0C40, 0.28))
-  ctx.fill(CGRect(x: 560, y: 640, width: 320, height: 360))
-  ctx.restoreGState()
-  // Crystals glinting in the rock.
-  for (x, y, h, c1, c2) in [
-    (318, 790, 46, 0x9AF6FF, 0x3BB8E6), (448, 884, 34, 0xFFB8E4, 0xE0499A),
-    (628, 810, 40, 0xFFB8E4, 0xE0499A),
-  ] as [(CGFloat, CGFloat, CGFloat, UInt32, UInt32)] {
-    let gem = CGMutablePath()
-    gem.move(to: CGPoint(x: x, y: y - h))
-    gem.addLine(to: CGPoint(x: x + h * 0.42, y: y))
-    gem.addLine(to: CGPoint(x: x, y: y + h * 0.5))
-    gem.addLine(to: CGPoint(x: x - h * 0.42, y: y))
-    gem.closeSubpath()
-    ctx.saveGState()
-    ctx.setShadow(offset: .zero, blur: 22, color: color(c1, 0.9))
-    ctx.addPath(gem)
-    ctx.setFillColor(color(c2))
-    ctx.fillPath()
+  // Top face.
+  let topFace = CGPath(ellipseIn: CGRect(x: cx - rx, y: top - ry, width: rx * 2, height: ry * 2), transform: nil)
+  fill(ctx, topFace, [color(0x9C8AE0), color(0x6E58BF)], [0, 1], from: CGPoint(x: cx, y: top - ry), to: CGPoint(x: cx, y: top + ry))
+  if warm {
+    ctx.saveGState(); ctx.addPath(topFace); ctx.clip()
+    glowDot(ctx, CGPoint(x: cx, y: top - ry * 0.2), rx * 0.95, 0xFFC6A0, 0.85)
     ctx.restoreGState()
-    fill(ctx, gem, [color(0xFFFFFF), color(c1), color(c2)], [0, 0.4, 1],
-         from: CGPoint(x: x - h * 0.4, y: y - h), to: CGPoint(x: x + h * 0.4, y: y + h * 0.5))
   }
+  // Bright lip along the front edge.
+  let lip = CGMutablePath()
+  lip.addArc(center: .zero, radius: 1, startAngle: 0.08 * .pi, endAngle: 0.92 * .pi, clockwise: false)
+  var t = CGAffineTransform(translationX: cx, y: top).scaledBy(x: rx, y: ry)
+  let lipPath = lip.copy(using: &t)!
+  ctx.addPath(lipPath); ctx.setStrokeColor(color(0xFFE2C4, warm ? 0.8 : 0.4)); ctx.setLineWidth(3); ctx.strokePath()
+}
 
-  // A waterfall pouring off the right-hand edge, fading into mist.
-  let fall = CGPath(roundedRect: CGRect(x: 738, y: 684, width: 50, height: 240), cornerWidth: 25, cornerHeight: 25, transform: nil)
-  fill(ctx, fall, [color(0xE6FBFF), color(0x8FE0FF, 0.9), color(0x8FE0FF, 0)], [0, 0.6, 1],
-       from: CGPoint(x: 0, y: 684), to: CGPoint(x: 0, y: 924))
-  ctx.setStrokeColor(color(0xFFFFFF, 0.75))
-  ctx.setLineWidth(5)
-  for x in [752, 770] as [CGFloat] {
-    ctx.move(to: CGPoint(x: x, y: 700))
-    ctx.addLine(to: CGPoint(x: x, y: 820))
-  }
-  ctx.strokePath()
-  for (x, y, r) in [(744, 912, 22), (780, 920, 26), (762, 902, 18)] as [(CGFloat, CGFloat, CGFloat)] {
-    ctx.setFillColor(color(0xFFFFFF, 0.28))
-    ctx.fillEllipse(in: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2))
-  }
-
-  // The grass on top: its edge, then the lawn.
-  ctx.addPath(ellipse(500, 676, 342, 78))
-  ctx.setFillColor(color(0x188A5C))
-  ctx.fillPath()
-  fill(ctx, ellipse(500, 650, 340, 70), [color(0xB6FAD2), color(0x5FDB9C), color(0x2FB57A)], [0, 0.55, 1],
-       from: CGPoint(x: 500, y: 580), to: CGPoint(x: 500, y: 720))
-
-  // Light pouring out of the gateway onto the island.
-  ctx.drawRadialGradient(
-    gradient([color(0xFFE7A8, 0.65), color(0xFFB3D1, 0.25), color(0xFFB3D1, 0)], [0, 0.5, 1]),
-    startCenter: CGPoint(x: 500, y: 560), startRadius: 0,
-    endCenter: CGPoint(x: 500, y: 560), endRadius: 300, options: [])
-
-  // Little round trees either side.
-  for (x, y, r) in [(232, 612, 40), (790, 618, 34), (282, 634, 26)] as [(CGFloat, CGFloat, CGFloat)] {
-    ctx.setFillColor(color(0x6B4A7A))
-    ctx.fill(CGRect(x: x - 6, y: y, width: 12, height: 34))
-    fill(ctx, ellipse(x, y - r * 0.3, r, r), [color(0xC2FFE0), color(0x4FD39A), color(0x1F9A66)], [0, 0.5, 1],
-         from: CGPoint(x: x - r, y: y - r * 1.3), to: CGPoint(x: x + r, y: y + r * 0.7))
-  }
-
-  // The gateway: a pearl-white stone arch with a sunrise world inside.
-  let cx: CGFloat = 500, base: CGFloat = 652, archY: CGFloat = 372
-  let outer = arch(cx, base, archY, 168)
-  let inner = arch(cx, base, archY, 120)
-  // The world through it.
+/// The mark: a stone gateway standing on a floating, faceted rock, a
+/// sunrise world glowing through it and lighting the stone, a pink gem for
+/// its keystone, and two shards floating alongside. Drawn in a 1000-unit
+/// square whose top-left is [origin], [side] pixels across.
+func drawGateway(_ ctx: CGContext, _ origin: CGPoint, _ side: CGFloat, halo: Bool) {
   ctx.saveGState()
-  ctx.addPath(inner)
+  ctx.translateBy(x: origin.x, y: origin.y); ctx.scaleBy(x: side / 1000, y: side / 1000)
+  let cx: CGFloat = 500, base: CGFloat = 728, archY: CGFloat = 392, inHW: CGFloat = 116, outHW: CGFloat = 168
+  if halo {
+    glowDot(ctx, CGPoint(x: cx, y: 470), 470, 0xFF8FC0, 0.30)
+    glowDot(ctx, CGPoint(x: cx, y: 520), 300, 0xFFC28A, 0.28)
+  }
+  // Floating shards.
+  rock(ctx, cx: 190, top: 820, rx: 38, ry: 9, tipY: 880, warm: false)
+  rock(ctx, cx: 818, top: 862, rx: 28, ry: 7, tipY: 906, warm: false)
+  // The island.
+  rock(ctx, cx: cx, top: base + 6, rx: 262, ry: 50, tipY: 975, warm: true)
+
+  // The world through the gateway.
+  let inner = arch(cx, base, archY, inHW)
+  ctx.saveGState(); ctx.addPath(inner); ctx.clip()
+  ctx.drawLinearGradient(gradient([color(0x2A1F7A), color(0x6B3FC4), color(0xE0609E), color(0xFFA77A), color(0xFFE1A6)], [0, 0.32, 0.62, 0.84, 1]),
+                         start: CGPoint(x: 0, y: archY - inHW), end: CGPoint(x: 0, y: 652), options: [.drawsAfterEndLocation])
+  // The sun rising in a valley, with its bloom.
+  glowDot(ctx, CGPoint(x: cx, y: 622), 230, 0xFFE9B8, 0.95)
+  ctx.setFillColor(color(0xFFF8E6)); ctx.fillEllipse(in: CGRect(x: cx - 50, y: 622 - 50, width: 100, height: 100))
+  // Mountain ranges, peaks either side of the sun.
+  ctx.addPath(poly([(370, 640), (412, 590), (452, 622), (500, 660), (548, 620), (590, 584), (640, 636), (640, 740), (370, 740)]))
+  ctx.setFillColor(color(0x9A58C4, 0.9)); ctx.fillPath()
+  ctx.addPath(poly([(370, 676), (424, 636), (476, 668), (500, 680), (530, 660), (584, 632), (640, 668), (640, 740), (370, 740)]))
+  ctx.setFillColor(color(0x52298F)); ctx.fillPath()
+  ctx.addPath(poly([(370, 708), (440, 690), (500, 702), (566, 686), (640, 700), (640, 740), (370, 740)]))
+  ctx.setFillColor(color(0x26124F)); ctx.fillPath()
+  // The portal's shimmering edge.
+  ctx.addPath(inner); ctx.setStrokeColor(color(0xFFFFFF, 0.5)); ctx.setLineWidth(10); ctx.strokePath()
+  ctx.restoreGState()
+
+  // Light spilling from the gateway across the island.
+  ctx.saveGState()
+  ctx.addPath(CGPath(ellipseIn: CGRect(x: cx - 262, y: base + 6 - 50, width: 524, height: 100), transform: nil)); ctx.clip()
+  ctx.addPath(poly([(cx - inHW, base - 4), (cx + inHW, base - 4), (cx + 230, base + 64), (cx - 230, base + 64)]))
   ctx.clip()
-  ctx.drawLinearGradient(
-    gradient([color(0x7CC4FF), color(0xC7A6FF), color(0xFFA9D2), color(0xFFD98C)], [0, 0.38, 0.7, 1]),
-    start: CGPoint(x: 0, y: archY - 120), end: CGPoint(x: 0, y: base), options: [])
-  ctx.drawRadialGradient(
-    gradient([color(0xFFF8D8), color(0xFFF1B8, 0.85), color(0xFFE08A, 0)], [0, 0.45, 1]),
-    startCenter: CGPoint(x: cx, y: 560), startRadius: 0,
-    endCenter: CGPoint(x: cx, y: 560), endRadius: 120, options: [])
-  ctx.setFillColor(color(0xFFFBEA))
-  ctx.fillEllipse(in: CGRect(x: cx - 46, y: 560 - 46, width: 92, height: 92))
-  // Clouds drifting in that world's sky.
-  ctx.setFillColor(color(0xFFFFFF, 0.85))
-  for (x, y, r) in [(432, 352, 22), (458, 344, 28), (486, 354, 20), (556, 318, 18), (578, 310, 24), (600, 320, 17)] as [(CGFloat, CGFloat, CGFloat)] {
-    ctx.fillEllipse(in: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2))
-  }
-  // Rolling hills.
-  let hillBack = CGMutablePath()
-  hillBack.move(to: CGPoint(x: 360, y: 640))
-  hillBack.addQuadCurve(to: CGPoint(x: 520, y: 600), control: CGPoint(x: 420, y: 560))
-  hillBack.addQuadCurve(to: CGPoint(x: 640, y: 590), control: CGPoint(x: 590, y: 540))
-  hillBack.addLine(to: CGPoint(x: 640, y: 660))
-  hillBack.addLine(to: CGPoint(x: 360, y: 660))
-  hillBack.closeSubpath()
-  ctx.addPath(hillBack)
-  ctx.setFillColor(color(0x6FD9B8))
-  ctx.fillPath()
-  let hillFront = CGMutablePath()
-  hillFront.move(to: CGPoint(x: 360, y: 610))
-  hillFront.addQuadCurve(to: CGPoint(x: 640, y: 640), control: CGPoint(x: 470, y: 600))
-  hillFront.addLine(to: CGPoint(x: 640, y: 660))
-  hillFront.addLine(to: CGPoint(x: 360, y: 660))
-  hillFront.closeSubpath()
-  ctx.addPath(hillFront)
-  ctx.setFillColor(color(0x2FB88C))
-  ctx.fillPath()
+  ctx.drawLinearGradient(gradient([color(0xFFF0CC, 1), color(0xFFC09A, 0.55), color(0xFF9FB0, 0)], [0, 0.5, 1]), start: CGPoint(x: 0, y: base - 4), end: CGPoint(x: 0, y: base + 64), options: [])
   ctx.restoreGState()
 
-  // The stone frame, glowing.
-  let frame = CGMutablePath()
-  frame.addPath(outer)
-  frame.addPath(inner)
+  // The frame: dark stone, lit gold from the world inside and cool from the sky.
+  let outer = arch(cx, base, archY, outHW)
+  let frame = CGMutablePath(); frame.addPath(outer); frame.addPath(inner)
   ctx.saveGState()
-  ctx.setShadow(offset: .zero, blur: 46, color: color(0xC9A8FF, 0.95))
-  ctx.addPath(frame)
-  ctx.setFillColor(color(0xEDE4FF))
-  ctx.fillPath(using: .evenOdd)
+  ctx.setShadow(offset: CGSize(width: 0, height: 0), blur: 60, color: color(0xFF9CC8, 0.55))
+  ctx.addPath(frame); ctx.setFillColor(color(0x221548)); ctx.fillPath(using: .evenOdd)
   ctx.restoreGState()
-  ctx.saveGState()
-  ctx.addPath(frame)
-  ctx.clip(using: .evenOdd)
-  ctx.drawLinearGradient(
-    gradient([color(0xFFFFFF), color(0xF1EAFF), color(0xBBA4FF)], [0, 0.45, 1]),
-    start: CGPoint(x: cx - 168, y: archY - 168), end: CGPoint(x: cx + 168, y: base), options: [])
-  // Carved joints between the stones.
-  ctx.setStrokeColor(color(0x9F87EA, 0.75))
-  ctx.setLineWidth(5)
-  for a in stride(from: CGFloat.pi * 1.0, through: CGFloat.pi * 2.0, by: CGFloat.pi / 5) {
+  ctx.saveGState(); ctx.addPath(frame); ctx.clip(using: .evenOdd)
+  ctx.drawLinearGradient(gradient([color(0x4B3796), color(0x2A1B63), color(0x170E3A)], [0, 0.5, 1]),
+                         start: CGPoint(x: cx - outHW, y: archY - outHW), end: CGPoint(x: cx + outHW, y: base), options: [])
+  // Inner reveal catching the sunrise.
+  let reveal = arch(cx, base, archY, inHW + 16)
+  let revealRing = CGMutablePath(); revealRing.addPath(reveal); revealRing.addPath(inner)
+  ctx.saveGState(); ctx.addPath(revealRing); ctx.clip(using: .evenOdd)
+  ctx.drawLinearGradient(gradient([color(0xB98CFF), color(0xFF9CC2), color(0xFFD29A)], [0, 0.55, 1]),
+                         start: CGPoint(x: 0, y: archY - inHW - 16), end: CGPoint(x: 0, y: base), options: [])
+  ctx.restoreGState()
+  // Stone joints.
+  ctx.setStrokeColor(color(0x0E0726, 0.55)); ctx.setLineWidth(4)
+  for a in stride(from: CGFloat.pi * 1.0, through: CGFloat.pi * 2.0, by: CGFloat.pi / 6) where a > .pi + 0.01 && a < 2 * .pi - 0.01 {
     let d = CGPoint(x: cos(a), y: sin(a))
-    ctx.move(to: CGPoint(x: cx + d.x * 118, y: archY + d.y * 118))
-    ctx.addLine(to: CGPoint(x: cx + d.x * 170, y: archY + d.y * 170))
+    ctx.move(to: CGPoint(x: cx + d.x * (inHW + 16), y: archY + d.y * (inHW + 16)))
+    ctx.addLine(to: CGPoint(x: cx + d.x * outHW, y: archY + d.y * outHW))
   }
-  for y in [452, 532, 612] as [CGFloat] {
-    for x in [cx - 168, cx + 120] {
-      ctx.move(to: CGPoint(x: x, y: y))
-      ctx.addLine(to: CGPoint(x: x + 48, y: y))
+  for y in [470, 560, 650] as [CGFloat] {
+    for (x0, x1) in [(cx - outHW, cx - inHW - 16), (cx + inHW + 16, cx + outHW)] {
+      ctx.move(to: CGPoint(x: x0, y: y)); ctx.addLine(to: CGPoint(x: x1, y: y))
     }
   }
   ctx.strokePath()
   ctx.restoreGState()
-  ctx.addPath(frame)
-  ctx.setStrokeColor(color(0x5B3AB0, 0.55))
-  ctx.setLineWidth(6)
-  ctx.strokePath()
-  // A step at its foot.
-  let step = CGPath(roundedRect: CGRect(x: cx - 196, y: base - 10, width: 392, height: 30), cornerWidth: 15, cornerHeight: 15, transform: nil)
-  fill(ctx, step, [color(0xF6F0FF), color(0xB49DF5)], [0, 1], from: CGPoint(x: 0, y: base - 10), to: CGPoint(x: 0, y: base + 20))
-  // The keystone: a pink gem.
-  let ks = CGMutablePath()
-  ks.move(to: CGPoint(x: cx, y: archY - 196))
-  ks.addLine(to: CGPoint(x: cx + 34, y: archY - 150))
-  ks.addLine(to: CGPoint(x: cx, y: archY - 112))
-  ks.addLine(to: CGPoint(x: cx - 34, y: archY - 150))
-  ks.closeSubpath()
+  // Rim light on the outer edge, brightest at the top left.
   ctx.saveGState()
-  ctx.setShadow(offset: .zero, blur: 30, color: color(0xFF8FD0, 0.95))
-  ctx.addPath(ks)
-  ctx.setFillColor(color(0xFF5FB0))
-  ctx.fillPath()
+  ctx.addPath(outer); ctx.setLineWidth(5)
+  ctx.replacePathWithStrokedPath(); ctx.clip()
+  ctx.drawLinearGradient(gradient([color(0xD9CCFF, 0.95), color(0x9F8BFF, 0.5), color(0x6B55D0, 0.1)], [0, 0.5, 1]),
+                         start: CGPoint(x: cx - outHW, y: archY - outHW), end: CGPoint(x: cx + outHW, y: base), options: [])
   ctx.restoreGState()
-  fill(ctx, ks, [color(0xFFFFFF), color(0xFFB0DE), color(0xE0398F)], [0, 0.4, 1],
-       from: CGPoint(x: cx - 30, y: archY - 196), to: CGPoint(x: cx + 30, y: archY - 112))
+  // Keystone gem.
+  let ks = poly([(cx, archY - outHW - 30), (cx + 26, archY - outHW + 2), (cx, archY - outHW + 34), (cx - 26, archY - outHW + 2)])
+  ctx.saveGState(); ctx.setShadow(offset: .zero, blur: 28, color: color(0xFF8FD0, 1)); ctx.addPath(ks); ctx.setFillColor(color(0xFF5FB0)); ctx.fillPath(); ctx.restoreGState()
+  fill(ctx, ks, [color(0xFFFFFF), color(0xFFB0DE), color(0xD9327F)], [0, 0.45, 1], from: CGPoint(x: cx - 20, y: archY - outHW - 30), to: CGPoint(x: cx + 20, y: archY - outHW + 34))
+  // Motes rising from the gateway.
+  for (x, y, r) in [(382, 520, 5), (636, 470, 4), (612, 600, 3), (360, 640, 3), (668, 560, 3.5)] as [(CGFloat, CGFloat, CGFloat)] {
+    glowDot(ctx, CGPoint(x: x, y: y), r * 4, 0xFFD9B0, 0.5)
+    ctx.setFillColor(color(0xFFF3DD, 0.95)); ctx.fillEllipse(in: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2))
+  }
+  ctx.restoreGState()
+}
 
-  sparkle(ctx, CGPoint(x: 712, y: 262), 36, 0.95)
-  sparkle(ctx, CGPoint(x: 290, y: 318), 24, 0.85)
-  sparkle(ctx, CGPoint(x: 700, y: 440), 15, 0.7)
-  ctx.restoreGState()
+/// The icon's backdrop: a deep night sky, faint stars and a vignette.
+func drawBackdrop(_ ctx: CGContext, _ S: CGFloat) {
+  ctx.drawLinearGradient(gradient([color(0x0B0622), color(0x1A0C45), color(0x35145F), color(0x5A1D6A)], [0, 0.45, 0.8, 1]),
+                         start: CGPoint(x: 0, y: 0), end: CGPoint(x: 0, y: S), options: [])
+  var seed: UInt64 = 11
+  func rnd() -> CGFloat { seed = seed &* 6364136223846793005 &+ 1442695040888963407; return CGFloat((seed >> 33) % 10000) / 10000 }
+  for _ in 0..<46 {
+    let p = CGPoint(x: rnd() * S, y: rnd() * S * 0.7)
+    let r = (0.8 + rnd() * 1.8) * S / 1000
+    ctx.setFillColor(color(0xFFFFFF, 0.18 + rnd() * 0.4))
+    ctx.fillEllipse(in: CGRect(x: p.x - r, y: p.y - r, width: 2 * r, height: 2 * r))
+  }
+  // Vignette.
+  ctx.drawRadialGradient(gradient([color(0x000000, 0), color(0x05020F, 0.55)], [0.55, 1]), startCenter: CGPoint(x: S / 2, y: S * 0.48), startRadius: 0, endCenter: CGPoint(x: S / 2, y: S * 0.48), endRadius: S * 0.78, options: [.drawsAfterEndLocation])
 }
 
 let size = 1024
@@ -447,76 +404,25 @@ save(coin.makeImage()!, "assets/branding/coin_face.png")
 
 // Logo mark: transparent background.
 let mark = makeContext(size)
-drawIsland(mark, CGPoint(x: 0, y: 0), S, glow: true)
+drawGateway(mark, CGPoint(x: 0, y: 0), S, halo: true)
 let markImage = mark.makeImage()!
 save(markImage, "assets/branding/logo_mark.png")
 
-/// The icon's night sky: stars, a ringed planet, clouds along the bottom.
-func drawSky(_ ctx: CGContext, _ S: CGFloat) {
-  ctx.drawLinearGradient(
-    gradient([color(0x120B2E), color(0x2A1463), color(0x5A2582), color(0xC2668F)], [0, 0.42, 0.78, 1]),
-    start: CGPoint(x: 0, y: 0), end: CGPoint(x: 0, y: S), options: [])
-  ctx.drawRadialGradient(
-    gradient([color(0xFFB38A, 0.4), color(0xFFB38A, 0)], [0, 1]),
-    startCenter: CGPoint(x: S / 2, y: S * 0.95), startRadius: 0,
-    endCenter: CGPoint(x: S / 2, y: S * 0.95), endRadius: S * 0.6, options: [])
-  var seed: UInt64 = 7
-  func rnd() -> CGFloat {
-    seed = seed &* 6364136223846793005 &+ 1442695040888963407
-    return CGFloat((seed >> 33) % 10000) / 10000
-  }
-  for _ in 0..<70 {
-    let p = CGPoint(x: rnd() * S, y: rnd() * S * 0.62)
-    let r = 1.5 + rnd() * 3
-    ctx.setFillColor(color(0xFFFFFF, 0.4 + rnd() * 0.5))
-    ctx.fillEllipse(in: CGRect(x: p.x - r, y: p.y - r, width: 2 * r, height: 2 * r))
-  }
-  // A small ringed planet up in the corner.
-  let pc = CGPoint(x: S * 0.83, y: S * 0.17), prad = S * 0.05
-  ctx.saveGState()
-  ctx.addEllipse(in: CGRect(x: pc.x - prad, y: pc.y - prad, width: 2 * prad, height: 2 * prad))
-  ctx.clip()
-  ctx.drawRadialGradient(
-    gradient([color(0xFFE7C8), color(0xFF9E7A), color(0xB0406E)], [0, 0.55, 1]),
-    startCenter: CGPoint(x: pc.x - prad * 0.4, y: pc.y - prad * 0.4), startRadius: 0,
-    endCenter: pc, endRadius: prad, options: [.drawsAfterEndLocation])
-  ctx.restoreGState()
-  ctx.saveGState()
-  ctx.translateBy(x: pc.x, y: pc.y)
-  ctx.rotate(by: -0.35)
-  ctx.setStrokeColor(color(0xFFD9A8, 0.85))
-  ctx.setLineWidth(S * 0.008)
-  ctx.strokeEllipse(in: CGRect(x: -prad * 1.8, y: -prad * 0.45, width: prad * 3.6, height: prad * 0.9))
-  ctx.restoreGState()
-  // Clouds along the bottom.
-  let iconBank = CGMutablePath()
-  for (x, y, r) in [(0.04, 0.97, 0.12), (0.22, 0.95, 0.14), (0.78, 0.95, 0.14), (0.96, 0.97, 0.12)] as [(CGFloat, CGFloat, CGFloat)] {
-    iconBank.addEllipse(in: CGRect(x: x * S - r * S, y: y * S - r * S, width: 2 * r * S, height: 2 * r * S))
-  }
-  ctx.saveGState()
-  ctx.addPath(iconBank)
-  ctx.clip()
-  ctx.drawLinearGradient(
-    gradient([color(0xF3D2FF, 0.9), color(0xC78AE0, 0.8), color(0x8E5CC0, 0.8)], [0, 0.5, 1]),
-    start: CGPoint(x: 0, y: S * 0.82), end: CGPoint(x: 0, y: S), options: [])
-  ctx.restoreGState()
-}
-
-// App icon: the island floating in the night sky.
+// App icon: the gateway in the night sky, filling the frame.
 let icon = makeContext(size)
-drawSky(icon, S)
-drawIsland(icon, CGPoint(x: S * 0.03, y: S * 0.02), S * 0.94, glow: true)
+drawBackdrop(icon, S)
+drawGateway(icon, CGPoint(x: -S * 0.06, y: -S * 0.15), S * 1.12, halo: true)
 let iconImage = icon.makeImage()!
 save(iconImage, "assets/branding/app_icon.png")
 
-// Android's adaptive icon: the sky behind, the island in front (the
-// launcher icon tool insets it into the mask's safe zone; raised a little
-// so the tip of the rock stays inside a round mask).
+// Android's adaptive icon: the sky behind, the gateway in front (the
+// launcher icon tool insets it into the mask's safe zone; a little smaller
+// so the rock's tip and the shards stay inside a round mask).
 let back = makeContext(size)
-drawSky(back, S)
+drawBackdrop(back, S)
 save(back.makeImage()!, "assets/branding/adaptive_background.png")
 let front = makeContext(size)
-drawIsland(front, CGPoint(x: 0, y: -S * 0.04), S, glow: true)
+drawGateway(front, CGPoint(x: S * 0.04, y: 0), S * 0.92, halo: true)
 save(front.makeImage()!, "assets/branding/adaptive_foreground.png")
 
 // Native launch images (the splash's first frame matches these exactly).
