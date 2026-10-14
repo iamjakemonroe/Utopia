@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/theme_controller.dart';
 import '../../../../core/widgets/app_background.dart';
 import '../../../../core/widgets/outlined_heading.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../store/presentation/theme_teleport.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
 
 /// Entry point for signed-out users: play immediately as a guest, or go
-/// straight to email sign-in/sign-up. The router's redirect moves the user
-/// to `/home` automatically once either path produces a session.
+/// straight to email sign-in/sign-up. Either way Chip carries them into
+/// their world through the portal, and home appears under its flash.
 class AuthChoiceScreen extends ConsumerStatefulWidget {
   const AuthChoiceScreen({super.key});
 
@@ -30,13 +33,32 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
       _isSigningInAsGuest = true;
       _error = null;
     });
+    final router = GoRouter.of(context);
+    // Chip carries them in through the portal, the same trip as email
+    // sign-in: the screen holds still until the trip's flash, and home
+    // appears under it.
+    SignInTrip.holding = true;
     try {
       await ref.read(authRepositoryProvider).signInAnonymously();
-      // Navigation happens via the router's redirect once the auth state
-      // stream emits the new session.
+      final teleporting = ref
+          .read(themeTeleportProvider.notifier)
+          .welcome(
+            ref.read(themeControllerProvider),
+            atFlash: () {
+              SignInTrip.holding = false;
+              router.go('/home');
+            },
+          );
+      if (!teleporting) {
+        SignInTrip.holding = false;
+        router.go('/home');
+      }
     } catch (e) {
+      SignInTrip.holding = false;
       debugPrint('signInAnonymously failed: $e');
-      setState(() => _error = "Couldn't start a guest game. Try again.");
+      if (mounted) {
+        setState(() => _error = "Couldn't start a guest game. Try again.");
+      }
     } finally {
       if (mounted) setState(() => _isSigningInAsGuest = false);
     }

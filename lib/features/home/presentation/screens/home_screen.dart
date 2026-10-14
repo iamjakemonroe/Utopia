@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/popup_tracker.dart';
 import '../../../coins/presentation/daily_reward_sheet.dart';
+import '../../../welcome/presentation/welcome_week.dart';
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/now_playing/now_playing.dart';
 import '../../../../core/profiles/profile_providers.dart';
@@ -58,13 +59,15 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  /// Whether this run of the app has already looked for a game to go back
-  /// to. Only the first look after opening the app jumps straight in;
-  /// after that the "Rejoin" card is there instead.
-  static bool _resumeChecked = false;
+  /// The player this run of the app has already looked for a game to go
+  /// back to. Only the first look after opening the app (or after signing
+  /// in as someone else) jumps straight in; after that the "Rejoin" card is
+  /// there instead.
+  static String? _resumeCheckedFor;
 
-  /// Whether today's reward has been offered this session.
-  static bool _rewardOffered = false;
+  /// The player today's welcome and reward have been offered to this
+  /// session (per player, so switching accounts offers them again).
+  static String? _rewardOfferedTo;
   Timer? _rewardTimer;
 
   final Set<String> _navigatedInviteIds = {};
@@ -86,20 +89,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// server can't be asked yet, or something else is on screen, it tries
   /// again a little later; leaving home waits until coming back.
   void _offerRewardSoon([Duration delay = const Duration(milliseconds: 1600)]) {
-    if (_rewardOffered) return;
+    final me = ref.read(currentUserProvider)?.id;
+    if (me == null || _rewardOfferedTo == me) return;
     _rewardTimer?.cancel();
     _rewardTimer = Timer(delay, () async {
-      if (!mounted || _rewardOffered) return;
+      if (!mounted || _rewardOfferedTo == me) return;
       final router = _router;
       if (router == null || currentPath(router) != '/home') return;
       if (PopupTracker.instance.open.value > 0) {
         _offerRewardSoon(const Duration(seconds: 4));
         return;
       }
-      _rewardOffered = true;
+      _rewardOfferedTo = me;
+      // A new player's welcome week comes first (or its last-day reminder,
+      // or its goodbye), then today's reward.
+      await showWelcomeIfDue(context, ref);
+      if (!mounted) return;
       final asked = await showDailyRewardIfReady(context, ref);
       if (!asked && mounted) {
-        _rewardOffered = false;
+        _rewardOfferedTo = null;
         _offerRewardSoon(const Duration(seconds: 15));
       }
     });
@@ -142,10 +150,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Opening the app mid-game (it closed, or they backed out) goes
     // straight back to that game, with home underneath.
-    if (myId != null && !_resumeChecked) {
+    if (myId != null && _resumeCheckedFor != myId) {
       ref.listen(activeGameProvider, (_, next) {
-        if (_resumeChecked || !next.hasValue) return;
-        _resumeChecked = true;
+        if (_resumeCheckedFor == myId || !next.hasValue) return;
+        _resumeCheckedFor = myId;
         final game = next.value;
         if (game != null && mounted) context.push(game.route);
       });

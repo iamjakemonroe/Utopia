@@ -271,6 +271,12 @@ CustomTransitionPage<void> _fadeIn(GoRouterState state, Widget child) {
   );
 }
 
+/// While a sign-in's portal trip is playing, the sign-in screen stays put:
+/// the trip itself moves to home under its flash (see [SignInTrip]).
+abstract final class SignInTrip {
+  static bool holding = false;
+}
+
 String? _redirect(AuthRepository authRepository, String location) {
   // The splash plays its intro and then routes itself (see SplashScreen).
   // Redirecting away from it here would skip it before its first frame.
@@ -289,6 +295,7 @@ String? _redirect(AuthRepository authRepository, String location) {
   // do, so send them to the lobby. `/auth/link` stays reachable while
   // signed in — that's the "save your account" upgrade path for anonymous
   // users, reached explicitly from the home screen banner.
+  if (location == '/auth' && SignInTrip.holding) return null;
   return location == '/auth' ? '/home' : null;
 }
 
