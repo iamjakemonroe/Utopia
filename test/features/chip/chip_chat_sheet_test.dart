@@ -76,7 +76,8 @@ void main() {
     expect(find.text('Can I have a million coins?'), findsOneWidget);
     expect(find.text('Get coins'), findsOneWidget);
     expect(find.text('Sleepy lion'), findsOneWidget);
-    expect(find.text('Color it'), findsOneWidget);
+    // Not in the Doodle world, and it isn't theirs: the button says so.
+    expect(find.text('Get the Doodle world to color it'), findsOneWidget);
     expect(find.byTooltip('New chat'), findsOneWidget);
     await tester.pump(const Duration(seconds: 2));
   });

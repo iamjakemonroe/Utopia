@@ -10,11 +10,17 @@ import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_controller.dart';
+import '../../../core/theme/utopia_themes.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../doodle_studio/data/picture_library.dart';
 import '../../doodle_studio/presentation/coloring_thumb.dart';
+import '../../doodle_studio/presentation/doodle_world_gate.dart';
+import '../../chat/presentation/chat_sticker.dart';
+import '../../store/domain/store_catalog.dart';
+import '../../store/presentation/store_controller.dart';
 import '../../friends/presentation/widgets/friends_popup.dart';
 import '../../notifications/presentation/notification_actions.dart';
 import '../../store/presentation/coin_shop.dart';
@@ -152,19 +158,26 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
     }
     final route = _places[place]?.$2;
     if (route == null) return;
+    if (place == 'sketchbook') {
+      final container = ProviderScope.containerOf(context);
+      Navigator.of(context).pop();
+      openInDoodleWorld(container, route);
+      return;
+    }
     final router = ref.read(goRouterProvider);
     Navigator.of(context).pop();
     router.push(route);
   }
 
-  /// Off to color a picture Chip drew.
+  /// Off to color a picture Chip drew, in the Doodle world.
   Future<void> _color(LibraryPicture picture) async {
     HapticFeedback.selectionClick();
     await ref.read(pictureLibraryProvider).keep(picture);
     if (!mounted) return;
-    final router = ref.read(goRouterProvider);
+    final container = ProviderScope.containerOf(context);
     Navigator.of(context).pop();
-    router.push(
+    openInDoodleWorld(
+      container,
       '/sketchbook/new?kind=coloring&page=${Uri.encodeQueryComponent(picture.pageId)}',
     );
   }
@@ -276,6 +289,8 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 _Bubble(line: line),
+                                if (line.sticker case final sticker?)
+                                  _StickerPop(id: sticker),
                                 if (picture != null)
                                   _PictureCard(
                                     picture: picture,
@@ -613,19 +628,99 @@ class _GoButton extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Opacity(opacity: v.clamp(0, 1), child: child),
         ),
-        child: ActionChip(
-          avatar: Icon(
-            Icons.arrow_forward_rounded,
-            size: 18,
-            color: AppColors.accent,
-          ),
-          label: Text(label),
-          labelStyle: AppTextStyles.body(
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-          ),
-          onPressed: onTap,
+        child: _ActionPill(
+          label: label,
+          icon: Icons.arrow_forward_rounded,
+          onTap: onTap,
         ),
+      ),
+    );
+  }
+}
+
+/// A button Chip offers: a solid accent pill with white text, so it reads
+/// in every world, light or dark.
+class _ActionPill extends StatelessWidget {
+  const _ActionPill({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          gradient: LinearGradient(
+            colors: [
+              AppColors.accent,
+              Color.lerp(AppColors.accent, Colors.black, 0.18)!,
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.accent.withValues(alpha: 0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 17, color: Colors.white),
+                const SizedBox(width: 7),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: AppTextStyles.body(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A sticker Chip sent, popping in under his message.
+class _StickerPop extends StatelessWidget {
+  const _StickerPop({required this.id});
+
+  final String id;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10, left: 4),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: 1),
+        duration: const Duration(milliseconds: 650),
+        curve: Curves.elasticOut,
+        builder: (context, v, child) => Transform.scale(
+          scale: v,
+          alignment: Alignment.bottomLeft,
+          child: child,
+        ),
+        child: ChatSticker(id: id, size: 68),
       ),
     );
   }
@@ -639,8 +734,33 @@ class _PictureCard extends ConsumerWidget {
   final ChipPicture picture;
   final ValueChanged<LibraryPicture> onColor;
 
+  /// What the button does from here: color it (in the Doodle world),
+  /// travel there to color it (they have it), or get the Doodle world.
+  (String, IconData) _action(WidgetRef ref) {
+    ref.watch(themeControllerProvider);
+    if (UtopiaThemes.active.world.biome == WorldBiome.doodle) {
+      return ('Color it', Icons.palette_rounded);
+    }
+    var owned = false;
+    try {
+      final store = ref.watch(storeControllerProvider);
+      final doodle = StoreCatalog.themes
+          .where((i) => i.id == UtopiaThemes.utopiaDoodle.id)
+          .firstOrNull;
+      owned = doodle != null && store.isOwned(doodle);
+    } catch (_) {
+      // The store can't be read (offline at start, tests): the button still
+      // works, and the trip there checks again.
+    }
+    if (owned) {
+      return ('Travel to Doodle to color it', Icons.rocket_launch_rounded);
+    }
+    return ('Get the Doodle world to color it', Icons.storefront_rounded);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final action = _action(ref);
     final id = picture.id;
     LibraryPicture? drawn;
     var status = picture.status;
@@ -726,12 +846,12 @@ class _PictureCard extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              FilledButton.icon(
-                onPressed: () => onColor(drawn!),
-                icon: const Icon(Icons.palette_rounded, size: 18),
-                label: const Text('Color it'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.accent,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _ActionPill(
+                  label: action.$1,
+                  icon: action.$2,
+                  onTap: () => onColor(drawn!),
                 ),
               ),
             ],

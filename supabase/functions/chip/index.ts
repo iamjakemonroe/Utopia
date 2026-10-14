@@ -100,8 +100,10 @@ How you talk:
 - Like texting a good friend: short and natural, usually one to three
   sentences. When they ask for an explanation, steps or advice, take what
   you need (up to about eight short sentences), never padding.
-- Plain words. No emoji, no markdown (no lists, bold or headings), no em
-  dashes.
+- Plain words, no markdown (no lists, bold or headings), no em dashes.
+- An emoji now and then is welcome when it adds warmth or a laugh, like a
+  friend texting: at most one or two in a message, and many messages with
+  none.
 - Match their energy and their language: if they write in another
   language, answer in it.
 - Use their name now and then, not every time. Ask something back now and
@@ -109,6 +111,15 @@ How you talk:
 - No filler openers like "Great question". If they ask what you are:
   you're Chip, Utopia's mascot, and your brain runs on AI so you can chat;
   you're not a person.
+- Stay aware. The chat history shows what you said and, in [brackets],
+  what you actually did and how it went (a picture you drew and whether
+  it's ready, a button you gave them, a sticker you sent) and when each of
+  their messages was sent. Trust it: if you already drew something, it's
+  done and waiting for them, so don't start it again or act as if you
+  haven't. If they come back after a break, pick up where you left off.
+  If they just say your name or hi, greet them back warmly and naturally.
+- Use what you know about them (below each message) and what you remember
+  from earlier chats, the way a friend would, without listing it back.
 - For things that change (news, scores, weather, prices, release dates),
   look them up with web search instead of guessing, and say what you
   found in your own words. Don't read out links.
@@ -175,7 +186,14 @@ What Utopia has today:
 - Coins: new players start with 1,000. Games can be free or have a coin
   entry where the winner takes the prize. More coins come from the daily
   reward, which grows with your streak, and from winning games that have
-  a coin entry. Coin top-ups are coming soon.
+  a coin entry. When the context says coin packs are on sale, they can
+  also buy coins in the coin shop (only quote the prices it gives, in
+  their currency); otherwise coin top-ups are coming soon. Buying is
+  always optional: never push anyone to spend, everything can be earned
+  by playing, and younger players should ask a parent first.
+- Welcome week: a new player's first 7 days are on us. Every world and
+  the Angel Halo aura are free for that week (worn straight away); when it
+  ends, they can rent the worlds they loved or unlock them for good.
 - Worlds: 14 living worlds to visit, from alien moons to a neon city, the
   deep sea, an ink-drawn Doodle world, a samurai castle at sunset (the
   Dojo), a graveyard where the dead rise (the Zombie world), pearly gates
@@ -198,7 +216,10 @@ What Utopia has today:
   a blank page, or color a picture: tap a shape to fill it, or paint with
   pencil, pen, marker and more. Players can search for any picture; if
   nobody has asked for it before, you draw it (it takes about a minute)
-  and it's added to the library for everyone.
+  and it's added to the library for everyone. You can draw a picture from
+  any world, but coloring happens in the Doodle world: tapping "Color it"
+  carries them there through the portal, and if they don't have the Doodle
+  world yet they can rent it or unlock it.
 - Friends: find people by username, send requests, and challenge them.
   Requests and challenges pop up in the app and land in Notifications.
 - The side menu (tap your picture) has Profile, Sketchbook (in the Doodle
@@ -208,8 +229,8 @@ What Utopia has today:
 - If the app ever closes mid-game, opening it again goes back to the game.
 
 Actions:
-At the very end of a reply you can add one action tag. Only when it really
-helps; most replies have none.
+At the very end of a reply you can add action tags. Only when they really
+help; most replies have none.
 - <open>place</open> puts a button under your message that takes them
   there. Places: store, auras, worlds, coins, friends, notifications,
   settings, profile, sketchbook, how_to_play_chess, how_to_play_checkers,
@@ -222,6 +243,18 @@ helps; most replies have none.
   "a castle on a cloud"). If it isn't right for a children's coloring
   book, don't draw it and suggest something else. Say you're on it, but
   don't describe the finished picture: you haven't drawn it yet.
+- <sticker>name</sticker> sends one of your stickers under your message,
+  for a big moment (a win, a joke, cheering them on), not every time.
+  Stickers: chip:happy, chip:excited, chip:thinking, chip:sad, chip:evil
+  (a cheeky grin), chip:peaceful, icon:heart, icon:fire, icon:thumb,
+  icon:party.
+- <remember>note</remember> keeps a short note for next time, in a
+  sentence, like "Ada has a maths exam on Wed 15 Oct" or "Ada's favourite
+  world is Heaven". Only things a friend would remember: plans, likes, how
+  something went. Never passwords, addresses, phone numbers, school names,
+  health details or anything private. At most two notes in a reply.
+- <forget/> wipes everything you remember about them, when they ask you to
+  forget.
 
 Every reply ends with the face you're making, in a tag like
 <mood>happy</mood>. Faces: happy, excited, thinking, sad, peaceful,
@@ -510,26 +543,63 @@ async function talk(
     .trim() || null;
 }
 
-/** Splits Chip's answer into what he says, his face, and any action. */
+/** Chip's stickers (the same ones players send in game chat). */
+const STICKERS = [
+  "chip:happy",
+  "chip:excited",
+  "chip:thinking",
+  "chip:sad",
+  "chip:evil",
+  "chip:peaceful",
+  "icon:heart",
+  "icon:fire",
+  "icon:thumb",
+  "icon:party",
+];
+
+/** Splits Chip's answer into what he says, his face, and any actions. */
 function readReply(raw: string) {
   const tag = (name: string) =>
     new RegExp(`<${name}>([\\s\\S]*?)</${name}>`, "i").exec(raw)?.[1]?.trim();
+  const remember = [...raw.matchAll(/<remember>([\s\S]*?)<\/remember>/gi)]
+    .map((m) => clip(m[1], 160))
+    .filter(Boolean)
+    .slice(0, 2);
   const reply = raw
-    .replace(/<(mood|open|draw)>[\s\S]*?<\/\1>/gi, "")
-    .replace(/<\/?(mood|open|draw)>/gi, "")
+    .replace(/<(mood|open|draw|sticker|remember)>[\s\S]*?<\/\1>/gi, "")
+    .replace(/<\/?(mood|open|draw|sticker|remember|forget)\s*\/?>/gi, "")
     .replace(/\*\*|__/g, "")
-    .replace(/\s*—\s*/g, ", ")
+    .replace(/\s*\u2014\s*/g, ", ")
     .replace(/[ \t]+\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
   const mood = tag("mood")?.toLowerCase();
   const place = tag("open")?.toLowerCase();
+  const sticker = tag("sticker")?.toLowerCase();
   return {
     reply,
     mood: MOODS.includes(mood as typeof MOODS[number]) ? mood! : "happy",
     open: place && PLACES.includes(place) ? place : null,
     draw: tag("draw") ?? null,
+    sticker: sticker && STICKERS.includes(sticker) ? sticker : null,
+    remember,
+    forget: /<forget\s*\/?>/i.test(raw),
   };
+}
+
+/** What became of a picture Chip started, for his memory of the chat. */
+function pictureNote(page: { status: string; title: string } | undefined) {
+  if (!page) return "[You started drawing a picture for them.]";
+  switch (page.status) {
+    case "ready":
+      return `[You drew "${page.title}" for them. It's finished and waiting in their Sketchbook.]`;
+    case "drawing":
+      return "[You're still drawing the picture you started for them.]";
+    case "refused":
+      return "[You couldn't draw that one: it isn't right for a coloring book.]";
+    default:
+      return "[That drawing didn't work out.]";
+  }
 }
 
 async function chat(
@@ -555,28 +625,73 @@ async function chat(
   const facts = [
     context.name ? `The player's name is ${clip(context.name, 40)}.` : "",
     context.now ? `Where they are it's ${clip(context.now, 60)}.` : "",
+    context.away
+      ? `They're back after ${clip(context.away, 40)} away from this chat (the app was closed); everything above happened before that.`
+      : "",
     context.screen ? `They are on the ${clip(context.screen, 40)} screen.` : "",
     context.world ? `Their world right now is ${clip(context.world, 40)}.` : "",
     context.aura ? `They're wearing the ${clip(context.aura, 40)} aura.` : "",
+    context.set ? `Set bonus active: ${clip(context.set, 80)}.` : "",
     context.coins ? `They have ${clip(context.coins, 20)} coins.` : "",
+    context.welcome ? `Welcome week: ${clip(context.welcome, 80)}.` : "",
+    context.worlds ? `Their worlds: ${clip(context.worlds, 200)}.` : "",
+    context.sketchbook ? `Sketchbook: ${clip(context.sketchbook, 120)}.` : "",
     context.guest ? "They're playing as a guest (no saved account yet)." : "",
+    context.topups ? `Coin packs: ${clip(context.topups, 160)}.` : "",
     context.playing ? `On their phone: ${clip(context.playing, 120)}.` : "",
   ].filter(Boolean).join(" ");
 
-  // Earlier turns from the bubble, oldest first, alternating.
-  const history = Array.isArray(body.history) ? body.history.slice(-16) : [];
+  // Earlier turns from the bubble, oldest first, alternating. Chip's own
+  // turns carry what he did, so he knows it happened.
+  const history = Array.isArray(body.history) ? body.history.slice(-20) : [];
+  const service = admin();
+  const pictureIds = history
+    .map((turn) => (turn as Record<string, unknown>).picture_id)
+    .filter((id): id is string => typeof id === "string" && /^[0-9a-f-]{36}$/.test(id));
+  const pages = new Map<string, { status: string; title: string }>();
+  if (pictureIds.length) {
+    const { data } = await service
+      .from("coloring_pages")
+      .select("id, status, title")
+      .in("id", pictureIds);
+    for (const row of data ?? []) pages.set(row.id, row);
+  }
+  const { data: notes } = await service
+    .from("chip_memories")
+    .select("note")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
   const messages: Anthropic.Beta.BetaMessageParam[] = [];
   for (const turn of history) {
     const t = turn as Record<string, unknown>;
     const role = t.role === "chip" ? "assistant" : "user";
-    const text = clip(t.text, 1200);
+    let text = clip(t.text, 1200);
     if (!text) continue;
     if (messages.length === 0 && role === "assistant") continue;
+    if (role === "user") {
+      const at = clip(t.at, 40);
+      if (at) text = `[${at}] ${text}`;
+    } else {
+      const did: string[] = [];
+      if (typeof t.picture_id === "string") did.push(pictureNote(pages.get(t.picture_id)));
+      if (typeof t.open === "string") did.push(`[You gave them a button to the ${clip(t.open, 30)}.]`);
+      if (typeof t.sticker === "string") did.push(`[You sent the ${clip(t.sticker, 30)} sticker.]`);
+      if (did.length) text = `${text}\n${did.join(" ")}`;
+    }
     messages.push({ role, content: text });
   }
+  const remembered = (notes ?? []).map((n: { note: string }) => `- ${n.note}`).reverse();
+  const extra = [
+    facts,
+    remembered.length
+      ? `What you remember about them from earlier chats:\n${remembered.join("\n")}`
+      : "",
+  ].filter(Boolean).join("\n\n");
   messages.push({
     role: "user",
-    content: facts ? `${message}\n\n(${facts})` : message,
+    content: extra ? `${message}\n\n(${extra})` : message,
   });
 
   const raw = await talk(messages);
@@ -584,11 +699,35 @@ async function chat(
   if (!out || !out.reply) {
     return json({ reply: "Hmm, let's talk about something else.", mood: "thinking" });
   }
+
+  // His memory: forget on request, then keep any new notes (the latest 30).
+  if (out.forget) {
+    await service.from("chip_memories").delete().eq("user_id", userId);
+  }
+  if (out.remember.length) {
+    await service
+      .from("chip_memories")
+      .insert(out.remember.map((note) => ({ user_id: userId, note })));
+    const { data: old } = await service
+      .from("chip_memories")
+      .select("id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .range(30, 200);
+    if (old?.length) {
+      await service
+        .from("chip_memories")
+        .delete()
+        .in("id", old.map((r: { id: number }) => r.id));
+    }
+  }
+
   const result: Record<string, unknown> = {
     reply: clip(out.reply, 1200),
     mood: out.mood,
   };
   if (out.open) result.open = out.open;
+  if (out.sticker) result.sticker = out.sticker;
   if (out.draw) {
     const picture = await startDrawing(db, userId, out.draw);
     if (picture.status !== "invalid") {

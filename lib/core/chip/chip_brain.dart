@@ -39,6 +39,8 @@ class ChipLine {
     this.mood,
     this.open,
     this.picture,
+    this.sticker,
+    this.at,
   });
 
   final bool fromChip;
@@ -53,10 +55,20 @@ class ChipLine {
   /// A picture Chip is drawing for the player.
   final ChipPicture? picture;
 
-  /// For Chip's brain: who said what.
+  /// A sticker Chip sent with it ('chip:excited', 'icon:party', ...).
+  final String? sticker;
+
+  /// When it was said.
+  final DateTime? at;
+
+  /// For Chip's brain: who said what, when, and what Chip did about it.
   Map<String, String> toJson() => {
     'role': fromChip ? 'chip' : 'player',
     'text': text,
+    if (at != null) 'at': chipTime(at!),
+    if (picture?.id != null) 'picture_id': picture!.id!,
+    'open': ?open,
+    'sticker': ?sticker,
   };
 
   /// Everything, for keeping the chat on the phone.
@@ -66,6 +78,8 @@ class ChipLine {
     'mood': mood,
     'open': open,
     'picture': picture?.toJson(),
+    'sticker': sticker,
+    'at': at?.toIso8601String(),
   };
 
   static ChipLine? fromStore(Object? json) {
@@ -76,8 +90,35 @@ class ChipLine {
       mood: json['mood'] as String?,
       open: json['open'] as String?,
       picture: ChipPicture.fromJson(json['picture']),
+      sticker: json['sticker'] as String?,
+      at: DateTime.tryParse(json['at'] as String? ?? ''),
     );
   }
+}
+
+const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const _months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+/// "Tue 14 Oct, 2:10 pm" on the phone's clock.
+String chipTime(DateTime when) {
+  final t = when.toLocal();
+  final hour = t.hour % 12 == 0 ? 12 : t.hour % 12;
+  final minute = t.minute.toString().padLeft(2, '0');
+  return '${_days[t.weekday - 1]} ${t.day} ${_months[t.month - 1]}, '
+      '$hour:$minute ${t.hour < 12 ? 'am' : 'pm'}';
 }
 
 /// What Chip's brain made of something playing.
@@ -142,6 +183,8 @@ class ChipBrain {
           mood: data['mood'] as String?,
           open: data['open'] as String?,
           picture: ChipPicture.fromJson(data['picture']),
+          sticker: data['sticker'] as String?,
+          at: DateTime.now(),
         );
       }
     } on FunctionException catch (e) {
