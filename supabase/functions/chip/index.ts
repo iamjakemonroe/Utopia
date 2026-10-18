@@ -194,17 +194,28 @@ What Utopia has today:
 - Welcome week: a new player's first 7 days are on us. Every world and
   the Angel Halo aura are free for that week (worn straight away); when it
   ends, they can rent the worlds they loved or unlock them for good.
-- Worlds: 16 living worlds to visit, from alien moons to a neon city, the
+- Worlds: 15 living worlds to visit, from alien moons to a neon city, the
   deep sea, an ink-drawn Doodle world, a samurai castle at sunset (the
   Dojo), a graveyard where the dead rise (the Zombie world), pearly gates
-  above the clouds (Heaven), lava rivers under a blood-red moon (Hell), a
-  night festival with lasers and a vinyl moon (Music) and a haunted hollow
-  under a harvest moon (Halloween), plus 36 color themes (12 colors, each
-  at dawn, dusk and midnight). Utopia Calm, Warm and Adventure are free
-  (every new player starts in one of them, picked at random), and so are
-  Noir and Azure Dusk; the rest, Utopia Twilight included, are bought or
-  rented with coins for 3 days, a week or a month. Change world from the
-  side menu.
+  above the clouds (Heaven), lava rivers under a blood-red moon (Hell) and
+  a night festival with lasers and a vinyl moon (Music), plus 36 color
+  themes (12 colors, each at dawn, dusk and midnight). Utopia Calm, Warm
+  and Adventure are free (every new player starts in one of them, picked
+  at random), and so are Noir and Azure Dusk; the rest, Utopia Twilight
+  included, are bought or rented with coins for 3 days, a week or a month.
+  Their Collection (side menu) has everything they own: change world or
+  frame there.
+- Events: some worlds and frames are never sold, only earned free in an
+  event by playing. Halloween is the first (mid October to 1 November):
+  Jack's Lantern for finishing 10 games, and Utopia Halloween (a haunted
+  hollow under a harvest moon) for 15 games over 5 different days. Every
+  game counts, online or against you and Robo. What they earn is theirs
+  for good and comes back every Halloween. The event card on home shows
+  how close they are.
+- Birthdays: players can give their birthday (day and month, never the
+  year) in Settings. On their birthday they get a world nobody else ever
+  sees, a party in the sky with a cake and fireworks, and the Birthday
+  Party frame, all day; you wear a party hat. Wish them happy birthday.
 - Auras: frames worn around your picture for 3 days, a week or a month,
   from common to rare, legendary and Mythic. Six make a set with a world,
   and each set changes you (Chip) too:
@@ -249,7 +260,7 @@ What Utopia has today:
 - Friends: find people by username, send requests, and challenge them.
   Requests and challenges pop up in the app and land in Notifications.
 - The side menu (tap your picture) has Profile, Sketchbook (in the Doodle
-  world), Store, Auras, Change world, Notifications, Friends, Get coins,
+  world), Store, Auras, Collection, Notifications, Friends, Get coins,
   Settings, How to play, Report a bug and Suggest a feature. Guests can
   save their account there too.
 - If the app ever closes mid-game, opening it again goes back to the game.
@@ -708,6 +719,10 @@ async function chat(
     context.set ? `Set bonus active: ${clip(context.set, 80)}.` : "",
     context.coins ? `They have ${clip(context.coins, 20)} coins.` : "",
     context.welcome ? `Welcome week: ${clip(context.welcome, 80)}.` : "",
+    context.birthday
+      ? "It's their birthday today! They're in their birthday world and you're wearing your party hat."
+      : "",
+    context.event ? `Event on now: ${clip(context.event, 260)}.` : "",
     context.worlds ? `Their worlds: ${clip(context.worlds, 200)}.` : "",
     context.sketchbook ? `Sketchbook: ${clip(context.sketchbook, 120)}.` : "",
     context.guest ? "They're playing as a guest (no saved account yet)." : "",

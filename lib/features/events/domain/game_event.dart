@@ -99,3 +99,21 @@ class EventStatus {
     ],
   );
 }
+
+/// An event item the player earned: theirs for good, usable while an event
+/// of its [season] is on.
+class SeasonItem {
+  const SeasonItem({
+    required this.itemId,
+    required this.isWorld,
+    required this.season,
+  });
+
+  final String itemId;
+  final bool isWorld;
+  final String season;
+
+  /// "Halloween".
+  String get seasonName =>
+      season.isEmpty ? season : season[0].toUpperCase() + season.substring(1);
+}

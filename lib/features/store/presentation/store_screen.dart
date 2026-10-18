@@ -99,8 +99,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   children: [
                     _WorldsTab(),
                     AurasTab(),
-                    _LudoPiecesTab(),
-                    _ChessPiecesTab(),
+                    LudoPiecesTab(),
+                    ChessPiecesTab(),
                   ],
                 ),
               ),
@@ -1041,11 +1041,16 @@ class _BuyButton extends ConsumerWidget {
 
 // ── Piece sets ──────────────────────────────────────────────────────────────
 
-class _LudoPiecesTab extends ConsumerWidget {
-  const _LudoPiecesTab();
+/// Every Ludo piece set (the store), or only the player's own
+/// ([ownedOnly], their collection).
+class LudoPiecesTab extends ConsumerWidget {
+  const LudoPiecesTab({super.key, this.ownedOnly = false});
+
+  final bool ownedOnly;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final store = ref.watch(storeControllerProvider);
     final me = ref.watch(currentUserProvider)?.id;
     final equipped = me == null
         ? 'classic'
@@ -1062,21 +1067,27 @@ class _LudoPiecesTab extends ConsumerWidget {
       childAspectRatio: 0.62,
       children: [
         for (final item in StoreCatalog.ludoPieceSets)
-          _PieceSetCard(
-            item: item,
-            equipped: equipped == item.id,
-            preview: _LudoSetPreview(setId: item.id),
-          ),
+          if (!ownedOnly || store.isOwned(item))
+            _PieceSetCard(
+              item: item,
+              equipped: equipped == item.id,
+              preview: _LudoSetPreview(setId: item.id),
+            ),
       ],
     );
   }
 }
 
-class _ChessPiecesTab extends ConsumerWidget {
-  const _ChessPiecesTab();
+/// Every Chess piece set (the store), or only the player's own
+/// ([ownedOnly], their collection).
+class ChessPiecesTab extends ConsumerWidget {
+  const ChessPiecesTab({super.key, this.ownedOnly = false});
+
+  final bool ownedOnly;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final store = ref.watch(storeControllerProvider);
     final me = ref.watch(currentUserProvider)?.id;
     final equipped = me == null
         ? 'classic'
@@ -1093,11 +1104,12 @@ class _ChessPiecesTab extends ConsumerWidget {
       childAspectRatio: 0.62,
       children: [
         for (final item in StoreCatalog.chessPieceSets)
-          _PieceSetCard(
-            item: item,
-            equipped: equipped == item.id,
-            preview: _ChessSetPreview(setId: item.id),
-          ),
+          if (!ownedOnly || store.isOwned(item))
+            _PieceSetCard(
+              item: item,
+              equipped: equipped == item.id,
+              preview: _ChessSetPreview(setId: item.id),
+            ),
       ],
     );
   }

@@ -854,7 +854,7 @@ class _Collection extends ConsumerWidget {
     final aura = Aura.byId(activeAura(profile));
     final worldTile = _CollectionTile(
       label: world.name,
-      onTap: () => context.push('/store?tab=worlds'),
+      onTap: () => context.push('/collection'),
       art: Container(
         width: 46,
         height: 46,

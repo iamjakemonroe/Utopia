@@ -20,6 +20,7 @@ import '../../features/chess/presentation/screens/chess_lobby_screen.dart';
 import '../bots/bots.dart';
 import '../../features/chess/presentation/screens/chess_match_screen.dart';
 import '../../features/birthday/presentation/birthday_screen.dart';
+import '../../features/collection/presentation/collection_screen.dart';
 import '../../features/help/presentation/how_to_play_screen.dart';
 import '../../features/invites/domain/game_invite.dart';
 import '../../features/invites/presentation/join_invite_screen.dart';
@@ -101,6 +102,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => StoreScreen(
           initialTab: switch (state.uri.queryParameters['tab']) {
             'auras' => 1,
+            'ludo' => 2,
+            'chess' => 3,
+            _ => 0,
+          },
+        ),
+      ),
+      // Everything the player has: worlds, frames, piece sets.
+      GoRoute(
+        path: '/collection',
+        builder: (context, state) => CollectionScreen(
+          initialTab: switch (state.uri.queryParameters['tab']) {
+            'frames' => 1,
             'ludo' => 2,
             'chess' => 3,
             _ => 0,

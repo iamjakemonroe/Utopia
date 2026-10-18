@@ -25,6 +25,21 @@ class EventsRepository {
         ),
       );
 
+  /// Every event item the player has earned (any season, in or out).
+  Future<List<SeasonItem>> seasonItems() async {
+    final rows = await _client
+        .from('season_items')
+        .select('item_id, kind, season');
+    return [
+      for (final r in rows)
+        SeasonItem(
+          itemId: r['item_id'] as String,
+          isWorld: r['kind'] == 'world',
+          season: r['season'] as String,
+        ),
+    ];
+  }
+
   static EventStatus _status(Object? data) => data is Map
       ? EventStatus.fromJson(Map<String, dynamic>.from(data))
       : const EventStatus(events: [], earnedNow: []);
@@ -33,3 +48,14 @@ class EventsRepository {
 final eventsRepositoryProvider = Provider<EventsRepository>(
   (ref) => EventsRepository(ref.watch(supabaseClientProvider)),
 );
+
+/// The player's earned event items, for their collection.
+final seasonItemsProvider = FutureProvider.autoDispose<List<SeasonItem>>((
+  ref,
+) async {
+  try {
+    return await ref.watch(eventsRepositoryProvider).seasonItems();
+  } catch (_) {
+    return const [];
+  }
+});

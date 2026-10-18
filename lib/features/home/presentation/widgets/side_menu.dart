@@ -116,10 +116,10 @@ class _SideMenu extends ConsumerWidget {
         badge: 'NEW',
       ),
       _MenuItem(
-        Icons.public_rounded,
-        'Change world',
+        Icons.collections_bookmark_rounded,
+        'Collection',
         AppColors.mint,
-        () => go('/store?tab=worlds'),
+        () => go('/collection'),
       ),
       _MenuItem(
         Icons.notifications_rounded,

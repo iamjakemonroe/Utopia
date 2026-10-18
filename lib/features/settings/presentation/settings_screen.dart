@@ -241,7 +241,7 @@ class SettingsScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    onTap: () => context.push('/store?tab=worlds'),
+                    onTap: () => context.push('/collection'),
                   ),
                   _LinkRow(
                     icon: Icons.add_circle_rounded,

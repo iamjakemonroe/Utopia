@@ -249,7 +249,7 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
   static const _places = <String, (String, String?)>{
     'store': ('Open the Store', '/store'),
     'auras': ('See auras', '/store?tab=auras'),
-    'worlds': ('Change world', '/store?tab=worlds'),
+    'worlds': ('Change world', '/collection'),
     'coins': ('Get coins', null),
     'friends': ('Open Friends', null),
     'notifications': ('Notifications', '/notifications'),

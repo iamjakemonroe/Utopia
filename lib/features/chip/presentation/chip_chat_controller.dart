@@ -25,6 +25,8 @@ import '../../store/domain/store_catalog.dart';
 import '../../store/presentation/store_controller.dart';
 import '../../welcome/data/welcome_repository.dart';
 import '../../home/domain/greeting.dart';
+import '../../birthday/presentation/birthday_providers.dart';
+import '../../events/presentation/events_controller.dart';
 
 class ChipChatState {
   const ChipChatState({this.lines = const [], this.thinking = false});
@@ -323,6 +325,16 @@ class ChipChatController extends StateNotifier<ChipChatState> {
       out['welcome'] = welcomeOn
           ? 'every world and the Angel Halo are free, $left day${left == 1 ? '' : 's'} left'
           : 'over';
+    }
+    if (_ref.read(birthdayTodayProvider)) out['birthday'] = 'today';
+    final event = _ref.read(eventsProvider).events.firstOrNull;
+    if (event != null) {
+      out['event'] = [
+        '${event.title}, ${event.timeLeft.toLowerCase()}',
+        'they have finished ${event.games} games on ${event.days} days',
+        for (final r in event.rewards)
+          '${r.name} (${[if (r.games > 0) '${r.games} games', if (r.days > 0) '${r.days} days'].join(' over ')}): ${r.earned ? 'earned' : 'not yet'}',
+      ].join('; ');
     }
     final store = _ref.read(storeControllerProvider);
     final owned = <String>[];
