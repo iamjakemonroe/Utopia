@@ -310,8 +310,10 @@ CustomTransitionPage<void> _fadeIn(GoRouterState state, Widget child) {
   );
 }
 
-/// While a sign-in's portal trip is playing, the sign-in screen stays put:
-/// the trip itself moves to home under its flash (see [SignInTrip]).
+/// While a sign-in is finishing (the guest portal trip, or an email
+/// sign-in's "done" moment and birthday step), the sign-in screens stay
+/// put instead of the router sending the new session home: they move on
+/// themselves.
 abstract final class SignInTrip {
   static bool holding = false;
 }
@@ -349,6 +351,7 @@ String? _redirect(AuthRepository authRepository, GoRouterState state) {
   // do, so send them to the lobby. `/auth/link` stays reachable while
   // signed in — that's the "save your account" upgrade path for anonymous
   // users, reached explicitly from the home screen banner.
+  // (A screen pushed over /auth, like /auth/link, is seen here as /auth.)
   if (location == '/auth' && SignInTrip.holding) return null;
   if (location == '/auth' || location == '/home') {
     final invite = PendingInvite.take();

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/audio/game_audio.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/theme_controller.dart';
 import '../../../store/presentation/theme_teleport.dart';
 import '../../../../core/widgets/confetti_burst.dart';
@@ -49,6 +50,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
 
   @override
   void dispose() {
+    SignInTrip.holding = false;
     _cooldown?.cancel();
     _emailController.dispose();
     _codeController.dispose();
@@ -151,6 +153,10 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       _isLoading = true;
       _error = null;
     });
+    // Signing in from the start screen: once there's a session the router
+    // would whisk them home and this screen (and the birthday step after
+    // it) would be gone. It stays until it moves on itself.
+    SignInTrip.holding = true;
 
     try {
       final repo = ref.read(authRepositoryProvider);
@@ -179,19 +185,23 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       Future.delayed(const Duration(milliseconds: 1300), () async {
         if (!mounted) return;
         if (!await knowsBirthday) {
+          SignInTrip.holding = false;
           if (mounted) router.go('/birthday?onboarding=1');
           return;
         }
         if (!mounted) return;
+        void home() {
+          SignInTrip.holding = false;
+          router.go('/home');
+        }
+
         final teleporting = ref
             .read(themeTeleportProvider.notifier)
-            .welcome(
-              ref.read(themeControllerProvider),
-              atFlash: () => router.go('/home'),
-            );
-        if (!teleporting) router.go('/home');
+            .welcome(ref.read(themeControllerProvider), atFlash: home);
+        if (!teleporting) home();
       });
     } catch (e) {
+      SignInTrip.holding = false;
       if (mounted) {
         setState(() {
           _error = 'That code didn\'t work. Try again.';
@@ -201,11 +211,14 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
     }
   }
 
-  /// Whether the player has given their birthday already (if it can't be
-  /// checked, it isn't asked: they can add it in Settings).
+  /// Whether the player has given their birthday already. A new account
+  /// hasn't, so it's always asked; if it can't be checked, it's asked too
+  /// (the page has "Skip for now").
   Future<bool> _knowsBirthday() async {
-    final me = ref.read(currentUserProvider)?.id;
-    if (me == null) return true;
+    // Straight from the auth client: it has the new session the moment the
+    // code is verified, before the app's own user state catches up.
+    final me = ref.read(authRepositoryProvider).currentUser?.id;
+    if (me == null) return false;
     try {
       final saved = await ref
           .read(birthdayRepositoryProvider)
@@ -213,7 +226,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
           .timeout(const Duration(seconds: 4));
       return saved != null;
     } catch (_) {
-      return true;
+      return false;
     }
   }
 
