@@ -27,6 +27,7 @@ import 'package:utopia/features/guess_doodle/presentation/chip_doodle_screen.dar
 import 'package:utopia/features/rankings/data/rankings_repository.dart';
 import 'package:utopia/features/rankings/domain/ranking.dart';
 import 'package:utopia/features/rankings/presentation/rankings_screen.dart';
+import 'package:utopia/features/rankings/presentation/rankings_widgets.dart';
 
 class _Events extends EventsController {
   _Events(super.ref, List<GameEvent> events) {
@@ -259,6 +260,40 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/new_chip_draws.png'),
+    );
+  });
+
+  testWidgets('legend badge', (tester) async {
+    await _phone(
+      tester,
+      Scaffold(
+        body: AppBackground(
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TierEmblem(tier: RankTier.legend, size: 120),
+                      TierEmblem(tier: RankTier.legend, size: 60),
+                      TierEmblem(tier: RankTier.diamond, size: 60),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  const TierLadder(rating: 1760),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 1230));
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/new_legend_badge.png'),
     );
   });
 }

@@ -12,7 +12,7 @@ enum RankTier {
   silver('Silver', 1100, Color(0xFFCAD5E6)),
   gold('Gold', 1300, Color(0xFFFFC94D)),
   diamond('Diamond', 1500, Color(0xFF6FE3FF)),
-  legend('Legend', 1700, Color(0xFFC490FF));
+  legend('Legend', 1700, Color(0xFFFF1F3D));
 
   const RankTier(this.label, this.from, this.color);
 

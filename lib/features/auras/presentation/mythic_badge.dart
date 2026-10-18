@@ -6,7 +6,9 @@ import 'package:flutter/scheduler.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/ambient_tick.dart';
 
-const _red = Color(0xFFFF1F3D);
+/// Mythic's red (and the Legend rank's).
+const kMythicRed = Color(0xFFFF1F3D);
+const _red = kMythicRed;
 
 /// "Mythic" in hot red with lightning crackling across it, for the tier
 /// that sits above legendary. [chip] wraps it in a glowing red pill.
@@ -54,7 +56,7 @@ class _MythicLightningState extends State<MythicLightning>
       valueListenable: _t,
       builder: (context, t, _) {
         // A flash a few times a second, like a live wire.
-        final flash = _flash(t);
+        final flash = mythicFlash(t);
         final text = ShaderMask(
           blendMode: BlendMode.srcIn,
           shaderCallback: (rect) => LinearGradient(
@@ -89,7 +91,7 @@ class _MythicLightningState extends State<MythicLightning>
           ),
         );
         final body = CustomPaint(
-          foregroundPainter: _CracklePainter(t: t, scale: size),
+          foregroundPainter: CracklePainter(t: t, scale: size),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -121,15 +123,17 @@ class _MythicLightningState extends State<MythicLightning>
       },
     );
   }
+}
 
-  static double _flash(double t) {
-    final beat = (t * 3.3) % 1;
-    final second = (t * 3.3 + 0.37) % 1;
-    return math.max(
-      beat < 0.08 ? 1 - beat / 0.08 : 0.0,
-      second < 0.05 ? 0.6 * (1 - second / 0.05) : 0.0,
-    );
-  }
+/// A live wire's flash at [t] seconds: 1 at a flash, fading to 0, a few
+/// times a second.
+double mythicFlash(double t) {
+  final beat = (t * 3.3) % 1;
+  final second = (t * 3.3 + 0.37) % 1;
+  return math.max(
+    beat < 0.08 ? 1 - beat / 0.08 : 0.0,
+    second < 0.05 ? 0.6 * (1 - second / 0.05) : 0.0,
+  );
 }
 
 double _rand(int i, int salt) {
@@ -137,13 +141,14 @@ double _rand(int i, int salt) {
   return x - x.floorToDouble();
 }
 
-/// Little bolts jumping between points around the label, a new set every
-/// tenth of a second.
-class _CracklePainter extends CustomPainter {
-  _CracklePainter({required this.t, required this.scale});
+/// Little bolts jumping between points around what it's painted over, a
+/// new set every tenth of a second.
+class CracklePainter extends CustomPainter {
+  CracklePainter({required this.t, required this.scale, this.color = _red});
 
   final double t;
   final double scale;
+  final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -174,7 +179,7 @@ class _CracklePainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = scale * 0.14
           ..strokeJoin = StrokeJoin.round
-          ..color = _red.withValues(alpha: 0.6)
+          ..color = color.withValues(alpha: 0.6)
           ..maskFilter = MaskFilter.blur(BlurStyle.normal, scale * 0.12),
       );
       canvas.drawPath(
@@ -189,8 +194,10 @@ class _CracklePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _CracklePainter old) =>
-      (old.t * 10).floor() != (t * 10).floor() || old.scale != scale;
+  bool shouldRepaint(covariant CracklePainter old) =>
+      (old.t * 10).floor() != (t * 10).floor() ||
+      old.scale != scale ||
+      old.color != color;
 }
 
 /// Wraps a Mythic aura's buy button in power that's trying to come alive:

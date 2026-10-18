@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/audio/game_audio.dart';
@@ -8,10 +9,12 @@ import '../../../core/profiles/profile_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/ambient_tick.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/user_avatar.dart';
 import '../../../core/widgets/utopia_toast.dart';
+import '../../auras/presentation/mythic_badge.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../friends/data/friend_repository.dart';
 import '../../friends/presentation/providers/friends_providers.dart';
@@ -32,7 +35,8 @@ Color? medalFor(int place) => switch (place) {
 // ── the tier badge ─────────────────────────────────────────────────────────
 
 /// A tier's badge: a glossy hexagon in its color, with one to three stars
-/// (Bronze to Gold), a diamond, or Legend's crest.
+/// (Bronze to Gold), a diamond, or Legend's bolt, with lightning crackling
+/// around it (like Mythic auras).
 class TierEmblem extends StatelessWidget {
   const TierEmblem({
     super.key,
@@ -49,6 +53,15 @@ class TierEmblem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Legend crackles (big enough to see it; the tiny ones in lists stay
+    // still).
+    if (!dim && tier == RankTier.legend && size >= 22) {
+      return _Crackling(
+        size: size,
+        color: tier.color,
+        mark: Center(child: _mark()),
+      );
+    }
     final emblem = SizedBox.square(
       dimension: size,
       child: CustomPaint(
@@ -68,9 +81,10 @@ class TierEmblem extends StatelessWidget {
         color: white,
       ),
       RankTier.legend => Icon(
-        Icons.workspace_premium_rounded,
-        size: size * 0.48,
+        Icons.bolt_rounded,
+        size: size * 0.52,
         color: white,
+        shadows: [Shadow(color: kMythicRed, blurRadius: size * 0.12)],
       ),
       _ => Padding(
         padding: EdgeInsets.only(top: size * 0.02),
@@ -90,11 +104,72 @@ class TierEmblem extends StatelessWidget {
   }
 }
 
+/// Lightning jumping around [child], and a glow that flashes with it.
+class _Crackling extends StatefulWidget {
+  const _Crackling({
+    required this.size,
+    required this.color,
+    required this.mark,
+  });
+
+  final double size;
+  final Color color;
+  final Widget mark;
+
+  @override
+  State<_Crackling> createState() => _CracklingState();
+}
+
+class _CracklingState extends State<_Crackling>
+    with SingleTickerProviderStateMixin {
+  final _t = ValueNotifier<double>(0);
+  late final Ticker _ticker;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = createTicker(
+      ambientTick((e) => _t.value = e.inMicroseconds / 1e6),
+    )..start();
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    _t.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = widget.size;
+    return ValueListenableBuilder<double>(
+      valueListenable: _t,
+      builder: (context, t, mark) => SizedBox.square(
+        dimension: size,
+        child: CustomPaint(
+          painter: _EmblemPainter(
+            widget.color,
+            glow: true,
+            flash: mythicFlash(t),
+          ),
+          foregroundPainter: CracklePainter(t: t, scale: size * 0.42),
+          child: mark,
+        ),
+      ),
+      child: widget.mark,
+    );
+  }
+}
+
 class _EmblemPainter extends CustomPainter {
-  _EmblemPainter(this.color, {required this.glow});
+  _EmblemPainter(this.color, {required this.glow, this.flash = 0});
 
   final Color color;
   final bool glow;
+
+  /// 0 to 1: the glow flaring with a lightning flash.
+  final double flash;
 
   static Path hexagon(Offset c, double r) {
     final path = Path();
@@ -115,8 +190,11 @@ class _EmblemPainter extends CustomPainter {
       canvas.drawPath(
         outer,
         Paint()
-          ..color = color.withValues(alpha: 0.55)
-          ..maskFilter = MaskFilter.blur(BlurStyle.normal, r * 0.18),
+          ..color = color.withValues(alpha: 0.55 + 0.45 * flash)
+          ..maskFilter = MaskFilter.blur(
+            BlurStyle.normal,
+            r * (0.18 + 0.22 * flash),
+          ),
       );
     }
     final bounds = Rect.fromCircle(center: c, radius: r);
@@ -165,7 +243,7 @@ class _EmblemPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _EmblemPainter old) =>
-      old.color != color || old.glow != glow;
+      old.color != color || old.glow != glow || old.flash != flash;
 }
 
 // ── numbers ────────────────────────────────────────────────────────────────
@@ -422,26 +500,31 @@ class TierLadder extends StatelessWidget {
                           ],
                         ),
                       ),
-                    // The player, between the badges.
-                    Positioned(
-                      left: x(pos) - 7,
-                      top: badge / 2 - 7,
-                      child: Container(
-                        width: 14,
-                        height: 14,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          border: Border.all(color: tier.color, width: 3),
-                          boxShadow: [
-                            BoxShadow(
-                              color: tier.color.withValues(alpha: 0.8),
-                              blurRadius: 8,
-                            ),
-                          ],
+                    // The player, between the badges (on one, its badge
+                    // lit up says so already).
+                    if (((pos * (tiers.length - 1)) -
+                                (pos * (tiers.length - 1)).round())
+                            .abs() >
+                        0.06)
+                      Positioned(
+                        left: x(pos) - 7,
+                        top: badge / 2 - 7,
+                        child: Container(
+                          width: 14,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            border: Border.all(color: tier.color, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: tier.color.withValues(alpha: 0.8),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               );
