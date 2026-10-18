@@ -27,6 +27,10 @@ class Env {
     'UTOPIA_REAL_MONEY_STORE',
   );
 
+  /// Where crash reports go (a Sentry project's DSN, `SENTRY_DSN` in
+  /// env/local.json). Empty: no crash reporting at all.
+  static const String sentryDsn = String.fromEnvironment('SENTRY_DSN');
+
   /// Non-null when the app was built without `--dart-define-from-file`.
   /// main.dart shows this on screen instead of throwing: a throw before
   /// runApp leaves the device on the blank native launch screen, which

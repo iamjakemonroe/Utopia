@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -37,12 +38,24 @@ Future<void> main() async {
     prefs,
   ]);
 
-  runApp(
-    ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(await prefs)],
-      child: const UtopiaApp(),
-    ),
+  final app = ProviderScope(
+    overrides: [sharedPreferencesProvider.overrideWithValue(await prefs)],
+    child: const UtopiaApp(),
   );
+
+  // Crash reports, once the build has a Sentry DSN: what went wrong, on
+  // which phone and version, never who (no personal details).
+  if (Env.sentryDsn.isEmpty) {
+    runApp(app);
+    return;
+  }
+  await SentryFlutter.init((options) {
+    options
+      ..dsn = Env.sentryDsn
+      ..environment = kReleaseMode ? 'production' : 'debug'
+      ..sendDefaultPii = false
+      ..tracesSampleRate = 0;
+  }, appRunner: () => runApp(app));
 }
 
 /// The bundled fonts (assets/google_fonts) are under the SIL Open Font
