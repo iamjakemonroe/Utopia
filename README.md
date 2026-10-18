@@ -38,7 +38,7 @@ them looks and behaves.
 | Server code | Supabase Edge Functions (Deno, TypeScript) |
 | AI | Anthropic Claude API (chat, structured output, web search) |
 | Native | Kotlin media session listener (Android), Swift app delegate (iOS) |
-| Tooling | flutter_test widget and golden tests, CoreGraphics icon renderer, Supabase CLI migrations |
+| Tooling | flutter_test widget and golden tests, migration tests on a throwaway Postgres (tool/db_test), GitHub Actions CI, CoreGraphics icon renderer, Supabase CLI migrations |
 
 ## Architecture
 
@@ -53,7 +53,8 @@ supabase/
   migrations/  Schema, RLS policies and game logic as SQL
   functions/   Edge Functions (Chip's brain, account deletion)
 test/          Unit and widget tests; test/tool renders art preview sheets
-tool/          Icon renderer, sound synthesis and support scripts
+tool/          Icon renderer, sound synthesis, database tests (db_test)
+               and support scripts
 ```
 
 Game rules that decide outcomes (moves, timers, scoring, coin transfers) run
