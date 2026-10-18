@@ -41,13 +41,6 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
   bool _isLoading = false;
   String? _error;
 
-  /// True when an anonymous (guest) user tried to save their account with
-  /// an email that's already registered to a different account. Supabase
-  /// correctly refuses to *link* it (that would silently merge two
-  /// separate identities), but the guest still needs a way forward instead
-  /// of a dead-end error — see [_loginWithExistingAccountInstead].
-  bool _emailBelongsToAnotherAccount = false;
-
   @override
   void dispose() {
     SignInTrip.holding = false;
@@ -69,66 +62,50 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       _isLoading = true;
       _isLinking = isAnonymous;
       _error = null;
-      _emailBelongsToAnotherAccount = false;
     });
 
     try {
       final repo = ref.read(authRepositoryProvider);
       if (isAnonymous) {
-        await repo.linkEmail(email);
+        try {
+          await repo.linkEmail(email);
+        } on AuthException catch (e) {
+          if (!_alreadyRegistered(e)) rethrow;
+          // A guest giving an email that already has an account: they want
+          // back into that account, so the code signs them in to it. (Two
+          // separate accounts can't be merged, so the guest session's
+          // progress stays behind.)
+          _isLinking = false;
+          await repo.signInWithEmailOtp(email);
+        }
       } else {
         await repo.signInWithEmailOtp(email);
       }
       if (mounted) setState(() => _step = _Step.enterCode);
     } catch (e) {
-      debugPrint('send code failed (isLinking=$isAnonymous): $e');
-      setState(() => _error = _messageFor(e, wasLinking: isAnonymous));
+      debugPrint('send code failed (isLinking=$_isLinking): $e');
+      setState(() => _error = _messageFor(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  /// A guest hit `email_exists` trying to save their account — instead of
-  /// leaving them stuck, send a normal sign-in code for the *existing*
-  /// account. They'll be logged into that account (guest coins on the
-  /// abandoned anonymous session are not carried over — Supabase has no
-  /// way to merge two already-separate identities), which is what the
-  /// person almost certainly wants: to get back into the account they
-  /// already have, not to stay locked out of it.
-  Future<void> _loginWithExistingAccountInstead() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-      _emailBelongsToAnotherAccount = false;
-      _isLinking = false;
-    });
-
-    try {
-      final repo = ref.read(authRepositoryProvider);
-      await repo.signInWithEmailOtp(_emailController.text.trim());
-      if (mounted) setState(() => _step = _Step.enterCode);
-    } catch (e) {
-      debugPrint('login-instead failed: $e');
-      setState(() => _error = _messageFor(e, wasLinking: false));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
+  /// Supabase refusing to attach an email that another account has.
+  static bool _alreadyRegistered(AuthException e) =>
+      e.code == 'email_exists' ||
+      e.code == 'user_already_exists' ||
+      e.message.toLowerCase().contains('already been registered');
 
   /// Maps the handful of failures users actually hit to plain language,
   /// instead of one generic message that hides what's actually wrong
-  /// (rate-limited vs. a real delivery failure vs. an already-registered
-  /// email all need different next steps). Checked against the base
+  /// (rate-limited vs. a real delivery failure need different next
+  /// steps). Checked against the base
   /// [AuthException] — `code`/`statusCode` live there, but which concrete
   /// subclass shows up varies (e.g. a mid-send failure surfaces as
   /// [AuthRetryableFetchException], not [AuthApiException]), so narrowing
   /// to one subclass would silently miss real cases.
-  String _messageFor(Object e, {required bool wasLinking}) {
+  String _messageFor(Object e) {
     if (e is AuthException) {
-      if (e.code == 'email_exists' && wasLinking) {
-        _emailBelongsToAnotherAccount = true;
-        return 'That email already has an account.';
-      }
       if (e.code == 'over_email_send_rate_limit') {
         return 'Too many code requests. Wait a few minutes and try again.';
       }
@@ -336,17 +313,6 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
                                 _error!,
                                 style: const TextStyle(color: AppColors.error),
                                 textAlign: TextAlign.center,
-                              ),
-                            ],
-                            if (_emailBelongsToAnotherAccount) ...[
-                              const SizedBox(height: AppSpacing.sm),
-                              TextButton(
-                                onPressed: _isLoading
-                                    ? null
-                                    : _loginWithExistingAccountInstead,
-                                child: const Text(
-                                  'Log in with this email instead',
-                                ),
                               ),
                             ],
                           ],
