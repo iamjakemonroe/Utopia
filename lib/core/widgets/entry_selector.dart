@@ -4,15 +4,9 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import 'utopia_icons.dart';
 
-/// The house cut taken from a prize pool, in basis points (see
-/// commission_bps on the match tables).
-const int kCommissionBps = 500;
-
-/// What the winner of a game with this [entry] and [players] receives.
-int prizeFor(int entry, int players) {
-  final pot = entry * players;
-  return pot - (pot * kCommissionBps) ~/ 10000;
-}
+/// What the winner of a game with this [entry] and [players] receives: the
+/// whole pot (there's no house cut).
+int prizeFor(int entry, int players) => entry * players;
 
 /// Picks how many coins each player puts in: free, or a coin amount. Each
 /// option is a bubble that springs when chosen, and the line underneath

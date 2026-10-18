@@ -20,7 +20,6 @@ import '../../../../core/widgets/bouncy_dialog.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/pop_card.dart';
 import '../../../../core/widgets/utopia_toast.dart';
-import '../../../../core/widgets/entry_selector.dart';
 import '../../../../core/widgets/utopia_icons.dart';
 import '../../../../core/settings/gameplay_settings.dart';
 import '../../../../core/widgets/primary_button.dart';
@@ -552,9 +551,7 @@ class _TopBar extends StatelessWidget {
                   ),
                 const SizedBox(width: 4),
                 Text(
-                  pot > 0
-                      ? formatCoins(pot - (pot * kCommissionBps) ~/ 10000)
-                      : 'Free',
+                  pot > 0 ? formatCoins(pot) : 'Free',
                   style: AppTextStyles.body(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -863,7 +860,7 @@ class _GameOverPanel extends ConsumerWidget {
       _ => '',
     };
     final commissionBps =
-        (state.matchRow?['commission_bps'] as num?)?.toInt() ?? 500;
+        (state.matchRow?['commission_bps'] as num?)?.toInt() ?? 0;
     final payout = (state.pot * (1 - commissionBps / 10000)).floor();
 
     return ClipRRect(
