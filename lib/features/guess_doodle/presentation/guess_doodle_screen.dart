@@ -19,6 +19,7 @@ import 'widgets/doodle_header.dart';
 import 'widgets/doodle_overlays.dart';
 import 'widgets/doodle_tools.dart';
 import '../../invites/domain/game_invite.dart';
+import '../../events/presentation/events_controller.dart';
 
 /// Name colors, given out in drawing order.
 const _nameColors = [
@@ -78,6 +79,11 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
           _play(Sfx.drop);
         case DoodlePhase.over:
           _play(game.winnerIds.contains(me) ? Sfx.win : Sfx.reaction);
+          if (was != null) {
+            ref
+                .read(eventsProvider.notifier)
+                .gameFinished('doodle', matchId: widget.gameId);
+          }
         default:
       }
     }

@@ -29,6 +29,7 @@ import '../../domain/checkers_bot.dart';
 import '../../domain/checkers_engine.dart';
 import '../widgets/checkers_board.dart';
 import '../widgets/checkers_disc.dart';
+import '../../../events/presentation/events_controller.dart';
 
 /// Checkers on this phone, no internet needed: against Chip or Robo (who
 /// think off the main thread and react to the game), or two people taking
@@ -408,6 +409,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
 
   void _finish() {
     _save();
+    ref.read(eventsProvider.notifier).gameFinished('checkers');
     final audio = ref.read(gameAudioProvider);
     final winner = _winner;
     if (winner == null) {

@@ -51,6 +51,8 @@ import '../../data/active_game.dart';
 import '../../domain/greeting.dart';
 import '../widgets/now_playing_widgets.dart';
 import '../widgets/side_menu.dart';
+import '../../../events/presentation/event_widgets.dart';
+import '../../../events/presentation/events_controller.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -69,6 +71,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// The player today's welcome and reward have been offered to this
   /// session (per player, so switching accounts offers them again).
   static String? _rewardOfferedTo;
+
+  /// The player whose visit the events have counted this session.
+  static String? _eventsVisitedBy;
   Timer? _rewardTimer;
 
   final Set<String> _navigatedInviteIds = {};
@@ -82,6 +87,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     // Chip listens along only while home is on screen.
     _music = ref.read(nowPlayingProvider.notifier)..setWatching(true);
+    // Events count the day (and hand back this season's earned items).
+    final me = ref.read(currentUserProvider)?.id;
+    if (me != null && _eventsVisitedBy != me) {
+      _eventsVisitedBy = me;
+      ref.read(eventsProvider.notifier).visit();
+    }
     _offerRewardSoon();
   }
 
@@ -264,6 +275,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(height: AppSpacing.lg),
                 ],
                 if (myId != null) const _RejoinCard(),
+                if (myId != null) const EventCard(),
                 if (myId != null) _UsernameBanner(myId: myId),
                 if (myId != null) _IncomingInvites(myId: myId),
                 const _GamesGrid(),

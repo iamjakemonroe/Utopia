@@ -33,6 +33,7 @@ import 'coin_shop.dart';
 import 'store_controller.dart';
 import 'theme_teleport.dart';
 import '../../../core/widgets/ambient_tick.dart';
+import '../../events/presentation/event_widgets.dart';
 
 /// The store: worlds (themes), Ludo piece sets and chess piece sets.
 class StoreScreen extends ConsumerStatefulWidget {
@@ -345,6 +346,7 @@ class _WorldsTab extends ConsumerWidget {
                   color: AppColors.textSecondary,
                 ),
               ),
+              const EventStoreBanner(),
             ],
           ),
         ),

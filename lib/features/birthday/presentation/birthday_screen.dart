@@ -454,7 +454,9 @@ class _Summary extends StatelessWidget {
         children: [
           Icon(
             picked == null ? Icons.redeem_rounded : Icons.celebration_rounded,
-            color: picked == null ? AppColors.textSecondary : AppColors.coinGold,
+            color: picked == null
+                ? AppColors.textSecondary
+                : AppColors.coinGold,
           ),
           const SizedBox(width: 10),
           Expanded(

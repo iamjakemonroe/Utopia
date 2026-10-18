@@ -38,6 +38,7 @@ import '../widgets/ludo_player_card.dart';
 import '../widgets/ludo_rules_sheet.dart';
 import '../widgets/ludo_seat_panel.dart';
 import '../../../chat/presentation/voice_notes.dart';
+import '../../../events/presentation/events_controller.dart';
 
 class LudoMatchScreen extends ConsumerStatefulWidget {
   const LudoMatchScreen({super.key, required this.matchId});
@@ -170,6 +171,9 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
     final done = !next.isActive && next.status != 'pending';
     if (done && !_playedResult) {
       _playedResult = true;
+      ref
+          .read(eventsProvider.notifier)
+          .gameFinished('ludo', matchId: next.isLocal ? null : widget.matchId);
       audio.play(next.winnerId == me ? Sfx.win : Sfx.lose);
     }
   }

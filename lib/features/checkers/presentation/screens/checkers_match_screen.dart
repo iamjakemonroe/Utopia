@@ -38,6 +38,7 @@ import '../../domain/checkers_engine.dart';
 import '../controllers/checkers_match_controller.dart';
 import '../widgets/checkers_board.dart';
 import '../widgets/checkers_disc.dart';
+import '../../../events/presentation/events_controller.dart';
 
 const _darkInk = Color(0xFFB79BFF);
 const _lightInk = Color(0xFFF4EEDC);
@@ -86,6 +87,9 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
       });
       if (fresh && !_playedResult) {
         _playedResult = true;
+        ref
+            .read(eventsProvider.notifier)
+            .gameFinished('checkers', matchId: widget.matchId);
         final me = ref.read(currentUserProvider)?.id;
         final winner = next.outcome?.winnerId;
         if (winner != null) {

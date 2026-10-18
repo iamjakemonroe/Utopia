@@ -14,6 +14,7 @@ import '../data/aura_repository.dart';
 import '../domain/aura.dart';
 import 'aura_sheet.dart';
 import 'mythic_badge.dart';
+import '../../events/presentation/event_widgets.dart';
 
 /// The aura shop: what you're wearing now, then every aura by tier, each
 /// shown live around your own picture.
@@ -38,6 +39,10 @@ class AurasTab extends ConsumerWidget {
     // Slivers, so only the cards on screen are built and animating.
     return CustomScrollView(
       slivers: [
+        const SliverPadding(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          sliver: SliverToBoxAdapter(child: EventStoreBanner()),
+        ),
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.md,

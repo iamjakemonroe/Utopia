@@ -35,6 +35,7 @@ import '../widgets/bot_clock.dart';
 import '../../../../core/widgets/game_card_art.dart';
 import '../../../home/data/offline_game.dart';
 import '../widgets/promotion_sheet.dart';
+import '../../../events/presentation/events_controller.dart';
 
 /// Chess against the computer, all on this phone: no internet needed.
 /// Chip (or Robo) thinks off the main thread, reacts to the game with a
@@ -445,6 +446,7 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
 
   void _finish() {
     _save();
+    ref.read(eventsProvider.notifier).gameFinished('chess');
     final audio = ref.read(gameAudioProvider);
     final winner = _winner;
     if (winner == null) {

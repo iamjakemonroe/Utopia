@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/profiles/profile_freshness.dart';
 import 'core/router/app_router.dart';
+import 'core/audio/game_audio.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/widgets/utopia_toast.dart';
@@ -15,6 +16,8 @@ import 'features/maestro/presentation/maestro_providers.dart';
 import 'features/notifications/presentation/notification_actions.dart';
 import 'features/notifications/presentation/notification_center.dart';
 import 'features/store/presentation/theme_teleport.dart';
+import 'features/events/presentation/event_widgets.dart';
+import 'features/events/presentation/events_controller.dart';
 
 class UtopiaApp extends ConsumerWidget {
   const UtopiaApp({super.key});
@@ -31,6 +34,15 @@ class UtopiaApp extends ConsumerWidget {
     ref.watch(maestroLookProvider);
     // On the player's birthday, his party hat.
     ref.watch(birthdayTodayProvider);
+    // An event reward just earned (in a game, or arriving home).
+    ref.listen(eventsProvider.select((s) => s.justEarned), (_, earned) {
+      if (earned.isEmpty) return;
+      ref.read(eventsProvider.notifier).clearEarned();
+      final ctx = appNavigatorContext(ref);
+      if (ctx == null || !ctx.mounted) return;
+      ref.read(gameAudioProvider).play(Sfx.purchase);
+      showEarnedSheet(ctx, earned);
+    });
     ref.watch(dragonSetProvider);
     ref.listen(dragonSetProvider, (previous, next) {
       if (previous != false || next != true) return;

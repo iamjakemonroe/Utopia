@@ -42,6 +42,7 @@ import '../widgets/chess_piece_art.dart';
 import '../widgets/chess_piece_styles.dart';
 import '../widgets/promotion_sheet.dart';
 import '../widgets/time_control_style.dart';
+import '../../../events/presentation/events_controller.dart';
 
 const _whiteInk = Color(0xFFF4EEDC);
 const _blackInk = Color(0xFFB79BFF);
@@ -102,6 +103,9 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
       });
       if (fresh && !_playedResult) {
         _playedResult = true;
+        ref
+            .read(eventsProvider.notifier)
+            .gameFinished('chess', matchId: widget.matchId);
         final me = ref.read(currentUserProvider)?.id;
         final winner = next.outcome?.winnerId;
         if (winner != null) audio.play(winner == me ? Sfx.win : Sfx.lose);

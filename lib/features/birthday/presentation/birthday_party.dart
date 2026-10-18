@@ -28,7 +28,10 @@ String _celebratedKey(String userId) => 'birthday.celebrated.$userId';
 /// once a year, Chip's happy birthday. Any other day, puts back the frame
 /// they wore before their birthday if it's still theirs. Returns whether it
 /// showed anything.
-Future<bool> celebrateBirthdayIfToday(BuildContext context, WidgetRef ref) async {
+Future<bool> celebrateBirthdayIfToday(
+  BuildContext context,
+  WidgetRef ref,
+) async {
   final me = ref.read(currentUserProvider)?.id;
   if (me == null) return false;
   final prefs = ref.read(sharedPreferencesProvider);
