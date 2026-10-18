@@ -72,8 +72,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Start once the splash is actually on screen, not when it's built:
     // the first frame can take a second or more to rasterize (debug
     // builds, slower phones), and a clock started now would cut the
-    // animation short or skip it entirely.
-    WidgetsBinding.instance.waitUntilFirstFrameRasterized.then((_) {
+    // animation short or skip it entirely. On the web a frame is drawn as
+    // it's built, and the engine only reports a drawn frame once another
+    // follows it, so waiting for that report on this still first frame
+    // would wait forever: there, start when the first frame is done.
+    final onScreen = kIsWeb
+        ? WidgetsBinding.instance.endOfFrame
+        : WidgetsBinding.instance.waitUntilFirstFrameRasterized;
+    onScreen.then((_) {
       if (mounted) _ticker.start();
     });
   }
