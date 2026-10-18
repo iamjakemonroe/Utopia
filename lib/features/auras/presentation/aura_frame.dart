@@ -2417,20 +2417,16 @@ class AuraPainter extends CustomPainter {
   /// A golden halo floating above the head, with feathers drifting down.
   // ── Zombie Bite ─────────────────────────────────────────────────────────
 
-  /// The Zombie Bite's shapes for a picture of radius 1 at the origin,
-  /// built once (path operations are too slow to redo every frame) and
-  /// scaled to each picture: the chunk bitten out, top right (a round bite
-  /// edged with tooth marks, out of the picture itself), everywhere but
-  /// the bite, and the picture (where the bite's torn edge shows).
-  /// Where the bite is centred (a little outside the picture's edge) and
-  /// how big it is, for a picture of radius 1.
-  static const _biteAt = 1.03;
-  static const _biteRadius = 0.33;
-
+  /// The Zombie Bite frame's shapes for a picture of radius 1 at the
+  /// origin, built once (path operations are too slow to redo every
+  /// frame) and scaled to each picture: the chunk bitten out, top right (a
+  /// round bite edged with tooth marks, right through the rim and into
+  /// the picture), the rim with the bite gone, the frame with the picture
+  /// in it, everywhere but the bite, and everywhere but where the bite
+  /// goes through the frame.
   static final _biteShapes = () {
-    final at = _dir(-0.75) * _biteAt;
-    var bite = Path()
-      ..addOval(Rect.fromCircle(center: at, radius: _biteRadius));
+    final at = _dir(-0.75) * 1.06;
+    var bite = Path()..addOval(Rect.fromCircle(center: at, radius: 0.27));
     for (var k = 0; k < 13; k++) {
       final a = k * 2 * math.pi / 13 + 0.2;
       bite = Path.combine(
@@ -2438,22 +2434,29 @@ class AuraPainter extends CustomPainter {
         bite,
         Path()..addOval(
           Rect.fromCircle(
-            center: at + _dir(a) * _biteRadius * 1.01,
-            radius: 0.06 + 0.016 * _rand(k, 98),
+            center: at + _dir(a) * 0.272,
+            radius: 0.05 + 0.014 * _rand(k, 98),
           ),
         ),
       );
     }
+    final whole = Path()
+      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 1.13))
+      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 0.97))
+      ..fillType = PathFillType.evenOdd;
     final disc = Path()
-      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 1.0));
+      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 1.13));
     final everywhere = Path()
       ..addRect(Rect.fromCircle(center: Offset.zero, radius: 3));
     return (
       bite: bite,
       disc: disc,
+      band: Path.combine(PathOperation.difference, whole, bite),
+      // Nothing is ever drawn in the bite: not the picture, nor the frame's
+      // own edges.
       unbitten: Path.combine(PathOperation.difference, everywhere, bite),
-      // The mist behind keeps going outside the picture; only the gap
-      // bitten out of it is left empty.
+      // Where the bite goes through the frame and picture: the glow behind
+      // is cut away there too (and fades out round it, see _zombie).
       gapless: Path.combine(
         PathOperation.difference,
         everywhere,
@@ -2462,11 +2465,10 @@ class AuraPainter extends CustomPainter {
     );
   }();
 
-  /// Undead, not on fire: a real bite taken out of the picture itself, no
-  /// frame round it (the gap is empty, its edge torn and bruised with
-  /// tooth punctures and slime running from it), two zombie hands clawing
-  /// up from below to grab the picture, slime dripping off the bottom,
-  /// sickly mist rising from below and flies buzzing round.
+  /// Undead, not on fire: the frame turns to rotting, stitched-up skin with
+  /// a bite taken clean out of it (nothing there, not even the glow behind:
+  /// just tooth marks round the gap), two zombie hands claw up from below
+  /// to grab it, slime drips off the bottom and flies buzz round.
   void _zombie(Canvas canvas, Offset c, double r, double t) {
     const skin = Color(0xFF8C9E72);
     const skinDark = Color(0xFF5E6E48);
@@ -2482,74 +2484,134 @@ class AuraPainter extends CustomPainter {
     final unbitten = _biteShapes.unbitten.transform(fit);
 
     if (!front) {
-      canvas.save();
+      canvas.saveLayer(Rect.fromCircle(center: c, radius: r * 2.2), Paint());
       canvas.clipPath(_biteShapes.gapless.transform(fit));
-      // Sickly green mist creeping up from below where the hands come
-      // from, rising and fading (never a ring round the picture).
-      for (var i = 0; i < 7; i++) {
+      // Sickly green mist pooling round the bottom, rising and fading.
+      for (var i = 0; i < 9; i++) {
         final life = (t * 0.12 + _rand(i, 91)) % 1;
-        final a = math.pi * (0.25 + 0.5 * _rand(i, 92));
+        final a = math.pi * (0.1 + 0.8 * _rand(i, 92));
         final p =
             c +
-            _dir(a) * r * (1.05 + 0.2 * _rand(i, 93)) +
-            Offset(0, -life * r * 0.45);
+            _dir(a) * r * (0.9 + 0.25 * _rand(i, 93)) +
+            Offset(0, -life * r * 0.6);
         canvas.drawCircle(
           p,
-          r * (0.18 + 0.1 * _rand(i, 94)),
+          r * (0.22 + 0.12 * _rand(i, 94)),
           Paint()
             ..color = const Color(
               0xFF7FD957,
-            ).withValues(alpha: 0.22 * math.sin(life * math.pi))
+            ).withValues(alpha: 0.28 * math.sin(life * math.pi))
             ..maskFilter = _blur(r * 0.14),
         );
       }
+      _glowRing(
+        canvas,
+        c,
+        r,
+        const Color(0xFF7DFF3D).withValues(alpha: 0.28),
+        width: 0.22,
+        blur: 0.22,
+        scale: 1.06,
+      );
+      // The glow fades away round the bite, so nothing shows through the
+      // gap and no outline of it hangs outside the frame.
+      canvas.drawCircle(
+        c + _dir(-0.75) * r * 1.06,
+        r * 0.42,
+        Paint()
+          ..blendMode = BlendMode.dstOut
+          ..maskFilter = _blur(r * 0.06),
+      );
       canvas.restore();
       return;
     }
 
-    final edgeR = r * 0.99;
-
-    // The bitten edge, on the picture itself: bruised and torn where the
-    // teeth went in, a puncture past each tooth mark.
+    // The rotting rim, with the bite gone from it.
+    final outerR = r * 1.13;
+    final innerR = r * 0.97;
+    final band = _biteShapes.band.transform(fit);
+    canvas.drawPath(band, Paint()..color = skin);
     canvas.save();
-    canvas.clipPath(_biteShapes.disc.transform(fit));
-    canvas.clipPath(unbitten);
-    canvas.drawPath(
-      bite,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = r * 0.16
-        ..color = const Color(0xFF3A1416).withValues(alpha: 0.45)
-        ..maskFilter = _blur(r * 0.04),
-    );
-    canvas.drawPath(
-      bite,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = r * 0.075
-        ..strokeJoin = StrokeJoin.round
-        ..color = const Color(0xFF6E1A1C),
-    );
-    canvas.drawPath(
-      bite,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = r * 0.03
-        ..strokeJoin = StrokeJoin.round
-        ..color = const Color(0xFF240A0C),
-    );
-    final at = c + _dir(-0.75) * r * _biteAt;
-    for (var k = 0; k < 13; k++) {
-      final a = k * 2 * math.pi / 13 + 0.2;
-      final p = at + _dir(a) * r * (_biteRadius + 0.1);
-      canvas.drawOval(
-        Rect.fromCenter(center: p, width: r * 0.035, height: r * 0.05),
-        Paint()..color = const Color(0xFF3A0E10).withValues(alpha: 0.8),
+    canvas.clipPath(band);
+    // Rot blotches and bruises.
+    for (var i = 0; i < 14; i++) {
+      final a = _rand(i, 95) * 2 * math.pi;
+      final p = c + _dir(a) * r * (1.0 + 0.12 * _rand(i, 96));
+      canvas.drawCircle(
+        p,
+        r * (0.05 + 0.06 * _rand(i, 97)),
+        Paint()
+          ..color = (i % 4 == 0 ? const Color(0xFF6E4A6A) : skinDark)
+              .withValues(alpha: 0.55),
       );
     }
     canvas.restore();
+
+    // From here on, nothing reaches into the bite.
+    canvas.save();
+    canvas.clipPath(unbitten);
+    final edge = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = r * 0.03
+      ..color = ink;
+    canvas.drawCircle(c, outerR, edge);
+    canvas.drawCircle(c, innerR, edge);
+
+    // Two stitched-up cuts along the rim.
+    for (final (start, len) in const [(2.2, 0.75), (4.75, 0.6)]) {
+      final mid = (outerR + innerR) / 2;
+      final cut = Path();
+      for (var k = 0; k <= 10; k++) {
+        final p = c + _dir(start + len * k / 10) * mid;
+        k == 0 ? cut.moveTo(p.dx, p.dy) : cut.lineTo(p.dx, p.dy);
+      }
+      canvas.drawPath(
+        cut,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = r * 0.025
+          ..color = const Color(0xFF4A1E24),
+      );
+      for (var k = 1; k < 6; k++) {
+        final a = start + len * k / 6;
+        final n = _dir(a);
+        final tg = _dir(a + math.pi / 2);
+        final p = c + n * mid;
+        canvas.drawLine(
+          p - n * r * 0.065 - tg * r * 0.015,
+          p + n * r * 0.065 + tg * r * 0.015,
+          Paint()
+            ..strokeWidth = r * 0.022
+            ..strokeCap = StrokeCap.round
+            ..color = ink,
+        );
+      }
+    }
+
+    // The bitten edge, through the rim and the picture: torn skin, darker
+    // where the teeth went in (drawn twice as wide, since the half inside
+    // the bite is clipped away), and a drip of slime running off it.
+    canvas.clipPath(_biteShapes.disc.transform(fit));
+    canvas.drawPath(
+      bite,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.14
+        ..color = skinDark,
+    );
+    canvas.drawPath(
+      bite,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.056
+        ..strokeJoin = StrokeJoin.round
+        ..color = ink,
+    );
+    canvas.restore();
+    canvas.save();
+    canvas.clipPath(unbitten);
     final ooze = (t * 0.5) % 1;
-    final dropStart = c + _dir(-0.75 - 0.3) * r * 0.85;
+    final dropStart = c + _dir(-0.75 - 0.3) * innerR;
     canvas.drawLine(
       dropStart,
       dropStart.translate(0, r * 0.25 * ooze),
@@ -2558,6 +2620,7 @@ class AuraPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round
         ..color = slime.withValues(alpha: 0.9 * (1 - ooze * 0.6)),
     );
+    canvas.restore();
 
     // Slime dripping off the bottom.
     for (var i = 0; i < 3; i++) {
@@ -2565,7 +2628,7 @@ class AuraPainter extends CustomPainter {
       final x = c.dx + (i - 1) * r * 0.42;
       final y0 =
           c.dy +
-          math.sqrt(math.max(0.0, edgeR * edgeR - math.pow(x - c.dx, 2))) -
+          math.sqrt(math.max(0.0, outerR * outerR - math.pow(x - c.dx, 2))) -
           r * 0.02;
       final len = r * 0.35 * Curves.easeIn.transform(life);
       final a = 1 - life;
