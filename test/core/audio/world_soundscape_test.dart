@@ -143,4 +143,22 @@ void main() {
       );
     }
   });
+
+  test('ghosts moan only when nothing is about to happen', () {
+    // Just before a strike of lightning: not now.
+    final period = HalloweenTimeline.lightningPeriod(0);
+    expect(WorldSoundscape.clearAhead(period * 10 - 1, 0), isFalse);
+    // Just before the witch laughs: not now either.
+    final witch = HalloweenTimeline.witchPeriod(0);
+    expect(
+      WorldSoundscape.clearAhead(witch * 4 + HalloweenTimeline.cackleAt - 1, 0),
+      isFalse,
+    );
+    // Some moments in a minute are clear.
+    final clear = [
+      for (var t = 0.0; t < 60; t += 0.1)
+        if (WorldSoundscape.clearAhead(t, 0)) t,
+    ];
+    expect(clear, isNotEmpty);
+  });
 }

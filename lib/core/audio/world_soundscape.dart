@@ -20,7 +20,8 @@ import 'game_audio.dart';
 /// crosses the moon (from the left to the right, as she flies), a shimmer
 /// of magic as she sweeps in, a bell across the hollow when someone appears
 /// in the tower window, a ghost's breath as it opens its mouth in view (as
-/// loud as the ghost is clear), whispers from the trees where eyes open,
+/// loud as the ghost is clear), a ghost moaning from its side of the
+/// hollow when everything's gone quiet, whispers from the trees where eyes open,
 /// now and then a far-off owl, and once in a while the scare: a wraith
 /// rushing out at you, screaming (sometimes after a swell of dread, and
 /// sometimes the dread comes and nothing does). Played at the music's
@@ -44,10 +45,13 @@ class WorldSoundscape {
   double _nextOwl = 0;
   double _ghostsQuietUntil = 0;
   double _whispersQuietUntil = 0;
+  double _moanQuietUntil = 0;
+
+  /// When something last broke the quiet.
+  double _lastEvent = 0;
   int _note = 2;
 
   static const _thunder = [Sfx.hwThunder1, Sfx.hwThunder2, Sfx.hwThunder3];
-  static const _cackles = [Sfx.hwCackle1, Sfx.hwCackle2, Sfx.hwCackle3];
 
   static const _notes = [
     Sfx.hwNote1,
@@ -139,13 +143,15 @@ class WorldSoundscape {
     // off as she flies on. Nearer (louder) on a wild night.
     final witch = HalloweenTimeline.witchPeriod(night);
     if (crossed(prev, now, witch, 0.9) && _chance(0.5)) {
-      _audio.playWithMusic(Sfx.hwMagic, volume: 0.45);
+      _sound(Sfx.hwMagic, 0.45, now);
     }
     if (crossed(prev, now, witch, HalloweenTimeline.cackleAt)) {
       // Not a background sound: as loud as a sound effect.
-      _audio.play(
-        _cackles[_rng.nextInt(_cackles.length)],
-        volume: (0.6 + 0.3 * night).clamp(0.0, 1.0),
+      _sound(
+        Sfx.hwCackle,
+        (0.6 + 0.3 * night).clamp(0.0, 1.0),
+        now,
+        loud: true,
       );
     }
     // The scare: the scream and a jolt as the wraith rushes out, sometimes
@@ -159,13 +165,15 @@ class WorldSoundscape {
       if (at != null) {
         if (HalloweenTimeline.scareWarned(k) &&
             passed(prev, now, slot + at - HalloweenTimeline.dreadLead)) {
-          _audio.playWithMusic(Sfx.hwDread, volume: 0.75);
+          _sound(Sfx.hwDread, 0.75, now);
         }
-        if (passed(prev, now, slot + at)) _audio.play(Sfx.hwScream);
+        if (passed(prev, now, slot + at)) {
+          _sound(Sfx.hwScream, 1, now, loud: true);
+        }
       }
       final alarm = HalloweenTimeline.falseAlarmIn(k);
       if (alarm != null && passed(prev, now, slot + alarm)) {
-        _audio.playWithMusic(Sfx.hwDread, volume: 0.6);
+        _sound(Sfx.hwDread, 0.6, now);
       }
     }
     // Whispers from the trees as eyes open there, on that side: faint, and
@@ -175,9 +183,10 @@ class WorldSoundscape {
         if (HalloweenTimeline.eyePhase(now, i) <
             HalloweenTimeline.eyePhase(prev, i)) {
           if (_chance(0.35)) {
-            _audio.playWithMusic(
+            _sound(
               i.isEven ? Sfx.hwWhisperLeft : Sfx.hwWhisperRight,
-              volume: 0.3 + 0.15 * night,
+              0.3 + 0.15 * night,
+              now,
             );
             _whispersQuietUntil = now + 25 + _rng.nextDouble() * 20;
           }
@@ -194,7 +203,7 @@ class WorldSoundscape {
           HalloweenTimeline.watcherPeriod * HalloweenTimeline.watcherFrom,
         ) &&
         _chance(0.35)) {
-      _audio.playWithMusic(Sfx.hwBell, volume: 0.45);
+      _sound(Sfx.hwBell, 0.45, now);
     }
     // A ghost's breath as its mouth opens wide, if it's in view.
     if (now >= _ghostsQuietUntil) {
@@ -203,9 +212,10 @@ class WorldSoundscape {
         if (HalloweenTimeline.ghostScream(prev, i) < 0.93 &&
             HalloweenTimeline.ghostScream(now, i) >= 0.93 &&
             fade > 0.45) {
-          _audio.playWithMusic(
+          _sound(
             i.isEven ? Sfx.hwGhost1 : Sfx.hwGhost2,
-            volume: 0.25 + 0.3 * fade,
+            0.25 + 0.3 * fade,
+            now,
           );
           _ghostsQuietUntil = now + 14 - 4 * night;
           break;
@@ -229,19 +239,62 @@ class WorldSoundscape {
     }
     // An owl, somewhere in the trees.
     if (now >= _nextOwl) {
-      _audio.playWithMusic(Sfx.hwOwl, volume: 0.4);
+      _sound(Sfx.hwOwl, 0.4, now);
       _nextOwl = now + 28 + _rng.nextDouble() * 27;
+    }
+    // In the quiet (nothing much for a while, and nothing coming: no
+    // lightning or witch about to), a ghost you can see moans, from its
+    // side of the hollow, as loud as it's clear.
+    if (now >= _moanQuietUntil &&
+        now - _lastEvent > 5 &&
+        clearAhead(now, night)) {
+      for (var i = 0; i < HalloweenTimeline.ghostCount(night); i++) {
+        final fade = HalloweenTimeline.ghostFade(now, i);
+        if (fade > 0.45) {
+          _sound(
+            HalloweenTimeline.ghostCrossed(now, i) < 0.5
+                ? Sfx.hwMoanLeft
+                : Sfx.hwMoanRight,
+            (0.5 + 0.5 * fade).clamp(0.0, 1.0),
+            now,
+          );
+          _moanQuietUntil = now + 20 + _rng.nextDouble() * 15;
+          break;
+        }
+      }
     }
     _due.removeWhere((d) {
       if (d.$1 > now) return false;
+      // A far rumble is part of the quiet; the music box is the quiet.
       _audio.playWithMusic(d.$2, volume: d.$3);
       return true;
     });
     _loud.removeWhere((d) {
       if (d.$1 > now) return false;
-      _audio.play(d.$2, volume: d.$3);
+      _sound(d.$2, d.$3, now, loud: true);
       return true;
     });
+  }
+
+  /// Plays [sfx] with the music (or, [loud], as a sound effect), and notes
+  /// that the hollow wasn't quiet just now.
+  void _sound(Sfx sfx, double volume, double now, {bool loud = false}) {
+    if (loud) {
+      _audio.play(sfx, volume: volume);
+    } else {
+      _audio.playWithMusic(sfx, volume: volume);
+    }
+    _lastEvent = now;
+  }
+
+  /// Whether nothing's about to happen: no lightning in the next 3.5
+  /// seconds, and the witch not about to laugh.
+  static bool clearAhead(double now, double night) {
+    final lightning = HalloweenTimeline.lightningPeriod(night);
+    final witch = HalloweenTimeline.witchPeriod(night);
+    final nextStrike = lightning - now % lightning;
+    final nextLaugh = (HalloweenTimeline.cackleAt - now % witch) % witch;
+    return nextStrike > 3.5 && nextLaugh > 4;
   }
 
   void dispose() {

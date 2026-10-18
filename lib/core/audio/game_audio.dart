@@ -61,13 +61,13 @@ enum Sfx {
   hwThunder1('hw_thunder_1'),
   hwThunder2('hw_thunder_2'),
   hwThunder3('hw_thunder_3'),
-  hwCackle1('hw_cackle_1'),
-  hwCackle2('hw_cackle_2'),
-  hwCackle3('hw_cackle_3'),
+  hwCackle('hw_cackle'),
   hwScream('hw_scream'),
   hwDread('hw_dread'),
   hwWhisperLeft('hw_whisper_left'),
-  hwWhisperRight('hw_whisper_right');
+  hwWhisperRight('hw_whisper_right'),
+  hwMoanLeft('hw_moan_left'),
+  hwMoanRight('hw_moan_right');
 
   const Sfx(this.file);
 
