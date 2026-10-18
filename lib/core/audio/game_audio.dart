@@ -41,7 +41,18 @@ enum Sfx {
   tick('tick'),
   chessMove('chess_move'),
   chessCapture('chess_capture'),
-  chessCheck('chess_check');
+  chessCheck('chess_check'),
+
+  // The Halloween world's own sounds (tool/synth_world_audio.py), played in
+  // step with the scene by WorldSoundscape.
+  hwThunderNear('hw_thunder_near'),
+  hwThunderFar('hw_thunder_far'),
+  hwWitch('hw_witch'),
+  hwGhost1('hw_ghost_1'),
+  hwGhost2('hw_ghost_2'),
+  hwBats('hw_bats'),
+  hwOwl('hw_owl'),
+  hwCreak('hw_creak');
 
   const Sfx(this.file);
 
@@ -70,6 +81,7 @@ class SoundSettings {
     this.sfxOn = true,
     this.musicVolume = 0.35,
     this.sfxVolume = 0.8,
+    this.worldSoundsOn = true,
   });
 
   final bool musicOn;
@@ -77,17 +89,23 @@ class SoundSettings {
   final double musicVolume;
   final double sfxVolume;
 
+  /// The worlds' own sounds (Halloween's thunder, wind and ghosts), with
+  /// the sound effects.
+  final bool worldSoundsOn;
+
   SoundSettings copyWith({
     bool? musicOn,
     bool? sfxOn,
     double? musicVolume,
     double? sfxVolume,
+    bool? worldSoundsOn,
   }) {
     return SoundSettings(
       musicOn: musicOn ?? this.musicOn,
       sfxOn: sfxOn ?? this.sfxOn,
       musicVolume: musicVolume ?? this.musicVolume,
       sfxVolume: sfxVolume ?? this.sfxVolume,
+      worldSoundsOn: worldSoundsOn ?? this.worldSoundsOn,
     );
   }
 }
@@ -101,6 +119,7 @@ class SoundSettingsController extends StateNotifier<SoundSettings> {
           sfxOn: _prefs.getBool('sound.sfx') ?? true,
           musicVolume: _prefs.getDouble('sound.musicVolume') ?? 0.35,
           sfxVolume: _prefs.getDouble('sound.sfxVolume') ?? 0.8,
+          worldSoundsOn: _prefs.getBool('sound.world') ?? true,
         ),
       );
 
@@ -114,6 +133,11 @@ class SoundSettingsController extends StateNotifier<SoundSettings> {
   void setSfxOn(bool on) {
     state = state.copyWith(sfxOn: on);
     _prefs.setBool('sound.sfx', on);
+  }
+
+  void setWorldSoundsOn(bool on) {
+    state = state.copyWith(worldSoundsOn: on);
+    _prefs.setBool('sound.world', on);
   }
 
   void setMusicVolume(double v) {
@@ -205,6 +229,84 @@ class GameAudio {
   void updateSettings(SoundSettings settings) {
     _settings = settings;
     _syncMusic();
+    _syncAmbient();
+  }
+
+  /// Whether the worlds' own sounds can play now.
+  bool get worldSoundsOn =>
+      _onScreen && _settings.sfxOn && _settings.worldSoundsOn;
+
+  // ── A world's ambient bed (Halloween's wind) ──
+
+  AudioPlayer? _ambient;
+  String? _ambientWanted;
+  String? _ambientLoaded;
+  double _ambientLevel = 0.4;
+  bool _ambientOn = false;
+  Timer? _ambientFade;
+
+  /// A sound looping quietly under everything ([asset], under assets/), at
+  /// [level] of the sound effects' volume, or null for none. Plays while
+  /// world sounds are on and the app is in front.
+  void setAmbient(String? asset, {double level = 0.4}) {
+    _ambientWanted = asset;
+    _ambientLevel = level;
+    _syncAmbient();
+  }
+
+  void _syncAmbient() {
+    final wanted = _foreground && _settings.sfxOn && _settings.worldSoundsOn
+        ? _ambientWanted
+        : null;
+    final volume = (_settings.sfxVolume * _ambientLevel).clamp(0.0, 1.0);
+    _guard(() async {
+      if (wanted == null) {
+        final player = _ambient;
+        if (player == null || !_ambientOn) return;
+        _ambientOn = false;
+        await _fadeAmbient(player, 0, 700);
+        if (!_ambientOn) await player.pause();
+        return;
+      }
+      await _ensureContext();
+      final player = _ambient ??= AudioPlayer(playerId: 'utopia-ambient')
+        ..setReleaseMode(ReleaseMode.loop);
+      if (_ambientOn && _ambientLoaded == wanted) {
+        await player.setVolume(volume);
+        return;
+      }
+      _ambientOn = true;
+      await player.setVolume(0);
+      if (_ambientLoaded == wanted) {
+        await player.resume();
+      } else {
+        _ambientLoaded = wanted;
+        await player.play(AssetSource(wanted));
+      }
+      await _fadeAmbient(player, volume, 1500);
+    });
+  }
+
+  Future<void> _fadeAmbient(AudioPlayer player, double target, int ms) {
+    _ambientFade?.cancel();
+    final done = Completer<void>();
+    final start = player.volume;
+    const stepMs = 50;
+    final steps = (ms / stepMs).ceil();
+    var i = 0;
+    _ambientFade = Timer.periodic(const Duration(milliseconds: stepMs), (t) {
+      i++;
+      _guard(
+        () async => player.setVolume(
+          (start + (target - start) * (i / steps)).clamp(0.0, 1.0),
+        ),
+      );
+      if (i >= steps) {
+        t.cancel();
+        if (!done.isCompleted) done.complete();
+      }
+    });
+    return done.future;
   }
 
   /// Vibration, from the gameplay settings. Works with sound off too.
@@ -304,6 +406,7 @@ class GameAudio {
         state == AppLifecycleState.resumed ||
         state == AppLifecycleState.inactive;
     _syncMusic();
+    _syncAmbient();
   }
 
   void _syncMusic() {
@@ -384,6 +487,8 @@ class GameAudio {
 
   void dispose() {
     _fade?.cancel();
+    _ambientFade?.cancel();
+    _guard(() async => _ambient?.dispose());
     _lifecycle.dispose();
     _guard(() async => _music?.dispose());
     for (final pool in _pools.values) {

@@ -114,6 +114,20 @@ class SettingsScreen extends ConsumerWidget {
                     onChanged: soundCtl.setSfxVolume,
                     onChangeEnd: (_) => audio.play(Sfx.tap),
                   ),
+                  _ToggleRow(
+                    icon: Icons.forest_rounded,
+                    color: const Color(0xFF6EE7B7),
+                    title: 'World sounds',
+                    subtitle:
+                        'Thunder, wind, ghosts and more, in step with '
+                        'worlds that have them',
+                    value: sound.sfxOn && sound.worldSoundsOn,
+                    onChanged: (v) {
+                      if (v && !sound.sfxOn) soundCtl.setSfxOn(true);
+                      soundCtl.setWorldSoundsOn(v);
+                      if (v) audio.play(Sfx.toggleOn);
+                    },
+                  ),
                 ],
               ),
               _Section(

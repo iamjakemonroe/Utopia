@@ -23,6 +23,41 @@ const _pumpkin = Color(0xFFF2761A);
 const _wisp = Color(0xFF8CFFE0);
 const _fog = Color(0xFFB9A8D6);
 
+/// When things happen in the Halloween world, shared by its painter and its
+/// sounds (world_soundscape.dart), so the thunder follows the flash and the
+/// witch cackles as she crosses the moon. [night] is the set's amount.
+abstract final class HalloweenTimeline {
+  /// Lightning flashes at every multiple of this.
+  static double lightningPeriod(double night) => 9 - 3.5 * night;
+
+  /// The witch sets off across the moon at every multiple of this, and
+  /// takes [witchCrossing] seconds to cross.
+  static double witchPeriod(double night) => 15 - 7 * night;
+  static const witchCrossing = 5.5;
+
+  /// Someone stands in the tower window from [watcherFrom] to [watcherTo]
+  /// of every [watcherPeriod] seconds.
+  static const watcherPeriod = 13.0;
+  static const watcherFrom = 0.55;
+  static const watcherTo = 0.85;
+
+  static int ghostCount(double night) => 3 + (night * 4).round();
+  static int batCount(double night) => 12 + (night * 16).round();
+
+  /// How far ghost [i] is across the screen, 0 to 1.
+  static double ghostCrossed(double t, int i) =>
+      (t * (0.025 + _rand(i, 570) * 0.025) + _rand(i, 571)) % 1.0;
+
+  /// How visible ghost [i] is, 0 to about 0.9.
+  static double ghostFade(double t, int i) =>
+      math.sin(ghostCrossed(t, i) * math.pi) *
+      (0.6 + 0.3 * math.sin(t * 0.7 + i));
+
+  /// How wide ghost [i]'s scream is, 0.4 to 1 (widest every ~7 seconds).
+  static double ghostScream(double t, int i) =>
+      0.4 + 0.6 * (0.5 + 0.5 * math.sin(t * 0.9 + i * 1.7));
+}
+
 /// The lightning: 0 most of the time, flashing twice in quick succession
 /// every [period] seconds.
 double _flash(double t, double period) {
@@ -54,11 +89,11 @@ void paintHalloweenScene(
   final w = size.width;
   final h = size.height;
   final night = WorldSets.halloween.amount;
-  final flash = _flash(t, 9 - 3.5 * night);
+  final flash = _flash(t, HalloweenTimeline.lightningPeriod(night));
 
   _moon(canvas, moon, w * 0.21, t, night);
   _witch(canvas, size, moon, w * 0.21, t, night);
-  _bats(canvas, size, t, moon, 12 + (night * 16).round());
+  _bats(canvas, size, t, moon, HalloweenTimeline.batCount(night));
   _moonClouds(canvas, size, moon, w * 0.21, t);
 
   if (flash > 0) {
@@ -72,7 +107,7 @@ void paintHalloweenScene(
   _hill(canvas, size, t, night, flash);
   _fogBand(canvas, size, t, h * 0.6, 0.5, 0.06);
   _forest(canvas, size, t, night, flash);
-  _ghosts(canvas, size, t, 3 + (night * 4).round(), night);
+  _ghosts(canvas, size, t, HalloweenTimeline.ghostCount(night), night);
   _ground(canvas, size);
   _scarecrow(canvas, Offset(w * 0.8, h * 0.79), h * 0.2, t, night);
   _fence(canvas, size, h * 0.83);
@@ -150,8 +185,8 @@ void _witch(
   double t,
   double night,
 ) {
-  final period = 15 - 7 * night;
-  final p = (t % period) / 5.5;
+  final period = HalloweenTimeline.witchPeriod(night);
+  final p = (t % period) / HalloweenTimeline.witchCrossing;
   if (p > 1) return;
   final w = size.width;
   final x = -w * 0.2 + p * w * 1.4;
@@ -439,8 +474,11 @@ void _hill(Canvas canvas, Size size, double t, double night, double flash) {
     canvas.drawLine(win.centerLeft, win.centerRight, bar);
   }
   // Someone in the tower window, now and then, watching.
-  final watch = (t % 13) / 13;
-  final there = watch > 0.55 && watch < 0.85
+  final watch =
+      (t % HalloweenTimeline.watcherPeriod) / HalloweenTimeline.watcherPeriod;
+  final there =
+      watch > HalloweenTimeline.watcherFrom &&
+          watch < HalloweenTimeline.watcherTo
       ? math.sin((watch - 0.55) / 0.3 * math.pi)
       : 0.0;
   final who = math.max(there, night * 0.85);
@@ -654,13 +692,12 @@ void _ghosts(Canvas canvas, Size size, double t, int count, double night) {
   final w = size.width;
   final h = size.height;
   for (var i = 0; i < count; i++) {
-    final speed = 0.025 + _rand(i, 570) * 0.025;
-    final k = (t * speed + _rand(i, 571)) % 1.0;
+    final k = HalloweenTimeline.ghostCrossed(t, i);
     final dir = i.isEven ? 1.0 : -1.0;
     final x = dir > 0 ? -w * 0.15 + k * w * 1.3 : w * 1.15 - k * w * 1.3;
     final y = h * (0.52 + 0.18 * _rand(i, 572)) + math.sin(t * 1.1 + i) * 10;
     final s = w * (0.045 + 0.025 * _rand(i, 573)) * (1 + 0.25 * night);
-    final fade = math.sin(k * math.pi) * (0.6 + 0.3 * math.sin(t * 0.7 + i));
+    final fade = HalloweenTimeline.ghostFade(t, i);
     if (fade <= 0.02) continue;
     canvas.save();
     canvas.translate(x, y);
@@ -752,7 +789,7 @@ void _ghosts(Canvas canvas, Size size, double t, int count, double night) {
 
     // The face: dark sockets with a cold point of light, a stretched scream.
     final hollow = Paint()..color = _a(const Color(0xFF07040C), 0.9 * fade);
-    final scream = 0.4 + 0.6 * (0.5 + 0.5 * math.sin(t * 0.9 + i * 1.7));
+    final scream = HalloweenTimeline.ghostScream(t, i);
     for (final (ex, tilt) in const [(-0.08, 0.35), (0.3, -0.35)]) {
       canvas.save();
       canvas.translate(s * ex, -s * 1.62);

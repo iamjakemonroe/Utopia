@@ -18,6 +18,7 @@ import 'features/notifications/presentation/notification_center.dart';
 import 'features/store/presentation/theme_teleport.dart';
 import 'features/events/presentation/event_widgets.dart';
 import 'features/events/presentation/events_controller.dart';
+import 'core/audio/world_soundscape.dart';
 
 class UtopiaApp extends ConsumerWidget {
   const UtopiaApp({super.key});
@@ -34,6 +35,8 @@ class UtopiaApp extends ConsumerWidget {
     ref.watch(maestroLookProvider);
     // On the player's birthday, his party hat.
     ref.watch(birthdayTodayProvider);
+    // A world's own sounds (Halloween's thunder, wind, ghosts) on home.
+    ref.watch(worldSoundscapeProvider);
     // An event reward just earned (in a game, or arriving home).
     ref.listen(eventsProvider.select((s) => s.justEarned), (_, earned) {
       if (earned.isEmpty) return;
