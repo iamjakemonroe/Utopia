@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/widgets/coin_buddy.dart';
 
-/// The line at the top of home: picked for the time of day, with a little
-/// variety so it isn't the same every visit.
+/// The line at the top of home: picked for the time of day (or, on the
+/// player's birthday, all about that), with a little variety so it isn't
+/// the same every visit.
 class Greeting {
   const Greeting({
     required this.title,
@@ -100,6 +101,26 @@ const _lateNight = (
   icon: Icons.nightlight_round,
 );
 
+// All day on the player's birthday, whatever the time.
+const _birthday = (
+  titles: [
+    'Happy birthday, {name}!',
+    "It's your day, {name}!",
+    'Party time, {name}!',
+  ],
+  lines: [
+    'The whole sky is partying for you today.',
+    'Make a wish! Mine is that you win today.',
+    'Cake first, then games. Birthday rules.',
+    'Every firework out there is for you.',
+    'Your birthday world is open all day. Enjoy it!',
+    "Another trip around the sun. Let's celebrate!",
+    'I put my party hat on just for you.',
+  ],
+  mood: BuddyMood.excited,
+  icon: Icons.cake_rounded,
+);
+
 _Pool _poolFor(int hour) {
   if (hour >= 5 && hour < 9) return _earlyMorning;
   if (hour >= 9 && hour < 12) return _morning;
@@ -126,9 +147,16 @@ String capitalizeWords(String text) => text
     .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
     .join(' ');
 
-Greeting pickGreeting(DateTime now, String? name, [math.Random? random]) {
+/// [birthday]: it's the player's birthday, so Chip talks about nothing
+/// else.
+Greeting pickGreeting(
+  DateTime now,
+  String? name, [
+  math.Random? random,
+  bool birthday = false,
+]) {
   final rng = random ?? math.Random();
-  final pool = _poolFor(now.hour);
+  final pool = birthday ? _birthday : _poolFor(now.hour);
   var title = pool.titles[rng.nextInt(pool.titles.length)];
   if (name == null || name.trim().isEmpty) {
     title = title

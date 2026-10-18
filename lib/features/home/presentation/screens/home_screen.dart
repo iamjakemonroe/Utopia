@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/popup_tracker.dart';
 import '../../../coins/presentation/daily_reward_sheet.dart';
 import '../../../birthday/presentation/birthday_party.dart';
+import '../../../birthday/presentation/birthday_providers.dart';
 import '../../../welcome/presentation/welcome_week.dart';
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/now_playing/now_playing.dart';
@@ -314,14 +315,19 @@ class _HomeGreetingState extends ConsumerState<_HomeGreeting> {
     final profile = id == null
         ? null
         : ref.watch(profileByIdProvider(id)).valueOrNull;
+    // On their birthday, Chip only talks about that (not even the music).
+    final birthday = ref.watch(birthdayTodayProvider);
     final greeting = pickGreeting(
       DateTime.now(),
       greetingName(profile),
       math.Random(_seed),
+      birthday,
     );
     final music = ref.watch(nowPlayingProvider);
     final vibing =
-        music.listening && ref.watch(gameplaySettingsProvider).showNowPlaying;
+        !birthday &&
+        music.listening &&
+        ref.watch(gameplaySettingsProvider).showNowPlaying;
 
     return Row(
       children: [
