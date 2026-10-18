@@ -396,17 +396,20 @@ func drawBackdrop(_ ctx: CGContext, _ S: CGFloat) {
 
 let size = 1024
 let S = CGFloat(size)
+// The in-app copies of the coin and the mark: never shown bigger than about
+// 150pt, so 768px is plenty at 3x and keeps the download small.
+let appSize = 768
 
 // The coin face (the loader coin and Chip's back): the old medallion.
 let coin = makeContext(size)
 drawMedallion(coin, CGPoint(x: S / 2, y: S / 2), S * 0.48)
-save(coin.makeImage()!, "assets/branding/coin_face.png")
+save(resized(coin.makeImage()!, appSize), "assets/branding/coin_face.png")
 
 // Logo mark: transparent background.
 let mark = makeContext(size)
 drawGateway(mark, CGPoint(x: 0, y: 0), S, halo: true)
 let markImage = mark.makeImage()!
-save(markImage, "assets/branding/logo_mark.png")
+save(resized(markImage, appSize), "assets/branding/logo_mark.png")
 
 // App icon: the gateway in the night sky, filling the frame.
 let icon = makeContext(size)
