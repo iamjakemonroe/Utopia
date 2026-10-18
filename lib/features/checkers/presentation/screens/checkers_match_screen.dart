@@ -39,6 +39,7 @@ import '../controllers/checkers_match_controller.dart';
 import '../widgets/checkers_board.dart';
 import '../widgets/checkers_disc.dart';
 import '../../../events/presentation/events_controller.dart';
+import '../../../../core/layout/game_stage.dart';
 
 const _darkInk = Color(0xFFB79BFF);
 const _lightInk = Color(0xFFF4EEDC);
@@ -249,8 +250,8 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
               AppSpacing.md,
               AppSpacing.sm,
             ),
-            child: Column(
-              children: [
+            child: GameStage(
+              above: [
                 _PlayerBar(
                   userId: opponentId,
                   side: mySide.opponent,
@@ -277,51 +278,50 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 _StatusLine(state: state, onLive: controller.goLive),
                 const SizedBox(height: AppSpacing.sm),
-                Expanded(
-                  child: Center(
-                    child: PopCard(
-                      borderRadius: 28,
-                      blur: 10,
-                      glow: state.reviewing
-                          ? AppColors.sky
-                          : interactive && state.mustCapture
-                          ? const Color(0xFFFF7A45)
-                          : AppColors.accent,
-                      padding: const EdgeInsets.all(10),
-                      child: CheckersBoard(
-                        position: state.displayPosition,
-                        lastMove: state.displayLastMove,
-                        fly: state.fly,
-                        selected: state.selected,
-                        targets: play.moveHints || state.mustCapture
-                            ? state.targets
-                            : const [],
-                        movable: interactive
-                            ? checkersEngine.movablePieces(state.position)
-                            : const {},
-                        mustCapture: state.mustCapture,
-                        bottom: mySide,
-                        interactive: interactive,
-                        onSquareTap: (s) {
-                          HapticFeedback.selectionClick();
-                          controller.selectSquare(s);
-                        },
-                        darkSet: _setOf(darkId),
-                        lightSet: _setOf(lightId),
-                        gameOver: over && !state.reviewing,
-                        winner: winnerId == null
-                            ? null
-                            : winnerId == darkId
-                            ? CheckersSide.dark
-                            : CheckersSide.light,
-                        onHop: (_, capture) => audio.play(
-                          capture ? Sfx.chessCapture : Sfx.chessMove,
-                        ),
-                        onCrown: () => audio.play(Sfx.home),
-                      ),
-                    ),
+              ],
+              board: Center(
+                child: PopCard(
+                  borderRadius: 28,
+                  blur: 10,
+                  glow: state.reviewing
+                      ? AppColors.sky
+                      : interactive && state.mustCapture
+                      ? const Color(0xFFFF7A45)
+                      : AppColors.accent,
+                  padding: const EdgeInsets.all(10),
+                  child: CheckersBoard(
+                    position: state.displayPosition,
+                    lastMove: state.displayLastMove,
+                    fly: state.fly,
+                    selected: state.selected,
+                    targets: play.moveHints || state.mustCapture
+                        ? state.targets
+                        : const [],
+                    movable: interactive
+                        ? checkersEngine.movablePieces(state.position)
+                        : const {},
+                    mustCapture: state.mustCapture,
+                    bottom: mySide,
+                    interactive: interactive,
+                    onSquareTap: (s) {
+                      HapticFeedback.selectionClick();
+                      controller.selectSquare(s);
+                    },
+                    darkSet: _setOf(darkId),
+                    lightSet: _setOf(lightId),
+                    gameOver: over && !state.reviewing,
+                    winner: winnerId == null
+                        ? null
+                        : winnerId == darkId
+                        ? CheckersSide.dark
+                        : CheckersSide.light,
+                    onHop: (_, capture) =>
+                        audio.play(capture ? Sfx.chessCapture : Sfx.chessMove),
+                    onCrown: () => audio.play(Sfx.home),
                   ),
                 ),
+              ),
+              below: [
                 const SizedBox(height: AppSpacing.sm),
                 MoveStrip(
                   labels: [for (final m in state.history) m.notation],

@@ -91,36 +91,44 @@ class _SketchbookScreenState extends ConsumerState<SketchbookScreen> {
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              // The two ways to start, side by side at a card's size (not
+              // stretched across a tablet).
               sliver: SliverToBoxAdapter(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _Pop(
-                        index: 0,
-                        child: _StartCard(
-                          icon: Icons.draw_rounded,
-                          title: 'New sketch',
-                          subtitle: 'A blank page',
-                          onTap: () {
-                            ref.read(gameAudioProvider).play(Sfx.drawer);
-                            context.push('/sketchbook/new');
-                          },
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 620),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _Pop(
+                            index: 0,
+                            child: _StartCard(
+                              icon: Icons.draw_rounded,
+                              title: 'New sketch',
+                              subtitle: 'A blank page',
+                              onTap: () {
+                                ref.read(gameAudioProvider).play(Sfx.drawer);
+                                context.push('/sketchbook/new');
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _Pop(
-                        index: 1,
-                        child: _StartCard(
-                          icon: Icons.palette_rounded,
-                          title: 'Color a picture',
-                          subtitle: 'Or search any picture',
-                          onTap: () => _pickPage(context, ref),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _Pop(
+                            index: 1,
+                            child: _StartCard(
+                              icon: Icons.palette_rounded,
+                              title: 'Color a picture',
+                              subtitle: 'Or search any picture',
+                              onTap: () => _pickPage(context, ref),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -340,7 +348,7 @@ class _ArtTile extends ConsumerWidget {
           : _Thumb(
               // A new key whenever it changes, so the picture is fresh.
               key: ValueKey('${summary.id}@${summary.updated}'),
-              load: () => store.thumbnail(summary.id).readAsBytes(),
+              load: () => store.thumbnailBytes(summary.id),
             ),
     );
   }

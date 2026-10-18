@@ -20,6 +20,7 @@ import '../data/birthday_repository.dart';
 import '../domain/birthday.dart';
 import 'birthday_providers.dart';
 import '../../../core/analytics/analytics.dart';
+import '../../../core/layout/responsive.dart';
 
 /// "When's your birthday?": the day and month (never the year), so Chip
 /// can throw the player a party every year in a world that only opens on
@@ -173,11 +174,11 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
           children: [
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                  AppSpacing.lg,
-                  AppSpacing.xl,
+                padding: context.readablePadding(
+                  maxWidth: 520,
+                  min: AppSpacing.lg,
+                  top: AppSpacing.sm,
+                  bottom: AppSpacing.xl,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

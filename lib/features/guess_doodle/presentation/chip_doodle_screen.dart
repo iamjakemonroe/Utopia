@@ -20,6 +20,7 @@ import '../domain/chip_doodle.dart';
 import 'chip_doodle_game.dart';
 import 'widgets/doodle_canvas_view.dart';
 import 'widgets/doodle_header.dart';
+import '../../../core/layout/game_stage.dart';
 
 /// "Chip draws, you guess": Chip doodles a word stroke by stroke and the
 /// player races to guess it, five times. Faster guesses score more; letters
@@ -197,8 +198,8 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
                     AppSpacing.md,
                     AppSpacing.sm,
                   ),
-                  child: Column(
-                    children: [
+                  child: GameStage(
+                    above: [
                       Row(
                         children: [
                           CoinBuddy(mood: mood, size: 54),
@@ -233,23 +234,23 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
-                      // Square, under the word, however tall the screen.
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: DoodleCanvasView(
-                              ink: g.ink,
-                              canDraw: false,
-                              onStart: (_) {},
-                              onMove: (_) {},
-                              onEnd: () {},
-                              overlay: _overlay(),
-                            ),
-                          ),
+                    ],
+                    // Square, under the word, however tall the screen.
+                    board: Align(
+                      alignment: Alignment.topCenter,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: DoodleCanvasView(
+                          ink: g.ink,
+                          canDraw: false,
+                          onStart: (_) {},
+                          onMove: (_) {},
+                          onEnd: () {},
+                          overlay: _overlay(),
                         ),
                       ),
+                    ),
+                    below: [
                       const SizedBox(height: AppSpacing.sm),
                       _Guesses(guesses: g.guesses),
                       const SizedBox(height: AppSpacing.xs),

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -675,7 +676,7 @@ class _AccessHint extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ios = Platform.isIOS;
+    final ios = !kIsWeb && Platform.isIOS;
     final text = ios
         ? (music.access == MusicAccess.granted
               ? "Ooh, what's playing? I can hear it, but iPhone only shows me songs from Apple Music. Tell me what it is!"

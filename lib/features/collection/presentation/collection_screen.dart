@@ -24,6 +24,7 @@ import '../../store/presentation/store_controller.dart';
 import '../../store/presentation/store_screen.dart';
 import '../../store/presentation/theme_teleport.dart';
 import '../../../core/profiles/profile_repository.dart';
+import '../../../core/layout/responsive.dart';
 
 /// Everything the player has, apart from the store: their worlds (bought,
 /// rented, free, and event or birthday worlds while they're open), their
@@ -120,7 +121,7 @@ class _WorldsTab extends ConsumerWidget {
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           sliver: SliverGrid.count(
-            crossAxisCount: 2,
+            crossAxisCount: context.gridColumns(),
             mainAxisSpacing: AppSpacing.sm,
             crossAxisSpacing: AppSpacing.sm,
             childAspectRatio: 0.78,
@@ -138,7 +139,7 @@ class _WorldsTab extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             sliver: SliverGrid.count(
-              crossAxisCount: 2,
+              crossAxisCount: context.gridColumns(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
               childAspectRatio: 0.78,
@@ -157,7 +158,7 @@ class _WorldsTab extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             sliver: SliverGrid.count(
-              crossAxisCount: 2,
+              crossAxisCount: context.gridColumns(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
               childAspectRatio: 0.78,
@@ -331,7 +332,7 @@ class _FramesTab extends ConsumerWidget {
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           sliver: SliverGrid.count(
-            crossAxisCount: 2,
+            crossAxisCount: context.gridColumns(),
             mainAxisSpacing: AppSpacing.sm,
             crossAxisSpacing: AppSpacing.sm,
             childAspectRatio: 0.82,
@@ -355,7 +356,7 @@ class _FramesTab extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             sliver: SliverGrid.count(
-              crossAxisCount: 2,
+              crossAxisCount: context.gridColumns(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
               childAspectRatio: 0.82,

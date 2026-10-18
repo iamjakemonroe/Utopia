@@ -22,6 +22,7 @@ import '../../../birthday/data/birthday_repository.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
 import '../../../../core/analytics/analytics.dart';
+import '../../../../core/layout/responsive.dart';
 
 class EmailLinkScreen extends ConsumerStatefulWidget {
   const EmailLinkScreen({super.key});
@@ -230,11 +231,11 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       body: AppBackground(
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.sm,
-              AppSpacing.lg,
-              AppSpacing.xl,
+            padding: context.readablePadding(
+              maxWidth: 520,
+              min: AppSpacing.lg,
+              top: AppSpacing.sm,
+              bottom: AppSpacing.xl,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

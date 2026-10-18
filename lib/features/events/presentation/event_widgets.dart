@@ -54,6 +54,17 @@ class EventCard extends ConsumerWidget {
   }
 }
 
+/// One event's card on its own (home lays them out side by side on a
+/// tablet).
+class EventTile extends StatelessWidget {
+  const EventTile({super.key, required this.event});
+
+  final GameEvent event;
+
+  @override
+  Widget build(BuildContext context) => _Card(event: event);
+}
+
 class _Card extends StatelessWidget {
   const _Card({required this.event});
 

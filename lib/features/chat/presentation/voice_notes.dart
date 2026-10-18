@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -394,6 +395,15 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
   }
 
   Future<void> _start() async {
+    // Recording keeps the note in a file first: the app's, not a browser's.
+    if (kIsWeb) {
+      showUtopiaToast(
+        context,
+        'Voice notes record in the Utopia app. You can still listen here.',
+        icon: Icons.mic_off_rounded,
+      );
+      return;
+    }
     final audio = ref.read(gameAudioProvider);
     if (!await _recorder.hasPermission()) {
       if (mounted) {

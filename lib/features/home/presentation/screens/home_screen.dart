@@ -55,6 +55,8 @@ import '../widgets/side_menu.dart';
 import '../../../events/presentation/event_widgets.dart';
 import '../../../events/presentation/events_controller.dart';
 import '../../../../core/analytics/analytics.dart';
+import '../../../../core/layout/responsive.dart';
+import '../../../../core/layout/tile_grid.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -238,6 +240,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       });
     }
 
+    // On a tablet the cards under the greeting sit side by side, a few to
+    // a row (like the games), instead of each stretching across.
+    final wide = context.screenSize.width >= 760;
+    final about = [
+      _HomeGreeting(myId: myId),
+      const SizedBox(height: AppSpacing.lg),
+      if (wide)
+        TileGrid(
+          columns: context.screenSize.width >= 1200 ? 3 : 2,
+          spacing: AppSpacing.md,
+          children: [
+            if (isAnonymous)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                child: _SaveAccountBanner(
+                  onTap: () => context.push('/auth/link'),
+                ),
+              ),
+            if (myId != null) ...[
+              const _RejoinCard(),
+              for (final event in ref.watch(eventsProvider).events)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                  child: EventTile(event: event),
+                ),
+              _UsernameBanner(myId: myId),
+              _IncomingInvites(myId: myId),
+            ],
+          ],
+        )
+      else ...[
+        if (isAnonymous) ...[
+          _SaveAccountBanner(onTap: () => context.push('/auth/link')),
+          const SizedBox(height: AppSpacing.lg),
+        ],
+        if (myId != null) const _RejoinCard(),
+        if (myId != null) const EventCard(),
+        if (myId != null) _UsernameBanner(myId: myId),
+        if (myId != null) _IncomingInvites(myId: myId),
+      ],
+    ];
+    const extras = [_SketchbookCard(), _StoreCard()];
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -264,29 +309,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: AppBackground(
           child: SafeArea(
             child: ListView(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                MediaQuery.of(context).padding.top > 0
+              // On a tablet: centered, wide enough for all the games in a
+              // row.
+              padding: context.readablePadding(
+                maxWidth: 1040,
+                min: AppSpacing.lg,
+                top: MediaQuery.of(context).padding.top > 0
                     ? AppSpacing.md
                     : AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.lg,
+                bottom: AppSpacing.lg,
               ),
               children: [
-                _HomeGreeting(myId: myId),
-                const SizedBox(height: AppSpacing.lg),
-                if (isAnonymous) ...[
-                  _SaveAccountBanner(onTap: () => context.push('/auth/link')),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
-                if (myId != null) const _RejoinCard(),
-                if (myId != null) const EventCard(),
-                if (myId != null) _UsernameBanner(myId: myId),
-                if (myId != null) _IncomingInvites(myId: myId),
-                const _GamesGrid(),
+                // On a tablet: two columns, you on the left (Chip, your
+                // cards, the sketchbook and store) and the games on the
+                // right. On a phone, one after the other.
+                ...about,
+                _GamesGrid(columns: context.screenSize.width >= 760 ? 4 : 2),
                 const SizedBox(height: AppSpacing.md),
-                const _SketchbookCard(),
-                const _StoreCard(),
+                ...extras,
               ],
             ),
           ),
@@ -1231,7 +1271,9 @@ class _InviteCard extends ConsumerWidget {
 
 /// The games, two to a row (more slot in as they arrive).
 class _GamesGrid extends StatelessWidget {
-  const _GamesGrid();
+  const _GamesGrid({required this.columns});
+
+  final int columns;
 
   @override
   Widget build(BuildContext context) {
@@ -1253,7 +1295,7 @@ class _GamesGrid extends StatelessWidget {
           ),
         ),
         GridView.count(
-          crossAxisCount: 2,
+          crossAxisCount: columns,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
@@ -1433,10 +1475,18 @@ class _RejoinCard extends ConsumerStatefulWidget {
 
 class _RejoinCardState extends ConsumerState<_RejoinCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _pulse = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1400),
-  )..repeat(reverse: true);
+  // Made in initState: made lazily, a card never shown would first make it
+  // in dispose, when its ticker can't look up the tree any more.
+  late final AnimationController _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulse = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+  }
 
   @override
   void dispose() {

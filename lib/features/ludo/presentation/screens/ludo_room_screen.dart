@@ -31,6 +31,7 @@ import '../widgets/ludo_setup_widgets.dart';
 import 'ludo_lobby_screen.dart';
 import '../../../invites/domain/game_invite.dart';
 import '../../../../core/analytics/analytics.dart';
+import '../../../../core/layout/responsive.dart';
 
 /// A friends' room: the code to share, a seat for each color filling up as
 /// friends join, and the host's start button. Everyone is taken to the game
@@ -203,11 +204,9 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
       body: AppBackground(
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.xs,
-              AppSpacing.md,
-              AppSpacing.xl,
+            padding: context.readablePadding(
+              top: AppSpacing.xs,
+              bottom: AppSpacing.xl,
             ),
             children: [
               _CodeCard(

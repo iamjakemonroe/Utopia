@@ -54,7 +54,7 @@ void main() {
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          artStoreProvider.overrideWith((ref) => ArtStore(dir)),
+          artStoreProvider.overrideWith((ref) => FileArtStore(dir)),
           pictureLibraryProvider.overrideWithValue(library),
           myPicturesProvider.overrideWith(
             (ref) async => const [

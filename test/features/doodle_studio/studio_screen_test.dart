@@ -23,7 +23,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [artStoreProvider.overrideWith((ref) => ArtStore(dir))],
+        overrides: [artStoreProvider.overrideWith((ref) => FileArtStore(dir))],
         child: const MaterialApp(home: StudioScreen()),
       ),
     );

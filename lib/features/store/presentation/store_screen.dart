@@ -34,6 +34,7 @@ import 'store_controller.dart';
 import 'theme_teleport.dart';
 import '../../../core/widgets/ambient_tick.dart';
 import '../../events/presentation/event_widgets.dart';
+import '../../../core/layout/responsive.dart';
 
 /// The store: worlds (themes), Ludo piece sets and chess piece sets.
 class StoreScreen extends ConsumerStatefulWidget {
@@ -353,7 +354,7 @@ class _WorldsTab extends ConsumerWidget {
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           sliver: SliverGrid.count(
-            crossAxisCount: 2,
+            crossAxisCount: context.gridColumns(),
             mainAxisSpacing: AppSpacing.sm,
             crossAxisSpacing: AppSpacing.sm,
             childAspectRatio: 0.78,
@@ -1009,7 +1010,7 @@ class LudoPiecesTab extends ConsumerWidget {
               'classic');
     return GridView.count(
       padding: const EdgeInsets.all(AppSpacing.md),
-      crossAxisCount: 2,
+      crossAxisCount: context.gridColumns(),
       mainAxisSpacing: AppSpacing.sm,
       crossAxisSpacing: AppSpacing.sm,
       childAspectRatio: 0.62,
@@ -1046,7 +1047,7 @@ class ChessPiecesTab extends ConsumerWidget {
               'classic');
     return GridView.count(
       padding: const EdgeInsets.all(AppSpacing.md),
-      crossAxisCount: 2,
+      crossAxisCount: context.gridColumns(),
       mainAxisSpacing: AppSpacing.sm,
       crossAxisSpacing: AppSpacing.sm,
       childAspectRatio: 0.62,

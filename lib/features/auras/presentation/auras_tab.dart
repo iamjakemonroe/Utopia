@@ -15,6 +15,7 @@ import '../domain/aura.dart';
 import 'aura_sheet.dart';
 import 'mythic_badge.dart';
 import '../../events/presentation/event_widgets.dart';
+import '../../../core/layout/responsive.dart';
 
 /// The aura shop: what you're wearing now, then every aura by tier, each
 /// shown live around your own picture.
@@ -140,7 +141,7 @@ class AurasTab extends ConsumerWidget {
           SliverPadding(
             padding: pad,
             sliver: SliverGrid.count(
-              crossAxisCount: 2,
+              crossAxisCount: context.gridColumns(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
               childAspectRatio: 0.82,

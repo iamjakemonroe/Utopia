@@ -37,6 +37,7 @@ import '../controllers/chess_match_controller.dart';
 import '../widgets/chess_piece_art.dart';
 import '../widgets/chess_piece_styles.dart';
 import '../widgets/time_control_style.dart';
+import '../../../../core/layout/responsive.dart';
 
 /// Pick a clock and an entry, then play someone new, challenge a friend,
 /// or play offline. Chess and checkers share it ([game]).
@@ -218,11 +219,9 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
                     )
                   : ListView(
                       key: const ValueKey('setup'),
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.md,
-                        AppSpacing.xs,
-                        AppSpacing.md,
-                        AppSpacing.xl,
+                      padding: context.readablePadding(
+                        top: AppSpacing.xs,
+                        bottom: AppSpacing.xl,
                       ),
                       children: [
                         ClipRRect(

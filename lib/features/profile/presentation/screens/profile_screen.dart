@@ -42,6 +42,7 @@ import '../../../store/domain/store_catalog.dart';
 import '../../../store/presentation/coin_shop.dart';
 import '../username_dialog.dart';
 import '../../../../core/widgets/ambient_tick.dart';
+import '../../../../core/layout/responsive.dart';
 
 final _myStatsProvider = FutureProvider.autoDispose
     .family<Map<String, dynamic>, String>(
@@ -270,7 +271,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               const SizedBox(height: 8),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                padding: context.readablePadding(min: AppSpacing.lg),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [

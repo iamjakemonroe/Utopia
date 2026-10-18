@@ -35,6 +35,7 @@ import '../widgets/ludo_pieces.dart';
 import '../widgets/ludo_rules_sheet.dart';
 import '../widgets/ludo_setup_widgets.dart';
 import '../../../../core/widgets/ambient_tick.dart';
+import '../../../../core/layout/responsive.dart';
 
 /// Turns backend errors into something a player can act on.
 String ludoErrorText(Object e) {
@@ -268,11 +269,9 @@ class _LudoLobbyScreenState extends ConsumerState<LudoLobbyScreen> {
                     )
                   : ListView(
                       key: const ValueKey('home'),
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.md,
-                        AppSpacing.xs,
-                        AppSpacing.md,
-                        AppSpacing.xl,
+                      padding: context.readablePadding(
+                        top: AppSpacing.xs,
+                        bottom: AppSpacing.xl,
                       ),
                       children: [
                         const ClipRRect(

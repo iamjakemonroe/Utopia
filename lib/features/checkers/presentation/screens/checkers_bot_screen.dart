@@ -30,6 +30,7 @@ import '../../domain/checkers_engine.dart';
 import '../widgets/checkers_board.dart';
 import '../widgets/checkers_disc.dart';
 import '../../../events/presentation/events_controller.dart';
+import '../../../../core/layout/game_stage.dart';
 
 /// Checkers on this phone, no internet needed: against Chip or Robo (who
 /// think off the main thread and react to the game), or two people taking
@@ -615,8 +616,8 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
               AppSpacing.md,
               AppSpacing.md,
             ),
-            child: Column(
-              children: [
+            child: GameStage(
+              above: [
                 if (_twoPlayer)
                   _SideBar(
                     side: CheckersSide.light,
@@ -649,45 +650,44 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
                           ),
                   ),
                 const SizedBox(height: AppSpacing.sm),
-                Expanded(
-                  child: Center(
-                    child: PopCard(
-                      borderRadius: 28,
-                      glow: mustCapture && _myTurn
-                          ? const Color(0xFFFF7A45)
-                          : AppColors.accent,
-                      padding: const EdgeInsets.all(10),
-                      child: CheckersBoard(
-                        position: _history[_shownPly],
-                        lastMove: last,
-                        fly: _fly,
-                        selected: _selected,
-                        targets: targets,
-                        movable: _myTurn
-                            ? {for (final m in legal) m.from}
-                            : const {},
-                        mustCapture: mustCapture,
-                        bottom: _twoPlayer ? CheckersSide.dark : _me,
-                        // Face to face: Light sits across the table.
-                        turnedFor: _twoPlayer ? CheckersSide.light : null,
-                        interactive: _myTurn,
-                        onSquareTap: _onSquare,
-                        darkSet: _twoPlayer || _me == CheckersSide.dark
-                            ? mySet
-                            : botSet,
-                        lightSet: _twoPlayer || _me == CheckersSide.light
-                            ? mySet
-                            : botSet,
-                        gameOver: _over && !_reviewing,
-                        winner: winner,
-                        onHop: (_, capture) => audio.play(
-                          capture ? Sfx.chessCapture : Sfx.chessMove,
-                        ),
-                        onCrown: () => audio.play(Sfx.home),
-                      ),
-                    ),
+              ],
+              board: Center(
+                child: PopCard(
+                  borderRadius: 28,
+                  glow: mustCapture && _myTurn
+                      ? const Color(0xFFFF7A45)
+                      : AppColors.accent,
+                  padding: const EdgeInsets.all(10),
+                  child: CheckersBoard(
+                    position: _history[_shownPly],
+                    lastMove: last,
+                    fly: _fly,
+                    selected: _selected,
+                    targets: targets,
+                    movable: _myTurn
+                        ? {for (final m in legal) m.from}
+                        : const {},
+                    mustCapture: mustCapture,
+                    bottom: _twoPlayer ? CheckersSide.dark : _me,
+                    // Face to face: Light sits across the table.
+                    turnedFor: _twoPlayer ? CheckersSide.light : null,
+                    interactive: _myTurn,
+                    onSquareTap: _onSquare,
+                    darkSet: _twoPlayer || _me == CheckersSide.dark
+                        ? mySet
+                        : botSet,
+                    lightSet: _twoPlayer || _me == CheckersSide.light
+                        ? mySet
+                        : botSet,
+                    gameOver: _over && !_reviewing,
+                    winner: winner,
+                    onHop: (_, capture) =>
+                        audio.play(capture ? Sfx.chessCapture : Sfx.chessMove),
+                    onCrown: () => audio.play(Sfx.home),
                   ),
                 ),
+              ),
+              below: [
                 const SizedBox(height: AppSpacing.sm),
                 MoveStrip(
                   labels: [for (final m in _moves) m.notation],

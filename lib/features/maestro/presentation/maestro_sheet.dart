@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,7 +48,7 @@ class _MaestroSheet extends ConsumerWidget {
 
   /// The store's own page for managing (or cancelling) the subscription.
   Future<void> _manage() => _open(
-    Platform.isIOS
+    !kIsWeb && Platform.isIOS
         ? 'https://apps.apple.com/account/subscriptions'
         : 'https://play.google.com/store/account/subscriptions'
               '?sku=$kMaestroProductId&package=com.iamjakemonroe.utopia',
@@ -206,7 +207,7 @@ class _MaestroSheet extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'Renews every month until you cancel. Cancel any time in your '
-                  '${Platform.isIOS ? 'App Store' : 'Google Play'} settings, at '
+                  '${!kIsWeb && Platform.isIOS ? 'App Store' : 'Google Play'} settings, at '
                   'least a day before it renews.',
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(

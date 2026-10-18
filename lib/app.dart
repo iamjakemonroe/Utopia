@@ -20,6 +20,7 @@ import 'features/events/presentation/event_widgets.dart';
 import 'features/events/presentation/events_controller.dart';
 import 'core/analytics/screen_views.dart';
 import 'core/audio/world_soundscape.dart';
+import 'features/dev/screen_tour.dart';
 
 class UtopiaApp extends ConsumerWidget {
   const UtopiaApp({super.key});
@@ -40,6 +41,8 @@ class UtopiaApp extends ConsumerWidget {
     ref.watch(screenViewsProvider);
     // A world's own sounds (Halloween's thunder, wind, ghosts) on home.
     ref.watch(worldSoundscapeProvider);
+    // Debug builds made for it: a tour of every screen (layout checks).
+    ref.watch(screenTourProvider);
     // An event reward just earned (in a game, or arriving home).
     ref.listen(eventsProvider.select((s) => s.justEarned), (_, earned) {
       if (earned.isEmpty) return;
@@ -137,16 +140,42 @@ class UtopiaApp extends ConsumerWidget {
       routerConfig: router,
       // The teleport plays above the router, so the rebuild a theme switch
       // triggers underneath never interrupts it.
-      builder: (context, child) => Stack(
-        children: [
-          child!,
-          // Chip, floating over the screens, ready to chat.
-          const Positioned.fill(child: FloatingChip()),
-          // Friend requests and challenges pop up over any screen.
-          const Positioned.fill(child: NotificationCenter()),
-          const Positioned.fill(child: ThemeTeleportLayer()),
-        ],
-      ),
+      builder: (context, child) {
+        final app = Stack(
+          children: [
+            child!,
+            // Chip, floating over the screens, ready to chat.
+            const Positioned.fill(child: FloatingChip()),
+            // Friend requests and challenges pop up over any screen.
+            const Positioned.fill(child: NotificationCenter()),
+            const Positioned.fill(child: ThemeTeleportLayer()),
+          ],
+        );
+        // The screen tour photographs the whole app, at the sizes it
+        // pretends to be.
+        if (!kScreenTour) return app;
+        return ValueListenableBuilder<Size?>(
+          valueListenable: screenTourCanvas,
+          builder: (context, canvas, _) {
+            final shot = RepaintBoundary(
+              key: screenTourShots,
+              child: canvas == null
+                  ? app
+                  : MediaQuery(
+                      data: MediaQuery.of(context).copyWith(size: canvas),
+                      child: app,
+                    ),
+            );
+            if (canvas == null) return shot;
+            return ColoredBox(
+              color: Colors.black,
+              child: FittedBox(
+                child: SizedBox.fromSize(size: canvas, child: shot),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

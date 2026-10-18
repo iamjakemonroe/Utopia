@@ -36,6 +36,7 @@ import '../../../../core/widgets/game_card_art.dart';
 import '../../../home/data/offline_game.dart';
 import '../widgets/promotion_sheet.dart';
 import '../../../events/presentation/events_controller.dart';
+import '../../../../core/layout/game_stage.dart';
 
 /// Chess against the computer, all on this phone: no internet needed.
 /// Chip (or Robo) thinks off the main thread, reacts to the game with a
@@ -691,8 +692,8 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
               AppSpacing.md,
               AppSpacing.md,
             ),
-            child: Column(
-              children: [
+            child: GameStage(
+              above: [
                 if (_twoPlayer)
                   _SideStrip(
                     color: PieceColor.black,
@@ -724,44 +725,44 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
                           ),
                   ),
                 const SizedBox(height: AppSpacing.sm),
-                Expanded(
-                  child: Center(
-                    child: PopCard(
-                      borderRadius: 28,
-                      glow: status == GameStatus.check && !_over
-                          ? AppColors.error
-                          : AppColors.accent,
-                      padding: const EdgeInsets.all(10),
-                      child: AnimatedChessBoard(
-                        position: _history[_shownPly],
-                        lastMove: last,
-                        fly: _fly,
-                        trail:
-                            last != null &&
-                            (_twoPlayer || last.piece.color == _bot),
-                        legalDestinations: legal,
-                        selectedSquare: _selected,
-                        myColor: _twoPlayer ? PieceColor.white : _me,
-                        interactive:
-                            !_over &&
-                            !_thinking &&
-                            !_reviewing &&
-                            _pos.sideToMove == _me,
-                        onSquareTap: _onSquare,
-                        whiteSet: _twoPlayer || _me == PieceColor.white
-                            ? mySet
-                            : botSet,
-                        blackSet: _twoPlayer || _me == PieceColor.black
-                            ? mySet
-                            : botSet,
-                        gameOver: _over && !_reviewing,
-                        winner: winner,
-                        // Face to face: Black sits across the table.
-                        turnedFor: _twoPlayer ? PieceColor.black : null,
-                      ),
-                    ),
+              ],
+              board: Center(
+                child: PopCard(
+                  borderRadius: 28,
+                  glow: status == GameStatus.check && !_over
+                      ? AppColors.error
+                      : AppColors.accent,
+                  padding: const EdgeInsets.all(10),
+                  child: AnimatedChessBoard(
+                    position: _history[_shownPly],
+                    lastMove: last,
+                    fly: _fly,
+                    trail:
+                        last != null &&
+                        (_twoPlayer || last.piece.color == _bot),
+                    legalDestinations: legal,
+                    selectedSquare: _selected,
+                    myColor: _twoPlayer ? PieceColor.white : _me,
+                    interactive:
+                        !_over &&
+                        !_thinking &&
+                        !_reviewing &&
+                        _pos.sideToMove == _me,
+                    onSquareTap: _onSquare,
+                    whiteSet: _twoPlayer || _me == PieceColor.white
+                        ? mySet
+                        : botSet,
+                    blackSet: _twoPlayer || _me == PieceColor.black
+                        ? mySet
+                        : botSet,
+                    gameOver: _over && !_reviewing,
+                    winner: winner,
+                    // Face to face: Black sits across the table.
+                    turnedFor: _twoPlayer ? PieceColor.black : null,
                   ),
                 ),
+              ),
+              below: [
                 const SizedBox(height: AppSpacing.sm),
                 MoveStrip(
                   labels: _sans,

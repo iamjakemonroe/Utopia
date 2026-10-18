@@ -13,6 +13,7 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../store/presentation/theme_teleport.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
+import '../../../../core/layout/responsive.dart';
 
 /// Entry point for signed-out users: play immediately as a guest, or go
 /// straight to email sign-in/sign-up. Either way Chip carries them into
@@ -72,9 +73,11 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
-                  vertical: AppSpacing.md,
+                padding: context.readablePadding(
+                  maxWidth: 520,
+                  min: AppSpacing.lg,
+                  top: AppSpacing.md,
+                  bottom: AppSpacing.md,
                 ),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(

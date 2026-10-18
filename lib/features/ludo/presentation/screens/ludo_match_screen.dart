@@ -39,6 +39,7 @@ import '../widgets/ludo_rules_sheet.dart';
 import '../widgets/ludo_seat_panel.dart';
 import '../../../chat/presentation/voice_notes.dart';
 import '../../../events/presentation/events_controller.dart';
+import '../../../../core/layout/game_stage.dart';
 
 class LudoMatchScreen extends ConsumerStatefulWidget {
   const LudoMatchScreen({super.key, required this.matchId});
@@ -452,8 +453,8 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
         child: Scaffold(
           body: AppBackground(
             child: SafeArea(
-              child: Column(
-                children: [
+              child: GameStage(
+                above: [
                   _TopBar(
                     pot: state.pot,
                     friends: state.isFriendsGame,
@@ -468,23 +469,23 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   row(top),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.xs,
-                        vertical: 4,
-                      ),
-                      child: LudoBoardView(
-                        game: game,
-                        myColor: state.myColor,
-                        movableTokens: state.movableTokens,
-                        onTokenTap: controller.selectToken,
-                        pieceSets: pieceSets,
-                        reaction: state.reaction,
-                        anchor: reactionAnchor,
-                      ),
-                    ),
+                ],
+                board: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs,
+                    vertical: 4,
                   ),
+                  child: LudoBoardView(
+                    game: game,
+                    myColor: state.myColor,
+                    movableTokens: state.movableTokens,
+                    onTokenTap: controller.selectToken,
+                    pieceSets: pieceSets,
+                    reaction: state.reaction,
+                    anchor: reactionAnchor,
+                  ),
+                ),
+                below: [
                   row(bottom),
                   _StatusLine(state: state),
                   const SizedBox(height: AppSpacing.xs),

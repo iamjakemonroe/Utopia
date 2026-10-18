@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -68,7 +70,8 @@ class _SideMenu extends ConsumerWidget {
         : ref.watch(profileByIdProvider(user.id)).valueOrNull;
     final name = user == null ? 'Player' : profileDisplayName(profile, user.id);
     final username = profile?['username'] as String?;
-    final width = MediaQuery.sizeOf(context).width * 0.84;
+    // Most of a phone's width; on a tablet, still about a phone's.
+    final width = math.min(MediaQuery.sizeOf(context).width * 0.84, 380.0);
     final unread = ref.watch(unreadNotificationsProvider);
     // Chip up here vibes along too when there's music on.
     final music = ref.watch(nowPlayingProvider);

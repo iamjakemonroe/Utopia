@@ -5,6 +5,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_background.dart';
 import '../../../core/widgets/pop_card.dart';
+import '../../../core/layout/responsive.dart';
 
 /// Utopia's privacy policy, in the app (Settings > Privacy policy). The
 /// same words are on the website at /privacy.html
@@ -86,11 +87,9 @@ class PrivacyScreen extends StatelessWidget {
       body: AppBackground(
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.sm,
-              AppSpacing.md,
-              AppSpacing.xxl,
+            padding: context.readablePadding(
+              top: AppSpacing.sm,
+              bottom: AppSpacing.xxl,
             ),
             children: [
               Text(

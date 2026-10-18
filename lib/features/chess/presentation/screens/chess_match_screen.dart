@@ -43,6 +43,7 @@ import '../widgets/chess_piece_styles.dart';
 import '../widgets/promotion_sheet.dart';
 import '../widgets/time_control_style.dart';
 import '../../../events/presentation/events_controller.dart';
+import '../../../../core/layout/game_stage.dart';
 
 const _whiteInk = Color(0xFFF4EEDC);
 const _blackInk = Color(0xFFB79BFF);
@@ -279,8 +280,8 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
               AppSpacing.md,
               AppSpacing.sm,
             ),
-            child: Column(
-              children: [
+            child: GameStage(
+              above: [
                 _PlayerBar(
                   userId: opponentId,
                   color: myColor.opponent,
@@ -306,44 +307,42 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 _StatusLine(state: state, onLive: controller.goLive),
                 const SizedBox(height: AppSpacing.sm),
-                Expanded(
-                  child: Center(
-                    child: PopCard(
-                      borderRadius: 28,
-                      blur: 10,
-                      glow: state.reviewing
-                          ? AppColors.sky
-                          : state.gameStatus == GameStatus.check && playing
-                          ? AppColors.error
-                          : AppColors.accent,
-                      padding: const EdgeInsets.all(10),
-                      child: AnimatedChessBoard(
-                        position: state.displayPosition,
-                        lastMove: shownMove,
-                        fly: state.fly,
-                        trail: trail,
-                        legalDestinations:
-                            state.selectedSquare == null || !hints
-                            ? const []
-                            : state.legalDestinations,
-                        selectedSquare: state.selectedSquare,
-                        myColor: state.myColor,
-                        interactive:
-                            state.isMyTurn && !state.reviewing && playing,
-                        onSquareTap: controller.selectSquare,
-                        whiteSet: _setOf(whiteId) ?? 'classic',
-                        blackSet: _setOf(blackId) ?? 'classic',
-                        // Looking back shows the game as it was then.
-                        gameOver: over && !state.reviewing,
-                        winner: state.outcome?.winnerId == null
-                            ? null
-                            : state.outcome!.winnerId == whiteId
-                            ? PieceColor.white
-                            : PieceColor.black,
-                      ),
-                    ),
+              ],
+              board: Center(
+                child: PopCard(
+                  borderRadius: 28,
+                  blur: 10,
+                  glow: state.reviewing
+                      ? AppColors.sky
+                      : state.gameStatus == GameStatus.check && playing
+                      ? AppColors.error
+                      : AppColors.accent,
+                  padding: const EdgeInsets.all(10),
+                  child: AnimatedChessBoard(
+                    position: state.displayPosition,
+                    lastMove: shownMove,
+                    fly: state.fly,
+                    trail: trail,
+                    legalDestinations: state.selectedSquare == null || !hints
+                        ? const []
+                        : state.legalDestinations,
+                    selectedSquare: state.selectedSquare,
+                    myColor: state.myColor,
+                    interactive: state.isMyTurn && !state.reviewing && playing,
+                    onSquareTap: controller.selectSquare,
+                    whiteSet: _setOf(whiteId) ?? 'classic',
+                    blackSet: _setOf(blackId) ?? 'classic',
+                    // Looking back shows the game as it was then.
+                    gameOver: over && !state.reviewing,
+                    winner: state.outcome?.winnerId == null
+                        ? null
+                        : state.outcome!.winnerId == whiteId
+                        ? PieceColor.white
+                        : PieceColor.black,
                   ),
                 ),
+              ),
+              below: [
                 const SizedBox(height: AppSpacing.sm),
                 MoveStrip(
                   labels: [for (final m in state.history) m.san],

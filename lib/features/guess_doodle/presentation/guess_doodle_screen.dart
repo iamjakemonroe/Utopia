@@ -21,6 +21,7 @@ import 'widgets/doodle_tools.dart';
 import '../../invites/domain/game_invite.dart';
 import '../../events/presentation/events_controller.dart';
 import '../../../core/analytics/analytics.dart';
+import '../../../core/layout/game_stage.dart';
 
 /// Name colors, given out in drawing order.
 const _nameColors = [
@@ -350,8 +351,8 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
           child: Stack(
             children: [
               SafeArea(
-                child: Column(
-                  children: [
+                child: GameStage(
+                  above: [
                     _TopBar(
                       round: game?.round ?? 0,
                       rounds: game?.rounds ?? 0,
@@ -408,59 +409,59 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
                               colorOf: colorOf,
                             ),
                     ),
-                    Expanded(
-                      child: LayoutBuilder(
-                        builder: (context, c) {
-                          // While typing, the drawing gives up room so the
-                          // chat still shows a few lines.
-                          final room = c.maxHeight - (typing ? 116 : 70);
-                          final side = (c.maxWidth - 24)
-                              .clamp(0.0, room < 0 ? 0.0 : room)
-                              .toDouble();
-                          return Column(
-                            children: [
-                              const SizedBox(height: 4),
-                              SizedBox.square(
-                                dimension: side,
-                                child: DoodleCanvasView(
-                                  ink: ctrl.ink,
-                                  canDraw: drawing,
-                                  onStart: (p) => ctrl.strokeStart(
-                                    p,
-                                    _pen.tool,
-                                    _pen.color,
-                                    _pen.size,
-                                  ),
-                                  onMove: ctrl.strokeMove,
-                                  onEnd: ctrl.strokeEnd,
-                                  overlay: AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 280),
-                                    child:
-                                        overlay ??
-                                        const SizedBox.shrink(
-                                          key: ValueKey('none'),
-                                        ),
-                                  ),
-                                ),
+                  ],
+                  board: LayoutBuilder(
+                    builder: (context, c) {
+                      // While typing, the drawing gives up room so the
+                      // chat still shows a few lines.
+                      final room = c.maxHeight - (typing ? 116 : 70);
+                      final side = (c.maxWidth - 24)
+                          .clamp(0.0, room < 0 ? 0.0 : room)
+                          .toDouble();
+                      return Column(
+                        children: [
+                          const SizedBox(height: 4),
+                          SizedBox.square(
+                            dimension: side,
+                            child: DoodleCanvasView(
+                              ink: ctrl.ink,
+                              canDraw: drawing,
+                              onStart: (p) => ctrl.strokeStart(
+                                p,
+                                _pen.tool,
+                                _pen.color,
+                                _pen.size,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  child: DoodleChatFeed(
-                                    messages: state.messages,
-                                    me: me,
-                                    colorOf: colorOf,
-                                    filter: game?.isPublic ?? true,
-                                  ),
-                                ),
+                              onMove: ctrl.strokeMove,
+                              onEnd: ctrl.strokeEnd,
+                              overlay: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 280),
+                                child:
+                                    overlay ??
+                                    const SizedBox.shrink(
+                                      key: ValueKey('none'),
+                                    ),
                               ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              child: DoodleChatFeed(
+                                messages: state.messages,
+                                me: me,
+                                colorOf: colorOf,
+                                filter: game?.isPublic ?? true,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  below: [
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
                       child: AnimatedSwitcher(

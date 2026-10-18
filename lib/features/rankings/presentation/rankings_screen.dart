@@ -21,6 +21,7 @@ import '../../chess/presentation/widgets/chess_piece_styles.dart';
 import '../data/rankings_repository.dart';
 import '../domain/ranking.dart';
 import 'rankings_widgets.dart';
+import '../../../core/layout/responsive.dart';
 
 /// The chess, checkers and Guess My Doodle boards. At the top, the player: their tier badge,
 /// rating (and how it's moved this week), their rating line and record,
@@ -132,11 +133,9 @@ class _BoardState extends ConsumerState<_Board> {
         RefreshIndicator(
           onRefresh: _refresh,
           child: ListView(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.md,
-              pinned ? 100 : AppSpacing.xxl,
+            padding: context.readablePadding(
+              top: AppSpacing.md,
+              bottom: pinned ? 100 : AppSpacing.xxl,
             ),
             children: [
               switch (board) {
@@ -211,8 +210,9 @@ class _BoardState extends ConsumerState<_Board> {
         ),
         if (pinned)
           Positioned(
-            left: AppSpacing.md,
-            right: AppSpacing.md,
+            // In line with the board above.
+            left: context.readablePadding().left,
+            right: context.readablePadding().right,
             bottom: AppSpacing.md,
             child: SafeArea(
               top: false,

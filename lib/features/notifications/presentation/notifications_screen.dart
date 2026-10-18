@@ -26,6 +26,7 @@ import 'notification_center.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../core/audio/game_audio.dart';
 import '../../../core/widgets/utopia_toast.dart';
+import '../../../core/layout/responsive.dart';
 
 /// Everything that's happened: friend requests (answer them right here),
 /// requests accepted, and challenges. Opening it marks everything read.
@@ -108,11 +109,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 : list.isEmpty
                 ? const _Empty()
                 : ListView(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md,
-                      AppSpacing.sm,
-                      AppSpacing.md,
-                      AppSpacing.xl,
+                    padding: context.readablePadding(
+                      top: AppSpacing.sm,
+                      bottom: AppSpacing.xl,
                     ),
                     children: [
                       if (today.isNotEmpty) ...[

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -233,6 +233,8 @@ class PictureLibrary {
   /// A real portrait's line art: from the phone if it's here, otherwise
   /// fetched (it's private to the player) and kept for next time.
   Future<Uint8List> artBytes(String path) async {
+    // A browser keeps nothing on disk: fetch it each time.
+    if (kIsWeb) return _client.storage.from('coloring-art').download(path);
     final docs = await getApplicationDocumentsDirectory();
     final safe = path.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
     final file = File('${docs.path}/pictures/art_$safe');

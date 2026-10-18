@@ -138,10 +138,13 @@ class StoreState {
 /// checked comes back on the next launch and is tried again.
 class StoreController extends StateNotifier<StoreState> {
   StoreController(this._ref) : super(const StoreState()) {
-    _purchases = InAppPurchase.instance.purchaseStream.listen(
-      _onPurchases,
-      onError: (Object _) {},
-    );
+    // Store purchases are the phone's (there are none on the web).
+    if (!kIsWeb) {
+      _purchases = InAppPurchase.instance.purchaseStream.listen(
+        _onPurchases,
+        onError: (Object _) {},
+      );
+    }
     refresh();
   }
 
@@ -173,7 +176,7 @@ class StoreController extends StateNotifier<StoreState> {
       final prices = await _repo.fetchCoinPrices();
       if (mounted) state = state.copyWith(coinPrices: prices);
     } catch (_) {}
-    if (!Env.realMoneyStore) {
+    if (!Env.realMoneyStore || kIsWeb) {
       if (mounted) state = state.copyWith(loaded: true);
       return;
     }

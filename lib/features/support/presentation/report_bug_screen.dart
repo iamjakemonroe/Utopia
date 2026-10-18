@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,6 +17,7 @@ import '../../../core/widgets/app_background.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/primary_button.dart';
+import '../../../core/layout/responsive.dart';
 
 /// This build, as "1.0.0+14", so a report says exactly which one it's about.
 final _buildProvider = FutureProvider<String>((ref) async {
@@ -164,8 +165,9 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
           'p_description': text,
           'p_category': _category,
           'p_app_version': build.isEmpty ? null : build,
-          'p_platform':
-              '${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
+          'p_platform': kIsWeb
+              ? 'web'
+              : '${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
           'p_contact': _contact.text.trim(),
           'p_screen': widget.from,
           'p_world': UtopiaThemes.active.name,
@@ -244,7 +246,11 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
     final shot = _shot;
     return ListView(
       key: const ValueKey('form'),
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: context.readablePadding(
+        min: AppSpacing.lg,
+        top: AppSpacing.lg,
+        bottom: AppSpacing.lg,
+      ),
       children: [
         Row(
           children: [

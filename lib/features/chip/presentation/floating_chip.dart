@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/now_playing/now_playing.dart';
 import '../../../core/router/app_router.dart';
@@ -42,18 +43,21 @@ class _FloatingChipState extends ConsumerState<FloatingChip>
   String _path = '/splash';
   bool _shown = false;
 
+  // Kept from initState: ref can't be read any more by dispose.
+  late final GoRouter _router;
+
   @override
   void initState() {
     super.initState();
-    final router = ref.read(goRouterProvider);
-    router.routerDelegate.addListener(_onRoute);
+    _router = ref.read(goRouterProvider);
+    _router.routerDelegate.addListener(_onRoute);
     PopupTracker.instance.open.addListener(_onRoute);
     WidgetsBinding.instance.addPostFrameCallback((_) => _onRoute());
   }
 
   @override
   void dispose() {
-    ref.read(goRouterProvider).routerDelegate.removeListener(_onRoute);
+    _router.routerDelegate.removeListener(_onRoute);
     PopupTracker.instance.open.removeListener(_onRoute);
     _float.dispose();
     super.dispose();

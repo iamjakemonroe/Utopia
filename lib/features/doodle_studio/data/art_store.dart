@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../domain/art_doc.dart';
@@ -46,14 +47,39 @@ class ArtSummary {
   }
 }
 
-/// A player's art on this phone, kept in the app's own files (so it stays
-/// through changing worlds, closing the app and restarting the phone):
-/// for each piece, everything drawn (`<id>.json`), a note for the list
+/// A player's art, kept on their device: in the app's own files on a phone
+/// ([FileArtStore]), in the browser's storage on the web ([WebArtStore]).
+abstract class ArtStore {
+  static Future<ArtStore> open(String player) {
+    final safe = player.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+    return kIsWeb ? WebArtStore.open(safe) : FileArtStore.open(safe);
+  }
+
+  /// Everything saved, newest first.
+  Future<List<ArtSummary>> list();
+
+  Future<ArtDoc?> load(String id);
+
+  /// Saves [doc] (and its small picture, when given).
+  Future<void> save(ArtDoc doc, {Uint8List? thumbnail});
+
+  Future<void> delete(String id);
+
+  /// The small picture for the list. Throws when there isn't one yet.
+  Future<Uint8List> thumbnailBytes(String id);
+
+  /// Forgets every piece (the account is going).
+  Future<void> deleteAll();
+}
+
+/// Art on a phone, kept in the app's own files (so it stays through
+/// changing worlds, closing the app and restarting the phone): for each
+/// piece, everything drawn (`<id>.json`), a note for the list
 /// (`<id>.meta`) and a small picture of it (`<id>.png`). Every write goes to
 /// a temporary file first and then replaces the old one, so a save cut
 /// short never leaves a broken file behind.
-class ArtStore {
-  ArtStore(this.dir);
+class FileArtStore implements ArtStore {
+  FileArtStore(this.dir);
 
   final Directory dir;
 
@@ -62,18 +88,22 @@ class ArtStore {
 
   static Future<ArtStore> open(String player) async {
     final docs = await getApplicationDocumentsDirectory();
-    final safe = player.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
-    final dir = Directory('${docs.path}/art/$safe');
+    final dir = Directory('${docs.path}/art/$player');
     await dir.create(recursive: true);
-    return ArtStore(dir);
+    return FileArtStore(dir);
   }
 
   File _file(String id, String ext) => File('${dir.path}/$id.$ext');
 
-  /// The small picture for the list (it may not exist yet).
-  File thumbnail(String id) => _file(id, 'png');
+  @override
+  Future<Uint8List> thumbnailBytes(String id) => _file(id, 'png').readAsBytes();
 
-  /// Everything saved, newest first.
+  @override
+  Future<void> deleteAll() async {
+    if (await dir.exists()) await dir.delete(recursive: true);
+  }
+
+  @override
   Future<List<ArtSummary>> list() async {
     if (!await dir.exists()) return const [];
     final out = <ArtSummary>[];
@@ -94,6 +124,7 @@ class ArtStore {
     return out;
   }
 
+  @override
   Future<ArtDoc?> load(String id) async {
     final f = _file(id, 'json');
     if (!await f.exists()) return null;
@@ -106,7 +137,7 @@ class ArtStore {
     }
   }
 
-  /// Saves [doc] (and its small picture, when given).
+  @override
   Future<void> save(ArtDoc doc, {Uint8List? thumbnail}) {
     final json = jsonEncode(doc.toJson());
     final meta = jsonEncode(
@@ -124,6 +155,7 @@ class ArtStore {
     });
   }
 
+  @override
   Future<void> delete(String id) => _enqueue(() async {
     for (final ext in const ['meta', 'json', 'png']) {
       final f = _file(id, ext);
@@ -142,6 +174,89 @@ class ArtStore {
     // A failed write mustn't block the ones after it.
     _queue = next.catchError((_) {});
     return next;
+  }
+}
+
+/// Art in a browser, kept in its local storage: the same three things per
+/// piece as on a phone, under keys named for the player and the piece.
+class WebArtStore implements ArtStore {
+  WebArtStore(this._prefs, this._prefix);
+
+  final SharedPreferences _prefs;
+  final String _prefix;
+
+  static Future<ArtStore> open(String player) async =>
+      WebArtStore(await SharedPreferences.getInstance(), 'art/$player/');
+
+  String _key(String id, String ext) => '$_prefix$id.$ext';
+
+  @override
+  Future<List<ArtSummary>> list() async {
+    final out = <ArtSummary>[];
+    for (final key in _prefs.getKeys()) {
+      if (!key.startsWith(_prefix) || !key.endsWith('.meta')) continue;
+      try {
+        final summary = ArtSummary.fromJson(
+          (jsonDecode(_prefs.getString(key)!) as Map).cast<String, Object?>(),
+        );
+        if (summary != null && _prefs.containsKey(_key(summary.id, 'json'))) {
+          out.add(summary);
+        }
+      } catch (_) {}
+    }
+    out.sort((a, b) => b.updated.compareTo(a.updated));
+    return out;
+  }
+
+  @override
+  Future<ArtDoc?> load(String id) async {
+    final json = _prefs.getString(_key(id, 'json'));
+    if (json == null) return null;
+    try {
+      return ArtDoc.fromJson((jsonDecode(json) as Map).cast<String, Object?>());
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> save(ArtDoc doc, {Uint8List? thumbnail}) async {
+    await _prefs.setString(_key(doc.id, 'json'), jsonEncode(doc.toJson()));
+    if (thumbnail != null) {
+      await _prefs.setString(_key(doc.id, 'png'), base64Encode(thumbnail));
+    }
+    await _prefs.setString(
+      _key(doc.id, 'meta'),
+      jsonEncode(
+        ArtSummary(
+          id: doc.id,
+          kind: doc.kind,
+          updated: doc.updated,
+          pageId: doc.pageId,
+        ).toJson(),
+      ),
+    );
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    for (final ext in const ['meta', 'json', 'png']) {
+      await _prefs.remove(_key(id, ext));
+    }
+  }
+
+  @override
+  Future<Uint8List> thumbnailBytes(String id) async {
+    final png = _prefs.getString(_key(id, 'png'));
+    if (png == null) throw StateError('no picture yet');
+    return base64Decode(png);
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    for (final key in _prefs.getKeys().toList()) {
+      if (key.startsWith(_prefix)) await _prefs.remove(key);
+    }
   }
 }
 

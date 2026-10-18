@@ -90,7 +90,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Home takes the player back into any game they left unfinished (or
     // into a friend's room, when an invite link opened the app).
     context.go(signedIn ? '/home' : '/auth');
-    if (kDebugMode) _debugStartRoute();
+    if (kDebugMode && !kIsWeb) _debugStartRoute();
   }
 
   /// Debug builds only: opens the screen named in the file

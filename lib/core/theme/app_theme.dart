@@ -139,9 +139,12 @@ class AppTheme {
           fontSize: 15,
         ),
       ),
+      // On a tablet a sheet stays a comfortable width, centered, rather
+      // than stretching edge to edge.
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
+        constraints: BoxConstraints(maxWidth: 640),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,

@@ -19,6 +19,7 @@ import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../ludo/presentation/screens/ludo_lobby_screen.dart' show CodeTiles;
 import '../data/doodle_game_repository.dart';
+import '../../../core/layout/responsive.dart';
 
 /// Server errors in words a player can use.
 String doodleErrorText(Object e) {
@@ -103,11 +104,9 @@ class GuessDoodleLobbyScreen extends ConsumerWidget {
         body: AppBackground(
           child: SafeArea(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.xs,
-                AppSpacing.md,
-                AppSpacing.xl,
+              padding: context.readablePadding(
+                top: AppSpacing.xs,
+                bottom: AppSpacing.xl,
               ),
               children: [
                 const ClipRRect(

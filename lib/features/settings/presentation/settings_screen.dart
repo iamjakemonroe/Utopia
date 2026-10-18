@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,6 +34,7 @@ import '../../birthday/presentation/birthday_providers.dart';
 import '../../maestro/presentation/maestro_providers.dart';
 import '../../maestro/presentation/maestro_sheet.dart';
 import '../../store/presentation/store_controller.dart';
+import '../../../core/layout/responsive.dart';
 
 /// "Show my coins" while the change is on its way to the server, so the
 /// switch moves at once.
@@ -73,11 +75,9 @@ class SettingsScreen extends ConsumerWidget {
       body: AppBackground(
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.xs,
-              AppSpacing.md,
-              AppSpacing.xxl,
+            padding: context.readablePadding(
+              top: AppSpacing.xs,
+              bottom: AppSpacing.xxl,
             ),
             children: [
               _Section(
@@ -193,7 +193,7 @@ class SettingsScreen extends ConsumerWidget {
                       icon: Icons.music_note_rounded,
                       color: AppColors.coinGold,
                       title: 'Let Chip see your music',
-                      subtitle: Platform.isAndroid
+                      subtitle: !kIsWeb && Platform.isAndroid
                           ? 'Turn on notification access for Utopia'
                           : 'Allow Apple Music so Chip can show the song',
                       onTap: () =>
@@ -444,7 +444,7 @@ class SettingsScreen extends ConsumerWidget {
     }
     try {
       final store = await ref.read(artStoreProvider.future);
-      if (await store.dir.exists()) await store.dir.delete(recursive: true);
+      await store.deleteAll();
     } catch (_) {}
     // The sign-in is already gone on the server: just forget it here.
     try {

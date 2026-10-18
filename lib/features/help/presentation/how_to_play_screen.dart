@@ -13,6 +13,7 @@ import '../../chess/domain/chess_types.dart';
 import '../../chess/presentation/widgets/chess_piece_art.dart';
 import '../../chess/presentation/widgets/chess_piece_styles.dart';
 import '../../ludo/presentation/widgets/ludo_rules_sheet.dart';
+import '../../../core/layout/responsive.dart';
 
 /// How to play every game in Utopia: a tab per game, each with its own
 /// sections. New games get a tab here as they arrive.
@@ -78,11 +79,9 @@ class _Guide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        AppSpacing.md,
-        AppSpacing.md,
-        AppSpacing.xxl,
+      padding: context.readablePadding(
+        top: AppSpacing.md,
+        bottom: AppSpacing.xxl,
       ),
       children: [
         ClipRRect(
