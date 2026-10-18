@@ -55,6 +55,8 @@ class Aura {
     required this.prices,
     this.retired = false,
     this.includedWith,
+    this.season,
+    this.birthday = false,
   });
 
   final String id;
@@ -74,8 +76,17 @@ class Aura {
   /// while the plan lasts.
   final String? includedWith;
 
-  /// Not for sale (retired, or part of a plan): shown only to whoever has it.
-  bool get notSold => retired || includedWith != null;
+  /// An event frame's season ('halloween'): earned by playing in its event,
+  /// and only worn while it's on. Never sold.
+  final String? season;
+
+  /// The Birthday frame: only ever given on the player's birthday.
+  final bool birthday;
+
+  /// Not for sale (retired, part of a plan, an event's or the birthday's):
+  /// shown only to whoever has it.
+  bool get notSold =>
+      retired || includedWith != null || season != null || birthday;
 
   int priceFor(AuraLength length) => prices[length]!;
 
@@ -102,6 +113,7 @@ class Aura {
 
   static const all = [
     maestro,
+    birthdayFrame,
     Aura(
       id: 'dragon',
       name: 'Dragon Coil',
@@ -178,6 +190,7 @@ class Aura {
       tier: AuraTier.legendary,
       color: Color(0xFFF2761A),
       prices: _legendary,
+      season: 'halloween',
     ),
     Aura(
       id: 'demon',
@@ -378,6 +391,18 @@ class Aura {
     color: Color(0xFFFF5C9C),
     prices: _legendary,
     includedWith: 'Chip Maestro',
+  );
+
+  /// The Birthday frame: worn all day on the player's birthday.
+  static const birthdayFrame = Aura(
+    id: 'birthday',
+    name: 'Birthday Party',
+    tagline:
+        'A ribbon in every color, a party hat, balloons and a little cake. Only on your birthday.',
+    tier: AuraTier.legendary,
+    color: Color(0xFFFF6FAE),
+    prices: _legendary,
+    birthday: true,
   );
 
   static Aura? byId(String? id) =>

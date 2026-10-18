@@ -26,7 +26,7 @@ class ThemeController extends StateNotifier<UtopiaTheme> {
   /// world saved on the player's account, so they land where they left.
   void adoptFromAccount(String? themeId) {
     if (themeId == null || _prefs.containsKey(_key)) return;
-    final theme = UtopiaThemes.all.where((t) => t.id == themeId).firstOrNull;
+    final theme = UtopiaThemes.find(themeId);
     if (theme == null) return;
     if (theme.id == state.id) {
       _prefs.setString(_key, theme.id);
@@ -56,6 +56,10 @@ class ThemeController extends StateNotifier<UtopiaTheme> {
     WidgetsBinding.instance.rootElement?.visitChildren(mark);
   }
 }
+
+/// Where to put [userId] back once a world they were moved into for a
+/// while (their birthday's) closes. Read by the store as it moves them out.
+String returnWorldKey(String userId) => 'world.returnTo.$userId';
 
 final themeControllerProvider =
     StateNotifierProvider<ThemeController, UtopiaTheme>(

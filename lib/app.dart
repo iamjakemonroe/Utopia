@@ -10,6 +10,7 @@ import 'features/auras/presentation/dragon_set.dart';
 import 'features/auras/presentation/world_set_providers.dart';
 import 'features/auras/presentation/zombie_set.dart';
 import 'features/chip/presentation/floating_chip.dart';
+import 'features/birthday/presentation/birthday_providers.dart';
 import 'features/maestro/presentation/maestro_providers.dart';
 import 'features/notifications/presentation/notification_actions.dart';
 import 'features/notifications/presentation/notification_center.dart';
@@ -28,6 +29,8 @@ class UtopiaApp extends ConsumerWidget {
     // Dragon Coil worn in the Dojo world sets its dragon free.
     // A Chip Maestro member's Chip wears his beret.
     ref.watch(maestroLookProvider);
+    // On the player's birthday, his party hat.
+    ref.watch(birthdayTodayProvider);
     ref.watch(dragonSetProvider);
     ref.listen(dragonSetProvider, (previous, next) {
       if (previous != false || next != true) return;

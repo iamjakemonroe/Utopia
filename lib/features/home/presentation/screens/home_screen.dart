@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/popup_tracker.dart';
 import '../../../coins/presentation/daily_reward_sheet.dart';
+import '../../../birthday/presentation/birthday_party.dart';
 import '../../../welcome/presentation/welcome_week.dart';
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/now_playing/now_playing.dart';
@@ -101,8 +102,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return;
       }
       _rewardOfferedTo = me;
-      // A new player's welcome week comes first (or its last-day reminder,
-      // or its goodbye), then today's reward.
+      // Their birthday party comes first (on the day), then a new player's
+      // welcome week (or its last-day reminder, or its goodbye), then
+      // today's reward.
+      await celebrateBirthdayIfToday(context, ref);
+      if (!mounted) return;
       await showWelcomeIfDue(context, ref);
       if (!mounted) return;
       final asked = await showDailyRewardIfReady(context, ref);
@@ -162,7 +166,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Loads what the player owns and rents (which also moves them out of a
     // rented world whose time ran out), and says so here.
     ref.listen(storeControllerProvider.select((s) => s.message), (_, message) {
-      if (message != null && message.contains('ran out')) {
+      if (message != null &&
+          (message.contains('ran out') || message.contains('is over'))) {
         showUtopiaToast(context, message, icon: Icons.timer_off_rounded);
         ref.read(storeControllerProvider.notifier).clearMessage();
       }

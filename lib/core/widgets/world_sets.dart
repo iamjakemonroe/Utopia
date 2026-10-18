@@ -58,6 +58,11 @@ abstract final class WorldSets {
   /// dances harder.
   static final musicLive = SetBonus();
 
+  /// The player's birthday: Chip puts on a party hat (on the day, in any
+  /// world). Worn with the Birthday frame in the Birthday world, the party
+  /// peaks.
+  static final birthday = SetBonus();
+
   /// Not a world's set but the same idea: a Chip Maestro member's Chip
   /// wears his artist's beret, with a brush tucked behind him.
   static final maestro = SetBonus();

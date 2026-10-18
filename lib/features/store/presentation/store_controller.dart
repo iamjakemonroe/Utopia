@@ -560,24 +560,45 @@ class StoreController extends StateNotifier<StoreState> {
     }
   }
 
-  /// A rented world whose time ran out: back to Twilight if they own it,
-  /// otherwise to their own free world.
+  /// A world whose time ran out (a rental, the Birthday world once the day
+  /// is over, an event world once its season ends): back where they were
+  /// before it (if that was saved and is still theirs), else Twilight if
+  /// they own it, else their own free world.
   void _leaveExpiredWorld() {
     final current = _ref.read(themeControllerProvider);
-    final item = StoreCatalog.themes
-        .where((i) => i.id == current.id)
-        .firstOrNull;
-    if (item == null || state.isOwned(item)) return;
+    if (UtopiaThemes.sold(current.id)) {
+      final item = StoreCatalog.themes
+          .where((i) => i.id == current.id)
+          .firstOrNull;
+      if (item == null || state.isOwned(item)) return;
+    } else if (state.rentedUntil(current.id) != null) {
+      return;
+    }
+    final me = _ref.read(currentUserProvider)?.id;
+    final prefs = _ref.read(sharedPreferencesProvider);
+    final back = me == null ? null : prefs.getString(returnWorldKey(me));
+    if (me != null) prefs.remove(returnWorldKey(me));
+    final backItem = StoreCatalog.themes.where((i) => i.id == back).firstOrNull;
     final twilight = UtopiaThemes.utopiaTwilight;
-    final home = state.owned.contains(twilight.id)
+    final home = backItem != null && state.isOwned(backItem)
+        ? UtopiaThemes.byId(back)
+        : state.owned.contains(twilight.id)
         ? twilight
-        : UtopiaThemes.starterFor(_ref.read(currentUserProvider)?.id);
+        : UtopiaThemes.starterFor(me);
     _ref.read(themeControllerProvider.notifier).apply(home);
     rememberTheme(home.id);
+    final season = UtopiaThemes.seasonal[current.id];
     state = state.copyWith(
-      message: 'Your time in ${current.name} ran out. Rent it again any time.',
+      message: current.id == UtopiaThemes.utopiaBirthday.id
+          ? 'Your birthday party is over. See you next year!'
+          : season != null
+          ? '${_seasonName(season)} is over. ${current.name} comes back next ${_seasonName(season)}.'
+          : 'Your time in ${current.name} ran out. Rent it again any time.',
     );
   }
+
+  static String _seasonName(String season) =>
+      season.isEmpty ? season : season[0].toUpperCase() + season.substring(1);
 
   /// Rents a world with coins for [days] and returns an error to show, or
   /// null once it's yours.

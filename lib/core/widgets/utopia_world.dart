@@ -14,6 +14,7 @@ import 'heaven_world.dart';
 import 'hell_world.dart';
 import 'music_world.dart';
 import 'halloween_world.dart';
+import 'birthday_world.dart';
 import 'zombie_world.dart';
 import 'ambient_tick.dart';
 
@@ -160,6 +161,8 @@ Offset _celestialAnchor(WorldStyle style, Size size) {
     WorldBiome.music => Offset(w * 0.74, h * 0.15),
     // A huge harvest moon over the hollow.
     WorldBiome.halloween => Offset(w * 0.32, h * 0.2),
+    // A low, warm sun setting behind the party island.
+    WorldBiome.birthday => Offset(w * 0.5, h * 0.66),
   };
 }
 
@@ -203,7 +206,8 @@ class _SkyPainter extends CustomPainter {
             style.biome == WorldBiome.dunes ||
             style.biome == WorldBiome.city ||
             style.biome == WorldBiome.reef ||
-            style.biome == WorldBiome.dojo;
+            style.biome == WorldBiome.dojo ||
+            style.biome == WorldBiome.birthday;
         _paintSun(canvas, anchor, w * (big ? 0.2 : 0.1));
       case CelestialKind.moon:
         // The Music world's moon is a record and Halloween's a huge
@@ -451,6 +455,14 @@ class _ScenePainter extends CustomPainter {
           t,
           style,
           moon: _celestialAnchor(style, size),
+        );
+      case WorldBiome.birthday:
+        paintBirthdayScene(
+          canvas,
+          size,
+          t,
+          style,
+          sun: _celestialAnchor(style, size),
         );
     }
   }

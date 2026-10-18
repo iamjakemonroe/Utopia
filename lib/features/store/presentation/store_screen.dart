@@ -320,7 +320,9 @@ class _WorldsTab extends ConsumerWidget {
     final bundle = StoreCatalog.products.firstWhere(
       (p) => p.id == 'utopia.themes.all',
     );
-    final ownsAll = StoreCatalog.themes.every(store.isOwned);
+    final ownsAll = StoreCatalog.themes
+        .where((i) => UtopiaThemes.sold(i.id))
+        .every(store.isOwned);
 
     // A lazy grid: only the live worlds on screen (and a little either
     // side) exist and animate, rather than all of them at once.
@@ -355,7 +357,7 @@ class _WorldsTab extends ConsumerWidget {
             childAspectRatio: 0.78,
             children: [
               for (final t in UtopiaThemes.utopia)
-                _WorldCard(theme: t, live: true),
+                if (UtopiaThemes.sold(t.id)) _WorldCard(theme: t, live: true),
             ],
           ),
         ),
@@ -392,7 +394,7 @@ class _WorldsTab extends ConsumerWidget {
                               style: AppTextStyles.display(fontSize: 18),
                             ),
                             Text(
-                              'All ${UtopiaThemes.all.length} worlds, now and forever.',
+                              'All ${UtopiaThemes.all.where((t) => UtopiaThemes.sold(t.id)).length} worlds, now and forever.',
                               style: AppTextStyles.body(
                                 fontSize: 13,
                                 color: AppColors.textSecondary,

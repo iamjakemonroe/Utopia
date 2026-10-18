@@ -210,6 +210,243 @@ class AuraPainter extends CustomPainter {
         _music(canvas, c, r, t);
       case 'jack':
         _hallows(canvas, c, r, t);
+      case 'birthday':
+        _birthday(canvas, c, r, t);
+    }
+  }
+
+  static const _partyColors = [
+    Color(0xFFFF6FAE),
+    Color(0xFFFFD166),
+    Color(0xFF6EE7B7),
+    Color(0xFF64B5F6),
+    Color(0xFFB39DDB),
+    Color(0xFFFF8A65),
+  ];
+
+  /// The Birthday frame (only ever worn on the player's birthday): a ring of
+  /// party ribbon in every color turning round the picture, a striped party
+  /// hat tipped on the rim, balloons bobbing up behind, a little cake with
+  /// its candle at the bottom, and confetti bursting off the ring every few
+  /// seconds.
+  void _birthday(Canvas canvas, Offset c, double r, double t) {
+    const colors = _partyColors;
+    if (!front) {
+      _glowRing(
+        canvas,
+        c,
+        r,
+        const Color(0xFFFFB3D9).withValues(alpha: 0.5),
+        width: 0.3,
+        blur: 0.24,
+        scale: 1.08,
+      );
+      // Balloons tied to the rim, bobbing up behind the top left.
+      final tie = c + _dir(-2.3) * r * 1.02;
+      for (var i = 0; i < 3; i++) {
+        final a = -2.05 - i * 0.42 + math.sin(t * 1.4 + i * 2) * 0.05;
+        final p = c + _dir(a) * r * (1.48 + 0.1 * i);
+        final br = r * (0.2 - 0.02 * i);
+        canvas.drawLine(
+          p + Offset(0, br * 1.1),
+          tie,
+          Paint()
+            ..strokeWidth = math.max(1, r * 0.015)
+            ..color = Colors.white.withValues(alpha: 0.75),
+        );
+        final body = Rect.fromCenter(
+          center: p,
+          width: br * 1.8,
+          height: br * 2.2,
+        );
+        final color = colors[(i * 2) % colors.length];
+        canvas.drawOval(
+          body,
+          Paint()
+            ..shader = RadialGradient(
+              center: const Alignment(-0.35, -0.4),
+              colors: [
+                Color.lerp(color, Colors.white, 0.45)!,
+                color,
+                Color.lerp(color, Colors.black, 0.25)!,
+              ],
+              stops: const [0, 0.55, 1],
+            ).createShader(body),
+        );
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: p + Offset(-br * 0.35, -br * 0.5),
+            width: br * 0.3,
+            height: br * 0.5,
+          ),
+          Paint()..color = Colors.white.withValues(alpha: 0.5),
+        );
+      }
+      return;
+    }
+
+    // The ribbon ring, turning.
+    final ring = Rect.fromCircle(center: c, radius: r * 1.04);
+    const pieces = 18;
+    for (var k = 0; k < pieces; k++) {
+      final start = k * 2 * math.pi / pieces + t * 0.6;
+      canvas.drawArc(
+        ring,
+        start,
+        2 * math.pi / pieces * 0.82,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = r * 0.11
+          ..color = colors[k % colors.length],
+      );
+    }
+    final edge = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(1, r * 0.02)
+      ..color = const Color(0xFFFFF4E0);
+    canvas.drawCircle(c, r * 0.985, edge);
+    canvas.drawCircle(c, r * 1.095, edge);
+
+    // Confetti bursting off the ring every few seconds and fluttering down.
+    final burst = (t % 3.2) / 3.2;
+    if (burst < 0.6 && !_lite) {
+      final k = burst / 0.6;
+      for (var i = 0; i < 16; i++) {
+        final a = _rand(i + (t / 3.2).floor() * 16, 300) * math.pi * 2;
+        final d = r * (1.1 + 0.55 * Curves.easeOut.transform(k));
+        final p = c + _dir(a) * d + Offset(0, k * k * r * 0.35);
+        canvas.save();
+        canvas.translate(p.dx, p.dy);
+        canvas.rotate(k * 9 + i);
+        canvas.drawRect(
+          Rect.fromCenter(
+            center: Offset.zero,
+            width: r * 0.09,
+            height: r * 0.05,
+          ),
+          Paint()..color = colors[i % colors.length].withValues(alpha: 1 - k),
+        );
+        canvas.restore();
+      }
+    }
+
+    // The party hat, tipped on the rim at the top right.
+    canvas.save();
+    final base = c + _dir(-0.85) * r * 1.0;
+    canvas.translate(base.dx, base.dy);
+    canvas.rotate(0.62 + math.sin(t * 2.2) * 0.06);
+    final hw = r * 0.34;
+    final hh = r * 0.62;
+    final cone = Path()
+      ..moveTo(-hw / 2, 0)
+      ..lineTo(hw / 2, 0)
+      ..lineTo(0, -hh)
+      ..close();
+    canvas.drawPath(cone, Paint()..color = const Color(0xFF64B5F6));
+    canvas.save();
+    canvas.clipPath(cone);
+    for (var s = 0; s < 4; s++) {
+      final y = -hh * (s + 0.5) / 4.2;
+      canvas.drawLine(
+        Offset(-hw, y + hw * 0.25),
+        Offset(hw, y - hw * 0.25),
+        Paint()
+          ..strokeWidth = hh * 0.08
+          ..color = colors[(s * 2 + 1) % colors.length],
+      );
+    }
+    canvas.restore();
+    canvas.drawCircle(
+      Offset(0, -hh),
+      r * 0.075,
+      Paint()..color = const Color(0xFFFFF4E0),
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(center: Offset.zero, width: hw * 1.1, height: r * 0.07),
+        Radius.circular(r * 0.03),
+      ),
+      Paint()..color = const Color(0xFFFFD166),
+    );
+    canvas.restore();
+
+    // The little cake at the bottom, its candle flickering.
+    final cb = c + Offset(0, r * 1.22);
+    final cw = r * 0.5;
+    final lower = Rect.fromCenter(
+      center: cb.translate(0, -r * 0.06),
+      width: cw,
+      height: r * 0.2,
+    );
+    final upper = Rect.fromCenter(
+      center: cb.translate(0, -r * 0.23),
+      width: cw * 0.7,
+      height: r * 0.16,
+    );
+    for (final (rect, color) in [
+      (lower, const Color(0xFFFF8FB9)),
+      (upper, const Color(0xFFFFF4E0)),
+    ]) {
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, Radius.circular(r * 0.04)),
+        Paint()..color = color,
+      );
+      canvas.drawRect(
+        Rect.fromLTWH(rect.left, rect.top, rect.width, rect.height * 0.28),
+        Paint()..color = Colors.white.withValues(alpha: 0.6),
+      );
+    }
+    final candle = Rect.fromCenter(
+      center: upper.topCenter.translate(0, -r * 0.08),
+      width: r * 0.05,
+      height: r * 0.16,
+    );
+    canvas.drawRect(candle, Paint()..color = const Color(0xFF6EE7B7));
+    final flick = 0.85 + 0.15 * math.sin(t * 17) + 0.06 * math.sin(t * 29);
+    final tip = candle.topCenter + Offset(math.sin(t * 6) * r * 0.01, 0);
+    canvas.drawCircle(
+      tip.translate(0, -r * 0.06),
+      r * 0.12 * flick,
+      Paint()
+        ..color = const Color(0x66FFD166)
+        ..maskFilter = _blur(r * 0.05),
+    );
+    final fh = r * 0.13 * flick;
+    canvas.drawPath(
+      Path()
+        ..moveTo(tip.dx, tip.dy - fh)
+        ..quadraticBezierTo(
+          tip.dx + r * 0.04,
+          tip.dy - fh * 0.3,
+          tip.dx,
+          tip.dy,
+        )
+        ..quadraticBezierTo(
+          tip.dx - r * 0.04,
+          tip.dy - fh * 0.3,
+          tip.dx,
+          tip.dy - fh,
+        )
+        ..close(),
+      Paint()..color = const Color(0xFFFFB238),
+    );
+
+    // Sparkles twinkling round the ring.
+    for (var i = 0; i < 6; i++) {
+      final a = i * math.pi / 3 + 0.3;
+      final tw = math.max(0.0, math.sin(t * 2.4 + i * 1.7));
+      if (tw <= 0) continue;
+      final p = c + _dir(a) * r * 1.24;
+      final s = r * 0.07 * tw;
+      final star = Path()
+        ..moveTo(p.dx, p.dy - s)
+        ..quadraticBezierTo(p.dx, p.dy, p.dx + s, p.dy)
+        ..quadraticBezierTo(p.dx, p.dy, p.dx, p.dy + s)
+        ..quadraticBezierTo(p.dx, p.dy, p.dx - s, p.dy)
+        ..quadraticBezierTo(p.dx, p.dy, p.dx, p.dy - s)
+        ..close();
+      canvas.drawPath(star, Paint()..color = const Color(0xFFFFF4E0));
     }
   }
 

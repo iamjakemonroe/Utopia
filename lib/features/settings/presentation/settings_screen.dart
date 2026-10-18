@@ -29,6 +29,7 @@ import '../../../core/now_playing/now_playing.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../store/presentation/coin_shop.dart';
 import '../../../core/config/env.dart';
+import '../../birthday/presentation/birthday_providers.dart';
 import '../../maestro/presentation/maestro_providers.dart';
 import '../../maestro/presentation/maestro_sheet.dart';
 import '../../store/presentation/store_controller.dart';
@@ -282,6 +283,22 @@ class SettingsScreen extends ConsumerWidget {
                     color: AppColors.sky,
                     title: 'Profile',
                     onTap: () => context.push('/profile'),
+                  ),
+                  Builder(
+                    builder: (context) {
+                      final saved = ref.watch(myBirthdayProvider).valueOrNull;
+                      return _LinkRow(
+                        icon: Icons.cake_rounded,
+                        color: const Color(0xFFFF6FAE),
+                        title: 'Your birthday',
+                        subtitle: saved == null
+                            ? 'Add it, and Chip throws you a party every year'
+                            : saved.canChange
+                            ? '${saved.birthday.label} (you can change it today)'
+                            : saved.birthday.label,
+                        onTap: () => context.push('/birthday'),
+                      );
+                    },
                   ),
                   _ToggleRow(
                     icon: Icons.monetization_on_rounded,

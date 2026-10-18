@@ -54,6 +54,11 @@ enum WorldBiome {
   /// manor, a twisted forest full of eyes, ghosts, a scarecrow, fog and a
   /// patch of jack-o'-lanterns.
   halloween,
+
+  /// A birthday party at dusk: bunting spelling HAPPY BIRTHDAY, fireworks,
+  /// balloons drifting up, and a floating island with a cake and presents.
+  /// Only ever seen on the player's own birthday.
+  birthday,
 }
 
 enum CelestialKind { ringedPlanet, sun, moon }
@@ -204,8 +209,23 @@ class UtopiaThemes {
     return starters[hash % starters.length];
   }
 
-  static UtopiaTheme byId(String? id) =>
-      all.firstWhere((t) => t.id == id, orElse: () => utopiaTwilight);
+  static UtopiaTheme byId(String? id) => find(id) ?? utopiaTwilight;
+
+  /// The theme with [id], hidden ones included, or null.
+  static UtopiaTheme? find(String? id) =>
+      [...all, ...secret].where((t) => t.id == id).firstOrNull;
+
+  /// Worlds that are never listed, sold or rented: the Birthday world, only
+  /// ever given (by the server) on the player's own birthday.
+  static final List<UtopiaTheme> secret = [utopiaBirthday];
+
+  /// Event worlds and their season: earned by playing in their event, and
+  /// only usable while it's on (never sold or rented).
+  static const seasonal = {'utopia_halloween': 'halloween'};
+
+  /// Whether [id] can be bought or rented in the store.
+  static bool sold(String id) =>
+      !seasonal.containsKey(id) && !secret.any((t) => t.id == id);
 
   static final List<UtopiaTheme> utopia = [
     utopiaCalm,
@@ -958,6 +978,60 @@ class UtopiaThemes {
       sparkles: [Color(0xFFFFA53D), Color(0xFF8BFF4A), Color(0xFFB98CFF)],
       haze: Color(0xFF2A1A3A),
       starDensity: 0.45,
+    ),
+  );
+
+  /// A birthday party at dusk, only ever seen on the player's own birthday.
+  static const utopiaBirthday = UtopiaTheme(
+    id: 'utopia_birthday',
+    name: 'Your Birthday',
+    family: 'Utopia',
+    tagline: 'A party in the sky, just for you. Happy birthday!',
+    background: Color(0xFF241044),
+    surface: Color(0xFF321A5A),
+    surfaceElevated: Color(0xFF3F2370),
+    accent: Color(0xFFFF6FAE),
+    trim: Color(0xFFFFD166),
+    trimBright: Color(0xFFFFE7A6),
+    glowRing: Color(0xFFFFB3D9),
+    textSecondary: Color(0xFFE2CFF5),
+    cardOutline: Color(0xFF12061F),
+    world: WorldStyle(
+      biome: WorldBiome.birthday,
+      // Deep plum overhead down to a warm peach sunset.
+      sky: [
+        Color(0xFF241044),
+        Color(0xFF3A1A63),
+        Color(0xFF6A2C82),
+        Color(0xFFB4498A),
+        Color(0xFFF07A72),
+        Color(0xFFFFB37A),
+      ],
+      horizonGlow: Color(0x66FFB37A),
+      aurora: [Color(0x30FF6FAE), Color(0x30FFD166)],
+      // A low, warm sun behind the party island.
+      celestial: CelestialKind.sun,
+      celestialColors: [
+        Color(0xFFFFF6D8),
+        Color(0xFFFFE0A0),
+        Color(0xFFFFB86B),
+        Color(0xFFF08A5D),
+      ],
+      ringColors: [Color(0xFFFFD166), Color(0xFFFF6FAE)],
+      cloudLight: Color(0xFFFFD1E8),
+      cloudShade: Color(0xFF9C6BB8),
+      layers: [
+        (Color(0xFF7A3C8C), Color(0xFF4A2066)),
+        (Color(0xFF5A2A78), Color(0xFF2E1450)),
+        (Color(0xFF3A1A5A), Color(0xFF1E0C38)),
+      ],
+      land: [Color(0xFF8EE3B0), Color(0xFF5FC98F), Color(0xFF3A9E6E)],
+      rock: [Color(0xFFC79BE0), Color(0xFF8E5DB5), Color(0xFF5A3584)],
+      foliage: [Color(0xFFFF8FB9), Color(0xFFFF6FAE), Color(0xFFB4498A)],
+      glow: Color(0xFFFFD166),
+      sparkles: [Color(0xFFFFD166), Color(0xFFFF6FAE), Color(0xFF6EE7B7)],
+      haze: Color(0xFF6A2C82),
+      starDensity: 0.35,
     ),
   );
 

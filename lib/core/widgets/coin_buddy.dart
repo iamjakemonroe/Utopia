@@ -87,10 +87,15 @@ class CoinBuddy extends StatefulWidget {
     this.flavor = ChipFlavor.none,
     this.lookAt,
     this.beret,
+    this.party,
   });
 
   final BuddyMood mood;
   final double size;
+
+  /// His birthday party hat: on or off whatever the day (to show it off),
+  /// or null to wear it on the player's birthday.
+  final bool? party;
 
   /// His artist's beret: on or off whatever the player's plan (to show it
   /// off), or null to wear it when they're a Chip Maestro member.
@@ -158,6 +163,11 @@ class _CoinBuddyState extends State<CoinBuddy>
           final fighter = WorldSets.dragon.amount;
           final dj = WorldSets.music.amount;
           final pumpkin = WorldSets.halloween.amount;
+          final party = switch (widget.party) {
+            true => 1.0,
+            false => 0.0,
+            null => WorldSets.birthday.amount,
+          };
           final artist = switch (widget.beret) {
             true => 1.0,
             false => 0.0,
@@ -240,6 +250,7 @@ class _CoinBuddyState extends State<CoinBuddy>
                       artist: artist,
                       dj: dj,
                       pumpkin: pumpkin,
+                      party: party,
                     ),
                   ),
                 ),
@@ -839,6 +850,7 @@ class _FacePainter extends CustomPainter {
     this.artist = 0,
     this.dj = 0,
     this.pumpkin = 0,
+    this.party = 0,
   });
 
   final BuddyMood mood;
@@ -866,6 +878,9 @@ class _FacePainter extends CustomPainter {
   /// Jack-o'-lantern Chip (the Halloween world's set): carved and lit from
   /// inside, in a witch's hat, 0 to 1.
   final double pumpkin;
+
+  /// The player's birthday: a party hat (in place of his beret), 0 to 1.
+  final double party;
 
   /// Turned far enough that his face is a zombie's, whatever his mood.
   bool get _dead => zombie >= 0.5;
@@ -1023,9 +1038,68 @@ class _FacePainter extends CustomPainter {
       canvas.restore();
     }
     if (fighter > 0) _headband(canvas, c, r);
-    if (artist > 0) _beret(canvas, c, r);
+    if (artist > 0 && party < 0.5) _beret(canvas, c, r);
     if (angel > 0) _halo(canvas, c, r);
     if (pumpkin > 0) _witchHat(canvas, c, r);
+    if (party > 0 && pumpkin < 0.5) _partyHat(canvas, c, r);
+  }
+
+  /// His birthday party hat: a striped cone tipped to one side with a fluffy
+  /// pom-pom, bobbing as he does.
+  void _partyHat(Canvas canvas, Offset c, double r) {
+    final a = party.clamp(0.0, 1.0);
+    const stripes = [Color(0xFFFFD166), Color(0xFF6EE7B7), Color(0xFFFFF4E0)];
+    canvas.save();
+    canvas.translate(c.dx + r * 0.22, c.dy - r * 0.78);
+    canvas.rotate(0.32 + math.sin(t * 1.6) * 0.05);
+    final w = r * 0.78;
+    final h = r * 1.0;
+    final cone = Path()
+      ..moveTo(-w / 2, 0)
+      ..quadraticBezierTo(0, r * 0.08, w / 2, 0)
+      ..lineTo(0, -h)
+      ..close();
+    canvas.drawPath(
+      cone,
+      Paint()..color = const Color(0xFFFF6FAE).withValues(alpha: a),
+    );
+    canvas.save();
+    canvas.clipPath(cone);
+    for (var s = 0; s < 4; s++) {
+      final y = -h * (s + 0.55) / 4.4;
+      canvas.drawLine(
+        Offset(-w, y + w * 0.22),
+        Offset(w, y - w * 0.22),
+        Paint()
+          ..strokeWidth = h * 0.09
+          ..color = stripes[s % stripes.length].withValues(alpha: a),
+      );
+    }
+    // A sheen down one side.
+    canvas.drawPath(
+      Path()
+        ..moveTo(-w * 0.32, 0)
+        ..lineTo(-w * 0.12, 0)
+        ..lineTo(0, -h)
+        ..close(),
+      Paint()..color = Colors.white.withValues(alpha: 0.22 * a),
+    );
+    canvas.restore();
+    // The pom-pom.
+    for (var k = 0; k < 7; k++) {
+      final ang = k / 7 * math.pi * 2 + t;
+      canvas.drawCircle(
+        Offset(0, -h) + Offset(math.cos(ang), math.sin(ang)) * r * 0.07,
+        r * 0.08,
+        Paint()..color = const Color(0xFFFFF4E0).withValues(alpha: a),
+      );
+    }
+    canvas.drawCircle(
+      Offset(0, -h),
+      r * 0.09,
+      Paint()..color = const Color(0xFFFFD166).withValues(alpha: a),
+    );
+    canvas.restore();
   }
 
   /// Chip Maestro: a red artist's beret tipped over one side (his sprout

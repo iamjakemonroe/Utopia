@@ -310,7 +310,6 @@ class StoreCatalog {
       'utopia_heaven',
       'utopia_hell',
       'utopia_music',
-      'utopia_halloween',
     ])
       StoreProduct(
         id: 'utopia.theme.$id',
@@ -329,7 +328,10 @@ class StoreCatalog {
     StoreProduct(
       id: 'utopia.themes.all',
       title: 'Every World',
-      itemIds: [for (final t in UtopiaThemes.all) t.id],
+      itemIds: [
+        for (final t in UtopiaThemes.all)
+          if (UtopiaThemes.sold(t.id)) t.id,
+      ],
     ),
     for (final set in ludoPieceSets)
       if (!set.free)

@@ -17,6 +17,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_background.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../birthday/data/birthday_repository.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
 
@@ -166,11 +167,17 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
         _step = _Step.done;
         _isLoading = false;
       });
-      // A moment to enjoy it, then Chip carries them home through the
-      // portal, the same trip as changing worlds. Home appears under the
-      // flash.
+      // A moment to enjoy it, then (if we don't know it yet) their
+      // birthday, or straight home: Chip carries them through the portal,
+      // the same trip as changing worlds, and home appears under the flash.
       final router = GoRouter.of(context);
-      Future.delayed(const Duration(milliseconds: 1300), () {
+      final knowsBirthday = _knowsBirthday();
+      Future.delayed(const Duration(milliseconds: 1300), () async {
+        if (!mounted) return;
+        if (!await knowsBirthday) {
+          if (mounted) router.go('/birthday?onboarding=1');
+          return;
+        }
         if (!mounted) return;
         final teleporting = ref
             .read(themeTeleportProvider.notifier)
@@ -187,6 +194,22 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  /// Whether the player has given their birthday already (if it can't be
+  /// checked, it isn't asked: they can add it in Settings).
+  Future<bool> _knowsBirthday() async {
+    final me = ref.read(currentUserProvider)?.id;
+    if (me == null) return true;
+    try {
+      final saved = await ref
+          .read(birthdayRepositoryProvider)
+          .fetch(me)
+          .timeout(const Duration(seconds: 4));
+      return saved != null;
+    } catch (_) {
+      return true;
     }
   }
 
