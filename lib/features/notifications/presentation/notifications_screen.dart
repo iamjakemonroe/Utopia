@@ -23,6 +23,9 @@ import '../data/notification_repository.dart';
 import 'answer_buttons.dart';
 import 'notification_actions.dart';
 import 'notification_center.dart';
+import '../../../core/supabase/supabase_providers.dart';
+import '../../../core/audio/game_audio.dart';
+import '../../../core/widgets/utopia_toast.dart';
 
 /// Everything that's happened: friend requests (answer them right here),
 /// requests accepted, and challenges. Opening it marks everything read.
@@ -216,6 +219,36 @@ class _RowState extends ConsumerState<_Row> {
     });
   }
 
+  /// A birthday wish back to the friend whose birthday it is.
+  Future<void> _wish() async {
+    final friend = widget.notification.actorId;
+    if (friend == null) return;
+    setState(() => _busy = true);
+    var ok = false;
+    try {
+      await ref
+          .read(supabaseClientProvider)
+          .rpc('wish_happy_birthday', params: {'p_friend': friend});
+      ok = true;
+      ref.read(gameAudioProvider).play(Sfx.reaction);
+    } catch (e) {
+      if (mounted) {
+        showUtopiaToast(
+          context,
+          e.toString().contains('not their birthday')
+              ? 'Their birthday is over. Catch them next year!'
+              : "Couldn't send that. Try again?",
+          kind: ToastKind.error,
+        );
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      if (ok) _answered = 'Wished!';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final n = widget.notification;
@@ -346,6 +379,25 @@ class _RowState extends ConsumerState<_Row> {
                         fontWeight: FontWeight.w800,
                         color: AppColors.success,
                       ),
+                    ),
+                  ),
+                )
+              else if (n.kind == 'friend_birthday' &&
+                  n.createdAt.isAfter(
+                    DateTime.now().subtract(const Duration(days: 1)),
+                  ))
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: look.color,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: _busy ? null : _wish,
+                      icon: const Icon(Icons.cake_rounded, size: 18),
+                      label: const Text('Wish happy birthday'),
                     ),
                   ),
                 )

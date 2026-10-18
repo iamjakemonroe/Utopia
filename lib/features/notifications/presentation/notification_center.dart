@@ -61,6 +61,20 @@ class NotificationLook {
           checkers ? Icons.blur_circular_rounded : Icons.extension_rounded,
           AppColors.coinGold,
         );
+      case 'friend_birthday':
+        return NotificationLook(
+          "It's $name's birthday!",
+          'Wish them a happy birthday.',
+          Icons.cake_rounded,
+          const Color(0xFFFF6FAE),
+        );
+      case 'birthday_wish':
+        return NotificationLook(
+          '$name wished you a happy birthday!',
+          'Have a wonderful day.',
+          Icons.celebration_rounded,
+          const Color(0xFFFFD166),
+        );
       default:
         return NotificationLook(
           name,

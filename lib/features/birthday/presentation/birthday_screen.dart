@@ -42,6 +42,28 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
   bool _saved = false;
   bool _seeded = false;
 
+  /// Whether friends hear about it on the day.
+  bool _tellFriends = true;
+
+  Future<void> _setTellFriends(bool on) async {
+    setState(() => _tellFriends = on);
+    // Saved already: change it now (it can change any time). Otherwise it
+    // goes with the save.
+    if (ref.read(myBirthdayProvider).valueOrNull == null) return;
+    try {
+      await ref.read(birthdayRepositoryProvider).setSharing(on);
+      ref.invalidate(myBirthdayProvider);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _tellFriends = !on);
+      showUtopiaToast(
+        context,
+        "Couldn't change that. Try again?",
+        kind: ToastKind.error,
+      );
+    }
+  }
+
   Birthday? get _choice {
     final month = _month;
     final day = _day;
@@ -72,6 +94,9 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
     setState(() => _saving = true);
     try {
       await ref.read(birthdayRepositoryProvider).save(choice);
+      if (!_tellFriends) {
+        await ref.read(birthdayRepositoryProvider).setSharing(false);
+      }
       ref.invalidate(myBirthdayProvider);
     } catch (e) {
       if (!mounted) return;
@@ -131,6 +156,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
       _seeded = true;
       _month = saved.birthday.month;
       _day = saved.birthday.day;
+      _tellFriends = saved.tellFriends;
     }
     final locked = saved != null && !saved.canChange && !widget.onboarding;
     final choice = _choice;
@@ -231,6 +257,11 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                           ),
                         ),
                       ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _TellFriends(
+                      value: _tellFriends,
+                      onChanged: _saving ? null : _setTellFriends,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     if (locked)
@@ -476,6 +507,52 @@ class _Summary extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// "Tell my friends on the day": friends get a notification on the
+/// player's birthday and can send a wish.
+class _TellFriends extends StatelessWidget {
+  const _TellFriends({required this.value, required this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 6, 8, 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: AppColors.surface.withValues(alpha: 0.6),
+        border: Border.all(color: AppColors.glowRing.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.people_rounded, color: AppColors.accentSecondary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tell my friends on the day',
+                  style: AppTextStyles.body(fontWeight: FontWeight.w800),
+                ),
+                Text(
+                  'They can send you a birthday wish.',
+                  style: AppTextStyles.body(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch.adaptive(value: value, onChanged: onChanged),
         ],
       ),
     );

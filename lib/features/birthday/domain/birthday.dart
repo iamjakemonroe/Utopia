@@ -59,10 +59,13 @@ class Birthday {
 /// The birthday a player has saved, and whether it can still be corrected
 /// (for a day after it was first set; then it's locked).
 class SavedBirthday {
-  const SavedBirthday(this.birthday, this.setAt);
+  const SavedBirthday(this.birthday, this.setAt, {this.tellFriends = true});
 
   final Birthday birthday;
   final DateTime setAt;
+
+  /// Whether their friends hear about it on the day.
+  final bool tellFriends;
 
   bool get canChange =>
       DateTime.now().difference(setAt) < const Duration(days: 1);

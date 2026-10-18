@@ -14,7 +14,7 @@ class BirthdayRepository {
   Future<SavedBirthday?> fetch(String userId) async {
     final row = await _client
         .from('user_birthdays')
-        .select('month, day, set_at')
+        .select('month, day, set_at, tell_friends')
         .eq('user_id', userId)
         .maybeSingle();
     if (row == null) return null;
@@ -22,6 +22,7 @@ class BirthdayRepository {
       Birthday((row['month'] as num).toInt(), (row['day'] as num).toInt()),
       DateTime.tryParse(row['set_at'] as String? ?? '')?.toLocal() ??
           DateTime.now(),
+      tellFriends: row['tell_friends'] as bool? ?? true,
     );
   }
 
@@ -30,6 +31,11 @@ class BirthdayRepository {
     'set_birthday',
     params: {'p_month': birthday.month, 'p_day': birthday.day},
   );
+
+  /// Whether their friends hear about their birthday on the day (any
+  /// time, even once the date's locked).
+  Future<void> setSharing(bool on) =>
+      _client.rpc('set_birthday_sharing', params: {'p_on': on});
 
   /// On the player's birthday: the Birthday world and frame until [until]
   /// (their midnight). Returns when the party ends, or null if it isn't
