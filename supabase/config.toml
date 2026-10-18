@@ -156,7 +156,7 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://localhost:3000"
+site_url = "https://utopia.kaivon.app"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
@@ -198,7 +198,9 @@ password_requirements = ""
 
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
-email_sent = 2
+# Every sign-in and sign-up is an email: keep this well above an hour's
+# sign-ins (Resend's plan caps the day too).
+email_sent = 150
 # Number of SMS messages that can be sent per hour. Requires auth.sms to be enabled.
 sms_sent = 30
 # Number of anonymous sign-ins that can be made per hour per IP address. Requires enable_anonymous_sign_ins = true.
@@ -238,17 +240,16 @@ otp_expiry = 3600
 # Production SMTP via Resend, needed because Supabase's free tier blocks
 # custom email templates (subject/HTML) when using its own default mailer —
 # confirmed by a rejected `config push` on 2026-09-23. The RESEND_API_KEY
-# secret is never committed; it's read from the environment at push time
-# via the env(...) substitution, same pattern SendGrid/Twilio used above.
-# `onboarding@resend.dev` works immediately with no domain verification;
-# swap it for a verified sender on your own domain before real launch.
+# secret is never committed; it's read from env/resend.env at push time
+# (tool/push_auth_email.sh) via the env(...) substitution. The sender's
+# domain, kaivon.app, must be verified in Resend first.
 [auth.email.smtp]
 enabled = true
 host = "smtp.resend.com"
 port = 587
 user = "resend"
 pass = "env(RESEND_API_KEY)"
-admin_email = "onboarding@resend.dev"
+admin_email = "noreply@kaivon.app"
 sender_name = "Utopia"
 
 # Uncomment to customize email template
