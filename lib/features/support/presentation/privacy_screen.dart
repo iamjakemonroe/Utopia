@@ -12,7 +12,7 @@ import '../../../core/widgets/pop_card.dart';
 class PrivacyScreen extends StatelessWidget {
   const PrivacyScreen({super.key});
 
-  static const updated = 'October 18, 2026';
+  static const updated = 'October 20, 2026';
 
   static const _sections = <(String, List<String>)>[
     (
@@ -25,6 +25,7 @@ class PrivacyScreen extends StatelessWidget {
         'Messages. Chat messages and voice notes you send in games and to friends. Voice notes are only available to the players in that game.',
         'Friends. Friend requests and your friends list.',
         'Reports. When you report a bug or suggest a feature: what you write, an optional screenshot, an optional email for follow-up, and the app version, phone system, screen and world you were in.',
+        "How you use Utopia. When the app opens, the screens you go to, and when you finish a game, buy something, earn a reward, share an invite or chat with Chip (not what you say), so we can see what works and fix what doesn't. It stays in our own database: it's never sold or given to advertisers, and it's deleted with your account.",
         "Chip. When you chat with Chip, your messages and some context from the app (your first name, the time, the screen and world you're on, and your coins, worlds and aura) are used to write his replies. Your conversation is kept on your phone until you start a new chat. Chip can also keep a few short notes about things you tell him, like a plan or a favourite world, so he can follow up next time; ask him to forget and he deletes them. If you send Chip a photo, it's used to draw your picture and isn't kept on our servers; it stays on your phone until you start a new chat, and a picture drawn from it is visible only to you. When Chip colors a picture for you, the picture is sent to him to choose the colors. A real portrait is drawn from your photo or the name you give. One from your photo is kept privately for you; one of a famous person is shared with other Chip Maestro members who ask for them. If you let Chip see what you're playing in other apps, the title and artist of the song, video or podcast are used for his reaction to it.",
         'Your Sketchbook drawings are kept only on your phone, unless you choose to save one to your photos.',
       ],

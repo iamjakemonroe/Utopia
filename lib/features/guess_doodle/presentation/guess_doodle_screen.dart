@@ -20,6 +20,7 @@ import 'widgets/doodle_overlays.dart';
 import 'widgets/doodle_tools.dart';
 import '../../invites/domain/game_invite.dart';
 import '../../events/presentation/events_controller.dart';
+import '../../../core/analytics/analytics.dart';
 
 /// Name colors, given out in drawing order.
 const _nameColors = [
@@ -203,6 +204,7 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
   }
 
   Future<void> _share(String code) async {
+    ref.read(analyticsProvider).log('invite_shared', {'game': 'doodle'});
     _play(Sfx.tap);
     final box = context.findRenderObject() as RenderBox?;
     await SharePlus.instance.share(

@@ -18,6 +18,7 @@ import '../../store/presentation/theme_teleport.dart';
 import '../data/birthday_repository.dart';
 import '../domain/birthday.dart';
 import 'birthday_providers.dart';
+import '../../../core/analytics/analytics.dart';
 
 /// "When's your birthday?": the day and month (never the year), so Chip
 /// can throw the player a party every year in a world that only opens on
@@ -87,6 +88,9 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
     if (!mounted) return;
     HapticFeedback.mediumImpact();
     ref.read(gameAudioProvider).play(Sfx.purchase);
+    ref.read(analyticsProvider).log('birthday_saved', {
+      'onboarding': widget.onboarding,
+    });
     setState(() {
       _saving = false;
       _saved = true;

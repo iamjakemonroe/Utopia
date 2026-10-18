@@ -20,6 +20,7 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../birthday/data/birthday_repository.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
+import '../../../../core/analytics/analytics.dart';
 
 class EmailLinkScreen extends ConsumerStatefulWidget {
   const EmailLinkScreen({super.key});
@@ -163,6 +164,9 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       _cooldown?.cancel();
       HapticFeedback.mediumImpact();
       ref.read(gameAudioProvider).play(Sfx.purchase);
+      ref
+          .read(analyticsProvider)
+          .log(_isLinking ? 'account_saved' : 'signed_in');
       setState(() {
         _step = _Step.done;
         _isLoading = false;

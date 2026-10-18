@@ -21,6 +21,7 @@ import '../../store/presentation/coin_shop.dart';
 import '../data/aura_repository.dart';
 import '../domain/aura.dart';
 import 'mythic_badge.dart';
+import '../../../core/analytics/analytics.dart';
 
 /// The aura up close: a big live preview on your own picture, how long to
 /// get it for, and the price.
@@ -59,6 +60,10 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
       await ref.read(auraRepositoryProvider).buy(widget.aura.id, _length);
       _refresh();
       ref.read(gameAudioProvider).play(Sfx.purchase);
+      ref.read(analyticsProvider).log('frame_bought', {
+        'frame': widget.aura.id,
+        'days': _length.days,
+      });
       if (!mounted) return;
       setState(() => _celebrate++);
       showUtopiaToast(

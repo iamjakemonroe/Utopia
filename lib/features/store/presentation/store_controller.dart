@@ -17,6 +17,7 @@ import '../../maestro/data/maestro_repository.dart';
 import '../../maestro/presentation/maestro_providers.dart';
 import '../data/store_repository.dart';
 import '../domain/store_catalog.dart';
+import '../../../core/analytics/analytics.dart';
 
 final storeRepositoryProvider = Provider<StoreRepository>(
   (ref) => StoreRepository(ref.watch(supabaseClientProvider)),
@@ -428,7 +429,10 @@ class StoreController extends StateNotifier<StoreState> {
                 ? 'Welcome to Chip Maestro!'
                 : 'Your Chip Maestro plan is back.',
           );
-          if (fresh) _ref.read(gameAudioProvider).play(Sfx.purchase);
+          if (fresh) {
+            _ref.read(gameAudioProvider).play(Sfx.purchase);
+            _ref.read(analyticsProvider).log('maestro_joined');
+          }
           return true;
         case 'expired':
           _ref.invalidate(maestroProvider);
@@ -484,6 +488,11 @@ class StoreController extends StateNotifier<StoreState> {
             );
             // The balance on screen follows by itself (it's live).
             if (coins > 0) _ref.read(gameAudioProvider).play(Sfx.purchase);
+            if (coins > 0) {
+              _ref.read(analyticsProvider).log('coin_purchase', {
+                'pack': pack.id,
+              });
+            }
           } else {
             state = state.copyWith(
               clearBusy: true,
@@ -529,6 +538,9 @@ class StoreController extends StateNotifier<StoreState> {
         unlockedFocus: product.itemIds.contains(_focus) ? _focus : null,
       );
       _ref.read(gameAudioProvider).play(Sfx.purchase);
+      _ref.read(analyticsProvider).log('store_purchase', {
+        'product': product.id,
+      });
     } catch (e) {
       final price = state.coinPrices[product.id];
       state = state.copyWith(
@@ -607,6 +619,7 @@ class StoreController extends StateNotifier<StoreState> {
       final until = await _repo.rentWorld(worldId, days);
       state = state.copyWith(rentals: {...state.rentals, worldId: until});
       _ref.read(gameAudioProvider).play(Sfx.purchase);
+      _ref.read(analyticsProvider).log('world_rented', {'world': worldId});
       return null;
     } catch (e) {
       if (e.toString().contains('insufficient balance')) {

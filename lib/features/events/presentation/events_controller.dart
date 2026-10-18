@@ -6,6 +6,7 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../store/presentation/store_controller.dart';
 import '../data/events_repository.dart';
 import '../domain/game_event.dart';
+import '../../../core/analytics/analytics.dart';
 
 @immutable
 class EventsState {
@@ -48,6 +49,10 @@ class EventsController extends StateNotifier<EventsState> {
   /// A game just finished: [game] is 'chess', 'checkers', 'ludo' or
   /// 'doodle'; [matchId] for an online one.
   Future<void> gameFinished(String game, {String? matchId}) async {
+    _ref.read(analyticsProvider).log('game_finished', {
+      'game': game,
+      'online': matchId != null,
+    });
     try {
       _take(await _repo.countGame(game, matchId: matchId));
     } catch (_) {
@@ -68,6 +73,11 @@ class EventsController extends StateNotifier<EventsState> {
       events: status.events,
       justEarned: earned.isEmpty ? null : earned,
     );
+    for (final reward in earned) {
+      _ref.read(analyticsProvider).log('reward_earned', {
+        'item': reward.itemId,
+      });
+    }
     if (earned.isNotEmpty) {
       _ref.read(storeControllerProvider.notifier).refresh();
       final me = _ref.read(currentUserProvider)?.id;

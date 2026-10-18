@@ -18,6 +18,7 @@ import 'features/notifications/presentation/notification_center.dart';
 import 'features/store/presentation/theme_teleport.dart';
 import 'features/events/presentation/event_widgets.dart';
 import 'features/events/presentation/events_controller.dart';
+import 'core/analytics/screen_views.dart';
 import 'core/audio/world_soundscape.dart';
 
 class UtopiaApp extends ConsumerWidget {
@@ -35,6 +36,8 @@ class UtopiaApp extends ConsumerWidget {
     ref.watch(maestroLookProvider);
     // On the player's birthday, his party hat.
     ref.watch(birthdayTodayProvider);
+    // Which screens players go to, for our analytics.
+    ref.watch(screenViewsProvider);
     // A world's own sounds (Halloween's thunder, wind, ghosts) on home.
     ref.watch(worldSoundscapeProvider);
     // An event reward just earned (in a game, or arriving home).

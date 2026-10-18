@@ -27,6 +27,7 @@ import '../../welcome/data/welcome_repository.dart';
 import '../../home/domain/greeting.dart';
 import '../../birthday/presentation/birthday_providers.dart';
 import '../../events/presentation/events_controller.dart';
+import '../../../core/analytics/analytics.dart';
 
 class ChipChatState {
   const ChipChatState({this.lines = const [], this.thinking = false});
@@ -143,6 +144,7 @@ class ChipChatController extends StateNotifier<ChipChatState> {
     if ((message.isEmpty && photo == null) || state.thinking) return;
     final history = state.lines;
     final context = _context(history);
+    _ref.read(analyticsProvider).log('chip_message', {'photo': photo != null});
     final path = photo == null ? null : await _keepPhoto(photo);
     if (!mounted) return;
     if (photo != null) _photo = (bytes: photo, at: DateTime.now());

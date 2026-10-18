@@ -32,6 +32,24 @@ Deno.serve(async (req) => {
     auth: { persistSession: false },
   });
 
+  // Their voice notes' files (the messages go with anonymize_account, so
+  // find them first): "voice:<match>/<note>.m4a|<length>|<waveform>".
+  const voicePaths: string[] = [];
+  for (const table of ["chess_chat_messages", "ludo_chat_messages"]) {
+    const { data: notes } = await admin
+      .from(table)
+      .select("body")
+      .eq("sender_id", user.id)
+      .eq("kind", "voice");
+    for (const note of notes ?? []) {
+      const path = /^voice:([^|]+)\|/.exec(note.body as string)?.[1];
+      if (path) voicePaths.push(path);
+    }
+  }
+  if (voicePaths.length > 0) {
+    await admin.storage.from("voice-notes").remove(voicePaths);
+  }
+
   const { error: forgetError } = await admin.rpc("anonymize_account", {
     p_user: user.id,
   });

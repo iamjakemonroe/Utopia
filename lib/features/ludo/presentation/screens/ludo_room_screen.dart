@@ -30,6 +30,7 @@ import '../widgets/ludo_pieces.dart';
 import '../widgets/ludo_setup_widgets.dart';
 import 'ludo_lobby_screen.dart';
 import '../../../invites/domain/game_invite.dart';
+import '../../../../core/analytics/analytics.dart';
 
 /// A friends' room: the code to share, a seat for each color filling up as
 /// friends join, and the host's start button. Everyone is taken to the game
@@ -143,6 +144,7 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
   }
 
   Future<void> _share(String code) async {
+    ref.read(analyticsProvider).log('invite_shared', {'game': 'ludo'});
     ref.read(gameAudioProvider).play(Sfx.tap);
     final box = context.findRenderObject() as RenderBox?;
     await SharePlus.instance.share(

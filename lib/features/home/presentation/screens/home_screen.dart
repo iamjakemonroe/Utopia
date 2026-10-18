@@ -53,6 +53,7 @@ import '../widgets/now_playing_widgets.dart';
 import '../widgets/side_menu.dart';
 import '../../../events/presentation/event_widgets.dart';
 import '../../../events/presentation/events_controller.dart';
+import '../../../../core/analytics/analytics.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -92,6 +93,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (me != null && _eventsVisitedBy != me) {
       _eventsVisitedBy = me;
       ref.read(eventsProvider.notifier).visit();
+      ref.read(analyticsProvider).log('app_open', {
+        'guest': ref.read(isAnonymousProvider),
+      });
     }
     _offerRewardSoon();
   }
