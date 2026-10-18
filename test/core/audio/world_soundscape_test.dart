@@ -16,6 +16,14 @@ void main() {
     }
   });
 
+  test('every music track is in the assets', () {
+    for (final track in MusicTrack.values) {
+      final asset = track.asset;
+      if (asset == null) continue;
+      expect(File('assets/$asset').existsSync(), isTrue, reason: asset);
+    }
+  });
+
   test('a moment in a repeating cycle is caught once, as it passes', () {
     // Lightning every 9 seconds, flashing at 0, 9, 18...
     const period = 9.0;
