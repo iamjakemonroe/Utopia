@@ -414,6 +414,7 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
             if (over && _showResult)
               Positioned.fill(
                 child: MatchResultCard(
+                  matchId: widget.matchId,
                   result: state.outcome?.result,
                   winnerId: state.outcome?.winnerId,
                   settled: state.outcome?.settled ?? true,

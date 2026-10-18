@@ -1,5 +1,5 @@
-// Phone screenshots of the birthday page, the event card and the event
-// sheet, into test/tool/goldens/. Run:
+// Phone screenshots of the birthday page, the event card and sheet, and
+// the rankings, into test/tool/goldens/. Run:
 // flutter test --run-skipped --update-goldens test/tool/new_screens_sheet_test.dart
 @Tags(['sheet'])
 library;
@@ -21,6 +21,9 @@ import 'package:utopia/features/birthday/presentation/birthday_screen.dart';
 import 'package:utopia/features/events/domain/game_event.dart';
 import 'package:utopia/features/events/presentation/event_widgets.dart';
 import 'package:utopia/features/events/presentation/events_controller.dart';
+import 'package:utopia/features/rankings/data/rankings_repository.dart';
+import 'package:utopia/features/rankings/domain/ranking.dart';
+import 'package:utopia/features/rankings/presentation/rankings_screen.dart';
 
 class _Events extends EventsController {
   _Events(super.ref, List<GameEvent> events) {
@@ -53,6 +56,30 @@ final _halloween = GameEvent(
   ],
 );
 
+final _board = Leaderboard(
+  top: [
+    for (final (i, (name, rating, games)) in const [
+      ('Ada', 1734, 61),
+      ('Kofi', 1588, 40),
+      ('Mei', 1412, 33),
+      ('Sam', 1296, 18),
+      ('Lena', 1188, 12),
+      ('Theo', 1104, 9),
+      ('Ivy', 1031, 6),
+    ].indexed)
+      BoardEntry(
+        place: i + 1,
+        userId: 'u$i',
+        profile: {'display_name': name, 'avatar_seed': i * 7 + 3},
+        rating: rating,
+        games: games,
+      ),
+  ],
+  myPlace: 5,
+  myRating: 1188,
+  myGames: 12,
+);
+
 Future<void> _phone(
   WidgetTester tester,
   Widget child, {
@@ -76,6 +103,7 @@ Future<void> _phone(
         currentUserProvider.overrideWithValue(null),
         myBirthdayProvider.overrideWith((ref) async => null),
         eventsProvider.overrideWith((ref) => _Events(ref, [_halloween])),
+        leaderboardProvider.overrideWith((ref, key) async => _board),
       ],
       child: MaterialApp(debugShowCheckedModeBanner: false, home: child),
     ),
@@ -134,6 +162,17 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/new_event_sheet.png'),
+    );
+  });
+
+  testWidgets('rankings', (tester) async {
+    await _phone(tester, const RankingsScreen());
+    // The board loads after the first frame; its fonts too.
+    await tester.runAsync(GoogleFonts.pendingFonts);
+    await tester.pump(const Duration(milliseconds: 600));
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/new_rankings.png'),
     );
   });
 }

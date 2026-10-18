@@ -21,6 +21,8 @@ import '../../../../core/widgets/utopia_loader.dart';
 import '../../../chat/domain/voice_note.dart';
 import '../../../chat/presentation/chat_sticker.dart';
 import '../../../chat/presentation/voice_notes.dart';
+import '../../../rankings/data/rankings_repository.dart';
+import '../../../rankings/domain/ranking.dart';
 import '../../domain/time_control.dart';
 
 /// The parts of a live board game's screen that chess and checkers share:
@@ -538,8 +540,12 @@ class MatchResultCard extends ConsumerStatefulWidget {
     required this.opponentId,
     required this.onReview,
     required this.playAgainRoute,
+    this.matchId,
     this.describe,
   });
+
+  /// The match, to show how it moved the player's rating.
+  final String? matchId;
 
   /// How it ended: 'resignation', 'timeout', 'aborted', 'draw', or the
   /// game's own words ('checkmate', 'win', ...).
@@ -748,6 +754,13 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
                         ),
                       ),
                   ],
+                  if (widget.matchId case final id?
+                      when widget.settled && !aborted && !disputed)
+                    if (ref.watch(ratingChangeProvider(id)).valueOrNull
+                        case final change?) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      _RatingPill(change: change),
+                    ],
                   const SizedBox(height: AppSpacing.lg),
                   Row(
                     children: [
@@ -777,6 +790,57 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The player's new rating, counting up (or down) from the old one.
+class _RatingPill extends StatelessWidget {
+  const _RatingPill({required this.change});
+
+  final RatingChange change;
+
+  @override
+  Widget build(BuildContext context) {
+    final up = change.delta >= 0;
+    final tier = RankTier.of(change.after);
+    return GestureDetector(
+      onTap: () => context.push('/rankings'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.black.withValues(alpha: 0.25),
+          border: Border.all(color: tier.color.withValues(alpha: 0.6)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.military_tech_rounded, color: tier.color, size: 20),
+            const SizedBox(width: 6),
+            TweenAnimationBuilder<double>(
+              tween: Tween(
+                begin: change.before.toDouble(),
+                end: change.after.toDouble(),
+              ),
+              duration: const Duration(milliseconds: 1400),
+              curve: Curves.easeOutCubic,
+              builder: (context, v, _) => Text(
+                'Rating ${v.round()}',
+                style: AppTextStyles.body(fontWeight: FontWeight.w800),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              change.label,
+              style: AppTextStyles.body(
+                fontWeight: FontWeight.w900,
+                color: up ? AppColors.success : AppColors.error,
+              ),
+            ),
+          ],
         ),
       ),
     );

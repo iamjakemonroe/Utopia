@@ -9,6 +9,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_controller.dart';
 import '../../../core/widgets/app_background.dart';
+import '../../../core/widgets/bubble_toggle.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/confetti_burst.dart';
 import '../../../core/widgets/primary_button.dart';
@@ -552,7 +553,12 @@ class _TellFriends extends StatelessWidget {
               ],
             ),
           ),
-          Switch.adaptive(value: value, onChanged: onChanged),
+          BubbleToggle(
+            value: value,
+            onChanged: onChanged,
+            onIcon: Icons.people_rounded,
+            semanticLabel: 'Tell my friends on the day',
+          ),
         ],
       ),
     );

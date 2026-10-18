@@ -29,11 +29,14 @@ import '../../../auras/domain/aura.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../chess/domain/chess_types.dart';
 import '../../../chess/presentation/widgets/chess_piece_art.dart';
+import '../../../checkers/domain/checkers_engine.dart';
+import '../../../checkers/presentation/widgets/checkers_disc.dart';
 import '../../../chess/presentation/widgets/chess_piece_styles.dart';
 import '../../../coins/presentation/providers/coin_balance_provider.dart';
 import '../../../ludo/domain/ludo_engine.dart';
 import '../../../ludo/presentation/controllers/ludo_match_controller.dart';
 import '../../../ludo/presentation/widgets/ludo_pieces.dart';
+import '../../../rankings/domain/ranking.dart';
 import '../../../store/domain/store_catalog.dart';
 import '../../../store/presentation/coin_shop.dart';
 import '../username_dialog.dart';
@@ -656,8 +659,9 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final played = _n('ludo_played') + _n('chess_played');
-    final won = _n('ludo_won') + _n('chess_won');
+    final played =
+        _n('ludo_played') + _n('chess_played') + _n('checkers_played');
+    final won = _n('ludo_won') + _n('chess_won') + _n('checkers_won');
     final rate = played == 0 ? 0 : (won * 100 / played).round();
     return Column(
       children: [
@@ -691,6 +695,24 @@ class _StatsRow extends StatelessWidget {
           ludoWon: _n('ludo_won'),
           chessPlayed: _n('chess_played'),
           chessWon: _n('chess_won'),
+          checkersPlayed: _n('checkers_played'),
+          checkersWon: _n('checkers_won'),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Row(
+          children: [
+            _RatingTile(
+              game: 'chess',
+              label: 'Chess',
+              rating: (stats?['chess_rating'] as num?)?.toInt(),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            _RatingTile(
+              game: 'checkers',
+              label: 'Checkers',
+              rating: (stats?['checkers_rating'] as num?)?.toInt(),
+            ),
+          ],
         ),
       ],
     );
@@ -744,12 +766,16 @@ class _GameSplit extends StatelessWidget {
     required this.ludoWon,
     required this.chessPlayed,
     required this.chessWon,
+    required this.checkersPlayed,
+    required this.checkersWon,
   });
 
   final int ludoPlayed;
   final int ludoWon;
   final int chessPlayed;
   final int chessWon;
+  final int checkersPlayed;
+  final int checkersWon;
 
   @override
   Widget build(BuildContext context) {
@@ -831,7 +857,97 @@ class _GameSplit extends StatelessWidget {
             chessPlayed,
             AppColors.accent,
           ),
+          const SizedBox(height: 10),
+          bar(
+            const SizedBox.square(
+              dimension: 26,
+              child: CustomPaint(painter: _CheckersDiscArt()),
+            ),
+            checkersWon,
+            checkersPlayed,
+            AppColors.coral,
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _CheckersDiscArt extends CustomPainter {
+  const _CheckersDiscArt();
+
+  @override
+  void paint(Canvas canvas, Size size) => paintCheckersDisc(
+    canvas,
+    size.center(Offset.zero),
+    size.width * 0.42,
+    finish: checkersFinish('classic', CheckersSide.dark),
+  );
+
+  @override
+  bool shouldRepaint(covariant _CheckersDiscArt old) => false;
+}
+
+/// A game's rating and tier; tap for the rankings.
+class _RatingTile extends StatelessWidget {
+  const _RatingTile({
+    required this.game,
+    required this.label,
+    required this.rating,
+  });
+
+  final String game;
+  final String label;
+
+  /// Null until they've played a rated (online) game.
+  final int? rating;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = rating;
+    final tier = r == null ? null : RankTier.of(r);
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => context.push('/rankings?game=$game'),
+        child: PopCard(
+          borderRadius: 20,
+          depth: 3,
+          borderWidth: 1.5,
+          padding: const EdgeInsets.fromLTRB(10, 10, 4, 10),
+          child: Row(
+            children: [
+              GlossyBadge(
+                icon: Icons.military_tech_rounded,
+                color: tier?.color ?? AppColors.textSecondary,
+                size: 34,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tier == null ? label : '$label · ${tier.label}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.body(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      r == null ? 'Unrated' : '$r',
+                      style: AppTextStyles.display(
+                        fontSize: r == null ? 16 : 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+            ],
+          ),
+        ),
       ),
     );
   }

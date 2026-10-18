@@ -110,6 +110,12 @@ class _SideMenu extends ConsumerWidget {
         () => go('/collection'),
       ),
       _MenuItem(
+        Icons.leaderboard_rounded,
+        'Rankings',
+        AppColors.coral,
+        () => go('/rankings'),
+      ),
+      _MenuItem(
         Icons.notifications_rounded,
         'Notifications',
         AppColors.sky,

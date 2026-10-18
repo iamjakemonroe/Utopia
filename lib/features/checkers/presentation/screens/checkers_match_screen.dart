@@ -377,6 +377,7 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
             if (over && _showResult)
               Positioned.fill(
                 child: MatchResultCard(
+                  matchId: widget.matchId,
                   result: state.outcome?.result,
                   winnerId: winnerId,
                   settled: state.outcome?.settled ?? true,

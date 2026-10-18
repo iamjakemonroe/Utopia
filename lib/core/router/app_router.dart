@@ -32,6 +32,7 @@ import '../../features/ludo/presentation/screens/ludo_match_screen.dart';
 import '../../features/ludo/presentation/screens/ludo_room_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/rankings/presentation/rankings_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/store/presentation/store_screen.dart';
 import '../../features/doodle_studio/domain/art_doc.dart';
@@ -118,6 +119,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             'chess' => 3,
             _ => 0,
           },
+        ),
+      ),
+      // Chess and checkers ratings, and the top players.
+      GoRoute(
+        path: '/rankings',
+        builder: (context, state) => RankingsScreen(
+          initialTab: state.uri.queryParameters['game'] == 'checkers' ? 1 : 0,
         ),
       ),
       GoRoute(

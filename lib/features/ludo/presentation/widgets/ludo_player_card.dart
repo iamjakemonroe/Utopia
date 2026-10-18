@@ -17,6 +17,7 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../coins/presentation/providers/coin_balance_provider.dart';
 import '../../../friends/data/friend_repository.dart';
 import '../../../friends/presentation/providers/friends_providers.dart';
+import '../../../rankings/domain/ranking.dart';
 import '../../../store/domain/store_catalog.dart';
 import '../../domain/ludo_engine.dart';
 import '../controllers/ludo_match_controller.dart';
@@ -145,6 +146,8 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
     final prefix = widget.game.name;
     final won = stats?['${prefix}_won'];
     final played = stats?['${prefix}_played'];
+    final rating = (stats?['${prefix}_rating'] as num?)?.toInt();
+    final tier = rating == null ? null : RankTier.of(rating);
 
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 360),
@@ -237,6 +240,12 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
                       iconColor: AppColors.accentSecondary,
                       label: pieces,
                     ),
+                    if (rating != null && tier != null)
+                      _Chip(
+                        icon: Icons.military_tech_rounded,
+                        iconColor: tier.color,
+                        label: '$rating · ${tier.label}',
+                      ),
                     if (coins != null)
                       _Chip(
                         icon: Icons.monetization_on_rounded,
