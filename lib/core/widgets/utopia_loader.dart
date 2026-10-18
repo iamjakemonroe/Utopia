@@ -308,7 +308,7 @@ class Coin3D extends StatelessWidget {
       filterQuality: FilterQuality.medium,
     );
     final front = at(-half, face);
-    // Pre-flipped so the "S" reads correctly when the back is showing.
+    // Pre-flipped so the face reads correctly when the back is showing.
     final back = at(
       half,
       Transform(

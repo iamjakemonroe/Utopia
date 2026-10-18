@@ -9,7 +9,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/utopia_icons.dart';
 
-/// The Utopia medallion floating in a halo of turning light, with Chip
+/// The Utopia gateway floating in a halo of turning light, with Chip
 /// hovering beside it.
 class AuthHero extends StatefulWidget {
   const AuthHero({super.key, this.mood = BuddyMood.happy, this.size = 150});
@@ -116,7 +116,7 @@ class _HaloPainter extends CustomPainter {
           ).createShader(Rect.fromCircle(center: c, radius: len)),
       );
     }
-    // Sparkles twinkling around the medallion.
+    // Sparkles twinkling around the gateway.
     for (var i = 0; i < 7; i++) {
       final phase = (t * 0.6 + i * 0.29) % 1.4;
       if (phase > 1) continue;

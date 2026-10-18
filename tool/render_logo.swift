@@ -4,8 +4,9 @@
 // floating rock, a sunrise world glowing through it, transparent),
 // app_icon.png (the mark in the night sky, opaque, for the launcher
 // icons), coin_face.png
-// (the gold coin the loader flips and Chip's back), the native launch
-// images, and the landing page's logo, favicon and touch icon.
+// (the gold coin the loader flips and Chip's back: the gateway on gold),
+// the native launch images, and the landing page's logo, favicon and
+// touch icon. With the argument "coin", only the coin face.
 import CoreGraphics
 import Foundation
 import ImageIO
@@ -132,68 +133,16 @@ func drawMedallion(_ ctx: CGContext, _ c: CGPoint, _ R: CGFloat) {
   ctx.setLineWidth(R * 0.016)
   ctx.strokeEllipse(in: disc)
 
-  // Orbit ring: tilted, passing behind the U and back out in front of it.
-  let ringRx = r * 0.86, ringRy = r * 0.24, tilt: CGFloat = -0.32
-  let ringCenter = CGPoint(x: c.x, y: c.y + r * 0.12)
-  // The ring is one continuous loop; its near half is drawn again over the
-  // U so the U sits inside it.
-  func ring(nearHalfOnly: Bool) {
-    ctx.saveGState()
-    ctx.translateBy(x: ringCenter.x, y: ringCenter.y)
-    ctx.rotate(by: tilt)
-    if nearHalfOnly {
-      // Top-down coordinates: the near half is the lower one (y > 0).
-      ctx.clip(to: CGRect(x: -ringRx * 1.3, y: 0, width: ringRx * 2.6, height: ringRy * 2))
-    }
-    let loop = CGPath(ellipseIn: CGRect(x: -ringRx, y: -ringRy, width: ringRx * 2, height: ringRy * 2), transform: nil)
-    ctx.addPath(loop.copy(strokingWithWidth: r * 0.075, lineCap: .butt, lineJoin: .round, miterLimit: 1))
-    ctx.clip()
-    ctx.drawLinearGradient(
-      gradient([color(0xFFF1B8), color(0xFFC94D), color(0xFF8FC4)], [0, 0.55, 1]),
-      start: CGPoint(x: -ringRx, y: 0), end: CGPoint(x: ringRx, y: 0), options: [])
-    ctx.restoreGState()
-  }
-  ring(nearHalfOnly: false)
-
-  // The U: one thick rounded stroke.
-  let uw = r * 0.62, top = c.y - r * 0.42, bottomY = c.y + r * 0.08
-  let u = CGMutablePath()
-  u.move(to: CGPoint(x: c.x - uw / 2, y: top))
-  u.addLine(to: CGPoint(x: c.x - uw / 2, y: bottomY))
-  u.addArc(center: CGPoint(x: c.x, y: bottomY), radius: uw / 2, startAngle: .pi, endAngle: 0, clockwise: true)
-  u.addLine(to: CGPoint(x: c.x + uw / 2, y: top))
-  let uShape = u.copy(strokingWithWidth: r * 0.26, lineCap: .round, lineJoin: .round, miterLimit: 1)
-  // Soft drop shadow.
+  // The gateway, glowing in the middle of the enamel (the app icon's mark,
+  // so the coin matches it).
   ctx.saveGState()
-  ctx.setShadow(offset: CGSize(width: 0, height: r * 0.05), blur: r * 0.08, color: color(0x12082E, 0.7))
-  ctx.setFillColor(color(0xFFFFFF))
-  ctx.addPath(uShape)
-  ctx.fillPath()
-  ctx.restoreGState()
-  ctx.saveGState()
-  ctx.addPath(uShape)
+  ctx.addEllipse(in: disc)
   ctx.clip()
-  ctx.drawLinearGradient(
-    gradient([color(0xFFFFFF), color(0xF3EDFF), color(0xCDBBFF)], [0, 0.5, 1]),
-    start: CGPoint(x: c.x, y: top - r * 0.15), end: CGPoint(x: c.x, y: bottomY + uw / 2 + r * 0.15), options: [])
-  // Gloss on the left arm.
-  ctx.setFillColor(color(0xFFFFFF, 0.55))
-  ctx.fillEllipse(in: CGRect(x: c.x - uw / 2 - r * 0.07, y: top - r * 0.06, width: r * 0.09, height: r * 0.34))
-  ctx.restoreGState()
-
-  ring(nearHalfOnly: true)
-  // A little planet riding the ring.
-  let planet = CGPoint(
-    x: ringCenter.x + cos(0.35) * ringRx * cos(tilt) - sin(0.35) * ringRy * sin(tilt),
-    y: ringCenter.y + cos(0.35) * ringRx * sin(tilt) + sin(0.35) * ringRy * cos(tilt))
-  let pr = r * 0.11
-  ctx.saveGState()
-  ctx.addEllipse(in: CGRect(x: planet.x - pr, y: planet.y - pr, width: 2 * pr, height: 2 * pr))
-  ctx.clip()
-  ctx.drawRadialGradient(
-    gradient([color(0xFFE3F2), color(0xFF7EB8), color(0xB0306E)], [0, 0.55, 1]),
-    startCenter: CGPoint(x: planet.x - pr * 0.4, y: planet.y - pr * 0.4), startRadius: 0,
-    endCenter: planet, endRadius: pr, options: [.drawsAfterEndLocation])
+  // The mark's art spans about x 150-850, y 250-950 of its 1000 box; fit
+  // that to most of the enamel.
+  let side = r * 2.05
+  let unit = side / 1000
+  drawGateway(ctx, CGPoint(x: c.x - 500 * unit, y: c.y - 590 * unit), side, halo: true)
   ctx.restoreGState()
 
   // Sheen across the top of the medallion.
@@ -400,10 +349,11 @@ let S = CGFloat(size)
 // 150pt, so 768px is plenty at 3x and keeps the download small.
 let appSize = 768
 
-// The coin face (the loader coin and Chip's back): the old medallion.
+// The coin face (the loader coin and Chip's back): the gateway on gold.
 let coin = makeContext(size)
 drawMedallion(coin, CGPoint(x: S / 2, y: S / 2), S * 0.48)
 save(resized(coin.makeImage()!, appSize), "assets/branding/coin_face.png")
+if CommandLine.arguments.dropFirst().first == "coin" { exit(0) }
 
 // Logo mark: transparent background.
 let mark = makeContext(size)
