@@ -18,6 +18,17 @@ void main() {
       ).allMatches(sql))
         m.group(1)!: int.parse(m.group(2)!),
     };
+    // Packs later migrations took off sale.
+    for (final file in Directory('supabase/migrations').listSync()) {
+      final later = File(file.path).readAsStringSync();
+      for (final delete in RegExp(
+        r'delete from public\.coin_packs\s+where product_id in \(([^)]*)\)',
+      ).allMatches(later)) {
+        for (final id in RegExp(r"'([^']+)'").allMatches(delete.group(1)!)) {
+          server.remove(id.group(1));
+        }
+      }
+    }
     expect(server, {for (final p in all) p.id: p.coins});
   });
 
