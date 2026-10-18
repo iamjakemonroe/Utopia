@@ -37,17 +37,119 @@ void main() {
     }
   });
 
-  test('the witch is heard while she is crossing the moon', () {
-    final period = HalloweenTimeline.witchPeriod(0);
-    // The cackle's moment, 0.9 s into each crossing, is inside it.
-    expect(0.9, lessThan(HalloweenTimeline.witchCrossing));
+  test('the witch laughs as she crosses the moon, and is gone after', () {
+    const at = HalloweenTimeline.cackleAt;
+    const until = at + HalloweenTimeline.cackleLength;
+    // Before the moon when it starts, past it when it ends.
     expect(
-      WorldSoundscape.crossed(period + 0.85, period + 0.95, period, 0.9),
+      HalloweenTimeline.witchAcross(at),
+      lessThan(HalloweenTimeline.moonAcross),
+    );
+    expect(
+      HalloweenTimeline.witchAcross(until),
+      greaterThan(HalloweenTimeline.moonAcross),
+    );
+    // On screen the whole time, and over before she's flown off.
+    expect(HalloweenTimeline.witchAcross(at), greaterThan(0));
+    expect(HalloweenTimeline.witchAcross(until), lessThan(1));
+    expect(until, lessThan(HalloweenTimeline.witchCrossing));
+    // Once per crossing.
+    final period = HalloweenTimeline.witchPeriod(0);
+    expect(
+      WorldSoundscape.crossed(
+        period + at - 0.05,
+        period + at + 0.05,
+        period,
+        at,
+      ),
       isTrue,
     );
     expect(
-      WorldSoundscape.crossed(period + 0.95, period + 1.05, period, 0.9),
+      WorldSoundscape.crossed(
+        period + at + 0.05,
+        period + at + 0.15,
+        period,
+        at,
+      ),
       isFalse,
     );
+  });
+
+  test('every strike has its nearness, and they vary', () {
+    final near = [for (var n = 0; n < 40; n++) HalloweenTimeline.strikeNear(n)];
+    expect(near.every((v) => v >= 0 && v < 1), isTrue);
+    // Some near enough to crack, some far enough only to rumble.
+    expect(near.where((v) => v >= 0.45), isNotEmpty);
+    expect(near.where((v) => v < 0.45), isNotEmpty);
+    expect(HalloweenTimeline.strike(9.5, 0), 1);
+  });
+
+  group('the scare', () {
+    test('comes rarely, at moments no one can guess', () {
+      final starts = [
+        for (var k = 0; k < 60; k++)
+          if (HalloweenTimeline.scareIn(k) case final at?)
+            k * HalloweenTimeline.scareSlot + at,
+      ];
+      // Most stretches have one, not all.
+      expect(starts.length, inInclusiveRange(36, 59));
+      final gaps = [
+        for (var i = 1; i < starts.length; i++) starts[i] - starts[i - 1],
+      ];
+      // Never two close together; about every 3 to 6 minutes.
+      expect(gaps.reduce((a, b) => a < b ? a : b), greaterThan(30));
+      final mean = gaps.reduce((a, b) => a + b) / gaps.length;
+      expect(mean, inInclusiveRange(180, 360));
+    });
+
+    test('its dread starts inside its stretch, and false alarms keep away', () {
+      for (var k = 0; k < 60; k++) {
+        final at = HalloweenTimeline.scareIn(k);
+        if (at != null) {
+          expect(at - HalloweenTimeline.dreadLead, greaterThan(0));
+        }
+        final alarm = HalloweenTimeline.falseAlarmIn(k);
+        if (alarm != null && at != null) {
+          expect((alarm - at).abs(), greaterThan(60));
+        }
+      }
+    });
+
+    test(
+      'the wraith shows only while it rushes in, and not when switched off',
+      () {
+        final k = [
+          for (var k = 0; k < 20; k++) k,
+        ].firstWhere((k) => HalloweenTimeline.scareIn(k) != null);
+        final start =
+            k * HalloweenTimeline.scareSlot + HalloweenTimeline.scareIn(k)!;
+        expect(HalloweenTimeline.scareProgress(start - 0.1), isNull);
+        expect(
+          HalloweenTimeline.scareProgress(start + 0.4),
+          closeTo(0.47, 0.01),
+        );
+        expect(
+          HalloweenTimeline.scareProgress(
+            start + HalloweenTimeline.scareLength + 0.1,
+          ),
+          isNull,
+        );
+        HalloweenTimeline.scaresOn = false;
+        addTearDown(() => HalloweenTimeline.scaresOn = true);
+        expect(HalloweenTimeline.scareProgress(start + 0.4), isNull);
+      },
+    );
+  });
+
+  test('eyes open on their own cycles, left and right', () {
+    for (var i = 0; i < 6; i++) {
+      final cycle = HalloweenTimeline.eyeCycle(i);
+      expect(cycle, inInclusiveRange(4, 9));
+      // Once round the cycle, it's back where it was.
+      expect(
+        HalloweenTimeline.eyePhase(10 + cycle, i),
+        closeTo(HalloweenTimeline.eyePhase(10, i), 1e-9),
+      );
+    }
   });
 }

@@ -57,7 +57,16 @@ enum Sfx {
   hwGhost2('hw_ghost_2'),
   hwMagic('hw_magic'),
   hwBell('hw_bell'),
-  hwOwl('hw_owl');
+  hwOwl('hw_owl'),
+  hwThunder1('hw_thunder_1'),
+  hwThunder2('hw_thunder_2'),
+  hwThunder3('hw_thunder_3'),
+  hwCackle1('hw_cackle_1'),
+  hwCackle2('hw_cackle_2'),
+  hwScream('hw_scream'),
+  hwDread('hw_dread'),
+  hwWhisperLeft('hw_whisper_left'),
+  hwWhisperRight('hw_whisper_right');
 
   const Sfx(this.file);
 
@@ -322,7 +331,7 @@ class GameAudio {
       Sfx.capture ||
       Sfx.chessCheck ||
       Sfx.purchase => HapticFeedback.mediumImpact,
-      Sfx.captureWar || Sfx.win => HapticFeedback.heavyImpact,
+      Sfx.captureWar || Sfx.win || Sfx.hwScream => HapticFeedback.heavyImpact,
       _ => null,
     };
     if (haptic != null) _guard(haptic);

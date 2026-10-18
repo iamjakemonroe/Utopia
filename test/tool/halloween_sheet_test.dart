@@ -1,5 +1,5 @@
 // Renders the Halloween world plain and with the Jack's Lantern set on
-// (once mid-lightning), into test/tool/goldens/. Run:
+// (once mid-lightning), and the jump scare, into test/tool/goldens/. Run:
 // flutter test --run-skipped --update-goldens test/tool/halloween_sheet_test.dart
 @Tags(['sheet'])
 library;
@@ -99,6 +99,53 @@ void main() {
     await expectLater(
       find.byKey(const ValueKey('world')),
       matchesGoldenFile('goldens/halloween_flash.png'),
+    );
+  });
+
+  // The jump scare, frozen at four moments as the wraith rushes in.
+  testWidgets('halloween scare', (tester) async {
+    tester.view.physicalSize = const Size(1720, 932);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final style = UtopiaThemes.utopiaHalloween.world;
+    final k = [
+      for (var k = 0; k < 20; k++) k,
+    ].firstWhere((k) => HalloweenTimeline.scareIn(k) != null);
+    final start =
+        k * HalloweenTimeline.scareSlot + HalloweenTimeline.scareIn(k)!;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: RepaintBoundary(
+          key: const ValueKey('world'),
+          child: Row(
+            children: [
+              for (final p in const [0.25, 0.5, 0.62, 0.75])
+                Container(
+                  width: 430,
+                  height: 932,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: style.sky,
+                    ),
+                  ),
+                  child: CustomPaint(
+                    painter: _Frozen(
+                      style,
+                      start + p * HalloweenTimeline.scareLength,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await expectLater(
+      find.byKey(const ValueKey('world')),
+      matchesGoldenFile('goldens/halloween_scare.png'),
     );
   });
 }

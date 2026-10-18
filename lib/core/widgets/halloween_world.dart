@@ -30,16 +30,90 @@ abstract final class HalloweenTimeline {
   /// Lightning flashes at every multiple of this.
   static double lightningPeriod(double night) => 9 - 3.5 * night;
 
+  /// Which strike of lightning it is at [t]: they're numbered in order.
+  static int strike(double t, double night) =>
+      (t / lightningPeriod(night)).floor();
+
+  /// How near strike [n] is, 0 (far off) to 1 (right overhead). A near one
+  /// flashes bright and cracks loud at once; a far one flashes dim and
+  /// rumbles faintly, a moment later.
+  static double strikeNear(int n) => _rand(n, 523);
+
   /// The witch sets off across the moon at every multiple of this, and
   /// takes [witchCrossing] seconds to cross.
   static double witchPeriod(double night) => 15 - 7 * night;
   static const witchCrossing = 5.5;
+
+  /// Where the witch is across the screen (0 left edge, 1 right) [s]
+  /// seconds into a crossing: she comes in from off the left and flies off
+  /// the right.
+  static double witchAcross(double s) => -0.2 + 1.4 * (s / witchCrossing);
+
+  /// The moon's place across the screen (see the world's moon anchor).
+  static const moonAcross = 0.32;
+
+  /// She laughs from this many seconds into a crossing, for about
+  /// [cackleLength]: loudest as she passes in front of the moon.
+  static const cackleAt = 1.35;
+  static const cackleLength = 1.7;
 
   /// Someone stands in the tower window from [watcherFrom] to [watcherTo]
   /// of every [watcherPeriod] seconds.
   static const watcherPeriod = 13.0;
   static const watcherFrom = 0.55;
   static const watcherTo = 0.85;
+
+  /// The jump scare: once in a while a wraith rushes out of the forest at
+  /// you, screaming. Switched off in Settings ("Halloween scares").
+  static bool scaresOn = true;
+
+  /// At most one scare in each [scareSlot] seconds, at a moment in it no
+  /// one can guess (and some slots have none): every 3 to 6 minutes or so.
+  static const scareSlot = 210.0;
+
+  /// How long the wraith takes to reach you and vanish.
+  static const scareLength = 0.85;
+
+  /// How long before a warned scare the dread starts to swell. It cuts
+  /// off 0.4 seconds before the scream: the silence before it.
+  static const dreadLead = 5.6;
+
+  /// When slot [k]'s scare comes, in seconds from the slot's start, or
+  /// null if it has none.
+  static double? scareIn(int k) =>
+      _rand(k, 580) < 0.8 ? 30 + _rand(k, 581) * 160 : null;
+
+  /// Whether slot [k]'s scare is warned of by a swell of dread (half are;
+  /// the rest come out of nowhere).
+  static bool scareWarned(int k) => _rand(k, 582) < 0.5;
+
+  /// A swell of dread in slot [k] that leads to nothing, in seconds from
+  /// the slot's start (or null): never near the real scare.
+  static double? falseAlarmIn(int k) {
+    if (_rand(k, 583) > 0.55) return null;
+    return ((scareIn(k) ?? 100) + 80 + _rand(k, 584) * 30) % scareSlot;
+  }
+
+  /// How far into a scare [t] is, 0 to 1, or null when there's none.
+  static double? scareProgress(double t) {
+    if (!scaresOn) return null;
+    final k = (t / scareSlot).floor();
+    final at = scareIn(k);
+    if (at == null) return null;
+    final p = (t - k * scareSlot - at) / scareLength;
+    return p >= 0 && p <= 1 ? p : null;
+  }
+
+  /// The eyes in the trees: pairs of them, each opening for a while and
+  /// closing again on its own cycle, on the left (even) or right (odd).
+  static int eyePairs(double night) => 6 + (night * 6).round();
+  static double eyeCycle(int i) => 4 + _rand(i, 560) * 5;
+
+  /// Where pair [i] is in its cycle, 0 to 1: open while under 0.6.
+  static double eyePhase(double t, int i) {
+    final cycle = eyeCycle(i);
+    return ((t + _rand(i, 561) * cycle) % cycle) / cycle;
+  }
 
   static int ghostCount(double night) => 3 + (night * 4).round();
   static int batCount(double night) => 12 + (night * 16).round();
@@ -89,7 +163,12 @@ void paintHalloweenScene(
   final w = size.width;
   final h = size.height;
   final night = WorldSets.halloween.amount;
-  final flash = _flash(t, HalloweenTimeline.lightningPeriod(night));
+  // Near strikes flash bright, far ones dim (and sound it: see
+  // HalloweenTimeline.strikeNear).
+  final near = HalloweenTimeline.strikeNear(HalloweenTimeline.strike(t, night));
+  final flash =
+      _flash(t, HalloweenTimeline.lightningPeriod(night)) *
+      (0.45 + 0.55 * near);
 
   _moon(canvas, moon, w * 0.21, t, night);
   _witch(canvas, size, moon, w * 0.21, t, night);
@@ -129,6 +208,235 @@ void paintHalloweenScene(
   _fogBand(canvas, size, t, h * 0.95, 1.1, 0.12);
   _leaves(canvas, size, t);
   _web(canvas, Offset(w, 0), w * 0.36, t);
+  if (HalloweenTimeline.scareProgress(t) case final p?) {
+    _wraith(canvas, size, t, p);
+    _wraithFlash(canvas, size, p);
+  }
+}
+
+/// The jump scare: a wraith rushing out of the trees at you, faster and
+/// faster, jaw stretched in a scream, until it fills the screen in a flash
+/// and is gone.
+void _wraith(Canvas canvas, Size size, double t, double p) {
+  final w = size.width;
+  final h = size.height;
+  const reach = 0.6;
+  final u = math.min(1.0, p / reach);
+  final gone = p <= reach ? 0.0 : (p - reach) / (1 - reach);
+  // The world darkens as it comes.
+  canvas.drawRect(
+    Offset.zero & size,
+    Paint()..color = _a(Colors.black, 0.5 * u * (1 - gone)),
+  );
+  final shake = gone > 0
+      ? Offset.zero
+      : Offset(
+          math.sin(t * 91) * w * 0.014 * u,
+          math.cos(t * 77) * w * 0.014 * u,
+        );
+  final r = w * (0.05 + 1.1 * math.pow(u, 2.2) + 0.6 * gone);
+  final c = Offset(w * 0.5, h * (0.6 - 0.14 * u)) + shake;
+  final alpha = (0.35 + 0.65 * u) * (1 - math.min(1.0, gone * 1.6));
+  if (alpha <= 0) return;
+  // Echoes trailing behind it, as it rushes.
+  for (final (scale, fade) in const [(0.55, 0.12), (0.75, 0.2)]) {
+    _wraithFace(canvas, c, r * scale, u, alpha * fade, t, hair: false);
+  }
+  _wraithFace(canvas, c, r, u, alpha, t, hair: true);
+}
+
+void _wraithFace(
+  Canvas canvas,
+  Offset c,
+  double r,
+  double u,
+  double alpha,
+  double t, {
+  required bool hair,
+}) {
+  Offset at(double x, double y) => c.translate(x * r, y * r);
+  // Hair streaming out behind, blown back by the rush.
+  if (hair) {
+    final strand = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = r * 0.025
+      ..color = _a(const Color(0xFF1B1820), 0.7 * alpha);
+    for (var k = 0; k < 18; k++) {
+      final a = -math.pi * 0.95 + k / 17 * math.pi * 0.9;
+      final from = at(math.cos(a) * 0.38, -0.25 + math.sin(a) * 0.5);
+      final len = 0.6 + 0.5 * _rand(k, 590);
+      final wave = math.sin(t * 20 + k) * 0.08;
+      final to =
+          from + Offset(math.cos(a + wave), math.sin(a + wave)) * r * len;
+      canvas.drawPath(
+        Path()
+          ..moveTo(from.dx, from.dy)
+          ..quadraticBezierTo(
+            (from.dx + to.dx) / 2 + r * 0.06 * math.sin(k + t * 9),
+            (from.dy + to.dy) / 2,
+            to.dx,
+            to.dy,
+          ),
+        strand,
+      );
+    }
+  }
+  // The face: long and gaunt, the jaw dropping as it screams.
+  final jaw = 0.75 + 0.25 * u;
+  final face = Path()
+    ..moveTo(at(0, -0.78).dx, at(0, -0.78).dy)
+    ..cubicTo(
+      at(0.36, -0.78).dx,
+      at(0.36, -0.78).dy,
+      at(0.48, -0.42).dx,
+      at(0.48, -0.42).dy,
+      at(0.44, -0.1).dx,
+      at(0.44, -0.1).dy,
+    )
+    ..cubicTo(
+      at(0.41, 0.15).dx,
+      at(0.41, 0.15).dy,
+      at(0.3, jaw * 0.6).dx,
+      at(0.3, jaw * 0.6).dy,
+      at(0, jaw).dx,
+      at(0, jaw).dy,
+    )
+    ..cubicTo(
+      at(-0.3, jaw * 0.6).dx,
+      at(-0.3, jaw * 0.6).dy,
+      at(-0.41, 0.15).dx,
+      at(-0.41, 0.15).dy,
+      at(-0.44, -0.1).dx,
+      at(-0.44, -0.1).dy,
+    )
+    ..cubicTo(
+      at(-0.48, -0.42).dx,
+      at(-0.48, -0.42).dy,
+      at(-0.36, -0.78).dx,
+      at(-0.36, -0.78).dy,
+      at(0, -0.78).dx,
+      at(0, -0.78).dy,
+    )
+    ..close();
+  final bounds = Rect.fromCenter(
+    center: at(0, -0.1),
+    width: r * 1.1,
+    height: r * 1.9,
+  );
+  canvas.drawPath(
+    face,
+    Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(0, -0.2),
+        colors: [
+          _a(const Color(0xFFEAF1EC), 0.95 * alpha),
+          _a(const Color(0xFFAEBDB6), 0.85 * alpha),
+          _a(const Color(0xFF5E6E68), 0.0),
+        ],
+        stops: const [0, 0.6, 1],
+      ).createShader(bounds),
+  );
+  // Sunken cheeks.
+  for (final side in const [-1.0, 1.0]) {
+    final cheek = Rect.fromCenter(
+      center: at(side * 0.26, 0.18),
+      width: r * 0.22,
+      height: r * 0.4,
+    );
+    canvas.drawOval(
+      cheek,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            _a(const Color(0xFF2A2F33), 0.45 * alpha),
+            _a(const Color(0xFF2A2F33), 0),
+          ],
+        ).createShader(cheek),
+    );
+  }
+  // Eyes: slanted black hollows with a red glint deep in each.
+  for (final side in const [-1.0, 1.0]) {
+    final socket = at(side * 0.19, -0.2);
+    canvas.save();
+    canvas.translate(socket.dx, socket.dy);
+    canvas.rotate(side * 0.38);
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset.zero, width: r * 0.26, height: r * 0.17),
+      Paint()..color = _a(const Color(0xFF040205), alpha),
+    );
+    canvas.restore();
+    canvas.drawCircle(
+      socket.translate(side * r * 0.01, r * 0.01),
+      r * 0.045,
+      Paint()
+        ..color = _a(const Color(0xFFFF1A1A), 0.8 * alpha)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, r * 0.03),
+    );
+    canvas.drawCircle(
+      socket.translate(side * r * 0.01, r * 0.01),
+      r * 0.016,
+      Paint()..color = _a(const Color(0xFFFFD0C0), alpha),
+    );
+  }
+  // The mouth: stretched open in a scream, ragged teeth top and bottom.
+  final top = 0.1;
+  final bottom = 0.1 + 0.62 * jaw;
+  const half = 0.15;
+  final mouth = Path()..moveTo(at(-half, top).dx, at(-half, top).dy);
+  for (var k = 1; k <= 7; k++) {
+    final x = -half + 2 * half * k / 7;
+    final y = k.isOdd ? top + 0.07 : top;
+    mouth.lineTo(at(x, y).dx, at(x, y).dy);
+  }
+  mouth.quadraticBezierTo(
+    at(half + 0.04, (top + bottom) / 2).dx,
+    at(half + 0.04, (top + bottom) / 2).dy,
+    at(half * 0.6, bottom).dx,
+    at(half * 0.6, bottom).dy,
+  );
+  for (var k = 1; k <= 5; k++) {
+    final x = half * 0.6 - 1.2 * half * k / 5;
+    final y = k.isOdd ? bottom - 0.06 : bottom;
+    mouth.lineTo(at(x, y).dx, at(x, y).dy);
+  }
+  mouth
+    ..quadraticBezierTo(
+      at(-half - 0.04, (top + bottom) / 2).dx,
+      at(-half - 0.04, (top + bottom) / 2).dy,
+      at(-half, top).dx,
+      at(-half, top).dy,
+    )
+    ..close();
+  final throat = Rect.fromCenter(
+    center: at(0, (top + bottom) / 2),
+    width: r * 0.4,
+    height: r * (bottom - top),
+  );
+  canvas.drawPath(
+    mouth,
+    Paint()
+      ..shader = RadialGradient(
+        colors: [
+          _a(const Color(0xFF000000), alpha),
+          _a(const Color(0xFF2B030A), alpha),
+          _a(const Color(0xFF5A0A16), alpha),
+        ],
+        stops: const [0, 0.7, 1],
+      ).createShader(throat),
+  );
+}
+
+/// The flash as the wraith reaches you.
+void _wraithFlash(Canvas canvas, Size size, double p) {
+  const reach = 0.6;
+  final gone = p <= reach ? 0.0 : (p - reach) / (1 - reach);
+  if (gone > 0) {
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = _a(Colors.white, 0.55 * (1 - gone) * (1 - gone)),
+    );
+  }
 }
 
 /// The harvest moon, huge and low, blood-orange with the set on.
@@ -186,10 +494,11 @@ void _witch(
   double night,
 ) {
   final period = HalloweenTimeline.witchPeriod(night);
-  final p = (t % period) / HalloweenTimeline.witchCrossing;
+  final into = t % period;
+  final p = into / HalloweenTimeline.witchCrossing;
   if (p > 1) return;
   final w = size.width;
-  final x = -w * 0.2 + p * w * 1.4;
+  final x = w * HalloweenTimeline.witchAcross(into);
   final y =
       moon.dy +
       r * 0.25 -
@@ -650,10 +959,9 @@ void _forest(Canvas canvas, Size size, double t, double night, double flash) {
   _tree(canvas, Offset(w * 0.97, h * 0.74), h * 0.36, -0.22, 11, near, t);
 
   // Eyes in the dark, blinking, appearing and gone.
-  final pairs = 6 + (night * 6).round();
+  final pairs = HalloweenTimeline.eyePairs(night);
   for (var i = 0; i < pairs; i++) {
-    final cycle = 4 + _rand(i, 560) * 5;
-    final k = ((t + _rand(i, 561) * cycle) % cycle) / cycle;
+    final k = HalloweenTimeline.eyePhase(t, i);
     if (k > 0.6) continue;
     final open = math.sin(k / 0.6 * math.pi).clamp(0.0, 1.0);
     final blink = (t * 1.3 + i) % 3.1 < 0.12 ? 0.1 : 1.0;

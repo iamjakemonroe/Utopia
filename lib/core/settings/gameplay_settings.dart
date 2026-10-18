@@ -14,6 +14,7 @@ class GameplaySettings {
     this.reminders = true,
     this.showNowPlaying = true,
     this.floatingChip = true,
+    this.halloweenScares = true,
   });
 
   /// Little buzzes on dice, captures, your turn and wins.
@@ -37,6 +38,9 @@ class GameplaySettings {
   /// Chip floats over the app's screens, ready to chat when tapped.
   final bool floatingChip;
 
+  /// In the Halloween world, now and then something jumps out at you.
+  final bool halloweenScares;
+
   GameplaySettings copyWith({
     bool? haptics,
     bool? moveHints,
@@ -45,6 +49,7 @@ class GameplaySettings {
     bool? reminders,
     bool? showNowPlaying,
     bool? floatingChip,
+    bool? halloweenScares,
   }) {
     return GameplaySettings(
       haptics: haptics ?? this.haptics,
@@ -54,6 +59,7 @@ class GameplaySettings {
       reminders: reminders ?? this.reminders,
       showNowPlaying: showNowPlaying ?? this.showNowPlaying,
       floatingChip: floatingChip ?? this.floatingChip,
+      halloweenScares: halloweenScares ?? this.halloweenScares,
     );
   }
 }
@@ -69,6 +75,7 @@ class GameplaySettingsController extends StateNotifier<GameplaySettings> {
           reminders: _prefs.getBool('play.reminders') ?? true,
           showNowPlaying: _prefs.getBool('play.nowPlaying') ?? true,
           floatingChip: _prefs.getBool('play.floatingChip') ?? true,
+          halloweenScares: _prefs.getBool('play.halloweenScares') ?? true,
         ),
       );
 
@@ -102,6 +109,11 @@ class GameplaySettingsController extends StateNotifier<GameplaySettings> {
   void setFloatingChip(bool on) {
     state = state.copyWith(floatingChip: on);
     _prefs.setBool('play.floatingChip', on);
+  }
+
+  void setHalloweenScares(bool on) {
+    state = state.copyWith(halloweenScares: on);
+    _prefs.setBool('play.halloweenScares', on);
   }
 
   void setTimerTicks(bool on) {

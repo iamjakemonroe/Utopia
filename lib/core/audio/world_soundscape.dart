@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../settings/gameplay_settings.dart';
 import '../theme/theme_controller.dart';
 import '../theme/utopia_themes.dart';
 import '../widgets/halloween_world.dart';
@@ -14,12 +15,18 @@ import 'game_audio.dart';
 ///
 /// Halloween's replaces the menu music: a calm, spooky bed
 /// ([MusicTrack.halloween]) with a music box picking out a lullaby that's
-/// never the same twice, and, in step with the scene, everything soft and
-/// far away: a distant rumble after some flashes of lightning, a shimmer of
-/// magic as the witch crosses the moon, a bell across the hollow when
-/// someone appears in the tower window, a ghost's breath as it opens its
-/// mouth in view, and now and then an owl. Played at the music's volume, and
-/// only while that music is (so not in games, or with the music off).
+/// never the same twice, and, in step with the scene: thunder with every
+/// strike of lightning (loud and at once when it's near, faint and late
+/// when it's far, just as the flash shows it), the witch laughing as she
+/// crosses the moon (from the left to the right, as she flies), a shimmer
+/// of magic as she sweeps in, a bell across the hollow when someone appears
+/// in the tower window, a ghost's breath as it opens its mouth in view (as
+/// loud as the ghost is clear), whispers from the trees where eyes open,
+/// now and then a far-off owl, and once in a while the scare: a wraith
+/// rushing out at you, screaming (sometimes after a swell of dread, and
+/// sometimes the dread comes and nothing does). Played at the music's
+/// volume (the scream louder), and only while that music is (so not in
+/// games, or with the music off).
 ///
 /// Reads the same clock and timings as the scene ([worldSeconds],
 /// [HalloweenTimeline]), so nothing is heard before or after it's seen.
@@ -37,7 +44,11 @@ class WorldSoundscape {
   double _nextPhrase = 0;
   double _nextOwl = 0;
   double _ghostsQuietUntil = 0;
+  double _whispersQuietUntil = 0;
   int _note = 2;
+
+  static const _thunder = [Sfx.hwThunder1, Sfx.hwThunder2, Sfx.hwThunder3];
+  static const _cackles = [Sfx.hwCackle1, Sfx.hwCackle2];
 
   static const _notes = [
     Sfx.hwNote1,
@@ -79,6 +90,10 @@ class WorldSoundscape {
   static bool crossed(double prev, double now, double period, double at) =>
       ((now - at) / period).floor() > ((prev - at) / period).floor();
 
+  /// Whether the moment [at] fell after [prev] and by [now].
+  static bool passed(double prev, double now, double at) =>
+      prev < at && now >= at;
+
   bool _chance(double p) => _rng.nextDouble() < p;
 
   void _halloween() {
@@ -93,19 +108,77 @@ class WorldSoundscape {
     }
     final night = WorldSets.halloween.amount;
 
-    // A low rumble, far away, after some of the lightning.
-    if (crossed(prev, now, HalloweenTimeline.lightningPeriod(night), 0) &&
-        _chance(0.6)) {
-      _due.add((
-        now + 1.5 + _rng.nextDouble() * 1.5,
-        _chance(0.5) ? Sfx.hwRumble1 : Sfx.hwRumble2,
-        0.5 + _rng.nextDouble() * 0.25,
-      ));
+    // Thunder with every strike, as near as it looks: a near one cracks
+    // loud right on the flash and rolls on; a far one rumbles faintly, a
+    // moment after (sound takes its time from far away). Louder on a wild
+    // night (the set on).
+    if (crossed(prev, now, HalloweenTimeline.lightningPeriod(night), 0)) {
+      final near = HalloweenTimeline.strikeNear(
+        HalloweenTimeline.strike(now, night),
+      );
+      if (near >= 0.45) {
+        _due.add((
+          now + 0.02 + (1 - near) * 0.35,
+          _thunder[_rng.nextInt(_thunder.length)],
+          (0.35 + 0.5 * near + 0.1 * night).clamp(0.0, 1.0),
+        ));
+      } else {
+        _due.add((
+          now + 1 + (1 - near) * 2,
+          _chance(0.5) ? Sfx.hwRumble1 : Sfx.hwRumble2,
+          0.25 + 0.5 * near,
+        ));
+      }
     }
-    // A shimmer of magic as the witch sweeps across the moon (some nights).
-    if (crossed(prev, now, HalloweenTimeline.witchPeriod(night), 0.9) &&
-        _chance(0.5)) {
-      _audio.playWithMusic(Sfx.hwMagic, volume: 0.55);
+    // The witch: a shimmer of magic as she sweeps in (some nights), and
+    // every time, her laugh, swelling as she crosses the moon and trailing
+    // off as she flies on. Nearer (louder) on a wild night.
+    final witch = HalloweenTimeline.witchPeriod(night);
+    if (crossed(prev, now, witch, 0.9) && _chance(0.5)) {
+      _audio.playWithMusic(Sfx.hwMagic, volume: 0.45);
+    }
+    if (crossed(prev, now, witch, HalloweenTimeline.cackleAt)) {
+      _audio.playWithMusic(
+        _cackles[_rng.nextInt(_cackles.length)],
+        volume: 0.45 + 0.25 * night,
+      );
+    }
+    // The scare (unless switched off): the scream and a jolt as the wraith
+    // rushes out, sometimes after a swell of dread that cuts to silence
+    // first; and now and then the dread comes and nothing does. The scream
+    // plays as a sound effect (so it's loud: the music's soft).
+    if (HalloweenTimeline.scaresOn) {
+      final k = (now / HalloweenTimeline.scareSlot).floor();
+      final slot = k * HalloweenTimeline.scareSlot;
+      final at = HalloweenTimeline.scareIn(k);
+      if (at != null) {
+        if (HalloweenTimeline.scareWarned(k) &&
+            passed(prev, now, slot + at - HalloweenTimeline.dreadLead)) {
+          _audio.playWithMusic(Sfx.hwDread, volume: 0.75);
+        }
+        if (passed(prev, now, slot + at)) _audio.play(Sfx.hwScream);
+      }
+      final alarm = HalloweenTimeline.falseAlarmIn(k);
+      if (alarm != null && passed(prev, now, slot + alarm)) {
+        _audio.playWithMusic(Sfx.hwDread, volume: 0.6);
+      }
+    }
+    // Whispers from the trees as eyes open there, on that side: faint, and
+    // only now and then.
+    if (now >= _whispersQuietUntil) {
+      for (var i = 0; i < HalloweenTimeline.eyePairs(night); i++) {
+        if (HalloweenTimeline.eyePhase(now, i) <
+            HalloweenTimeline.eyePhase(prev, i)) {
+          if (_chance(0.35)) {
+            _audio.playWithMusic(
+              i.isEven ? Sfx.hwWhisperLeft : Sfx.hwWhisperRight,
+              volume: 0.3 + 0.15 * night,
+            );
+            _whispersQuietUntil = now + 25 + _rng.nextDouble() * 20;
+          }
+          break;
+        }
+      }
     }
     // A bell across the hollow, now and then, as someone appears up in the
     // tower window.
@@ -171,6 +244,14 @@ class WorldSoundscape {
 /// at the app's root.
 final worldSoundscapeProvider = Provider<void>((ref) {
   final scape = WorldSoundscape(ref.read(gameAudioProvider));
+  // The scares, as the player wants them (the scene reads it too).
+  HalloweenTimeline.scaresOn = ref
+      .read(gameplaySettingsProvider)
+      .halloweenScares;
+  ref.listen(
+    gameplaySettingsProvider,
+    (_, next) => HalloweenTimeline.scaresOn = next.halloweenScares,
+  );
   ref.listen(
     themeControllerProvider,
     (_, theme) => scape.update(theme.world.biome),
