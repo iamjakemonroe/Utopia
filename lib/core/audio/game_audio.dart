@@ -76,7 +76,10 @@ enum MusicTrack {
 
   /// The Halloween world's music in place of the menu's: a calm, spooky bed
   /// that the world's sounds play over (see WorldSoundscape).
-  halloween('music/halloween.m4a');
+  halloween('music/halloween.m4a'),
+
+  /// The Birthday world's: "Happy Birthday to You" as a party waltz.
+  birthday('music/birthday.m4a');
 
   const MusicTrack(this.asset);
 
@@ -229,8 +232,8 @@ class GameAudio {
     _syncMusic();
   }
 
-  /// The world's own music in place of the menu's (Halloween's soundscape),
-  /// or null for the menu music.
+  /// The world's own music in place of the menu's (Halloween's soundscape,
+  /// the Birthday world's song), or null for the menu music.
   MusicTrack? _worldTrack;
 
   void setWorldTrack(MusicTrack? track) {

@@ -1,8 +1,18 @@
 """Generates the worlds' own music: Halloween's calm, spooky soundscape (it
 replaces the menu music there; lib/core/audio/world_soundscape.dart plays
-it in step with the scene).
+it in step with the scene), and the Birthday world's birthday song.
 
-Run from the repo root:  python3 tool/synth_world_audio.py
+Run from the repo root:  python3 tool/synth_world_audio.py [halloween|birthday]
+(both when neither is named).
+
+Birthday: assets/music/birthday.m4a, "Happy Birthday to You" (public
+domain) as a party waltz, about a minute, looping: a music box sings it
+first, then a whistle with the music box in harmony, an interlude lifts it
+a step for a big last verse, and a turnaround brings it home to the start.
+Bass, marimba oom-pah-pah, a soft kick and shaker, glockenspiel sparkles;
+every note a hair off the grid, so it plays like people, not a machine.
+
+Halloween:
 Writes assets/music/halloween.m4a (a slow, dark pad that drifts over a
 minute and loops seamlessly) and assets/sfx/hw_*.wav: music-box notes for
 a lullaby that's never the same twice, a distant rumble for the lightning,
@@ -239,7 +249,254 @@ def owl():
     return reverb(biquad(out, "lp", 700, sr=SR), size=1.4, feedback=0.22)
 
 
+# ── the birthday song ──────────────────────────────────────────────────────
+
+
+def midi(m):
+    return 440.0 * 2 ** ((m - 69) / 12)
+
+
+# "Happy Birthday to You" in F, an octave up: (MIDI note, beats). The
+# pickup ("Hap-py") comes on the last beat of the bar before.
+PICKUP = [(72, 0.75), (72, 0.25)]
+VERSE = [
+    [(74, 1), (72, 1), (77, 1)],
+    [(76, 2), (72, 0.75), (72, 0.25)],
+    [(74, 1), (72, 1), (79, 1)],
+    [(77, 2), (72, 0.75), (72, 0.25)],
+    [(84, 1), (81, 1), (77, 1)],
+    [(76, 1), (74, 1), (82, 0.75), (82, 0.25)],
+    [(81, 1), (77, 1), (79, 1)],
+    [(77, 3)],
+]
+# Each verse bar's chord per beat (in F).
+VERSE_CHORDS = [
+    ["F"] * 3, ["C7"] * 3, ["C7"] * 3, ["F"] * 3,
+    ["F7"] * 3, ["Bb"] * 3, ["F", "F", "C7"], ["F"] * 3,
+]
+# Root (MIDI, bass octave) and the marimba's voicing.
+CHORDS = {
+    "F": (41, [57, 60, 65]),
+    "C7": (36, [55, 58, 64]),
+    "F7": (41, [57, 63, 65]),
+    "Bb": (46, [58, 62, 65]),
+    "Am": (45, [57, 60, 64]),
+    "D7": (38, [57, 60, 66]),
+    "G": (43, [59, 62, 67]),
+    "G7": (43, [59, 62, 65]),
+    "C": (36, [55, 60, 64]),
+    "Gm7": (43, [58, 62, 65]),
+}
+UP_A_STEP = {"F": "G", "C7": "D7", "F7": "G7", "Bb": "C"}
+
+
+def note_tone(freq, seconds, parts, attack=0.003, lp=None):
+    x = partials(freq, seconds, parts, attack)
+    return biquad(x, "lp", lp, sr=SR) if lp else x
+
+
+_cache = {}
+
+
+def cached(key, make):
+    if key not in _cache:
+        _cache[key] = make()
+    return _cache[key]
+
+
+def box(m):
+    """The music box: sweet, a little bright."""
+    return cached(("box", m), lambda: note_tone(
+        midi(m), 1.8, [(1.0, 1.0, 0.9), (2.0, 0.28, 0.35), (3.0, 0.08, 0.2), (4.16, 0.06, 0.12)],
+        lp=5200))
+
+
+def glock(m):
+    return cached(("glock", m), lambda: note_tone(
+        midi(m), 1.4, [(1.0, 1.0, 0.7), (2.76, 0.22, 0.25), (5.4, 0.08, 0.1)], lp=7000))
+
+
+def marimba(m):
+    return cached(("marimba", m), lambda: note_tone(
+        midi(m), 0.8, [(1.0, 1.0, 0.32), (3.98, 0.22, 0.06), (9.9, 0.05, 0.02)], attack=0.002,
+        lp=4000))
+
+
+def bass(m):
+    """A round, plucked bass."""
+    return cached(("bass", m), lambda: note_tone(
+        midi(m), 1.1, [(1.0, 1.0, 0.45), (2.0, 0.4, 0.22), (3.0, 0.14, 0.12)], attack=0.006,
+        lp=1100))
+
+
+def whistle(m, seconds):
+    """A whistled note held for [seconds], with a little vibrato once it
+    settles."""
+    def make():
+        f = midi(m)
+        n = int((seconds + 0.14) * SR)
+        out = array.array("d", bytes(8 * n))
+        ph = 0.0
+        for i in range(n):
+            t = i / SR
+            vib = 1 + 0.006 * min(1, max(0, (t - 0.2) / 0.3)) * math.sin(2 * math.pi * 5.4 * t)
+            ph += 2 * math.pi * f * vib / SR
+            env = min(1, t / 0.035) * (1 if t < seconds else max(0, 1 - (t - seconds) / 0.14))
+            out[i] = env * (math.sin(ph) + 0.12 * math.sin(2 * ph) + 0.04 * math.sin(3 * ph))
+        return out
+    return cached(("whistle", m, round(seconds, 3)), make)
+
+
+def kick():
+    return cached("kick", _kick)
+
+
+def _kick():
+    n = int(0.3 * SR)
+    out = array.array("d", bytes(8 * n))
+    ph = 0.0
+    for i in range(n):
+        t = i / SR
+        ph += 2 * math.pi * (95 * math.exp(-t * 22) + 48) / SR
+        out[i] = math.sin(ph) * math.exp(-t / 0.09) * min(1, i / 30)
+    return out
+
+
+def shaker():
+    return cached("shaker", lambda: biquad(
+        shape(white(0.07), lambda t: min(1, t / 0.006) * math.exp(-t / 0.018)), "hp", 5200,
+        sr=SR))
+
+
+def birthday(bpm=112):
+    """The whole song as (start seconds, sound, gain) events, and its
+    length."""
+    rng = random.Random(1018)
+    beat = 60.0 / bpm
+    bar = 3 * beat
+    events = []
+
+    def at(beats, sound, gain, loose=True):
+        t = beats * beat + (rng.uniform(-0.007, 0.007) if loose else 0)
+        events.append((t, sound, gain * rng.uniform(0.92, 1.06)))
+
+    def comp(start, chords, kick_on=True, shake=True):
+        """Oom-pah-pah: bass (root, then fifth on the next bar) on one,
+        marimba chords on two and three."""
+        for k, per_beat in enumerate(chords):
+            b = start + 3 * k
+            root, voicing = CHORDS[per_beat[0]]
+            low = root + (7 if k % 2 and per_beat[0] == chords[k - 1][0] else 0)
+            at(b, bass(low), 0.55)
+            if kick_on:
+                at(b, kick(), 0.32, loose=False)
+            for beat_no in (1, 2):
+                _, v = CHORDS[per_beat[beat_no]]
+                for m in v:
+                    at(b + beat_no, marimba(m), 0.11)
+                if shake:
+                    at(b + beat_no, shaker(), 0.05)
+                    at(b + beat_no + 0.5, shaker(), 0.03)
+
+    def sparkle(start, chord, up=True):
+        _, v = CHORDS[chord]
+        tones = [m + 24 for m in v] + [v[0] + 36]
+        for k, m in enumerate(tones if up else tones[::-1]):
+            at(start + k * 0.25, glock(m), 0.09)
+
+    def melody(start, shift, voice, harmony=False, last=3):
+        """A verse's tune from [start] (the pickup a beat before)."""
+        b = start - 1
+        bars = [PICKUP] + VERSE
+        chords = [[c if not shift else UP_A_STEP[c] for c in bar_chords]
+                  for bar_chords in VERSE_CHORDS]
+        for k, notes in enumerate(bars):
+            if k == len(bars) - 1:
+                notes = [(notes[0][0], last)]
+            for m, length in notes:
+                m += shift
+                voice(b, m, length)
+                if harmony and k > 0:
+                    beat_in_bar = int(math.floor(b - start + 1e-6)) % 3
+                    chord = chords[k - 1][min(2, beat_in_bar)]
+                    _, v = CHORDS[chord]
+                    pcs = {x % 12 for x in v}
+                    h = next(x for x in range(m + 3, m + 10) if x % 12 in pcs)
+                    at(b, box(h), 0.16)
+                b += length
+
+    def box_voice(b, m, length):
+        at(b, box(m), 0.42)
+
+    def whistle_voice(b, m, length):
+        at(b, whistle(m - 12, length * beat * 0.92), 0.30)
+
+    def both_voice(b, m, length):
+        at(b, box(m), 0.34)
+        at(b, whistle(m - 12, length * beat * 0.92), 0.24)
+
+    # Intro: F | F | C7 | C7, a sparkle up to start.
+    comp(0, [["F"] * 3, ["F"] * 3, ["C7"] * 3, ["C7"] * 3], shake=False)
+    sparkle(0, "F")
+    # Verse 1: the music box, from bar 4.
+    v1 = 12
+    comp(v1, VERSE_CHORDS)
+    melody(v1, 0, box_voice, last=2)
+    # Verse 2: the whistle, the music box in harmony above.
+    v2 = v1 + 24
+    comp(v2, VERSE_CHORDS)
+    melody(v2, 0, whistle_voice, harmony=True)
+    sparkle(v2 + 21, "F", up=False)
+    # Interlude: Bb | C7 | Am | D7, up to G.
+    inter = v2 + 24
+    comp(inter, [["Bb"] * 3, ["C7"] * 3, ["Am"] * 3, ["D7"] * 3])
+    sparkle(inter, "Bb")
+    sparkle(inter + 6, "Am")
+    # Verse 3 in G: everyone.
+    v3 = inter + 12
+    up = [[UP_A_STEP[c] for c in bar_chords] for bar_chords in VERSE_CHORDS]
+    comp(v3, up)
+    melody(v3, 2, both_voice)
+    sparkle(v3 + 21, "G")
+    # Turnaround: G | Gm7 | C7 | C7, home to F at the top.
+    out = v3 + 24
+    comp(out, [["G"] * 3, ["Gm7"] * 3, ["C7"] * 3, ["C7"] * 3], shake=False)
+    sparkle(out + 9, "C7", up=False)
+    return events, (out + 12) * beat
+
+
+def birthday_track():
+    events, length = birthday()
+    # Two passes, keeping the second: reverb and ringing notes from the end
+    # carry over into the start, so the loop joins without a seam.
+    x = buf(length * 2 + 2, SR)
+    for t, sound, gain in events:
+        for start in (0.0, length):
+            add(x, sound, start + max(0.0, t), gain, SR)
+    x = delay_reverb(x, sr=SR, taps=((0.061, 0.3), (0.097, 0.24), (0.149, 0.18), (0.211, 0.12)),
+                     feedback=0.3)
+    n = int(length * SR)
+    return array.array("d", x[n: 2 * n])
+
+
 def main():
+    which = sys.argv[1:] or ["halloween", "birthday"]
+    # Halloween first: it draws on the shared random numbers from the top.
+    if "halloween" in which:
+        halloween()
+    if "birthday" in which:
+        wav = f"{OUT_MUSIC}/birthday.wav"
+        write(wav, normalize(birthday_track(), 0.62), sr=SR)
+        subprocess.run(
+            ["afconvert", "-f", "m4af", "-d", "aac", "-b", "64000", wav,
+             f"{OUT_MUSIC}/birthday.m4a"],
+            check=True,
+        )
+        os.remove(wav)
+        print(f"wrote {OUT_MUSIC}/birthday.m4a")
+
+
+def halloween():
     for old in os.listdir(OUT_SFX):
         if old.startswith("hw_"):
             os.remove(os.path.join(OUT_SFX, old))

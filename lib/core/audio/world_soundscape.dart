@@ -23,6 +23,9 @@ import 'game_audio.dart';
 ///
 /// Reads the same clock and timings as the scene ([worldSeconds],
 /// [HalloweenTimeline]), so nothing is heard before or after it's seen.
+///
+/// The Birthday world has music of its own too: a birthday song in place
+/// of the menu's ([MusicTrack.birthday]).
 class WorldSoundscape {
   WorldSoundscape(this._audio);
 
@@ -48,11 +51,15 @@ class WorldSoundscape {
   /// Sounds waiting for their moment: (when, sound, volume).
   final List<(double, Sfx, double)> _due = [];
 
-  /// Plays [biome]'s music and sounds (Halloween has them; other worlds
-  /// keep the menu music).
+  /// Plays [biome]'s music and sounds (Halloween has both, Birthday its
+  /// song; other worlds keep the menu music).
   void update(WorldBiome biome) {
+    _audio.setWorldTrack(switch (biome) {
+      WorldBiome.halloween => MusicTrack.halloween,
+      WorldBiome.birthday => MusicTrack.birthday,
+      _ => null,
+    });
     final on = biome == WorldBiome.halloween;
-    _audio.setWorldTrack(on ? MusicTrack.halloween : null);
     if (on == _on) return;
     _on = on;
     _tick?.cancel();
