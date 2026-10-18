@@ -57,6 +57,48 @@ void main() {
     expect(s.events.single.allEarned, isFalse);
   });
 
+  test("reads the week's quests: coins", () {
+    final s = EventStatus.fromJson({
+      'earned_now': ['games_5'],
+      'events': [
+        {
+          'id': 'weekly_2026_43',
+          'season': 'weekly',
+          'title': 'This week',
+          'ends_at': DateTime.now()
+              .add(const Duration(days: 3))
+              .toUtc()
+              .toIso8601String(),
+          'games': 5,
+          'days': 1,
+          'rewards': [
+            {
+              'item_id': 'games_5',
+              'kind': 'coins',
+              'games': 5,
+              'days': 0,
+              'coins': 1500,
+              'earned': true,
+            },
+            {
+              'item_id': 'games_12',
+              'kind': 'coins',
+              'games': 12,
+              'days': 0,
+              'coins': 4000,
+              'earned': false,
+            },
+          ],
+        },
+      ],
+    });
+    final week = s.events.single;
+    expect(week.isWeekly, isTrue);
+    expect(week.rewards.first.isCoins, isTrue);
+    expect(week.rewards.first.name, '1,500 coins');
+    expect(week.next?.coins, 4000);
+  });
+
   test('nothing on', () {
     final s = EventStatus.fromJson({'events': [], 'earned_now': []});
     expect(s.events, isEmpty);

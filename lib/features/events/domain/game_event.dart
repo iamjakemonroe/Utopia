@@ -1,33 +1,51 @@
 import '../../../core/theme/utopia_themes.dart';
+import '../../../core/widgets/utopia_icons.dart' show formatCoins;
 import '../../auras/domain/aura.dart';
 
-/// Something an event gives away free: a world or a frame, earned by
-/// finishing [games] games and coming by on [days] different days while the
-/// event is on. Kept for good, and usable whenever its season comes round.
+/// What an event gives: a world or a frame (kept for good, usable whenever
+/// its season comes round), or coins (a week's quests).
+enum RewardKind { world, aura, coins }
+
+/// Something an event gives away free, earned by finishing [games] games
+/// and coming by on [days] different days while the event is on.
 class EventReward {
   const EventReward({
     required this.itemId,
-    required this.isWorld,
+    required this.kind,
     required this.games,
     required this.days,
     required this.earned,
+    this.coins = 0,
   });
 
   final String itemId;
-  final bool isWorld;
+  final RewardKind kind;
   final int games;
   final int days;
   final bool earned;
 
-  String get name => isWorld
-      ? UtopiaThemes.byId(itemId).name
-      : Aura.byId(itemId)?.name ?? itemId;
+  /// For [RewardKind.coins]: how many.
+  final int coins;
+
+  bool get isWorld => kind == RewardKind.world;
+  bool get isCoins => kind == RewardKind.coins;
+
+  String get name => switch (kind) {
+    RewardKind.world => UtopiaThemes.byId(itemId).name,
+    RewardKind.aura => Aura.byId(itemId)?.name ?? itemId,
+    RewardKind.coins => '${formatCoins(coins)} coins',
+  };
 
   static EventReward fromJson(Map<String, dynamic> json) => EventReward(
     itemId: json['item_id'] as String,
-    isWorld: json['kind'] == 'world',
+    kind: switch (json['kind']) {
+      'world' => RewardKind.world,
+      'coins' => RewardKind.coins,
+      _ => RewardKind.aura,
+    },
     games: (json['games'] as num?)?.toInt() ?? 0,
     days: (json['days'] as num?)?.toInt() ?? 0,
+    coins: (json['coins'] as num?)?.toInt() ?? 0,
     earned: json['earned'] == true,
   );
 }
@@ -56,6 +74,9 @@ class GameEvent {
 
   /// The next thing to earn, if any are left.
   EventReward? get next => rewards.where((r) => !r.earned).firstOrNull;
+
+  /// The week's quests (coins), rather than a seasonal event.
+  bool get isWeekly => season == 'weekly';
 
   bool get allEarned => rewards.every((r) => r.earned);
 

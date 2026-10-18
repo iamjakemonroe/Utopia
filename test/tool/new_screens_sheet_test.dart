@@ -38,14 +38,14 @@ final _halloween = GameEvent(
   rewards: const [
     EventReward(
       itemId: 'jack',
-      isWorld: false,
+      kind: RewardKind.aura,
       games: 10,
       days: 0,
       earned: false,
     ),
     EventReward(
       itemId: 'utopia_halloween',
-      isWorld: true,
+      kind: RewardKind.world,
       games: 15,
       days: 5,
       earned: false,

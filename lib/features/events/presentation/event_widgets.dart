@@ -12,6 +12,7 @@ import '../../../core/widgets/confetti_burst.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/user_avatar.dart';
+import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../../core/widgets/utopia_world.dart';
 import '../../auras/data/aura_repository.dart';
@@ -23,26 +24,32 @@ import 'events_controller.dart';
 /// Each season's color.
 Color seasonColor(String season) => switch (season) {
   'halloween' => const Color(0xFFF2761A),
+  'weekly' => AppColors.coinGold,
   _ => AppColors.accent,
 };
 
-/// On home while an event is on: what's next to earn and how close the
-/// player is. Tap for the whole event.
+/// On home: each event on now (a seasonal one, then the week's quests),
+/// what's next to earn and how close the player is. Tap for the whole of
+/// it.
 class EventCard extends ConsumerWidget {
   const EventCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final event = ref.watch(eventsProvider).events.firstOrNull;
+    final events = ref.watch(eventsProvider).events;
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOutCubic,
-      child: event == null
-          ? const SizedBox(width: double.infinity)
-          : Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      child: Column(
+        children: [
+          for (final event in events)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
               child: _Card(event: event),
             ),
+          if (events.isNotEmpty) const SizedBox(height: AppSpacing.sm),
+        ],
+      ),
     );
   }
 }
@@ -80,7 +87,9 @@ class _Card extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              '${event.title} event',
+                              event.isWeekly
+                                  ? event.title
+                                  : '${event.title} event',
                               style: AppTextStyles.display(fontSize: 17),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -92,7 +101,9 @@ class _Card extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         next == null
-                            ? 'You earned everything. Yours every ${event.title}.'
+                            ? event.isWeekly
+                                  ? 'All done this week. New quests on Monday.'
+                                  : 'You earned everything. Yours every ${event.title}.'
                             : _nextLine(event, next),
                         style: AppTextStyles.body(
                           fontSize: 13,
@@ -129,7 +140,8 @@ String _nextLine(GameEvent event, EventReward next) {
     if (days > 0) 'come by on $days more day${days == 1 ? '' : 's'}',
   ];
   final what = parts.join(' and ');
-  return '${what[0].toUpperCase()}${what.substring(1)} for ${next.name}, free.';
+  return '${what[0].toUpperCase()}${what.substring(1)} for ${next.name}'
+      '${next.isCoins ? '.' : ', free.'}';
 }
 
 double _progress(GameEvent event, EventReward reward) {
@@ -200,6 +212,23 @@ class RewardPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (reward.isCoins) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [
+              AppColors.coinGold.withValues(alpha: 0.35),
+              AppColors.coinGold.withValues(alpha: 0.05),
+            ],
+          ),
+        ),
+        alignment: Alignment.center,
+        child: CoinIcon(size: size * 0.62),
+      );
+    }
     if (reward.isWorld) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(size * 0.28),
@@ -257,8 +286,10 @@ class _EventSheet extends ConsumerWidget {
         Text(event.title, style: AppTextStyles.display(fontSize: 28)),
         const SizedBox(height: 4),
         Text(
-          'Earn these free by playing. They stay yours, and come back '
-          'every ${event.title}. ${event.timeLeft}.',
+          event.isWeekly
+              ? 'Coins for playing, new every Monday. ${event.timeLeft}.'
+              : 'Earn these free by playing. They stay yours, and come back '
+                    'every ${event.title}. ${event.timeLeft}.',
           textAlign: TextAlign.center,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
@@ -322,14 +353,20 @@ class _RewardRow extends ConsumerWidget {
               children: [
                 Text(reward.name, style: AppTextStyles.display(fontSize: 17)),
                 Text(
-                  reward.isWorld ? 'World' : 'Frame',
+                  switch (reward.kind) {
+                    RewardKind.world => 'World',
+                    RewardKind.aura => 'Frame',
+                    RewardKind.coins => 'Coins',
+                  },
                   style: AppTextStyles.body(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 6),
-                if (reward.earned)
+                if (reward.earned && reward.isCoins)
+                  _Pill(text: 'Collected', color: AppColors.success)
+                else if (reward.earned)
                   _UseButton(reward: reward)
                 else ...[
                   if (reward.games > 0)
@@ -477,24 +514,36 @@ Future<void> showEarnedSheet(BuildContext context, List<EventReward> earned) {
       color: AppColors.coinGold,
       confetti: true,
       children: [
-        Text('Unlocked!', style: AppTextStyles.display(fontSize: 30)),
+        Text(
+          earned.every((r) => r.isCoins) ? 'Quest complete!' : 'Unlocked!',
+          style: AppTextStyles.display(fontSize: 30),
+        ),
         const SizedBox(height: AppSpacing.md),
         for (final reward in earned) ...[
           RewardPreview(reward: reward, size: 110),
           const SizedBox(height: AppSpacing.sm),
-          Text(reward.name, style: AppTextStyles.display(fontSize: 22)),
+          Text(
+            reward.isCoins ? '+${reward.name}' : reward.name,
+            style: AppTextStyles.display(fontSize: 22),
+          ),
           const SizedBox(height: 4),
           Text(
-            reward.isWorld
-                ? "A new world, yours for good. It's open whenever its "
-                      'season is on.'
-                : "A new frame, yours for good. You can wear it whenever "
-                      'its season is on.',
+            switch (reward.kind) {
+              RewardKind.world =>
+                "A new world, yours for good. It's open whenever its "
+                    'season is on.',
+              RewardKind.aura =>
+                'A new frame, yours for good. You can wear it whenever '
+                    'its season is on.',
+              RewardKind.coins =>
+                "Added to your coins. Keep playing: "
+                    "there's more this week.",
+            },
             textAlign: TextAlign.center,
             style: AppTextStyles.body(color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.md),
-          _UseButton(reward: reward, big: true),
+          if (!reward.isCoins) _UseButton(reward: reward, big: true),
           const SizedBox(height: AppSpacing.md),
         ],
       ],
@@ -570,7 +619,11 @@ class EventStoreBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final event = ref.watch(eventsProvider).events.firstOrNull;
+    final event = ref
+        .watch(eventsProvider)
+        .events
+        .where((e) => !e.isWeekly)
+        .firstOrNull;
     if (event == null) return const SizedBox.shrink();
     final color = seasonColor(event.season);
     final names = [for (final r in event.rewards) r.name];
