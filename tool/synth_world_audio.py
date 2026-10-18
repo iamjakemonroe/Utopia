@@ -3,8 +3,9 @@ replaces the menu music there; lib/core/audio/world_soundscape.dart plays
 it in step with the scene), and the Birthday world's birthday song.
 
 Run from the repo root:  python3 tool/synth_world_audio.py [halloween|birthday]
-(both when neither is named; halloween-fx for just the thunder and the
-witch's laughs).
+(both when neither is named; halloween-fx for just the thunder, the dread
+and the whispers). The witch's laughs and the scream are recordings:
+tool/recorded_sfx.py.
 
 Birthday: assets/music/birthday.m4a, "Happy Birthday to You" (public
 domain) as a party waltz, about a minute, looping: a music box sings it
@@ -252,8 +253,8 @@ def owl():
 
 # ── thunder ────────────────────────────────────────────────────────────────
 #
-# These and the cackle draw on their own random numbers, so adding them
-# leaves every other Halloween sound exactly as it was.
+# These (and the scare, the dread and the whispers) draw on their own random
+# numbers, so adding them left every other Halloween sound exactly as it was.
 
 
 def noise(seconds, rng):
@@ -297,87 +298,12 @@ def thunder(seed):
     return reverb(out, size=1.8, feedback=0.3)
 
 
-# ── the witch's cackle ─────────────────────────────────────────────────────
-
-# Vowel formants (Hz) for a high, pinched voice: frequency, bandwidth, gain.
+# Vowel formants (Hz), for the whispers: frequency, bandwidth, gain.
 _VOWELS = {
     "a": [(980, 110, 1.0), (1450, 120, 0.7), (2950, 170, 0.35)],
     "e": [(640, 90, 1.0), (2150, 130, 0.65), (3050, 170, 0.35)],
     "i": [(420, 80, 1.0), (2550, 140, 0.6), (3300, 180, 0.35)],
 }
-
-# Syllables: (start s, length s, vowel, pitch from, pitch to, loudness).
-# "Heh-heh-heh, HAAA ha-ha-ha-haaa": a few tittering heh's, a shriek, then
-# laughter tumbling down.
-_CACKLES = [
-    [(0.00, 0.08, "e", 1.05, 0.95, 0.55), (0.13, 0.08, "e", 1.1, 1.0, 0.6),
-     (0.26, 0.08, "e", 1.15, 1.05, 0.65), (0.40, 0.30, "a", 1.45, 1.2, 1.0),
-     (0.76, 0.08, "a", 1.2, 1.1, 0.8), (0.88, 0.08, "a", 1.15, 1.05, 0.75),
-     (1.00, 0.08, "a", 1.1, 1.0, 0.7), (1.12, 0.08, "a", 1.02, 0.94, 0.65),
-     (1.24, 0.34, "a", 1.0, 0.7, 0.6)],
-    [(0.00, 0.30, "i", 1.25, 1.5, 0.8), (0.36, 0.08, "e", 1.3, 1.2, 0.75),
-     (0.48, 0.08, "e", 1.25, 1.15, 0.75), (0.60, 0.08, "e", 1.2, 1.1, 0.7),
-     (0.72, 0.08, "a", 1.15, 1.05, 0.7), (0.84, 0.08, "a", 1.1, 1.0, 0.65),
-     (0.96, 0.08, "a", 1.05, 0.95, 0.6), (1.08, 0.38, "a", 1.0, 0.68, 0.55)],
-]
-
-
-def cackle(pattern, seed, f0=560.0):
-    """A witch's laugh, from a voice: a breathy pulse at a high pitch
-    through the mouth's resonances, a puff of breath ("h") before each
-    syllable. Distant, up in the sky, and moving across it left to right
-    as she flies (returns left, right)."""
-    rng = random.Random(seed)
-    syllables = _CACKLES[pattern]
-    secs = syllables[-1][0] + syllables[-1][1] + 0.4
-    voice = buf(secs, SR)
-    for start, length, vowel, p0, p1, loud in syllables:
-        n = int((length + 0.04) * SR)
-        src = array.array("d", bytes(8 * n))
-        phase = 0.0
-        wobble = rng.uniform(0, 6.28)
-        for i in range(n):
-            t = i / SR
-            u = min(1.0, t / length)
-            pitch = f0 * (p0 + (p1 - p0) * u) * (1 + 0.025 * math.sin(2 * math.pi * 9 * t + wobble))
-            phase += pitch / SR
-            # A glottal pulse: rich in harmonics, falling off with height.
-            v = 0.0
-            for k in range(1, int(5000 / pitch) + 1):
-                v += math.sin(2 * math.pi * k * phase) / k ** 1.1
-            src[i] = v
-        breath = noise(length + 0.04, rng)
-        mixed = array.array("d", (0.8 * a + 0.35 * b for a, b in zip(src, breath)))
-        shaped = buf(length + 0.04, SR)
-        for freq, bw, g in _VOWELS[vowel]:
-            add(shaped, scale(biquad(mixed, "bp", freq, q=freq / bw, sr=SR), g), sr=SR)
-
-        def env(t, length=length):
-            return min(1.0, t / 0.012) * min(1.0, max(0.0, (length + 0.03 - t) / 0.04))
-
-        add(voice, scale(shape(shaped, env), loud), at=start + 0.035, sr=SR)
-        # The "h": a little puff of breath just before the voice.
-        h = biquad(noise(0.05, rng), "bp", 1800, q=0.8, sr=SR)
-        add(voice, scale(shape(h, lambda t: math.sin(math.pi * min(1.0, t / 0.05))), 0.25 * loud), at=start, sr=SR)
-    voice = biquad(biquad(voice, "hp", 220, sr=SR), "lp", 4200, sr=SR)
-    # Far off in the sky: a light echo (light, so each "ha" stays apart),
-    # swelling in as she nears the moon and away after.
-    voice = delay_reverb(
-        voice + buf(0.4, SR),
-        sr=SR,
-        taps=((0.037, 0.22), (0.061, 0.16), (0.097, 0.1)),
-        feedback=0.12,
-    )
-    total = len(voice) / SR
-    voice = shape(voice, lambda t: 0.7 + 0.3 * math.sin(math.pi * min(1.0, t / (total * 0.9))))
-    # Left to right, as she flies.
-    left = array.array("d", bytes(8 * len(voice)))
-    right = array.array("d", bytes(8 * len(voice)))
-    for i, v in enumerate(voice):
-        pan = 0.15 + 0.5 * (i / len(voice))
-        left[i] = v * math.cos(pan * math.pi / 2)
-        right[i] = v * math.sin(pan * math.pi / 2)
-    return left, right
 
 
 def save_stereo(name, left, right, peak=0.7, fade_out=0.4):
@@ -409,33 +335,10 @@ def save_stereo(name, left, right, peak=0.7, fade_out=0.4):
 # ── the scare ──────────────────────────────────────────────────────────────
 
 
-def voice_tone(f0_at, secs, formants, rng, rough=0.0, breath=0.2):
-    """A voice: a harmonic-rich pulse following the pitch curve [f0_at],
-    breath mixed in, shaped by the mouth's [formants] (freq, bandwidth,
-    gain). [rough] adds a growl (a flutter at about 70 Hz)."""
-    n = int(secs * SR)
-    src = array.array("d", bytes(8 * n))
-    phase = 0.0
-    for i in range(n):
-        t = i / SR
-        f0 = f0_at(t) * (1 + rng.uniform(-0.012, 0.012))
-        phase += f0 / SR
-        v = 0.0
-        for k in range(1, int(6000 / f0) + 1):
-            v += math.sin(2 * math.pi * k * phase) / k ** 0.9
-        if rough:
-            v *= 1 - rough * (0.5 + 0.5 * math.sin(2 * math.pi * 71 * t))
-        src[i] = v
-    noisy = array.array("d", (a + breath * 3 * (rng.random() * 2 - 1) for a in src))
-    out = buf(secs, SR)
-    for freq, bw, g in formants:
-        add(out, scale(biquad(noisy, "bp", freq, q=freq / bw, sr=SR), g), sr=SR)
-    return out
-
-
-def scream():
-    """The jump scare, as the wraith rushes out at you: a boom and a rush
-    of air, a shriek, and the strings stabbing."""
+def scare_hit():
+    """What hits as the wraith rushes out, under its scream (a recording:
+    tool/recorded_sfx.py): a boom and a rush of air, and the strings
+    stabbing."""
     rng = random.Random(666)
     secs = 3.2
     out = buf(secs, SR)
@@ -451,26 +354,6 @@ def scream():
     # The rush of air.
     rush = biquad(noise(0.6, rng), "bp", lambda t: 400 + 5000 * t, q=0.9, sr=SR)
     add(out, scale(shape(rush, lambda t: math.exp(-t / 0.18)), 0.5), sr=SR)
-
-    # The shriek: up fast, wavering, a little higher, then breaking down.
-    def f0(t):
-        rise = 700 + 550 * min(1.0, t / 0.12)
-        hold = rise + 120 * min(1.0, t / 0.8)
-        fall = max(0.0, (t - 0.85) / 0.6)
-        return (hold - 420 * fall) * (1 + 0.045 * math.sin(2 * math.pi * 6.5 * t))
-
-    shriek = voice_tone(
-        f0,
-        1.5,
-        [(1050, 160, 1.0), (1850, 200, 0.8), (3100, 260, 0.5), (4200, 320, 0.25)],
-        rng,
-        rough=0.3,
-        breath=0.25,
-    )
-    shriek = shape(shriek, lambda t: min(1.0, t / 0.03) * min(1.0, max(0.0, (1.5 - t) / 0.45)))
-    # Pushed hard, as a scream is.
-    shriek = array.array("d", (math.tanh(2.2 * v / 3) for v in shriek))
-    add(out, scale(shriek, 1.0), at=0.04, sr=SR)
     # The strings: a stab of clashing notes.
     stab = buf(2.2, SR)
     for f in (261.63, 277.18, 369.99, 392.0, 523.25, 554.37, 739.99, 783.99):
@@ -484,7 +367,7 @@ def scream():
             tone[i] = saw * min(1.0, t / 0.008) * math.exp(-t / 0.7)
         add(stab, scale(tone, 0.12), sr=SR)
     add(out, scale(biquad(stab, "lp", 4500, sr=SR), 0.9), sr=SR)
-    return reverb(out, size=1.2, feedback=0.25)
+    return out
 
 
 def dread():
@@ -557,16 +440,12 @@ def whispers(seed, pan):
 
 
 def halloween_fx():
-    """The strikes of thunder, the witch's laughs, the scare, the dread
-    and the whispers."""
+    """The strikes of thunder, the dread and the whispers. (The witch's
+    laughs and the scare's scream are recordings: tool/recorded_sfx.py.)"""
     for k, seed in enumerate([31, 47, 83], start=1):
         x = thunder(seed)
         # The bolt always comes down on the right half of the sky.
         save_stereo(f"hw_thunder_{k}", scale(x, 0.8), x, peak=0.8, fade_out=1.2)
-    for k in range(2):
-        left, right = cackle(k, seed=101 + k)
-        save_stereo(f"hw_cackle_{k + 1}", left, right, peak=0.7, fade_out=0.4)
-    save("hw_scream", scream(), peak=0.95, fade_out=0.8)
     save("hw_dread", dread(), peak=0.8, fade_out=0.02)
     for side, pan, seed in [("left", 0.12, 211), ("right", 0.88, 223)]:
         left, right = whispers(seed, pan)
@@ -805,7 +684,7 @@ def birthday_track():
 
 def main():
     which = sys.argv[1:] or ["halloween", "birthday"]
-    # Just the thunder and the witch's laughs.
+    # Just the thunder, the dread and the whispers.
     if which == ["halloween-fx"]:
         halloween_fx()
         return

@@ -92,14 +92,14 @@ void main() {
             k * HalloweenTimeline.scareSlot + at,
       ];
       // Most stretches have one, not all.
-      expect(starts.length, inInclusiveRange(36, 59));
+      expect(starts.length, inInclusiveRange(42, 59));
       final gaps = [
         for (var i = 1; i < starts.length; i++) starts[i] - starts[i - 1],
       ];
-      // Never two close together; about every 3 to 6 minutes.
-      expect(gaps.reduce((a, b) => a < b ? a : b), greaterThan(30));
+      // Never two close together; about every 2 or 3 minutes.
+      expect(gaps.reduce((a, b) => a < b ? a : b), greaterThan(40));
       final mean = gaps.reduce((a, b) => a + b) / gaps.length;
-      expect(mean, inInclusiveRange(180, 360));
+      expect(mean, inInclusiveRange(140, 220));
     });
 
     test('its dread starts inside its stretch, and false alarms keep away', () {
@@ -110,35 +110,26 @@ void main() {
         }
         final alarm = HalloweenTimeline.falseAlarmIn(k);
         if (alarm != null && at != null) {
-          expect((alarm - at).abs(), greaterThan(60));
+          expect((alarm - at).abs(), greaterThan(45));
         }
       }
     });
 
-    test(
-      'the wraith shows only while it rushes in, and not when switched off',
-      () {
-        final k = [
-          for (var k = 0; k < 20; k++) k,
-        ].firstWhere((k) => HalloweenTimeline.scareIn(k) != null);
-        final start =
-            k * HalloweenTimeline.scareSlot + HalloweenTimeline.scareIn(k)!;
-        expect(HalloweenTimeline.scareProgress(start - 0.1), isNull);
-        expect(
-          HalloweenTimeline.scareProgress(start + 0.4),
-          closeTo(0.47, 0.01),
-        );
-        expect(
-          HalloweenTimeline.scareProgress(
-            start + HalloweenTimeline.scareLength + 0.1,
-          ),
-          isNull,
-        );
-        HalloweenTimeline.scaresOn = false;
-        addTearDown(() => HalloweenTimeline.scaresOn = true);
-        expect(HalloweenTimeline.scareProgress(start + 0.4), isNull);
-      },
-    );
+    test('the wraith shows only while it rushes in', () {
+      final k = [
+        for (var k = 0; k < 20; k++) k,
+      ].firstWhere((k) => HalloweenTimeline.scareIn(k) != null);
+      final start =
+          k * HalloweenTimeline.scareSlot + HalloweenTimeline.scareIn(k)!;
+      expect(HalloweenTimeline.scareProgress(start - 0.1), isNull);
+      expect(HalloweenTimeline.scareProgress(start + 0.4), closeTo(0.47, 0.01));
+      expect(
+        HalloweenTimeline.scareProgress(
+          start + HalloweenTimeline.scareLength + 0.1,
+        ),
+        isNull,
+      );
+    });
   });
 
   test('eyes open on their own cycles, left and right', () {

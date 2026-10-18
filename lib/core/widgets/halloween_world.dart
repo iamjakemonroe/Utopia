@@ -52,10 +52,10 @@ abstract final class HalloweenTimeline {
   /// The moon's place across the screen (see the world's moon anchor).
   static const moonAcross = 0.32;
 
-  /// She laughs from this many seconds into a crossing, for about
-  /// [cackleLength]: loudest as she passes in front of the moon.
-  static const cackleAt = 1.35;
-  static const cackleLength = 1.7;
+  /// She laughs from this many seconds into a crossing (as she comes into
+  /// view), for up to [cackleLength]: all the way across the moon.
+  static const cackleAt = 1.0;
+  static const cackleLength = 3.2;
 
   /// Someone stands in the tower window from [watcherFrom] to [watcherTo]
   /// of every [watcherPeriod] seconds.
@@ -64,12 +64,11 @@ abstract final class HalloweenTimeline {
   static const watcherTo = 0.85;
 
   /// The jump scare: once in a while a wraith rushes out of the forest at
-  /// you, screaming. Switched off in Settings ("Halloween scares").
-  static bool scaresOn = true;
-
+  /// you, screaming. It's what this world is for.
+  ///
   /// At most one scare in each [scareSlot] seconds, at a moment in it no
-  /// one can guess (and some slots have none): every 3 to 6 minutes or so.
-  static const scareSlot = 210.0;
+  /// one can guess (and some slots have none): every 2 or 3 minutes.
+  static const scareSlot = 150.0;
 
   /// How long the wraith takes to reach you and vanish.
   static const scareLength = 0.85;
@@ -81,7 +80,7 @@ abstract final class HalloweenTimeline {
   /// When slot [k]'s scare comes, in seconds from the slot's start, or
   /// null if it has none.
   static double? scareIn(int k) =>
-      _rand(k, 580) < 0.8 ? 30 + _rand(k, 581) * 160 : null;
+      _rand(k, 580) < 0.85 ? 25 + _rand(k, 581) * 100 : null;
 
   /// Whether slot [k]'s scare is warned of by a swell of dread (half are;
   /// the rest come out of nowhere).
@@ -91,12 +90,11 @@ abstract final class HalloweenTimeline {
   /// the slot's start (or null): never near the real scare.
   static double? falseAlarmIn(int k) {
     if (_rand(k, 583) > 0.55) return null;
-    return ((scareIn(k) ?? 100) + 80 + _rand(k, 584) * 30) % scareSlot;
+    return ((scareIn(k) ?? 60) + 60 + _rand(k, 584) * 20) % scareSlot;
   }
 
   /// How far into a scare [t] is, 0 to 1, or null when there's none.
   static double? scareProgress(double t) {
-    if (!scaresOn) return null;
     final k = (t / scareSlot).floor();
     final at = scareIn(k);
     if (at == null) return null;

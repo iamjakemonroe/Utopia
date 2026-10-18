@@ -63,6 +63,7 @@ enum Sfx {
   hwThunder3('hw_thunder_3'),
   hwCackle1('hw_cackle_1'),
   hwCackle2('hw_cackle_2'),
+  hwCackle3('hw_cackle_3'),
   hwScream('hw_scream'),
   hwDread('hw_dread'),
   hwWhisperLeft('hw_whisper_left'),
@@ -330,7 +331,10 @@ class GameAudio {
       Sfx.home => HapticFeedback.lightImpact,
       Sfx.capture ||
       Sfx.chessCheck ||
-      Sfx.purchase => HapticFeedback.mediumImpact,
+      Sfx.purchase ||
+      Sfx.hwThunder1 ||
+      Sfx.hwThunder2 ||
+      Sfx.hwThunder3 => HapticFeedback.mediumImpact,
       Sfx.captureWar || Sfx.win || Sfx.hwScream => HapticFeedback.heavyImpact,
       _ => null,
     };

@@ -3,7 +3,6 @@ import 'dart:math' as math;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../settings/gameplay_settings.dart';
 import '../theme/theme_controller.dart';
 import '../theme/utopia_themes.dart';
 import '../widgets/halloween_world.dart';
@@ -48,7 +47,7 @@ class WorldSoundscape {
   int _note = 2;
 
   static const _thunder = [Sfx.hwThunder1, Sfx.hwThunder2, Sfx.hwThunder3];
-  static const _cackles = [Sfx.hwCackle1, Sfx.hwCackle2];
+  static const _cackles = [Sfx.hwCackle1, Sfx.hwCackle2, Sfx.hwCackle3];
 
   static const _notes = [
     Sfx.hwNote1,
@@ -61,6 +60,9 @@ class WorldSoundscape {
 
   /// Sounds waiting for their moment: (when, sound, volume).
   final List<(double, Sfx, double)> _due = [];
+
+  /// Sounds waiting for their moment that play as sound effects (louder).
+  final List<(double, Sfx, double)> _loud = [];
 
   /// Plays [biome]'s music and sounds (Halloween has both, Birthday its
   /// song; other worlds keep the menu music).
@@ -104,6 +106,7 @@ class WorldSoundscape {
     // game, or giving way to the player's own: nothing to catch up on.
     if (now - prev > 1 || !_audio.isPlaying(MusicTrack.halloween)) {
       _due.clear();
+      _loud.clear();
       return;
     }
     final night = WorldSets.halloween.amount;
@@ -117,10 +120,11 @@ class WorldSoundscape {
         HalloweenTimeline.strike(now, night),
       );
       if (near >= 0.45) {
-        _due.add((
+        // Near: loud, as a sound effect (and felt).
+        _loud.add((
           now + 0.02 + (1 - near) * 0.35,
           _thunder[_rng.nextInt(_thunder.length)],
-          (0.35 + 0.5 * near + 0.1 * night).clamp(0.0, 1.0),
+          (0.4 + 0.5 * near + 0.1 * night).clamp(0.0, 1.0),
         ));
       } else {
         _due.add((
@@ -138,16 +142,17 @@ class WorldSoundscape {
       _audio.playWithMusic(Sfx.hwMagic, volume: 0.45);
     }
     if (crossed(prev, now, witch, HalloweenTimeline.cackleAt)) {
-      _audio.playWithMusic(
+      // Not a background sound: as loud as a sound effect.
+      _audio.play(
         _cackles[_rng.nextInt(_cackles.length)],
-        volume: 0.45 + 0.25 * night,
+        volume: (0.6 + 0.3 * night).clamp(0.0, 1.0),
       );
     }
-    // The scare (unless switched off): the scream and a jolt as the wraith
-    // rushes out, sometimes after a swell of dread that cuts to silence
-    // first; and now and then the dread comes and nothing does. The scream
-    // plays as a sound effect (so it's loud: the music's soft).
-    if (HalloweenTimeline.scaresOn) {
+    // The scare: the scream and a jolt as the wraith rushes out, sometimes
+    // after a swell of dread that cuts to silence first; and now and then
+    // the dread comes and nothing does. The scream plays as a sound effect
+    // (so it's loud: the music's soft).
+    {
       final k = (now / HalloweenTimeline.scareSlot).floor();
       final slot = k * HalloweenTimeline.scareSlot;
       final at = HalloweenTimeline.scareIn(k);
@@ -232,6 +237,11 @@ class WorldSoundscape {
       _audio.playWithMusic(d.$2, volume: d.$3);
       return true;
     });
+    _loud.removeWhere((d) {
+      if (d.$1 > now) return false;
+      _audio.play(d.$2, volume: d.$3);
+      return true;
+    });
   }
 
   void dispose() {
@@ -244,14 +254,6 @@ class WorldSoundscape {
 /// at the app's root.
 final worldSoundscapeProvider = Provider<void>((ref) {
   final scape = WorldSoundscape(ref.read(gameAudioProvider));
-  // The scares, as the player wants them (the scene reads it too).
-  HalloweenTimeline.scaresOn = ref
-      .read(gameplaySettingsProvider)
-      .halloweenScares;
-  ref.listen(
-    gameplaySettingsProvider,
-    (_, next) => HalloweenTimeline.scaresOn = next.halloweenScares,
-  );
   ref.listen(
     themeControllerProvider,
     (_, theme) => scape.update(theme.world.biome),

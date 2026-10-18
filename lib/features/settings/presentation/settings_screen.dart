@@ -200,18 +200,6 @@ class SettingsScreen extends ConsumerWidget {
                           ref.read(nowPlayingProvider.notifier).requestAccess(),
                     ),
                   _ToggleRow(
-                    icon: Icons.sentiment_very_dissatisfied_rounded,
-                    color: const Color(0xFFFF7A1A),
-                    title: 'Halloween scares',
-                    subtitle:
-                        'In the Halloween world, something may jump out at you',
-                    value: play.halloweenScares,
-                    onChanged: (v) {
-                      playCtl.setHalloweenScares(v);
-                      toggled(v);
-                    },
-                  ),
-                  _ToggleRow(
                     icon: Icons.blur_on_rounded,
                     color: const Color(0xFF3DDC97),
                     title: 'Chess move hints',
