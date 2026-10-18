@@ -17,7 +17,7 @@
 // Every model call is counted against the player's daily allowance first
 // (chip_take), so a runaway client can't run up the bill.
 
-import Anthropic from "npm:@anthropic-ai/sdk";
+import Anthropic from "npm:@anthropic-ai/sdk@0.135.0";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const MODEL = Deno.env.get("CHIP_MODEL") ?? "claude-opus-5-5";
