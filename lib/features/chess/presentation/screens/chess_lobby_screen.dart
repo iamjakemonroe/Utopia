@@ -10,6 +10,7 @@ import '../../../../core/bots/bots.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/pop_card.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/widgets/quiet_lobby_offer.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -131,6 +132,17 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
     });
   }
 
+  /// Nobody to play online right now: a free game against Chip on the same
+  /// clock instead.
+  Future<void> _playChipInstead() async {
+    await _cancelSearch();
+    if (!mounted) return;
+    context.push(
+      '/$_name/bot?opponent=${kChessChip.key}&level=${BotLevel.normal.name}'
+      '&color=random&clock=${_time.minutes}&inc=${_time.increment}',
+    );
+  }
+
   void _playFriend() {
     if (ref.read(isAnonymousProvider)) {
       showUtopiaToast(
@@ -202,6 +214,7 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
                       entry: _entry,
                       checkers: _checkers,
                       onCancel: _cancelSearch,
+                      onPlayChip: _playChipInstead,
                     )
                   : ListView(
                       key: const ValueKey('setup'),
@@ -570,12 +583,14 @@ class _SearchingView extends StatefulWidget {
     required this.entry,
     required this.checkers,
     required this.onCancel,
+    required this.onPlayChip,
   });
 
   final TimeControl time;
   final int entry;
   final bool checkers;
   final VoidCallback onCancel;
+  final VoidCallback onPlayChip;
 
   @override
   State<_SearchingView> createState() => _SearchingViewState();
@@ -609,99 +624,106 @@ class _SearchingViewState extends State<_SearchingView>
     final style = ChessPieceStyle.byId('classic');
 
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox.square(
-            dimension: 240,
-            child: AnimatedBuilder(
-              animation: _orbit,
-              builder: (context, _) {
-                final t = _orbit.value * 2 * math.pi;
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    const UtopiaLoader(size: 96),
-                    for (final (i, (type, color)) in pieces.indexed)
-                      Transform.translate(
-                        offset: Offset(
-                          math.cos(t + i * math.pi / 3) * 96,
-                          math.sin(t + i * math.pi / 3) * 96 * 0.55,
-                        ),
-                        child: Transform.scale(
-                          scale:
-                              0.75 +
-                              0.25 * (math.sin(t + i * math.pi / 3) + 1) / 2,
-                          child: widget.checkers
-                              ? CustomPaint(
-                                  size: const Size.square(40),
-                                  painter: _OrbitDisc(
-                                    side: i.isEven
-                                        ? CheckersSide.dark
-                                        : CheckersSide.light,
-                                    king: i % 3 == 0,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox.square(
+              dimension: 240,
+              child: AnimatedBuilder(
+                animation: _orbit,
+                builder: (context, _) {
+                  final t = _orbit.value * 2 * math.pi;
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      const UtopiaLoader(size: 96),
+                      for (final (i, (type, color)) in pieces.indexed)
+                        Transform.translate(
+                          offset: Offset(
+                            math.cos(t + i * math.pi / 3) * 96,
+                            math.sin(t + i * math.pi / 3) * 96 * 0.55,
+                          ),
+                          child: Transform.scale(
+                            scale:
+                                0.75 +
+                                0.25 * (math.sin(t + i * math.pi / 3) + 1) / 2,
+                            child: widget.checkers
+                                ? CustomPaint(
+                                    size: const Size.square(40),
+                                    painter: _OrbitDisc(
+                                      side: i.isEven
+                                          ? CheckersSide.dark
+                                          : CheckersSide.light,
+                                      king: i % 3 == 0,
+                                    ),
+                                  )
+                                : ChessPieceArt(
+                                    type: type,
+                                    finish: style.of(color),
+                                    size: 40,
                                   ),
-                                )
-                              : ChessPieceArt(
-                                  type: type,
-                                  finish: style.of(color),
-                                  size: 40,
-                                ),
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'Finding an opponent',
+              style: AppTextStyles.display(fontSize: 22),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(speedIcon(speed), size: 18, color: speedColor(speed)),
+                const SizedBox(width: 4),
+                Text(
+                  widget.time.label,
+                  style: AppTextStyles.body(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(width: 14),
+                if (widget.entry == 0) ...[
+                  Icon(
+                    Icons.favorite_rounded,
+                    size: 16,
+                    color: AppColors.coral,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Free',
+                    style: AppTextStyles.body(fontWeight: FontWeight.w800),
+                  ),
+                ] else
+                  CoinAmount(widget.entry, size: 15),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            StreamBuilder<int>(
+              stream: Stream.periodic(
+                const Duration(seconds: 1),
+                (_) => DateTime.now().difference(_started).inSeconds,
+              ),
+              builder: (context, snap) {
+                final s = snap.data ?? 0;
+                return Text(
+                  '${s ~/ 60}:${(s % 60).toString().padLeft(2, '0')}',
+                  style: AppTextStyles.body(color: AppColors.textSecondary),
                 );
               },
             ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Finding an opponent',
-            style: AppTextStyles.display(fontSize: 22),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(speedIcon(speed), size: 18, color: speedColor(speed)),
-              const SizedBox(width: 4),
-              Text(
-                widget.time.label,
-                style: AppTextStyles.body(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(width: 14),
-              if (widget.entry == 0) ...[
-                Icon(Icons.favorite_rounded, size: 16, color: AppColors.coral),
-                const SizedBox(width: 4),
-                Text(
-                  'Free',
-                  style: AppTextStyles.body(fontWeight: FontWeight.w800),
-                ),
-              ] else
-                CoinAmount(widget.entry, size: 15),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          StreamBuilder<int>(
-            stream: Stream.periodic(
-              const Duration(seconds: 1),
-              (_) => DateTime.now().difference(_started).inSeconds,
+            QuietLobbyOffer(label: 'Play Chip', onPlay: widget.onPlayChip),
+            const SizedBox(height: AppSpacing.xl),
+            TextButton.icon(
+              onPressed: widget.onCancel,
+              icon: const Icon(Icons.close_rounded),
+              label: const Text('Cancel'),
             ),
-            builder: (context, snap) {
-              final s = snap.data ?? 0;
-              return Text(
-                '${s ~/ 60}:${(s % 60).toString().padLeft(2, '0')}',
-                style: AppTextStyles.body(color: AppColors.textSecondary),
-              );
-            },
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          TextButton.icon(
-            onPressed: widget.onCancel,
-            icon: const Icon(Icons.close_rounded),
-            label: const Text('Cancel'),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

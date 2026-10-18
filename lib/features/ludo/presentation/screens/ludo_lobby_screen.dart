@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/bots/bots.dart';
 import '../../../../core/widgets/pop_card.dart';
+import '../../../../core/widgets/quiet_lobby_offer.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../core/audio/game_audio.dart';
@@ -156,6 +157,23 @@ class _LudoLobbyScreenState extends ConsumerState<LudoLobbyScreen> {
     if (mounted) setState(() => _searching = false);
   }
 
+  /// Nobody to play online right now: the same size table offline, with
+  /// bots in the other seats.
+  Future<void> _playBotsInstead() async {
+    await _cancelSearch();
+    if (!mounted) return;
+    final me = ref.read(currentUserProvider)?.id ?? 'me';
+    final id = startLocalLudo(
+      LocalLudoSetup(
+        playerIds: _offlineSeats(_size, 0, 0, me),
+        colors: ludoSeatColors(_size),
+        humanId: me,
+      ),
+    );
+    ref.read(gameAudioProvider).play(Sfx.reaction);
+    context.push('/ludo/$id');
+  }
+
   /// An offline table with computer players: pick how many play and which
   /// color is yours, and the bots fill the other seats.
   Future<void> _openBots() async {
@@ -246,6 +264,7 @@ class _LudoLobbyScreenState extends ConsumerState<LudoLobbyScreen> {
                       entry: _entry,
                       size: _size,
                       onCancel: _cancelSearch,
+                      onPlayBots: _playBotsInstead,
                     )
                   : ListView(
                       key: const ValueKey('home'),
@@ -923,11 +942,13 @@ class _SearchingView extends StatefulWidget {
     required this.entry,
     required this.size,
     required this.onCancel,
+    required this.onPlayBots,
   });
 
   final int entry;
   final int size;
   final VoidCallback onCancel;
+  final VoidCallback onPlayBots;
 
   @override
   State<_SearchingView> createState() => _SearchingViewState();
@@ -959,85 +980,96 @@ class _SearchingViewState extends State<_SearchingView>
   Widget build(BuildContext context) {
     final colors = ludoSeatColors(4);
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox.square(
-            dimension: 240,
-            child: ValueListenableBuilder<double>(
-              valueListenable: _t,
-              builder: (context, t, _) => Stack(
-                alignment: Alignment.center,
-                children: [
-                  const UtopiaLoader(size: 96),
-                  for (var i = 0; i < 4; i++)
-                    Transform.translate(
-                      offset: Offset(
-                        math.cos(t * 0.9 + i * math.pi / 2) * 92,
-                        math.sin(t * 0.9 + i * math.pi / 2) * 92 * 0.55 -
-                            10 * math.sin(t * 6 + i).clamp(0.0, 1.0).toDouble(),
-                      ),
-                      child: SizedBox(
-                        width: 30,
-                        height: 30 * LudoTokenPainter.aspect,
-                        child: CustomPaint(
-                          painter: LudoTokenPainter(
-                            setId: 'classic',
-                            color: colors[i],
-                            t: t + i,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox.square(
+              dimension: 240,
+              child: ValueListenableBuilder<double>(
+                valueListenable: _t,
+                builder: (context, t, _) => Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const UtopiaLoader(size: 96),
+                    for (var i = 0; i < 4; i++)
+                      Transform.translate(
+                        offset: Offset(
+                          math.cos(t * 0.9 + i * math.pi / 2) * 92,
+                          math.sin(t * 0.9 + i * math.pi / 2) * 92 * 0.55 -
+                              10 *
+                                  math
+                                      .sin(t * 6 + i)
+                                      .clamp(0.0, 1.0)
+                                      .toDouble(),
+                        ),
+                        child: SizedBox(
+                          width: 30,
+                          height: 30 * LudoTokenPainter.aspect,
+                          child: CustomPaint(
+                            painter: LudoTokenPainter(
+                              setId: 'classic',
+                              color: colors[i],
+                              t: t + i,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            widget.size == 2 ? 'Finding an opponent' : 'Gathering players',
-            style: AppTextStyles.display(fontSize: 22),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.groups_rounded, size: 18, color: AppColors.sky),
-              const SizedBox(width: 4),
-              Text(
-                '${widget.size}',
-                style: AppTextStyles.body(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(width: 14),
-              if (widget.entry == 0) ...[
-                Icon(Icons.favorite_rounded, size: 16, color: AppColors.coral),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              widget.size == 2 ? 'Finding an opponent' : 'Gathering players',
+              style: AppTextStyles.display(fontSize: 22),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.groups_rounded, size: 18, color: AppColors.sky),
                 const SizedBox(width: 4),
                 Text(
-                  'Free',
+                  '${widget.size}',
                   style: AppTextStyles.body(fontWeight: FontWeight.w800),
                 ),
-              ] else
-                CoinAmount(widget.entry, size: 15),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          ValueListenableBuilder<double>(
-            valueListenable: _t,
-            builder: (context, t, _) {
-              final s = t.floor();
-              return Text(
-                '${s ~/ 60}:${(s % 60).toString().padLeft(2, '0')}',
-                style: AppTextStyles.body(color: AppColors.textSecondary),
-              );
-            },
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          TextButton.icon(
-            onPressed: widget.onCancel,
-            icon: const Icon(Icons.close_rounded),
-            label: const Text('Cancel'),
-          ),
-        ],
+                const SizedBox(width: 14),
+                if (widget.entry == 0) ...[
+                  Icon(
+                    Icons.favorite_rounded,
+                    size: 16,
+                    color: AppColors.coral,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Free',
+                    style: AppTextStyles.body(fontWeight: FontWeight.w800),
+                  ),
+                ] else
+                  CoinAmount(widget.entry, size: 15),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            ValueListenableBuilder<double>(
+              valueListenable: _t,
+              builder: (context, t, _) {
+                final s = t.floor();
+                return Text(
+                  '${s ~/ 60}:${(s % 60).toString().padLeft(2, '0')}',
+                  style: AppTextStyles.body(color: AppColors.textSecondary),
+                );
+              },
+            ),
+            QuietLobbyOffer(label: 'Play with bots', onPlay: widget.onPlayBots),
+            const SizedBox(height: AppSpacing.xl),
+            TextButton.icon(
+              onPressed: widget.onCancel,
+              icon: const Icon(Icons.close_rounded),
+              label: const Text('Cancel'),
+            ),
+          ],
+        ),
       ),
     );
   }
