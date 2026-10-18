@@ -89,6 +89,69 @@ class Leaderboard {
   int get gamesToGo => (kGamesToRank - myGames).clamp(0, kGamesToRank);
 }
 
+/// The player's own record in a game.
+class PlayerRecord {
+  const PlayerRecord({
+    required this.rating,
+    required this.best,
+    required this.games,
+    required this.wins,
+    required this.losses,
+    required this.draws,
+  });
+
+  factory PlayerRecord.fromJson(Map<String, dynamic> json) {
+    int n(String key) => (json[key] as num?)?.toInt() ?? 0;
+    return PlayerRecord(
+      rating: n('rating'),
+      best: n('best'),
+      games: n('games'),
+      wins: n('wins'),
+      losses: n('losses'),
+      draws: n('draws'),
+    );
+  }
+
+  final int rating;
+  final int best;
+  final int games;
+  final int wins;
+  final int losses;
+  final int draws;
+}
+
+/// One rated game's change, and when.
+class RatingStep {
+  const RatingStep(this.change, this.at);
+
+  final RatingChange change;
+  final DateTime at;
+}
+
+/// The rating over [steps] (oldest first): where it started, then after
+/// each game.
+List<int> ratingLine(List<RatingStep> steps) => [
+  if (steps.isNotEmpty) steps.first.change.before,
+  for (final s in steps) s.change.after,
+];
+
+/// How far the rating moved in the week before [now].
+int weekChange(List<RatingStep> steps, DateTime now) => steps
+    .where((s) => now.difference(s.at) < const Duration(days: 7))
+    .fold(0, (sum, s) => sum + s.change.delta);
+
+/// Where [rating] sits along the tiers, 0 (bottom of Bronze's band) to 1
+/// (Legend), each tier an equal share.
+double ladderPosition(int rating) {
+  final tiers = RankTier.values;
+  final tier = RankTier.of(rating);
+  final next = tier.next;
+  final low = tier == RankTier.bronze ? 900 : tier.from;
+  if (next == null) return 1;
+  final within = ((rating - low) / (next.from - low)).clamp(0.0, 1.0);
+  return (tier.index + within) / (tiers.length - 1);
+}
+
 /// How one match moved a player's rating.
 class RatingChange {
   const RatingChange(this.before, this.after);

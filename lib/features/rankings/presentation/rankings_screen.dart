@@ -2,65 +2,88 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/profiles/profile_repository.dart';
+import '../../../core/audio/game_audio.dart';
+import '../../../core/profiles/profile_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_background.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/primary_button.dart';
-import '../../../core/widgets/user_avatar.dart';
 import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
+import '../../checkers/domain/checkers_engine.dart';
+import '../../checkers/presentation/widgets/checkers_disc.dart';
+import '../../chess/domain/chess_types.dart';
+import '../../chess/presentation/widgets/chess_piece_art.dart';
+import '../../chess/presentation/widgets/chess_piece_styles.dart';
 import '../data/rankings_repository.dart';
 import '../domain/ranking.dart';
+import 'rankings_widgets.dart';
 
-/// The chess and checkers boards: the player's rating and tier, and the
-/// top players, worldwide or among friends. Ratings come from online games.
-class RankingsScreen extends StatelessWidget {
+/// The chess and checkers boards. At the top, the player: their tier badge,
+/// rating (and how it's moved this week), their rating line and record,
+/// and the tier ladder. Then the board: the top three on a podium and
+/// everyone after, worldwide or among friends, with the player's own place
+/// pinned below when they're further down. Ratings come from online games.
+class RankingsScreen extends StatefulWidget {
   const RankingsScreen({super.key, this.initialTab = 0});
 
   final int initialTab;
 
   @override
+  State<RankingsScreen> createState() => _RankingsScreenState();
+}
+
+class _RankingsScreenState extends State<RankingsScreen> {
+  late String _game = rankedGames[widget.initialTab.clamp(0, 1)];
+
+  @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: rankedGames.length,
-      initialIndex: initialTab,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Rankings'),
-          bottom: TabBar(
-            labelColor: AppColors.textPrimary,
-            unselectedLabelColor: AppColors.textSecondary,
-            indicatorColor: AppColors.goldBorder,
-            indicatorWeight: 3,
-            labelStyle: AppTextStyles.body(
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Rankings'),
+        actions: [
+          IconButton(
+            tooltip: 'How rankings work',
+            icon: const Icon(Icons.info_outline_rounded),
+            onPressed: () => showTierGuide(context),
+          ),
+        ],
+      ),
+      body: AppBackground(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.md,
+                0,
+              ),
+              child: _GameSwitch(
+                game: _game,
+                onChanged: (g) => setState(() => _game = g),
+              ),
             ),
-            tabs: const [
-              Tab(icon: Icon(Icons.extension_rounded), text: 'Chess'),
-              Tab(icon: Icon(Icons.blur_circular_rounded), text: 'Checkers'),
-            ],
-          ),
-        ),
-        body: const AppBackground(
-          child: TabBarView(
-            children: [
-              _Board(game: 'chess'),
-              _Board(game: 'checkers'),
-            ],
-          ),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: _Board(key: ValueKey(_game), game: _game),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
+String _gameName(String game) => game == 'checkers' ? 'Checkers' : 'Chess';
+
 class _Board extends ConsumerStatefulWidget {
-  const _Board({required this.game});
+  const _Board({super.key, required this.game});
 
   final String game;
 
@@ -68,69 +91,216 @@ class _Board extends ConsumerStatefulWidget {
   ConsumerState<_Board> createState() => _BoardState();
 }
 
-class _BoardState extends ConsumerState<_Board>
-    with AutomaticKeepAliveClientMixin {
+class _BoardState extends ConsumerState<_Board> {
   bool _friends = false;
 
-  @override
-  bool get wantKeepAlive => true;
+  Future<void> _refresh() async {
+    final game = widget.game;
+    ref.invalidate(myRecordProvider(game));
+    ref.invalidate(ratingHistoryProvider(game));
+    ref.invalidate(leaderboardProvider((game, _friends)));
+    await ref.read(leaderboardProvider((game, _friends)).future);
+  }
+
+  void _open(BoardEntry entry) {
+    ref.read(gameAudioProvider).play(Sfx.tap);
+    showBoardPlayer(context, entry: entry, gameName: _gameName(widget.game));
+  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    final key = (widget.game, _friends);
+    final game = widget.game;
+    final key = (game, _friends);
     final board = ref.watch(leaderboardProvider(key));
+    final record = ref.watch(myRecordProvider(game)).valueOrNull;
+    final history =
+        ref.watch(ratingHistoryProvider(game)).valueOrNull ?? const [];
     final me = ref.watch(currentUserProvider)?.id;
     final isGuest = ref.watch(isAnonymousProvider);
+    final value = board.valueOrNull;
+    final top = value?.top ?? const <BoardEntry>[];
+    final rating = value?.myRating ?? record?.rating ?? 1000;
+    final place = value?.myPlace;
+    final pinned = place != null && !top.any((e) => e.userId == me);
+    final myProfile = me == null
+        ? null
+        : ref.watch(profileByIdProvider(me)).valueOrNull;
 
-    return RefreshIndicator(
-      onRefresh: () => ref.refresh(leaderboardProvider(key).future),
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.md,
-          AppSpacing.md,
-          AppSpacing.md,
-          AppSpacing.xxl,
-        ),
-        children: [
-          switch (board) {
-            AsyncData(:final value) => _MyStanding(
-              board: value,
-              friends: _friends,
+    return Stack(
+      children: [
+        RefreshIndicator(
+          onRefresh: _refresh,
+          child: ListView(
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              pinned ? 100 : AppSpacing.xxl,
             ),
-            AsyncError() => _LoadError(
-              onRetry: () => ref.invalidate(leaderboardProvider(key)),
-            ),
-            _ => const SizedBox(
-              height: 140,
-              child: Center(child: UtopiaLoader(size: 48)),
-            ),
-          },
-          const SizedBox(height: AppSpacing.md),
-          if (!isGuest) ...[
-            _ScopeSwitch(
-              friends: _friends,
-              onChanged: (v) => setState(() => _friends = v),
-            ),
-            const SizedBox(height: AppSpacing.md),
-          ],
-          if (board.valueOrNull case final value?)
-            if (value.top.isEmpty)
-              _NobodyYet(game: widget.game, friends: _friends)
-            else
-              for (final entry in value.top)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: _Row(entry: entry, me: entry.userId == me),
+            children: [
+              switch (board) {
+                AsyncData(:final value) => _MyRankCard(
+                  board: value,
+                  record: record,
+                  history: history,
+                  friends: _friends,
                 ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Ratings come from online games. Everyone starts at 1000, and '
-            "you're ranked after $kGamesToRank games.",
-            textAlign: TextAlign.center,
-            style: AppTextStyles.body(
-              fontSize: 12,
-              color: AppColors.textSecondary,
+                AsyncError() => _LoadError(
+                  onRetry: () => ref.invalidate(leaderboardProvider(key)),
+                ),
+                _ => const SizedBox(
+                  height: 220,
+                  child: Center(child: UtopiaLoader(size: 48)),
+                ),
+              },
+              const SizedBox(height: AppSpacing.sm),
+              TierLadder(rating: rating),
+              const SizedBox(height: AppSpacing.lg),
+              // Side by side when there's room; the switch goes under on
+              // a narrow phone.
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: [
+                  Text(
+                    'Top players',
+                    style: AppTextStyles.display(fontSize: 20),
+                  ),
+                  if (!isGuest)
+                    _ScopeSwitch(
+                      friends: _friends,
+                      onChanged: (v) {
+                        ref.read(gameAudioProvider).play(Sfx.tap);
+                        setState(() => _friends = v);
+                      },
+                    ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (value != null)
+                if (top.isEmpty)
+                  _NobodyYet(game: game, friends: _friends)
+                else ...[
+                  Podium(top: top.take(3).toList(), myId: me, onTap: _open),
+                  const SizedBox(height: AppSpacing.md),
+                  for (final (i, entry) in top.skip(3).indexed)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      child: BoardRow(
+                        entry: entry,
+                        me: entry.userId == me,
+                        index: i,
+                        onTap: () => _open(entry),
+                      ),
+                    ),
+                ],
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                'Ratings come from online games. Pull down to refresh.',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.body(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (pinned)
+          Positioned(
+            left: AppSpacing.md,
+            right: AppSpacing.md,
+            bottom: AppSpacing.md,
+            child: SafeArea(
+              top: false,
+              child: MeBar(place: place, rating: rating, profile: myProfile),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Chess or checkers, with a piece for each.
+class _GameSwitch extends StatelessWidget {
+  const _GameSwitch({required this.game, required this.onChanged});
+
+  final String game;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget tab(String id, Widget art) {
+      final on = id == game;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => onChanged(id),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            height: 48,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              gradient: on
+                  ? LinearGradient(
+                      colors: [
+                        Color.lerp(AppColors.accent, Colors.white, 0.2)!,
+                        AppColors.accent,
+                      ],
+                    )
+                  : null,
+              boxShadow: on
+                  ? [
+                      BoxShadow(
+                        color: AppColors.accent.withValues(alpha: 0.45),
+                        blurRadius: 12,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox.square(dimension: 28, child: Center(child: art)),
+                const SizedBox(width: 6),
+                Text(
+                  _gameName(id),
+                  style: AppTextStyles.body(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: on ? Colors.white : AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        color: Colors.black.withValues(alpha: 0.28),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Row(
+        children: [
+          tab(
+            'chess',
+            ChessPieceArt(
+              type: PieceType.knight,
+              finish: ChessPieceStyle.byId('classic').white,
+              size: 26,
+            ),
+          ),
+          tab(
+            'checkers',
+            const SizedBox.square(
+              dimension: 24,
+              child: CustomPaint(painter: _DiscArt()),
             ),
           ),
         ],
@@ -139,95 +309,274 @@ class _BoardState extends ConsumerState<_Board>
   }
 }
 
-/// The player's rating, tier and place, and how far it is to the next tier.
-class _MyStanding extends StatelessWidget {
-  const _MyStanding({required this.board, required this.friends});
+class _DiscArt extends CustomPainter {
+  const _DiscArt();
+
+  @override
+  void paint(Canvas canvas, Size size) => paintCheckersDisc(
+    canvas,
+    size.center(Offset.zero),
+    size.width * 0.44,
+    finish: checkersFinish('classic', CheckersSide.dark),
+  );
+
+  @override
+  bool shouldRepaint(covariant _DiscArt old) => false;
+}
+
+/// The player at a glance: badge, rating, place, how they're doing lately.
+class _MyRankCard extends StatelessWidget {
+  const _MyRankCard({
+    required this.board,
+    required this.record,
+    required this.history,
+    required this.friends,
+  });
 
   final Leaderboard board;
+  final PlayerRecord? record;
+  final List<RatingStep> history;
   final bool friends;
 
   @override
   Widget build(BuildContext context) {
     final rating = board.myRating;
     final tier = RankTier.of(rating);
-    final next = tier.next;
     final place = board.myPlace;
-    final where = place == null
-        ? board.myGames == 0
-              ? 'Play an online game to get started'
-              : 'Play ${board.gamesToGo} more '
-                    '${board.gamesToGo == 1 ? 'game' : 'games'} to get ranked'
-        : friends
-        ? '#$place among your friends'
-        : '#$place in Utopia';
-    // Bronze starts at 0, but nobody's down there: fill from 900.
-    final low = tier == RankTier.bronze ? 900 : tier.from;
+    final week = weekChange(history, DateTime.now());
+    final line = ratingLine(history);
+    final r = record;
+    final form = history.reversed.take(6).toList();
 
     return PopCard(
-      borderRadius: 26,
+      borderRadius: 28,
       tint: tier.color,
       glow: tier.color,
       padding: const EdgeInsets.all(AppSpacing.md),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
+          Row(
             children: [
-              GlossyBadge(
-                icon: Icons.military_tech_rounded,
-                color: tier.color,
-                size: 62,
+              Column(
+                children: [
+                  TierEmblem(tier: tier, size: 82),
+                  const SizedBox(height: 2),
+                  Text(
+                    tier.label.toUpperCase(),
+                    style: AppTextStyles.body(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      color: tier.color,
+                    ).copyWith(letterSpacing: 1.5),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                tier.label,
-                style: AppTextStyles.body(
-                  fontWeight: FontWeight.w800,
-                  color: tier.color,
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'YOUR RATING',
+                      style: AppTextStyles.body(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textSecondary,
+                      ).copyWith(letterSpacing: 1.2),
+                    ),
+                    CountUp(rating, style: AppTextStyles.display(fontSize: 40)),
+                    if (week != 0) ...[
+                      TrendChip(week),
+                      const SizedBox(height: 6),
+                    ],
+                    _Where(board: board, friends: friends),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          if (place == null) ...[
+            const SizedBox(height: AppSpacing.md),
+            _Placement(games: board.myGames),
+          ],
+          if (line.length >= 3) ...[
+            const SizedBox(height: AppSpacing.md),
+            Row(
               children: [
                 Text(
-                  'Your rating',
+                  'Last ${history.length} games',
                   style: AppTextStyles.body(
                     fontSize: 12,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.textSecondary,
                   ),
                 ),
-                Text('$rating', style: AppTextStyles.display(fontSize: 34)),
-                Text(
-                  where,
-                  style: AppTextStyles.body(fontWeight: FontWeight.w700),
-                ),
-                if (next != null) ...[
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: LinearProgressIndicator(
-                      value: ((rating - low) / (next.from - low)).clamp(
-                        0.0,
-                        1.0,
-                      ),
-                      minHeight: 8,
-                      color: next.color,
-                      backgroundColor: Colors.black.withValues(alpha: 0.3),
-                    ),
+                const Spacer(),
+                for (final s in form)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: _FormPip(s.change.delta),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${next.from - rating} to ${next.label}',
-                    style: AppTextStyles.body(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
               ],
+            ),
+            const SizedBox(height: 4),
+            RatingSparkline(values: line, color: tier.color),
+          ],
+          if (r != null && r.games > 0) ...[
+            const SizedBox(height: AppSpacing.md),
+            Row(
+              children: [
+                _MiniStat('${r.wins}', 'Wins', AppColors.success),
+                _MiniStat('${r.losses}', 'Losses', AppColors.error),
+                _MiniStat('${r.draws}', 'Draws', AppColors.sky),
+                _MiniStat('${r.best}', 'Best', AppColors.coinGold),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Where extends StatelessWidget {
+  const _Where({required this.board, required this.friends});
+
+  final Leaderboard board;
+  final bool friends;
+
+  @override
+  Widget build(BuildContext context) {
+    final place = board.myPlace;
+    final style = AppTextStyles.body(fontWeight: FontWeight.w800);
+    if (place == null) {
+      return Text(
+        board.myGames == 0 ? 'Not ranked yet' : 'Getting placed',
+        style: style.copyWith(color: AppColors.textSecondary),
+      );
+    }
+    return Row(
+      children: [
+        if (medalFor(place) case final medal?) ...[
+          Icon(Icons.emoji_events_rounded, size: 18, color: medal),
+          const SizedBox(width: 4),
+        ],
+        Text(
+          friends ? '#$place among friends' : '#$place in Utopia',
+          style: style,
+        ),
+      ],
+    );
+  }
+}
+
+/// The first games, before a player has a place: a dot each.
+class _Placement extends StatelessWidget {
+  const _Placement({required this.games});
+
+  final int games;
+
+  @override
+  Widget build(BuildContext context) {
+    final left = (kGamesToRank - games).clamp(0, kGamesToRank);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.black.withValues(alpha: 0.22),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < kGamesToRank; i++)
+            Container(
+              margin: const EdgeInsets.only(right: 6),
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: i < games
+                    ? AppColors.coinGold
+                    : Colors.white.withValues(alpha: 0.12),
+                border: Border.all(color: Colors.white24),
+              ),
+              child: i < games
+                  ? const Icon(
+                      Icons.check_rounded,
+                      size: 12,
+                      color: Colors.white,
+                    )
+                  : null,
+            ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              games == 0
+                  ? 'Play $kGamesToRank online games to get your place'
+                  : '$left more ${left == 1 ? 'game' : 'games'} to get your place',
+              style: AppTextStyles.body(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One recent game's change: green up, red down.
+class _FormPip extends StatelessWidget {
+  const _FormPip(this.delta);
+
+  final int delta;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = delta > 0
+        ? AppColors.success
+        : delta < 0
+        ? AppColors.error
+        : AppColors.sky;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: color.withValues(alpha: 0.2),
+        border: Border.all(color: color.withValues(alpha: 0.6)),
+      ),
+      child: Text(
+        delta > 0 ? '+$delta' : '$delta',
+        style: AppTextStyles.body(
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  const _MiniStat(this.value, this.label, this.color);
+
+  final String value;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(value, style: AppTextStyles.display(fontSize: 20, color: color)),
+          Text(
+            label,
+            style: AppTextStyles.body(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
             ),
           ),
         ],
@@ -247,163 +596,50 @@ class _ScopeSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget tab(bool value, IconData icon, String label) {
       final on = value == friends;
-      return Expanded(
-        child: GestureDetector(
-          onTap: () => onChanged(value),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            height: 44,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: on ? AppColors.accent : Colors.transparent,
-              boxShadow: on
-                  ? [
-                      BoxShadow(
-                        color: AppColors.accent.withValues(alpha: 0.4),
-                        blurRadius: 10,
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 20,
+      return GestureDetector(
+        onTap: () => onChanged(value),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: on ? AppColors.accent : Colors.transparent,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: on ? Colors.white : AppColors.textSecondary,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: AppTextStyles.body(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
                   color: on ? Colors.white : AppColors.textSecondary,
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: AppTextStyles.body(
-                    fontWeight: FontWeight.w800,
-                    color: on ? Colors.white : AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
     }
 
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(17),
         color: Colors.black.withValues(alpha: 0.25),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           tab(false, Icons.public_rounded, 'Everyone'),
           tab(true, Icons.people_rounded, 'Friends'),
         ],
-      ),
-    );
-  }
-}
-
-class _Row extends StatelessWidget {
-  const _Row({required this.entry, required this.me});
-
-  final BoardEntry entry;
-  final bool me;
-
-  @override
-  Widget build(BuildContext context) {
-    final tier = RankTier.of(entry.rating);
-    final name = me ? 'You' : profileDisplayName(entry.profile, entry.userId);
-    return PopCard(
-      borderRadius: 18,
-      depth: 2,
-      borderWidth: me ? 2 : 1.2,
-      tint: me ? AppColors.accent : null,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        children: [
-          SizedBox(width: 38, child: _Place(entry.place)),
-          const SizedBox(width: 6),
-          UserAvatar.fromProfile(
-            entry.profile,
-            fallbackInitial: name,
-            radius: 18,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.body(fontWeight: FontWeight.w800),
-                ),
-                Text(
-                  '${tier.label} · ${entry.games} games',
-                  style: AppTextStyles.body(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            '${entry.rating}',
-            style: AppTextStyles.display(fontSize: 20, color: tier.color),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// 1, 2 and 3 get medals; the rest a number.
-class _Place extends StatelessWidget {
-  const _Place(this.place);
-
-  final int place;
-
-  @override
-  Widget build(BuildContext context) {
-    final medal = switch (place) {
-      1 => AppColors.coinGold,
-      2 => RankTier.silver.color,
-      3 => RankTier.bronze.color,
-      _ => null,
-    };
-    if (medal == null) {
-      return Text(
-        '#$place',
-        textAlign: TextAlign.center,
-        style: AppTextStyles.body(
-          fontWeight: FontWeight.w800,
-          color: AppColors.textSecondary,
-        ),
-      );
-    }
-    return Center(
-      child: Container(
-        width: 30,
-        height: 30,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            center: const Alignment(-0.3, -0.4),
-            colors: [Color.lerp(medal, Colors.white, 0.5)!, medal],
-          ),
-          border: Border.all(color: Colors.white70, width: 1.5),
-        ),
-        child: Text(
-          '$place',
-          style: AppTextStyles.body(
-            fontWeight: FontWeight.w900,
-            color: AppColors.faceInk,
-          ),
-        ),
       ),
     );
   }
@@ -417,40 +653,47 @@ class _NobodyYet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopCard(
-      borderRadius: 22,
-      depth: 3,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        children: [
-          GlossyBadge(
-            icon: Icons.emoji_events_rounded,
-            color: AppColors.coinGold,
-            size: 52,
+    return Column(
+      children: [
+        // The podium, waiting.
+        Podium(top: const [], myId: null, onTap: (_) {}),
+        const SizedBox(height: AppSpacing.md),
+        PopCard(
+          borderRadius: 22,
+          depth: 3,
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            children: [
+              GlossyBadge(
+                icon: Icons.emoji_events_rounded,
+                color: AppColors.coinGold,
+                size: 48,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                friends
+                    ? 'None of your friends are ranked yet'
+                    : 'The podium is empty',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.display(fontSize: 20),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Play $kGamesToRank online games to get on the board. '
+                'The top spot is waiting!',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.body(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              PrimaryButton(
+                label: 'Play ${_gameName(game).toLowerCase()} online',
+                color: AppColors.success,
+                onPressed: () => context.push('/$game'),
+              ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            friends
-                ? 'None of your friends are ranked yet'
-                : 'Nobody is ranked yet',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.display(fontSize: 20),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Play $kGamesToRank online games to get on the board. '
-            'The top spot is waiting!',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.body(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          PrimaryButton(
-            label: 'Play online',
-            color: AppColors.success,
-            onPressed: () => context.push('/$game'),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -79,6 +79,27 @@ class _FakeChipDoodles implements ChipDoodleRepository {
   );
 }
 
+final _history = [
+  for (final (i, (before, after)) in const [
+    (1000, 1020),
+    (1020, 1041),
+    (1041, 1022),
+    (1022, 1060),
+    (1060, 1083),
+    (1083, 1070),
+    (1070, 1101),
+    (1101, 1124),
+    (1124, 1150),
+    (1150, 1139),
+    (1139, 1165),
+    (1165, 1188),
+  ].indexed)
+    RatingStep(
+      RatingChange(before, after),
+      DateTime.now().subtract(Duration(days: 11 - i)),
+    ),
+];
+
 final _board = Leaderboard(
   top: [
     for (final (i, (name, rating, games)) in const [
@@ -127,6 +148,17 @@ Future<void> _phone(
         myBirthdayProvider.overrideWith((ref) async => null),
         eventsProvider.overrideWith((ref) => _Events(ref, [_halloween])),
         leaderboardProvider.overrideWith((ref, key) async => _board),
+        myRecordProvider.overrideWith(
+          (ref, game) async => const PlayerRecord(
+            rating: 1188,
+            best: 1215,
+            games: 12,
+            wins: 8,
+            losses: 3,
+            draws: 1,
+          ),
+        ),
+        ratingHistoryProvider.overrideWith((ref, game) async => _history),
         chipDoodleRepositoryProvider.overrideWithValue(_FakeChipDoodles()),
       ],
       child: MaterialApp(debugShowCheckedModeBanner: false, home: child),
@@ -193,10 +225,18 @@ void main() {
     await _phone(tester, const RankingsScreen());
     // The board loads after the first frame; its fonts too.
     await tester.runAsync(GoogleFonts.pendingFonts);
-    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(const Duration(milliseconds: 1600));
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/new_rankings.png'),
+    );
+    await tester.drag(find.byType(ListView), const Offset(0, -700));
+    await tester.pump(const Duration(milliseconds: 1600));
+    await tester.runAsync(GoogleFonts.pendingFonts);
+    await tester.pump(const Duration(milliseconds: 100));
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/new_rankings_board.png'),
     );
   });
 
