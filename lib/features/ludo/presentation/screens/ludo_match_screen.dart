@@ -66,6 +66,11 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
 
   // The roller keeps the die until everyone has seen what they got.
   static const _diceHold = Duration(milliseconds: 1200);
+
+  /// The one die, wherever it is: it keeps its state as it moves from seat
+  /// to seat, so a roll that arrives as it moves still tumbles and lands
+  /// (a new die there would just appear showing the number).
+  final _diceKey = GlobalKey();
   static const _speechFor = Duration(seconds: 4);
 
   /// An offline game waits while the app is in the background.
@@ -370,6 +375,7 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
             : null,
         dice: isOwner
             ? LudoDice(
+                key: _diceKey,
                 rollSeq: game.rollSeq,
                 value: game.lastRoll?.value,
                 enabled:

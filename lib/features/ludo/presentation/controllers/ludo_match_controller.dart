@@ -503,11 +503,25 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     final game = LudoState.fromJson(row['state'] as Map<String, dynamic>);
     if (!state.loading && !_isNewer(row, game)) return;
 
-    // Someone moved before their die had landed here (a slow connection
-    // can bunch the roll and the move together): show the roll first.
-    final shownAt = state.rollShownAt;
     final turn = (row['turn_count'] as num?)?.toInt() ?? 0;
     final localTurn = (state.matchRow?['turn_count'] as num?)?.toInt() ?? 0;
+
+    // The roll and the move it made arrived together (a slow connection,
+    // or an update that never came through): roll the die on the board as
+    // it was, and the move waits below until its number has shown.
+    final roll = game.lastRoll;
+    if (!state.loading &&
+        turn > localTurn &&
+        game.rollSeq > state.game.rollSeq &&
+        !game.hasRolled &&
+        roll != null) {
+      state = state.copyWith(
+        game: state.game.copyWith(rollSeq: game.rollSeq, lastRoll: roll),
+      );
+    }
+
+    // Someone moved before their die had landed here: show the roll first.
+    final shownAt = state.rollShownAt;
     if (!state.loading && shownAt != null && turn > localTurn) {
       final wait = shownAt.add(kDiceReadTime).difference(DateTime.now());
       if (wait > Duration.zero) {

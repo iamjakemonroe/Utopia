@@ -186,6 +186,47 @@ void main() {
     expect(controller.state.movableTokens, isNotEmpty);
   });
 
+  test(
+    'a roll that arrives with its move shows before the piece moves',
+    () async {
+      final base = _base();
+      final before = base.copyWith(
+        turn: LudoColor.yellow,
+        tokens: {
+          ...base.tokens,
+          LudoColor.yellow: const [10, -1, -1, -1],
+        },
+      );
+      repo.match.add(_row(before, turnCount: 3));
+      await _settle();
+      // Yellow rolled a 4 and moved; this phone never saw the roll alone.
+      final after = before.copyWith(
+        turn: LudoColor.red,
+        rollSeq: before.rollSeq + 1,
+        lastRoll: const LudoRoll(LudoColor.yellow, 4),
+        tokens: {
+          ...before.tokens,
+          LudoColor.yellow: const [14, -1, -1, -1],
+        },
+      );
+      repo.match.add(_row(after, turnCount: 4));
+      await _settle();
+      // The die rolls first, on the board as it was.
+      expect(controller.state.game.rollSeq, after.rollSeq);
+      expect(
+        controller.state.game.lastRoll,
+        const LudoRoll(LudoColor.yellow, 4),
+      );
+      expect(controller.state.game.tokens[LudoColor.yellow]![0], 10);
+      // Then, once its number has been seen, the piece moves.
+      await Future<void>.delayed(
+        kDiceReveal + kDiceReadTime + const Duration(milliseconds: 50),
+      );
+      expect(controller.state.game.tokens[LudoColor.yellow]![0], 14);
+      expect(controller.state.game.turn, LudoColor.red);
+    },
+  );
+
   test('a roll with no legal move is shown and passes the turn', () async {
     // All tokens in base: anything but a 6 has no legal move.
     repo.match.add(_row(_base()));
