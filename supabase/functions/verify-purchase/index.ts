@@ -19,6 +19,10 @@
 //   404 { status: "unknown" }: the store doesn't know this purchase (yet).
 //   503 { status: "unavailable" }: store keys not set up, or the store
 //       didn't answer. The app keeps the purchase and tries again later.
+//
+// Chip Maestro (the monthly art plan, product utopia.maestro.*) is checked
+// the same way and answers { status: "active" | "expired", until } once
+// recorded, or { status: "other" } when it's another account's.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import {
   appleBundleId,
@@ -27,6 +31,7 @@ import {
   googlePurchase,
   StoreNotConfigured,
 } from "../_shared/stores.ts";
+import { MAESTRO_PREFIX, maestroFromApple, maestroFromGoogle } from "../_shared/maestro.ts";
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -63,7 +68,8 @@ Deno.serve(async (req) => {
   const { platform, product_id: productId, purchase_id: purchaseId } = body;
   if (
     (platform !== "ios" && platform !== "android") ||
-    typeof productId !== "string" || !productId.startsWith("utopia.coins.") ||
+    typeof productId !== "string" ||
+    !(productId.startsWith("utopia.coins.") || productId.startsWith(MAESTRO_PREFIX)) ||
     typeof purchaseId !== "string" || purchaseId.length === 0 ||
     purchaseId.length > 1000
   ) {
@@ -118,6 +124,13 @@ Deno.serve(async (req) => {
   }
 
   try {
+    if (productId.startsWith(MAESTRO_PREFIX)) {
+      const result = platform === "ios"
+        ? await maestroFromApple(admin, purchaseId, me)
+        : await maestroFromGoogle(admin, purchaseId, productId, me);
+      const code = result.status === "unknown" ? 404 : result.status === "pending" ? 202 : 200;
+      return json({ status: result.status, until: result.until ?? null }, code);
+    }
     if (platform === "ios") {
       const found = await appleTransaction(purchaseId);
       if (!found) return json({ status: "unknown" }, 404);

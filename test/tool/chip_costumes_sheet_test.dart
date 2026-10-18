@@ -1,5 +1,5 @@
 // Renders Chip in several moods in each set's costume (zombie, angel,
-// devil, fighter) into test/tool/goldens/chip_<costume>.png. Run:
+// devil, fighter, and Chip Maestro's beret) into test/tool/goldens/chip_<costume>.png. Run:
 // flutter test --run-skipped --update-goldens test/tool/chip_costumes_sheet_test.dart
 @Tags(['sheet'])
 library;
@@ -23,6 +23,7 @@ void main() {
     ('angel', WorldSets.heaven),
     ('devil', WorldSets.hell),
     ('fighter', WorldSets.dragon),
+    ('maestro', WorldSets.maestro),
   ]) {
     testWidgets('chip $name', (tester) async {
       tester.view.physicalSize = const Size(1500, 640);
@@ -33,6 +34,7 @@ void main() {
         WorldSets.heaven,
         WorldSets.hell,
         WorldSets.dragon,
+        WorldSets.maestro,
       ]) {
         other.on.value = other == set;
         other.settle();

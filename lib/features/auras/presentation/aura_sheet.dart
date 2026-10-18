@@ -197,7 +197,16 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
                       onToggle: () => _wear(!wearing),
                     ),
                   ],
-                  if (aura.retired) ...[
+                  if (aura.includedWith case final plan?) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      "Comes with $plan. Yours to wear while you're a member.",
+                      style: AppTextStyles.body(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ] else if (aura.retired) ...[
                     const SizedBox(height: AppSpacing.lg),
                     Text(
                       'No longer sold. Yours to wear until it runs out.',

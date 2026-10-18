@@ -5,11 +5,33 @@ import 'package:flutter/material.dart';
 
 import '../domain/art_doc.dart';
 import '../domain/coloring_pages.dart';
+import '../domain/line_art.dart';
 import '../domain/regions.dart';
 
 /// The paper every page is drawn on, and the ink of a coloring page's lines.
 const kPaper = Color(0xFFFFFDF7);
 const kLineInk = Color(0xFF1F1E1B);
+
+/// Draws [page]'s lines in page units: its outlines, or its line art once
+/// that's ready ([LineArt.ready] says when). [cache] keeps parsed outlines.
+void paintPageLines(
+  Canvas canvas,
+  ColoringPage page,
+  Map<String, List<Path>> cache,
+) {
+  if (page.artPath == null) {
+    ColoringPage.paintLines(canvas, cache[page.id] ??= page.draw(), kLineInk);
+    return;
+  }
+  final ink = LineArt.of(page);
+  if (ink == null) return;
+  canvas.drawImageRect(
+    ink,
+    Offset.zero & Size(ink.width.toDouble(), ink.height.toDouble()),
+    LineArt.fit(ink),
+    Paint()..filterQuality = FilterQuality.medium,
+  );
+}
 
 /// How a brush stroke looks, for each tool. [s] is the stroke's size.
 void paintStroke(Canvas canvas, StrokeOp s) {
@@ -118,9 +140,18 @@ class PageArt {
   static const _traceScale = 0.5;
 
   static Future<PageArt> _build(ColoringPage page) async {
-    final paths = page.draw();
     final rec = ui.PictureRecorder();
-    ColoringPage.paintLines(Canvas(rec), paths, kLineInk);
+    if (page.artPath != null) {
+      final ink = await LineArt.load(page);
+      Canvas(rec).drawImageRect(
+        ink,
+        Offset.zero & Size(ink.width.toDouble(), ink.height.toDouble()),
+        LineArt.fit(ink),
+        Paint()..filterQuality = FilterQuality.high,
+      );
+    } else {
+      ColoringPage.paintLines(Canvas(rec), page.draw(), kLineInk);
+    }
     final lines = rec.endRecording();
     final small = ui.PictureRecorder();
     final canvas = Canvas(small)..scale(_traceScale);
@@ -137,6 +168,7 @@ class PageArt {
       w,
       h,
       scale: _traceScale,
+      seal: page.artPath != null,
     );
     return PageArt(page, lines, regions);
   }
@@ -170,6 +202,24 @@ class ArtRender {
   /// The fills as they are now (coloring pages only).
   ui.Image? get fills => _fills;
 
+  /// While Chip's colors sweep in: how far (0 to 1) a circle growing from
+  /// [revealAt] has spread, the fills from before showing outside it. Null
+  /// when nothing is sweeping.
+  double? reveal;
+  Offset revealAt = Offset.zero;
+  ui.Image? _before;
+  bool _keepBefore = false;
+
+  /// The next [update] keeps the fills it replaces, to sweep from.
+  void holdForReveal() => _keepBefore = true;
+
+  /// The sweep is done: only the new fills from here on.
+  void endReveal() {
+    reveal = null;
+    _before?.dispose();
+    _before = null;
+  }
+
   /// Brings the cached paint and fills up to date with [doc]. Call after
   /// anything is added, undone or redone.
   Future<void> update() async {
@@ -188,14 +238,23 @@ class ArtRender {
     final p = page;
     if (p == null) return;
     final fills = doc.fills;
-    if (_fillsFor != null && _mapEquals(_fillsFor!, fills)) return;
+    if (_fillsFor != null && _mapEquals(_fillsFor!, fills)) {
+      _keepBefore = false;
+      return;
+    }
     final image = await p.regions.fillImage(fills);
     if (_disposed || generation != _generation) {
       image.dispose();
       return;
     }
     _fillsFor = fills;
-    _fills?.dispose();
+    if (_keepBefore) {
+      _before?.dispose();
+      _before = _fills;
+      _keepBefore = false;
+    } else {
+      _fills?.dispose();
+    }
     _fills = image;
   }
 
@@ -214,14 +273,31 @@ class ArtRender {
     Iterable<StrokeOp> more = const [],
   }) {
     canvas.drawRect(_pageRect, Paint()..color = kPaper);
+    void drawFills(ui.Image image) => canvas.drawImageRect(
+      image,
+      Offset.zero & Size(image.width.toDouble(), image.height.toDouble()),
+      _pageRect,
+      Paint()..filterQuality = FilterQuality.medium,
+    );
     final fills = _fills;
-    if (fills != null) {
-      canvas.drawImageRect(
-        fills,
-        Offset.zero & Size(fills.width.toDouble(), fills.height.toDouble()),
-        _pageRect,
-        Paint()..filterQuality = FilterQuality.medium,
-      );
+    final sweep = reveal;
+    if (sweep != null) {
+      if (_before case final before?) drawFills(before);
+      if (fills != null) {
+        canvas.save();
+        canvas.clipPath(
+          Path()..addOval(
+            Rect.fromCircle(
+              center: revealAt,
+              radius: sweep * size.longestSide * 1.15,
+            ),
+          ),
+        );
+        drawFills(fills);
+        canvas.restore();
+      }
+    } else if (fills != null) {
+      drawFills(fills);
     }
     // The paint gets a layer of its own, so the eraser takes away paint
     // only, never the paper or the fills under it.
@@ -265,6 +341,8 @@ class ArtRender {
     _paint = null;
     _fills?.dispose();
     _fills = null;
+    _before?.dispose();
+    _before = null;
   }
 }
 

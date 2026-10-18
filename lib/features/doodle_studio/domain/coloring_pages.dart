@@ -11,6 +11,7 @@ class ColoringPage {
     required this.id,
     required this.name,
     required this.draw,
+    this.artPath,
   });
 
   /// A page from the picture library (pictures Chip draws for players):
@@ -24,11 +25,22 @@ class ColoringPage {
     return ColoringPage(id: id, name: name, draw: draw);
   }
 
+  /// A page that is line art (a real portrait): an image of black lines on
+  /// white, kept in the library at [artPath] (see LineArt).
+  factory ColoringPage.fromArt({
+    required String id,
+    required String name,
+    required String artPath,
+  }) => ColoringPage(id: id, name: name, draw: _noLines, artPath: artPath);
+
   final String id;
   final String name;
 
-  /// The outlines, in page units.
+  /// The outlines, in page units (none for line art).
   final List<Path> Function() draw;
+
+  /// Where a line-art page's image is kept; null for outlines.
+  final String? artPath;
 
   /// How thick the outlines are drawn, in page units.
   static const lineWidth = 7.0;
@@ -49,6 +61,8 @@ class ColoringPage {
     }
   }
 }
+
+List<Path> _noLines() => const [];
 
 const kColoringPages = [
   ColoringPage(id: 'mandala', name: 'Mandala', draw: _mandala),

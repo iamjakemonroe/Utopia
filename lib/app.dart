@@ -7,9 +7,10 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/widgets/utopia_toast.dart';
 import 'features/auras/presentation/dragon_set.dart';
-import 'features/auras/presentation/heaven_hell_sets.dart';
+import 'features/auras/presentation/world_set_providers.dart';
 import 'features/auras/presentation/zombie_set.dart';
 import 'features/chip/presentation/floating_chip.dart';
+import 'features/maestro/presentation/maestro_providers.dart';
 import 'features/notifications/presentation/notification_actions.dart';
 import 'features/notifications/presentation/notification_center.dart';
 import 'features/store/presentation/theme_teleport.dart';
@@ -25,6 +26,8 @@ class UtopiaApp extends ConsumerWidget {
     // Refreshes cached player profiles after time away from the app.
     ref.watch(profileFreshnessProvider);
     // Dragon Coil worn in the Dojo world sets its dragon free.
+    // A Chip Maestro member's Chip wears his beret.
+    ref.watch(maestroLookProvider);
     ref.watch(dragonSetProvider);
     ref.listen(dragonSetProvider, (previous, next) {
       if (previous != false || next != true) return;
@@ -60,6 +63,34 @@ class UtopiaApp extends ConsumerWidget {
         'Hell set complete. Chip grew horns.',
         kind: ToastKind.success,
         icon: Icons.local_fire_department_rounded,
+      );
+    });
+    // Encore in the Music world puts Chip on the decks; the player's own
+    // music makes the show dance harder.
+    ref.watch(musicLiveProvider);
+    ref.watch(musicSetProvider);
+    ref.listen(musicSetProvider, (previous, next) {
+      if (previous != false || next != true) return;
+      final ctx = appNavigatorContext(ref);
+      if (ctx == null || !ctx.mounted) return;
+      showUtopiaToast(
+        ctx,
+        'Music set complete. Chip is on the decks.',
+        kind: ToastKind.success,
+        icon: Icons.headphones_rounded,
+      );
+    });
+    // Jack's Lantern in the Halloween world gets Chip carved.
+    ref.watch(halloweenSetProvider);
+    ref.listen(halloweenSetProvider, (previous, next) {
+      if (previous != false || next != true) return;
+      final ctx = appNavigatorContext(ref);
+      if (ctx == null || !ctx.mounted) return;
+      showUtopiaToast(
+        ctx,
+        'Halloween set complete. Chip got carved.',
+        kind: ToastKind.success,
+        icon: Icons.nightlight_round,
       );
     });
     // Zombie Bite worn in the Zombie world gets Chip bitten.

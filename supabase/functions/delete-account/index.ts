@@ -1,7 +1,8 @@
 // Deletes the signed-in player's account (Settings > Delete account).
 //
 // 1. Forgets everything personal (anonymize_account: name, username,
-//    picture, friends, chats, invites, notifications...).
+//    picture, friends, chats, invites, notifications...), and the
+//    pictures Chip drew from their photos.
 // 2. Removes their pictures and report screenshots from storage.
 // 3. Deletes the sign-in itself. It's a soft delete: the email and every
 //    way to sign in are gone for good, while the anonymous row stays for
@@ -39,9 +40,12 @@ Deno.serve(async (req) => {
     return json({ error: "Couldn't delete the account" }, 500);
   }
 
-  // Their files: profile pictures and bug-report screenshots live in a
-  // folder named after them.
-  for (const bucket of ["avatars", "bug-screenshots"]) {
+  // Pictures Chip drew from their photos are theirs alone: gone with them.
+  await admin.from("coloring_pages").delete().eq("owner", user.id);
+
+  // Their files: profile pictures, bug-report screenshots and portrait
+  // line art live in a folder named after them.
+  for (const bucket of ["avatars", "bug-screenshots", "coloring-art"]) {
     const { data: files } = await admin.storage.from(bucket).list(user.id, {
       limit: 1000,
     });

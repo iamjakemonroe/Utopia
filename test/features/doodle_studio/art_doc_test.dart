@@ -89,4 +89,47 @@ void main() {
     // The fill reaches in under the line.
     expect(alphaAt(4, 0), 255);
   });
+
+  test("Chip's colors land as one step: one undo takes them all back", () {
+    final doc = ArtDoc.blank(ArtKind.coloring, pageId: 'p:1')
+      ..add(const FillOp(region: 1, color: 0xFF111111))
+      ..add(const FillsOp({1: 0xFFAA0000, 2: 0xFF00AA00}))
+      ..add(const FillOp(region: 2, color: 0xFF0000AA));
+    // Later steps win, shape by shape.
+    expect(doc.fills, {1: 0xFFAA0000, 2: 0xFF0000AA});
+    doc.undo();
+    expect(doc.fills, {1: 0xFFAA0000, 2: 0xFF00AA00});
+    doc.undo();
+    expect(doc.fills, {1: 0xFF111111});
+
+    // Saved and read back.
+    final again = ArtDoc.fromJson(
+      (doc..redoLast()).toJson().cast<String, Object?>(),
+    )!;
+    expect(again.ops.last, isA<FillsOp>());
+    expect(again.fills, {1: 0xFFAA0000, 2: 0xFF00AA00});
+  });
+
+  test('shapes for Chip: biggest first, each labelled inside itself', () {
+    // 12 x 6 at half scale (so a pixel is 2 page units): a wall at x = 3
+    // leaves a narrow shape on the left and a wide one on the right.
+    const w = 12, h = 6;
+    final px = Uint8List(w * h * 4);
+    for (var y = 0; y < h; y++) {
+      px[(y * w + 3) * 4 + 3] = 255;
+    }
+    final map = RegionMap.label(px, w, h, scale: 0.5);
+    final shapes = map.shapes(minArea: 1);
+    expect(shapes, hasLength(2));
+    final wide = shapes.first, narrow = shapes.last;
+    expect(wide.area, greaterThan(narrow.area));
+    expect(wide.area, 8 * 6 * 4); // 48 pixels of 2 x 2 page units
+    expect(narrow.width, 3 * 2);
+    expect(wide.left, 4 * 2);
+    for (final s in shapes) {
+      expect(map.regionAtPage(s.labelX, s.labelY), s.id);
+    }
+    // Too small to bother Chip with.
+    expect(map.shapes(minArea: 100), hasLength(1));
+  });
 }

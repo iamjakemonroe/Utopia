@@ -12,6 +12,8 @@ import 'fire_dragon.dart';
 import 'doodle_world.dart';
 import 'heaven_world.dart';
 import 'hell_world.dart';
+import 'music_world.dart';
+import 'halloween_world.dart';
 import 'zombie_world.dart';
 import 'ambient_tick.dart';
 
@@ -154,6 +156,10 @@ Offset _celestialAnchor(WorldStyle style, Size size) {
     WorldBiome.heaven => Offset(w * 0.5, h * 0.1),
     // A blood-red moon through the smoke.
     WorldBiome.hell => Offset(w * 0.78, h * 0.15),
+    // A giant vinyl record turning over the stage.
+    WorldBiome.music => Offset(w * 0.74, h * 0.15),
+    // A huge harvest moon over the hollow.
+    WorldBiome.halloween => Offset(w * 0.32, h * 0.2),
   };
 }
 
@@ -200,7 +206,12 @@ class _SkyPainter extends CustomPainter {
             style.biome == WorldBiome.dojo;
         _paintSun(canvas, anchor, w * (big ? 0.2 : 0.1));
       case CelestialKind.moon:
-        _paintMoon(canvas, anchor, w * 0.075);
+        // The Music world's moon is a record and Halloween's a huge
+        // harvest moon, both drawn with the scene.
+        if (style.biome != WorldBiome.music &&
+            style.biome != WorldBiome.halloween) {
+          _paintMoon(canvas, anchor, w * 0.075);
+        }
     }
   }
 
@@ -419,6 +430,22 @@ class _ScenePainter extends CustomPainter {
         );
       case WorldBiome.hell:
         paintHellScene(
+          canvas,
+          size,
+          t,
+          style,
+          moon: _celestialAnchor(style, size),
+        );
+      case WorldBiome.music:
+        paintMusicScene(
+          canvas,
+          size,
+          t,
+          style,
+          moon: _celestialAnchor(style, size),
+        );
+      case WorldBiome.halloween:
+        paintHalloweenScene(
           canvas,
           size,
           t,

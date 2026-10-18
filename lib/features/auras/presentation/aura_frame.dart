@@ -204,7 +204,625 @@ class AuraPainter extends CustomPainter {
         _starlight(canvas, c, r, t);
       case 'autumn':
         _autumn(canvas, c, r, t);
+      case 'maestro':
+        _maestro(canvas, c, r, t);
+      case 'music':
+        _music(canvas, c, r, t);
+      case 'jack':
+        _hallows(canvas, c, r, t);
     }
+  }
+
+  /// Jack's Lantern: a ring of black brambles wound round the picture in a
+  /// haze of candlelight and witch-violet; on the rim three carved
+  /// jack-o'-lanterns flicker, a cobweb hangs across the top corner with a
+  /// red-eyed spider dropping on its thread, bats circle and green wisps
+  /// curl up.
+  void _hallows(Canvas canvas, Offset c, double r, double t) {
+    final flicker = 0.78 + 0.22 * math.sin(t * 9.1) * math.sin(t * 3.7 + 1);
+    if (!front) {
+      _glowRing(
+        canvas,
+        c,
+        r,
+        const Color(0xFFFF7A1A).withValues(alpha: 0.42 * flicker),
+        width: 0.34,
+        blur: 0.26,
+        scale: 1.12,
+      );
+      _glowRing(
+        canvas,
+        c,
+        r,
+        const Color(0xFF8A4BFF).withValues(alpha: 0.3),
+        width: 0.2,
+        blur: 0.3,
+        scale: 1.36,
+      );
+      // Brambles: three thorny vines twisting round each other.
+      for (var v = 0; v < 3; v++) {
+        final path = Path();
+        final thorns = <(Offset, double)>[];
+        for (var k = 0; k <= 64; k++) {
+          final a = k / 64 * 2 * math.pi;
+          final wave = math.sin(a * 5 + v * 2.1 + t * 0.3) * r * 0.06;
+          final p = c + _dir(a) * (r * 1.1 + wave);
+          if (k == 0) {
+            path.moveTo(p.dx, p.dy);
+          } else {
+            path.lineTo(p.dx, p.dy);
+          }
+          if (k % 5 == v) thorns.add((p, a + (k.isEven ? 0.9 : -0.9)));
+        }
+        canvas.drawPath(
+          path,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = r * (0.11 - v * 0.02)
+            ..strokeCap = StrokeCap.round
+            ..color = Color.lerp(
+              const Color(0xFF0C0612),
+              const Color(0xFF2A1636),
+              v / 2,
+            )!,
+        );
+        final thorn = Paint()..color = const Color(0xFF0C0612);
+        for (final (p, a) in thorns) {
+          final out = _dir(a);
+          final side = Offset(-out.dy, out.dx);
+          canvas.drawPath(
+            Path()
+              ..moveTo(p.dx + side.dx * r * 0.03, p.dy + side.dy * r * 0.03)
+              ..lineTo(p.dx + out.dx * r * 0.16, p.dy + out.dy * r * 0.16)
+              ..lineTo(p.dx - side.dx * r * 0.03, p.dy - side.dy * r * 0.03)
+              ..close(),
+            thorn,
+          );
+        }
+      }
+      // Bats circling behind.
+      for (var i = 0; i < 4; i++) {
+        final a = t * (0.8 + 0.2 * i) + i * math.pi / 2;
+        final p = c + Offset(math.cos(a) * r * 1.55, math.sin(a) * r * 1.35);
+        _batShape(canvas, p, r * 0.13, t * 15 + i, const Color(0xFF0C0612));
+      }
+      return;
+    }
+
+    // Green wisps curling up from the brambles.
+    for (var i = 0; i < 5; i++) {
+      final k = (t * 0.3 + i / 5) % 1.0;
+      final a = math.pi * (0.15 + 0.7 * _rand(i, 40));
+      final base = c + _dir(a + math.pi) * r * 1.1;
+      final p = base.translate(math.sin(t * 2 + i) * r * 0.08, -k * r * 0.6);
+      final puff = Rect.fromCircle(center: p, radius: r * (0.09 + 0.08 * k));
+      canvas.drawOval(
+        puff,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [
+              const Color(
+                0xFF8BFF4A,
+              ).withValues(alpha: 0.4 * math.sin(k * math.pi)),
+              const Color(0x008BFF4A),
+            ],
+          ).createShader(puff),
+      );
+    }
+
+    // The cobweb across the top-left of the rim.
+    final corner = c + _dir(-math.pi * 0.75) * r * 1.42;
+    final silk = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(0.6, r * 0.012)
+      ..color = Colors.white.withValues(alpha: 0.55);
+    final spokes = [for (var k = 0; k < 5; k++) math.pi * (0.05 + k * 0.1)];
+    for (final a in spokes) {
+      canvas.drawLine(corner, corner + _dir(a) * r * 0.62, silk);
+    }
+    for (var ring = 1; ring <= 4; ring++) {
+      final d = r * 0.62 * ring / 4.4;
+      final web = Path();
+      for (var k = 0; k < spokes.length; k++) {
+        final p = corner + _dir(spokes[k]) * d;
+        if (k == 0) {
+          web.moveTo(p.dx, p.dy);
+        } else {
+          final prev = corner + _dir(spokes[k - 1]) * d;
+          final mid = Offset.lerp(prev, p, 0.5)!;
+          final sag = mid + (corner - mid) * 0.1;
+          web.quadraticBezierTo(sag.dx, sag.dy, p.dx, p.dy);
+        }
+      }
+      canvas.drawPath(web, silk);
+    }
+    // The spider dropping down its thread and climbing back.
+    final hang = corner + _dir(math.pi * 0.25) * r * 0.42;
+    final spider = hang.translate(
+      0,
+      r * (0.12 + 0.2 * (0.5 + 0.5 * math.sin(t * 0.9))),
+    );
+    canvas.drawLine(hang, spider, silk);
+    final ink = Paint()..color = const Color(0xFF0C0612);
+    final legs = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(0.8, r * 0.02)
+      ..color = ink.color;
+    final u = r * 0.045;
+    for (final side in const [-1.0, 1.0]) {
+      for (var k = 0; k < 4; k++) {
+        final from = spider.translate(0, -u * 0.4 + k * u * 0.35);
+        final wiggle = math.sin(t * 7 + k) * u * 0.3;
+        canvas.drawPath(
+          Path()
+            ..moveTo(from.dx, from.dy)
+            ..quadraticBezierTo(
+              from.dx + side * u * 1.3,
+              from.dy - u * (1.1 - k * 0.4) + wiggle,
+              from.dx + side * u * 2,
+              from.dy + u * (0.4 + k * 0.5),
+            ),
+          legs,
+        );
+      }
+    }
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: spider.translate(0, u * 0.4),
+        width: u * 1.5,
+        height: u * 1.9,
+      ),
+      ink,
+    );
+    canvas.drawCircle(spider.translate(0, -u * 0.6), u * 0.6, ink);
+    for (final dx in const [-0.22, 0.22]) {
+      canvas.drawCircle(
+        spider.translate(u * dx, -u * 0.7),
+        u * 0.16,
+        Paint()..color = const Color(0xFFFF3A1A),
+      );
+    }
+
+    // Three jack-o'-lanterns sitting on the rim.
+    for (final (a, size, face) in const [
+      (0.72, 0.5, 0),
+      (0.2, 0.38, 1),
+      (-0.28, 0.3, 2),
+    ]) {
+      _lanternOn(
+        canvas,
+        c + _dir(math.pi * a) * r * 1.12,
+        r * size,
+        t,
+        face,
+        flicker,
+      );
+    }
+  }
+
+  void _batShape(Canvas canvas, Offset p, double s, double beat, Color color) {
+    final flap = math.sin(beat);
+    canvas.drawPath(
+      Path()
+        ..moveTo(p.dx, p.dy)
+        ..quadraticBezierTo(
+          p.dx - s,
+          p.dy - s * (0.4 + flap),
+          p.dx - s * 2,
+          p.dy - s * 0.2 * flap,
+        )
+        ..lineTo(p.dx - s * 1.4, p.dy + s * 0.2)
+        ..lineTo(p.dx - s * 0.8, p.dy)
+        ..lineTo(p.dx - s * 0.4, p.dy + s * 0.4)
+        ..lineTo(p.dx, p.dy + s * 0.15)
+        ..lineTo(p.dx + s * 0.4, p.dy + s * 0.4)
+        ..lineTo(p.dx + s * 0.8, p.dy)
+        ..lineTo(p.dx + s * 1.4, p.dy + s * 0.2)
+        ..lineTo(p.dx + s * 2, p.dy - s * 0.2 * flap)
+        ..quadraticBezierTo(p.dx + s, p.dy - s * (0.4 + flap), p.dx, p.dy)
+        ..close(),
+      Paint()..color = color,
+    );
+  }
+
+  /// A small jack-o'-lantern of [size] centred at [at], carved [face]
+  /// lit by its candle.
+  void _lanternOn(
+    Canvas canvas,
+    Offset at,
+    double size,
+    double t,
+    int face,
+    double flicker,
+  ) {
+    final s = size;
+    final light = flicker * (0.85 + 0.15 * math.sin(t * 5 + face));
+    final halo = Rect.fromCircle(center: at, radius: s * 1.5);
+    canvas.drawOval(
+      halo,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            const Color(0xFFFF7A1A).withValues(alpha: 0.45 * light),
+            const Color(0x00FF7A1A),
+          ],
+        ).createShader(halo),
+    );
+    for (final (dx, wide, dark) in const [
+      (-0.32, 0.62, 0.3),
+      (0.32, 0.62, 0.3),
+      (0.0, 0.66, 0.0),
+    ]) {
+      final lobe = Rect.fromCenter(
+        center: at.translate(s * dx, 0),
+        width: s * wide * 1.4,
+        height: s * 1.0,
+      );
+      canvas.drawOval(
+        lobe,
+        Paint()
+          ..shader = RadialGradient(
+            center: const Alignment(-0.3, -0.4),
+            colors: [
+              Color.lerp(const Color(0xFFFFA24A), Colors.black, dark)!,
+              Color.lerp(const Color(0xFFF2761A), Colors.black, dark + 0.1)!,
+              Color.lerp(const Color(0xFF9A3A08), Colors.black, dark + 0.2)!,
+            ],
+            stops: const [0, 0.6, 1],
+          ).createShader(lobe),
+      );
+    }
+    canvas.drawPath(
+      Path()
+        ..moveTo(at.dx - s * 0.07, at.dy - s * 0.46)
+        ..quadraticBezierTo(
+          at.dx - s * 0.04,
+          at.dy - s * 0.66,
+          at.dx + s * 0.13,
+          at.dy - s * 0.72,
+        )
+        ..lineTo(at.dx + s * 0.14, at.dy - s * 0.64)
+        ..quadraticBezierTo(
+          at.dx + s * 0.06,
+          at.dy - s * 0.6,
+          at.dx + s * 0.07,
+          at.dy - s * 0.46,
+        )
+        ..close(),
+      Paint()..color = const Color(0xFF3A3A16),
+    );
+    final cut = Path();
+    for (final side in const [-1.0, 1.0]) {
+      final e = at.translate(side * s * 0.26, -s * 0.12);
+      if (face == 1) {
+        // Angry, slanted.
+        cut
+          ..moveTo(e.dx - side * s * 0.14, e.dy - s * 0.04)
+          ..lineTo(e.dx + side * s * 0.16, e.dy - s * 0.16)
+          ..lineTo(e.dx + side * s * 0.1, e.dy + s * 0.08)
+          ..close();
+      } else {
+        cut
+          ..moveTo(e.dx - s * 0.12, e.dy + s * 0.08)
+          ..lineTo(e.dx, e.dy - s * 0.14)
+          ..lineTo(e.dx + s * 0.12, e.dy + s * 0.08)
+          ..close();
+      }
+    }
+    cut.moveTo(at.dx - s * 0.4, at.dy + s * 0.1);
+    cut.quadraticBezierTo(
+      at.dx,
+      at.dy + s * (face == 2 ? 0.55 : 0.45),
+      at.dx + s * 0.4,
+      at.dy + s * 0.1,
+    );
+    for (var k = 1; k < 6; k++) {
+      cut.lineTo(
+        at.dx + s * (0.4 - k * 0.16),
+        at.dy + s * (k.isEven ? 0.12 : 0.24),
+      );
+    }
+    cut.close();
+    canvas.drawPath(
+      cut,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            const Color(0xFFFFF2B0).withValues(alpha: light.clamp(0.0, 1.0)),
+            const Color(0xFFFFC23D).withValues(alpha: light.clamp(0.0, 1.0)),
+            const Color(0xFFFF7A1A).withValues(alpha: light.clamp(0.0, 1.0)),
+          ],
+        ).createShader(Rect.fromCircle(center: at, radius: s * 0.6)),
+    );
+  }
+
+  static const _stage = [
+    Color(0xFF00E5FF),
+    Color(0xFF7C8CFF),
+    Color(0xFFB44CFF),
+    Color(0xFFFF2E9A),
+    Color(0xFFC6FF3D),
+  ];
+
+  /// Encore: the picture sits on a spinning record. Behind it, an
+  /// equalizer of neon bars radiates all the way round, jumping on every
+  /// beat (the same beat as the Music world); in front, the record's
+  /// grooves catch the light, a ring of sound goes out on each beat, and
+  /// notes orbit.
+  void _music(Canvas canvas, Offset c, double r, double t) {
+    final beats = worldSeconds * 2;
+    final phase = beats % 1.0;
+    final hit = math.exp(-phase * 6);
+    if (!front) {
+      _glowRing(
+        canvas,
+        c,
+        r,
+        const Color(0xFFB44CFF).withValues(alpha: 0.45 + 0.25 * hit),
+        width: 0.3,
+        blur: 0.24,
+        scale: 1.12,
+      );
+      const bars = 40;
+      for (var i = 0; i < bars; i++) {
+        final a = i * 2 * math.pi / bars - math.pi / 2;
+        // Mirrored left and right, the bass at the bottom thumping hardest.
+        final band = (math.cos(a + math.pi / 2).abs());
+        final flutter = 0.5 + 0.5 * math.sin(t * (7 + 9 * band) + i * 1.7);
+        final level =
+            0.25 + 0.45 * hit * (1 - band) + 0.3 * flutter * (0.4 + band);
+        final from = c + _dir(a) * r * 1.13;
+        final to = c + _dir(a) * r * (1.17 + 0.42 * level);
+        final color = Color.lerp(
+          _stage[(i ~/ 4) % _stage.length],
+          _stage[(i ~/ 4 + 1) % _stage.length],
+          (i % 4) / 4,
+        )!;
+        canvas.drawLine(
+          from,
+          to,
+          Paint()
+            ..strokeWidth = r * 0.075
+            ..strokeCap = StrokeCap.round
+            ..color = color,
+        );
+        canvas.drawCircle(
+          to + _dir(a) * r * 0.07,
+          r * 0.03,
+          Paint()..color = Colors.white.withValues(alpha: 0.85),
+        );
+      }
+      // The record under the picture.
+      canvas.drawCircle(c, r * 1.11, Paint()..color = const Color(0xFF0B0812));
+      return;
+    }
+    // The record's grooves, and the light sliding round them.
+    final groove = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(0.6, r * 0.012)
+      ..color = Colors.white.withValues(alpha: 0.16);
+    for (final k in const [1.03, 1.06, 1.09]) {
+      canvas.drawCircle(c, r * k, groove);
+    }
+    final spin = t * 1.4;
+    for (final off in const [0.0, math.pi]) {
+      canvas.drawArc(
+        Rect.fromCircle(center: c, radius: r * 1.06),
+        spin + off,
+        0.7,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = r * 0.07
+          ..strokeCap = StrokeCap.round
+          ..shader = SweepGradient(
+            transform: GradientRotation(spin + off),
+            colors: [
+              Colors.white.withValues(alpha: 0),
+              Colors.white.withValues(alpha: 0.4),
+              Colors.white.withValues(alpha: 0),
+            ],
+            stops: const [0, 0.05, 0.11],
+          ).createShader(Rect.fromCircle(center: c, radius: r * 1.1)),
+      );
+    }
+    // A neon rim, pulsing.
+    canvas.drawCircle(
+      c,
+      r * 1.005,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.05
+        ..shader = SweepGradient(
+          transform: GradientRotation(-t * 0.8),
+          colors: const [
+            Color(0xFF00E5FF),
+            Color(0xFFFF2E9A),
+            Color(0xFFC6FF3D),
+            Color(0xFF00E5FF),
+          ],
+        ).createShader(Rect.fromCircle(center: c, radius: r)),
+    );
+    // A ring of sound going out on each beat.
+    canvas.drawCircle(
+      c,
+      r * (1.12 + 0.5 * phase),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.04 * (1 - phase)
+        ..color = const Color(0xFF00E5FF).withValues(alpha: 0.7 * (1 - phase)),
+    );
+    // Notes orbiting.
+    for (var i = 0; i < 3; i++) {
+      final a = -t * 0.9 + i * 2 * math.pi / 3;
+      final at = c + _dir(a) * r * (1.42 + 0.05 * math.sin(t * 3 + i));
+      final s = r * 0.17 * (1 + 0.12 * hit);
+      final paint = Paint()..color = _stage[(i * 2 + 3) % _stage.length];
+      final halo = Rect.fromCircle(center: at, radius: s * 1.3);
+      canvas.drawOval(
+        halo,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [
+              paint.color.withValues(alpha: 0.4),
+              paint.color.withValues(alpha: 0),
+            ],
+          ).createShader(halo),
+      );
+      canvas.drawOval(
+        Rect.fromCenter(center: at, width: s, height: s * 0.74),
+        paint,
+      );
+      canvas.drawRect(
+        Rect.fromLTWH(at.dx + s * 0.34, at.dy - s * 1.45, s * 0.16, s * 1.45),
+        paint,
+      );
+      canvas.drawPath(
+        Path()
+          ..moveTo(at.dx + s * 0.5, at.dy - s * 1.45)
+          ..quadraticBezierTo(
+            at.dx + s * 1.1,
+            at.dy - s * 1.05,
+            at.dx + s * 0.85,
+            at.dy - s * 0.55,
+          ),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = s * 0.16
+          ..color = paint.color,
+      );
+    }
+  }
+
+  static const _paints = [
+    Color(0xFFFF5C9C),
+    Color(0xFFFF8A3D),
+    Color(0xFFFFD447),
+    Color(0xFF3DDC97),
+    Color(0xFF4DA3FF),
+    Color(0xFF9B6BFF),
+  ];
+
+  /// Chip Maestro: a ring of thick rainbow brushstrokes slowly turning
+  /// behind the picture; in front, fat splats of paint (the low ones drip),
+  /// and a brush painting its way round, its wet stroke fading behind it.
+  void _maestro(Canvas canvas, Offset c, double r, double t) {
+    final ring = Rect.fromCircle(center: c, radius: r * 1.1);
+    if (!front) {
+      canvas.drawCircle(
+        c,
+        r * 1.1,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = r * 0.34
+          ..color = const Color(0xFFFF8FC4).withValues(alpha: 0.25)
+          ..maskFilter = _blur(r * 0.18),
+      );
+      // One fat stroke per color, overlapping like real paint.
+      final turn = t * 0.25;
+      for (var i = 0; i < _paints.length; i++) {
+        final from = turn + i * 2 * math.pi / _paints.length;
+        final wobble = 0.03 * math.sin(t * 1.1 + i * 2);
+        canvas.drawArc(
+          Rect.fromCircle(center: c, radius: r * (1.1 + wobble)),
+          from,
+          2 * math.pi / _paints.length + 0.32,
+          false,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeCap = StrokeCap.round
+            ..strokeWidth = r * (0.22 + 0.05 * _rand(i, 4))
+            ..color = _paints[i],
+        );
+        // The shine of wet paint along each stroke.
+        canvas.drawArc(
+          Rect.fromCircle(center: c, radius: r * (1.06 + wobble)),
+          from + 0.15,
+          2 * math.pi / _paints.length - 0.2,
+          false,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeCap = StrokeCap.round
+            ..strokeWidth = r * 0.035
+            ..color = Colors.white.withValues(alpha: 0.38),
+        );
+      }
+      return;
+    }
+    // Splats round the ring; the lower ones drip.
+    for (var i = 0; i < 7; i++) {
+      final a = i * 2 * math.pi / 7 + 0.4;
+      final swell = 0.88 + 0.12 * math.sin(t * 1.6 + i * 1.3);
+      final at = c + _dir(a) * r * 1.2;
+      final color = _paints[(i + 2) % _paints.length];
+      final s = r * 0.14 * swell;
+      final splat = Paint()..color = color;
+      canvas.drawCircle(at, s, splat);
+      for (var k = 0; k < 4; k++) {
+        final d = a + (k - 1.5) * 0.55 + _rand(i, k) * 0.3;
+        canvas.drawCircle(
+          at + _dir(d) * s * (1.45 + _rand(i, k + 7) * 0.5),
+          s * (0.2 + _rand(i, k + 3) * 0.22),
+          splat,
+        );
+      }
+      if (math.sin(a) > 0.25) {
+        final drip = s * (0.9 + 0.9 * ((t * 0.35 + _rand(i, 9)) % 1));
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(at.dx - s * 0.22, at.dy, s * 0.44, drip),
+            Radius.circular(s * 0.22),
+          ),
+          splat,
+        );
+        canvas.drawCircle(Offset(at.dx, at.dy + drip), s * 0.3, splat);
+      }
+      canvas.drawCircle(
+        at.translate(-s * 0.32, -s * 0.32),
+        s * 0.3,
+        Paint()..color = Colors.white.withValues(alpha: 0.5),
+      );
+    }
+    // The brush going round, and the wet stroke it leaves.
+    final spin = t * 0.8;
+    final ink = _paints[(t * 0.3).floor() % _paints.length];
+    for (var k = 0; k < 16; k++) {
+      canvas.drawArc(
+        ring,
+        spin - 0.1 * (k + 1),
+        0.11,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = r * 0.12 * (1 - k / 22)
+          ..color = ink.withValues(alpha: 0.95 * (1 - k / 16)),
+      );
+    }
+    final tip = c + _dir(spin) * r * 1.1;
+    canvas.save();
+    canvas.translate(tip.dx, tip.dy);
+    canvas.rotate(spin + math.pi * 0.8);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(-r * 0.045, r * 0.1, r * 0.09, r * 0.55),
+        Radius.circular(r * 0.045),
+      ),
+      Paint()..color = const Color(0xFFC98A4B),
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(-r * 0.06, -r * 0.03, r * 0.12, r * 0.14),
+      Paint()..color = const Color(0xFFCFD6E0),
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(-r * 0.06, -r * 0.03)
+        ..quadraticBezierTo(-r * 0.05, -r * 0.16, 0, -r * 0.22)
+        ..quadraticBezierTo(r * 0.05, -r * 0.16, r * 0.06, -r * 0.03)
+        ..close(),
+      Paint()..color = ink,
+    );
+    canvas.restore();
   }
 
   void _glowRing(
@@ -1799,16 +2417,20 @@ class AuraPainter extends CustomPainter {
   /// A golden halo floating above the head, with feathers drifting down.
   // ── Zombie Bite ─────────────────────────────────────────────────────────
 
-  /// The Zombie Bite frame's shapes for a picture of radius 1 at the
-  /// origin, built once (path operations are too slow to redo every
-  /// frame) and scaled to each picture: the chunk bitten out, top right (a
-  /// round bite edged with tooth marks, right through the rim and into
-  /// the picture), the rim, the rim with the bite gone, everywhere but the
-  /// bite, and the frame with the picture in it (where the bite's torn
-  /// edge shows).
+  /// The Zombie Bite's shapes for a picture of radius 1 at the origin,
+  /// built once (path operations are too slow to redo every frame) and
+  /// scaled to each picture: the chunk bitten out, top right (a round bite
+  /// edged with tooth marks, out of the picture itself), everywhere but
+  /// the bite, and the picture (where the bite's torn edge shows).
+  /// Where the bite is centred (a little outside the picture's edge) and
+  /// how big it is, for a picture of radius 1.
+  static const _biteAt = 1.03;
+  static const _biteRadius = 0.33;
+
   static final _biteShapes = () {
-    final at = _dir(-0.75) * 1.06;
-    var bite = Path()..addOval(Rect.fromCircle(center: at, radius: 0.27));
+    final at = _dir(-0.75) * _biteAt;
+    var bite = Path()
+      ..addOval(Rect.fromCircle(center: at, radius: _biteRadius));
     for (var k = 0; k < 13; k++) {
       final a = k * 2 * math.pi / 13 + 0.2;
       bite = Path.combine(
@@ -1816,28 +2438,22 @@ class AuraPainter extends CustomPainter {
         bite,
         Path()..addOval(
           Rect.fromCircle(
-            center: at + _dir(a) * 0.272,
-            radius: 0.05 + 0.014 * _rand(k, 98),
+            center: at + _dir(a) * _biteRadius * 1.01,
+            radius: 0.06 + 0.016 * _rand(k, 98),
           ),
         ),
       );
     }
-    final whole = Path()
-      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 1.13))
-      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 0.97))
-      ..fillType = PathFillType.evenOdd;
     final disc = Path()
-      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 1.13));
+      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 1.0));
     final everywhere = Path()
       ..addRect(Rect.fromCircle(center: Offset.zero, radius: 3));
     return (
       bite: bite,
-      whole: whole,
       disc: disc,
-      band: Path.combine(PathOperation.difference, whole, bite),
       unbitten: Path.combine(PathOperation.difference, everywhere, bite),
-      // The glow behind keeps going outside the frame; only the gap
-      // bitten out of the frame and picture is left empty.
+      // The mist behind keeps going outside the picture; only the gap
+      // bitten out of it is left empty.
       gapless: Path.combine(
         PathOperation.difference,
         everywhere,
@@ -1846,10 +2462,11 @@ class AuraPainter extends CustomPainter {
     );
   }();
 
-  /// Undead, not on fire: the frame turns to rotting, stitched-up skin with
-  /// a bite taken clean out of it (nothing there, just tooth marks round
-  /// the gap), two zombie hands claw up from below to grab it, slime drips
-  /// off the bottom and flies buzz round.
+  /// Undead, not on fire: a real bite taken out of the picture itself, no
+  /// frame round it (the gap is empty, its edge torn and bruised with
+  /// tooth punctures and slime running from it), two zombie hands clawing
+  /// up from below to grab the picture, slime dripping off the bottom,
+  /// sickly mist rising from below and flies buzzing round.
   void _zombie(Canvas canvas, Offset c, double r, double t) {
     const skin = Color(0xFF8C9E72);
     const skinDark = Color(0xFF5E6E48);
@@ -1867,121 +2484,72 @@ class AuraPainter extends CustomPainter {
     if (!front) {
       canvas.save();
       canvas.clipPath(_biteShapes.gapless.transform(fit));
-      // Sickly green mist pooling round the bottom, rising and fading.
-      for (var i = 0; i < 9; i++) {
+      // Sickly green mist creeping up from below where the hands come
+      // from, rising and fading (never a ring round the picture).
+      for (var i = 0; i < 7; i++) {
         final life = (t * 0.12 + _rand(i, 91)) % 1;
-        final a = math.pi * (0.1 + 0.8 * _rand(i, 92));
+        final a = math.pi * (0.25 + 0.5 * _rand(i, 92));
         final p =
             c +
-            _dir(a) * r * (0.9 + 0.25 * _rand(i, 93)) +
-            Offset(0, -life * r * 0.6);
+            _dir(a) * r * (1.05 + 0.2 * _rand(i, 93)) +
+            Offset(0, -life * r * 0.45);
         canvas.drawCircle(
           p,
-          r * (0.22 + 0.12 * _rand(i, 94)),
+          r * (0.18 + 0.1 * _rand(i, 94)),
           Paint()
             ..color = const Color(
               0xFF7FD957,
-            ).withValues(alpha: 0.28 * math.sin(life * math.pi))
+            ).withValues(alpha: 0.22 * math.sin(life * math.pi))
             ..maskFilter = _blur(r * 0.14),
         );
       }
-      _glowRing(
-        canvas,
-        c,
-        r,
-        const Color(0xFF7DFF3D).withValues(alpha: 0.28),
-        width: 0.22,
-        blur: 0.22,
-        scale: 1.06,
-      );
       canvas.restore();
       return;
     }
 
-    // The rotting rim, with the bite gone from it.
-    final outerR = r * 1.13;
-    final innerR = r * 0.97;
-    final band = _biteShapes.band.transform(fit);
-    canvas.drawPath(band, Paint()..color = skin);
-    canvas.save();
-    canvas.clipPath(band);
-    // Rot blotches and bruises.
-    for (var i = 0; i < 14; i++) {
-      final a = _rand(i, 95) * 2 * math.pi;
-      final p = c + _dir(a) * r * (1.0 + 0.12 * _rand(i, 96));
-      canvas.drawCircle(
-        p,
-        r * (0.05 + 0.06 * _rand(i, 97)),
-        Paint()
-          ..color = (i % 4 == 0 ? const Color(0xFF6E4A6A) : skinDark)
-              .withValues(alpha: 0.55),
-      );
-    }
-    canvas.restore();
-    canvas.save();
-    canvas.clipPath(unbitten);
-    final edge = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = r * 0.03
-      ..color = ink;
-    canvas.drawCircle(c, outerR, edge);
-    canvas.drawCircle(c, innerR, edge);
+    final edgeR = r * 0.99;
 
-    // Two stitched-up cuts along the rim.
-    for (final (start, len) in const [(2.2, 0.75), (4.75, 0.6)]) {
-      final mid = (outerR + innerR) / 2;
-      final cut = Path();
-      for (var k = 0; k <= 10; k++) {
-        final p = c + _dir(start + len * k / 10) * mid;
-        k == 0 ? cut.moveTo(p.dx, p.dy) : cut.lineTo(p.dx, p.dy);
-      }
-      canvas.drawPath(
-        cut,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = r * 0.025
-          ..color = const Color(0xFF4A1E24),
-      );
-      for (var k = 1; k < 6; k++) {
-        final a = start + len * k / 6;
-        final n = _dir(a);
-        final tg = _dir(a + math.pi / 2);
-        final p = c + n * mid;
-        canvas.drawLine(
-          p - n * r * 0.065 - tg * r * 0.015,
-          p + n * r * 0.065 + tg * r * 0.015,
-          Paint()
-            ..strokeWidth = r * 0.022
-            ..strokeCap = StrokeCap.round
-            ..color = ink,
-        );
-      }
-    }
-
-    canvas.restore();
-
-    // The bitten edge, through the rim and the picture: torn skin, darker
-    // where the teeth went in, and a drip of slime running off it.
+    // The bitten edge, on the picture itself: bruised and torn where the
+    // teeth went in, a puncture past each tooth mark.
     canvas.save();
     canvas.clipPath(_biteShapes.disc.transform(fit));
+    canvas.clipPath(unbitten);
     canvas.drawPath(
       bite,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = r * 0.07
-        ..color = skinDark,
+        ..strokeWidth = r * 0.16
+        ..color = const Color(0xFF3A1416).withValues(alpha: 0.45)
+        ..maskFilter = _blur(r * 0.04),
     );
     canvas.drawPath(
       bite,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = r * 0.028
+        ..strokeWidth = r * 0.075
         ..strokeJoin = StrokeJoin.round
-        ..color = ink,
+        ..color = const Color(0xFF6E1A1C),
     );
+    canvas.drawPath(
+      bite,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.03
+        ..strokeJoin = StrokeJoin.round
+        ..color = const Color(0xFF240A0C),
+    );
+    final at = c + _dir(-0.75) * r * _biteAt;
+    for (var k = 0; k < 13; k++) {
+      final a = k * 2 * math.pi / 13 + 0.2;
+      final p = at + _dir(a) * r * (_biteRadius + 0.1);
+      canvas.drawOval(
+        Rect.fromCenter(center: p, width: r * 0.035, height: r * 0.05),
+        Paint()..color = const Color(0xFF3A0E10).withValues(alpha: 0.8),
+      );
+    }
     canvas.restore();
     final ooze = (t * 0.5) % 1;
-    final dropStart = c + _dir(-0.75 - 0.3) * innerR;
+    final dropStart = c + _dir(-0.75 - 0.3) * r * 0.85;
     canvas.drawLine(
       dropStart,
       dropStart.translate(0, r * 0.25 * ooze),
@@ -1997,7 +2565,7 @@ class AuraPainter extends CustomPainter {
       final x = c.dx + (i - 1) * r * 0.42;
       final y0 =
           c.dy +
-          math.sqrt(math.max(0.0, outerR * outerR - math.pow(x - c.dx, 2))) -
+          math.sqrt(math.max(0.0, edgeR * edgeR - math.pow(x - c.dx, 2))) -
           r * 0.02;
       final len = r * 0.35 * Curves.easeIn.transform(life);
       final a = 1 - life;
@@ -2174,7 +2742,9 @@ class AuraPainter extends CustomPainter {
     if (!front) {
       _smoke(canvas, c, r, t);
       _obsidianTail(canvas, c, r, t);
-      // The flames, behind the picture.
+      // A crown of fire that never goes out, then the flames trying to
+      // catch, behind the picture.
+      _blaze(canvas, c, r, t);
       _hellfire(canvas, c, r, t, back: true);
       for (final side in const [-1.0, 1.0]) {
         _obsidianHorn(canvas, c, r, t, side);
@@ -2202,6 +2772,81 @@ class AuraPainter extends CustomPainter {
             life,
           )!.withValues(alpha: math.sin(life * math.pi)),
       );
+    }
+  }
+
+  /// Big flames always burning out from the upper half of the ring,
+  /// tallest over the top, each leaping and swaying on its own.
+  void _blaze(Canvas canvas, Offset c, double r, double t) {
+    final count = _lite ? 6 : 12;
+    const colors = [
+      Color(0xFF8A0A03),
+      Color(0xFFD9381F),
+      Color(0xFFFF7A1A),
+      Color(0xFFFFD27A),
+    ];
+    if (!_lite) {
+      canvas.drawCircle(
+        c.translate(0, -r * 0.35),
+        r * 1.55,
+        Paint()
+          ..shader =
+              RadialGradient(
+                colors: const [Color(0x55FF4A10), Color(0x00FF4A10)],
+              ).createShader(
+                Rect.fromCircle(
+                  center: c.translate(0, -r * 0.35),
+                  radius: r * 1.55,
+                ),
+              ),
+      );
+    }
+    for (var k = 0; k < count; k++) {
+      final u = k / (count - 1);
+      final a = -math.pi + 0.62 + (math.pi - 1.24) * u;
+      final high = -math.sin(a); // 1 at the top
+      final base = c + _dir(a) * r * 0.96;
+      final size = r * (0.18 + 0.12 * high);
+      canvas.save();
+      canvas.translate(base.dx, base.dy);
+      canvas.rotate((a + math.pi / 2) * 0.6);
+      for (var layer = 0; layer < 4; layer++) {
+        final scale = 1 - layer * 0.22;
+        final sway =
+            (math.sin(t * (5 + layer * 1.7) + k * 2.1) +
+                0.5 * math.sin(t * 11.3 + k * 3 + layer)) *
+            size *
+            0.12;
+        final lick =
+            1 +
+            0.25 * math.sin(t * (8 + layer * 2.3) + k * 1.7) +
+            0.1 * math.sin(t * 17 + k);
+        final hgt = size * (1.5 + 1.1 * high) * scale * lick;
+        final wid = size * 0.95 * scale;
+        canvas.drawPath(
+          Path()
+            ..moveTo(-wid, 0)
+            ..cubicTo(
+              -wid * 1.25,
+              -hgt * 0.35,
+              -wid * 0.2 + sway * 0.6,
+              -hgt * 0.7,
+              sway,
+              -hgt,
+            )
+            ..cubicTo(
+              wid * 0.3 + sway * 0.6,
+              -hgt * 0.65,
+              wid * 1.25,
+              -hgt * 0.35,
+              wid,
+              0,
+            )
+            ..close(),
+          Paint()..color = colors[layer],
+        );
+      }
+      canvas.restore();
     }
   }
 

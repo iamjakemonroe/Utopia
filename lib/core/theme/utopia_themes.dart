@@ -45,6 +45,15 @@ enum WorldBiome {
   /// Below everything: lava rivers, a smoking volcano, a black citadel,
   /// fire pits and embers under a blood-red moon.
   hell,
+
+  /// A festival at night: a vinyl record for a moon, lasers, an equalizer
+  /// skyline, a stage with pumping speakers and a crowd with their hands up.
+  music,
+
+  /// All Hallows' Eve: a harvest moon with a witch crossing it, a haunted
+  /// manor, a twisted forest full of eyes, ghosts, a scarecrow, fog and a
+  /// patch of jack-o'-lanterns.
+  halloween,
 }
 
 enum CelestialKind { ringedPlanet, sun, moon }
@@ -175,19 +184,35 @@ class UtopiaTheme {
 class UtopiaThemes {
   UtopiaThemes._();
 
+  /// The look before the player's own world is known (signed out). Every
+  /// account starts in one of [starters] instead.
   static const defaultId = 'utopia_dark';
 
-  static UtopiaTheme active = utopiaDark;
+  static UtopiaTheme active = utopiaTwilight;
+
+  /// The free worlds a new account starts in, one picked at random by the
+  /// server (profiles.equipped_theme's default).
+  static const starters = [utopiaCalm, utopiaWarm, utopiaAdventure];
+
+  /// The free world [userId] goes back to when a rented world runs out:
+  /// always the same one for the same player.
+  static UtopiaTheme starterFor(String? userId) {
+    var hash = 0;
+    for (final unit in (userId ?? '').codeUnits) {
+      hash = (hash * 31 + unit) & 0x7fffffff;
+    }
+    return starters[hash % starters.length];
+  }
 
   static UtopiaTheme byId(String? id) =>
-      all.firstWhere((t) => t.id == id, orElse: () => utopiaDark);
+      all.firstWhere((t) => t.id == id, orElse: () => utopiaTwilight);
 
   static final List<UtopiaTheme> utopia = [
-    utopiaDark,
-    noir,
     utopiaCalm,
-    utopiaAdventure,
     utopiaWarm,
+    utopiaAdventure,
+    noir,
+    utopiaTwilight,
     utopiaAlien,
     utopiaTech,
     utopiaAnime,
@@ -197,6 +222,8 @@ class UtopiaThemes {
     utopiaZombie,
     utopiaHeaven,
     utopiaHell,
+    utopiaMusic,
+    utopiaHalloween,
   ];
 
   static final List<UtopiaTheme> colors = [
@@ -208,9 +235,10 @@ class UtopiaThemes {
 
   // ── The four Utopia worlds, hand-tuned ───────────────────────────────────
 
-  static const utopiaDark = UtopiaTheme(
+  static const utopiaTwilight = UtopiaTheme(
+    // Its id stays utopia_dark: players own and wear it by that.
     id: 'utopia_dark',
-    name: 'Utopia Dark',
+    name: 'Utopia Twilight',
     family: 'Utopia',
     tagline: 'Twilight islands floating over a sea of clouds.',
     background: Color(0xFF120B2E),
@@ -779,7 +807,7 @@ class UtopiaThemes {
     id: 'utopia_hell',
     name: 'Utopia Hell',
     family: 'Utopia',
-    tagline: 'Rivers of lava under a blood-red moon. Mind the heat.',
+    tagline: 'A sea of fire under a blood moon. Something is watching.',
     background: Color(0xFF120504),
     surface: Color(0xFF1E0A07),
     surfaceElevated: Color(0xFF2A100B),
@@ -791,13 +819,14 @@ class UtopiaThemes {
     cardOutline: Color(0xFF060100),
     world: WorldStyle(
       biome: WorldBiome.hell,
+      // Nearly black overhead, burning red down at the fire line.
       sky: [
-        Color(0xFF120504),
-        Color(0xFF2A0906),
-        Color(0xFF4A0F08),
-        Color(0xFF74180A),
-        Color(0xFFA8300E),
-        Color(0xFFE0581A),
+        Color(0xFF030101),
+        Color(0xFF0A0201),
+        Color(0xFF1C0402),
+        Color(0xFF3E0904),
+        Color(0xFF7A1406),
+        Color(0xFFC0360C),
       ],
       horizonGlow: Color(0x88FF6A2A),
       aurora: [Color(0x38FF5A1A), Color(0x28FFB040)],
@@ -823,6 +852,112 @@ class UtopiaThemes {
       sparkles: [Color(0xFFFFB050), Color(0xFFFF6A2A), Color(0xFFFFE0A0)],
       haze: Color(0xFF3A0E08),
       starDensity: 0.15,
+    ),
+  );
+
+  static const utopiaMusic = UtopiaTheme(
+    id: 'utopia_music',
+    name: 'Utopia Music',
+    family: 'Utopia',
+    tagline: 'The show never ends. Lasers up, bass down, hands in the air.',
+    background: Color(0xFF0A0618),
+    surface: Color(0xFF140C2A),
+    surfaceElevated: Color(0xFF1E1240),
+    accent: Color(0xFFFF2E9A),
+    trim: Color(0xFF00E5FF),
+    trimBright: Color(0xFF7CF7FF),
+    glowRing: Color(0xFFB44CFF),
+    textSecondary: Color(0xFFB8A8E0),
+    cardOutline: Color(0xFF05020F),
+    world: WorldStyle(
+      biome: WorldBiome.music,
+      // Midnight overhead, stage-light violet and magenta low down.
+      sky: [
+        Color(0xFF0A0618),
+        Color(0xFF0B0524),
+        Color(0xFF1A0A3D),
+        Color(0xFF2E0F5C),
+        Color(0xFF521578),
+        Color(0xFF8A1F8F),
+      ],
+      horizonGlow: Color(0x77FF2E9A),
+      aurora: [Color(0x4000E5FF), Color(0x40FF2E9A)],
+      // Drawn as a turning vinyl record.
+      celestial: CelestialKind.moon,
+      celestialColors: [
+        Color(0xFF3A3450),
+        Color(0xFF1E1A2C),
+        Color(0xFF110E1A),
+        Color(0xFF07050C),
+      ],
+      ringColors: [Color(0xFF00E5FF), Color(0xFFFF2E9A)],
+      cloudLight: Color(0xFF3A2470),
+      cloudShade: Color(0xFF140A2E),
+      layers: [
+        (Color(0xFF1A0E3A), Color(0xFF0E0624)),
+        (Color(0xFF140A2E), Color(0xFF09041A)),
+        (Color(0xFF0E0624), Color(0xFF050210)),
+      ],
+      land: [Color(0xFF2E1F5C), Color(0xFF1C1240), Color(0xFF0E0824)],
+      rock: [Color(0xFF3A2E66), Color(0xFF221A44), Color(0xFF110C24)],
+      foliage: [Color(0xFFFF2E9A), Color(0xFFB44CFF), Color(0xFF00E5FF)],
+      glow: Color(0xFF00E5FF),
+      sparkles: [Color(0xFFFF2E9A), Color(0xFF00E5FF), Color(0xFFC6FF3D)],
+      haze: Color(0xFF2A1250),
+      starDensity: 0.6,
+    ),
+  );
+
+  static const utopiaHalloween = UtopiaTheme(
+    id: 'utopia_halloween',
+    name: 'Utopia Halloween',
+    family: 'Utopia',
+    tagline: "All Hallows' Eve, every night. Don't look at the tower window.",
+    background: Color(0xFF0D0716),
+    surface: Color(0xFF1A0F26),
+    surfaceElevated: Color(0xFF261636),
+    accent: Color(0xFFF2761A),
+    trim: Color(0xFFFFA53D),
+    trimBright: Color(0xFFFFD08A),
+    glowRing: Color(0xFF8BFF4A),
+    textSecondary: Color(0xFFC9B3D9),
+    cardOutline: Color(0xFF050208),
+    world: WorldStyle(
+      biome: WorldBiome.halloween,
+      // Black-violet overhead down to a sick harvest orange.
+      sky: [
+        Color(0xFF0D0716),
+        Color(0xFF140A22),
+        Color(0xFF22103A),
+        Color(0xFF3A1650),
+        Color(0xFF6A2A4A),
+        Color(0xFFB0501E),
+      ],
+      horizonGlow: Color(0x66FF7A1A),
+      aurora: [Color(0x288BFF4A), Color(0x309B4BFF)],
+      // Drawn by the scene: a huge harvest moon.
+      celestial: CelestialKind.moon,
+      celestialColors: [
+        Color(0xFFFFF1C8),
+        Color(0xFFFFC66A),
+        Color(0xFFE8862A),
+        Color(0xFF9A3E12),
+      ],
+      ringColors: [Color(0xFFFFA53D), Color(0xFF6A2A4A)],
+      cloudLight: Color(0xFF3A2650),
+      cloudShade: Color(0xFF140A20),
+      layers: [
+        (Color(0xFF1E1230), Color(0xFF100818)),
+        (Color(0xFF160C24), Color(0xFF0A0512)),
+        (Color(0xFF100818), Color(0xFF05020A)),
+      ],
+      land: [Color(0xFF2A1A36), Color(0xFF1A0F26), Color(0xFF0A0512)],
+      rock: [Color(0xFF3A2C46), Color(0xFF221830), Color(0xFF100A18)],
+      foliage: [Color(0xFFF2761A), Color(0xFFB0501E), Color(0xFF5A2A10)],
+      glow: Color(0xFFFFA53D),
+      sparkles: [Color(0xFFFFA53D), Color(0xFF8BFF4A), Color(0xFFB98CFF)],
+      haze: Color(0xFF2A1A3A),
+      starDensity: 0.45,
     ),
   );
 

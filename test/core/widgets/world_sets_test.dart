@@ -11,6 +11,9 @@ void main() {
     WorldSets.zombie,
     WorldSets.heaven,
     WorldSets.hell,
+    WorldSets.music,
+    WorldSets.musicLive,
+    WorldSets.halloween,
   ];
   tearDown(() {
     for (final set in all) {
@@ -35,6 +38,8 @@ void main() {
     ('Zombie', UtopiaThemes.utopiaZombie, WorldSets.zombie),
     ('Heaven', UtopiaThemes.utopiaHeaven, WorldSets.heaven),
     ('Hell', UtopiaThemes.utopiaHell, WorldSets.hell),
+    ('Music', UtopiaThemes.utopiaMusic, WorldSets.music),
+    ('Halloween', UtopiaThemes.utopiaHalloween, WorldSets.halloween),
   ]) {
     for (final on in [false, true]) {
       testWidgets('$name and every Chip mood paint, set=$on', (tester) async {

@@ -273,7 +273,16 @@ class StoreCatalog {
 
   // ── Themes ───────────────────────────────────────────────────────────────
 
-  static const freeThemeIds = {'utopia_dark', 'azure_dusk', 'noir'};
+  /// Free for everyone: the three worlds new players start in, plus Noir
+  /// and Azure Dusk. Utopia Twilight (utopia_dark) is premium; players
+  /// who had it before it was keep it.
+  static const freeThemeIds = {
+    'utopia_calm',
+    'utopia_warm',
+    'utopia_adventure',
+    'azure_dusk',
+    'noir',
+  };
 
   static final themes = [
     for (final t in UtopiaThemes.all)
@@ -290,9 +299,7 @@ class StoreCatalog {
 
   static final products = [
     for (final id in const [
-      'utopia_calm',
-      'utopia_adventure',
-      'utopia_warm',
+      'utopia_dark',
       'utopia_alien',
       'utopia_tech',
       'utopia_anime',
@@ -302,6 +309,8 @@ class StoreCatalog {
       'utopia_zombie',
       'utopia_heaven',
       'utopia_hell',
+      'utopia_music',
+      'utopia_halloween',
     ])
       StoreProduct(
         id: 'utopia.theme.$id',
@@ -356,9 +365,7 @@ class StoreCatalog {
   // ── Worlds for coins ─────────────────────────────────────────────────────
 
   static const premiumWorldIds = {
-    'utopia_calm',
-    'utopia_adventure',
-    'utopia_warm',
+    'utopia_dark',
     'utopia_alien',
     'utopia_tech',
     'utopia_anime',
@@ -368,6 +375,8 @@ class StoreCatalog {
     'utopia_zombie',
     'utopia_heaven',
     'utopia_hell',
+    'utopia_music',
+    'utopia_halloween',
   };
 
   /// What renting a world for [days] costs in coins, or null if it can't

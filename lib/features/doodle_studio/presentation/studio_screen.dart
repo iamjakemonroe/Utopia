@@ -10,6 +10,7 @@ import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/audio/game_audio.dart';
+import '../../../core/chip/chip_brain.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/utopia_toast.dart';
@@ -18,6 +19,7 @@ import '../data/picture_library.dart';
 import '../domain/art_doc.dart';
 import '../domain/coloring_pages.dart';
 import 'art_render.dart';
+import 'chip_paint.dart';
 import 'studio_toolbar.dart';
 
 /// Wider than this, the tools sit down the sides (tablets, landscape).
@@ -37,6 +39,7 @@ class StudioScreen extends ConsumerStatefulWidget {
     this.artId,
     this.kind = ArtKind.sketch,
     this.pageId,
+    this.paintStyle,
   });
 
   /// A saved piece to carry on with; otherwise a new one of [kind].
@@ -45,6 +48,10 @@ class StudioScreen extends ConsumerStatefulWidget {
 
   /// The coloring page, for a new coloring.
   final String? pageId;
+
+  /// Chip colors the page in this style as soon as it opens (asked for in
+  /// the chat).
+  final String? paintStyle;
 
   @override
   ConsumerState<StudioScreen> createState() => _StudioScreenState();
@@ -119,6 +126,10 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
   final List<_Splash> _splashes = [];
   late final Ticker _splashTicker;
 
+  // Chip coloring the page, and his colors sweeping across it.
+  bool _chipPainting = false;
+  late final AnimationController _sweep;
+
   // Saving.
   Timer? _saveTimer;
   bool _dirty = false;
@@ -149,6 +160,20 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
       duration: const Duration(milliseconds: 360),
     )..addListener(_onGlide);
     _splashTicker = createTicker(_onSplashTick);
+    _sweep =
+        AnimationController(
+            vsync: this,
+            duration: const Duration(milliseconds: 1200),
+          )
+          ..addListener(() {
+            _render?.reveal = Curves.easeOutCubic.transform(_sweep.value);
+            _repaint.value++;
+          })
+          ..addStatusListener((status) {
+            if (status != AnimationStatus.completed) return;
+            _render?.endReveal();
+            _repaint.value++;
+          });
     _load();
   }
 
@@ -189,6 +214,10 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
           _color = 0xFF5AB8FF;
         }
       });
+      final style = widget.paintStyle;
+      if (style != null && doc.kind == ArtKind.coloring) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _chipPaint(style));
+      }
     } catch (_) {
       if (mounted) setState(() => _error = "Couldn't open this one.");
     }
@@ -206,6 +235,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
     }
     _glide.dispose();
     _splashTicker.dispose();
+    _sweep.dispose();
     _render?.dispose();
     _repaint.dispose();
     _save.dispose();
@@ -490,6 +520,58 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
     _splashes.add(_Splash(local, Color(_color), _clock.elapsed));
     if (!_splashTicker.isActive) _splashTicker.start();
     _changed();
+  }
+
+  // ── Chip colors it ─────────────────────────────────────────────────────
+
+  Future<void> _askChip() async {
+    HapticFeedback.selectionClick();
+    ref.read(gameAudioProvider).play(Sfx.drawer);
+    final style = await showChipPaintSheet(context);
+    if (style != null && mounted) await _chipPaint(style);
+  }
+
+  /// Chip colors the whole page in [style]; his colors sweep out from the
+  /// middle, and one undo takes them all back.
+  Future<void> _chipPaint(String style) async {
+    final render = _render;
+    final doc = _doc;
+    final page = render?.page;
+    if (render == null || doc == null || page == null || _chipPainting) {
+      return;
+    }
+    setState(() => _chipPainting = true);
+    final result = await askChipToPaint(
+      ref.read(chipBrainProvider),
+      page,
+      style,
+    );
+    if (!mounted) return;
+    setState(() => _chipPainting = false);
+    if (result.status != 'ready') {
+      showUtopiaToast(context, switch (result.status) {
+        'limited' => "I've colored lots today. Ask me again tomorrow!",
+        'refused' => "I can't color that one.",
+        'off' => "My paintbrush isn't ready yet.",
+        _ => "I couldn't color it just now. Try again?",
+      }, icon: Icons.palette_rounded);
+      return;
+    }
+    doc.add(FillsOp(result.fills));
+    render.holdForReveal();
+    _scheduleSave();
+    await render.update();
+    if (!mounted) return;
+    render
+      ..revealAt = kPageSize.center(Offset.zero)
+      ..reveal = 0;
+    HapticFeedback.mediumImpact();
+    ref.read(gameAudioProvider).play(Sfx.purchase);
+    unawaited(_sweep.forward(from: 0));
+    setState(() {});
+    if (result.note.isNotEmpty) {
+      showUtopiaToast(context, result.note, icon: Icons.palette_rounded);
+    }
   }
 
   /// After anything is drawn, filled, undone or redone: redraw, and save
@@ -982,6 +1064,13 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
               ),
             ),
             Positioned(right: 12, bottom: 12, child: _zoomControls()),
+            if (_doc?.kind == ArtKind.coloring)
+              Positioned(
+                left: 12,
+                bottom: 12,
+                child: _ChipPaintButton(onTap: _chipPainting ? null : _askChip),
+              ),
+            if (_chipPainting) const Positioned.fill(child: _ChipPainting()),
             Positioned(
               top: 10,
               left: 0,
@@ -1121,6 +1210,104 @@ class _StudioPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _StudioPainter old) => true;
+}
+
+/// "Color with Chip": Chip colors the whole page for the player.
+class _ChipPaintButton extends StatelessWidget {
+  const _ChipPaintButton({required this.onTap});
+
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Color with Chip',
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: onTap == null ? 0.5 : 1,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(6, 5, 14, 5),
+            decoration: BoxDecoration(
+              color: kStudioPaper,
+              borderRadius: BorderRadius.circular(26),
+              border: Border.all(color: kStudioInk, width: 2),
+              boxShadow: const [
+                BoxShadow(color: kStudioInk, offset: Offset(0, 3)),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CoinBuddy(mood: BuddyMood.happy, size: 34),
+                const SizedBox(width: 6),
+                Text(
+                  'Color with Chip',
+                  style: AppTextStyles.body(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: kStudioInk,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Over the page while Chip works out the colors.
+class _ChipPainting extends StatelessWidget {
+  const _ChipPainting();
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: kStudioDesk.withValues(alpha: 0.55),
+      child: Center(
+        child: Container(
+          width: 260,
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+          decoration: BoxDecoration(
+            color: kStudioPaper,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: kStudioInk, width: 2.5),
+            boxShadow: const [
+              BoxShadow(color: kStudioInk, offset: Offset(0, 4)),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CoinBuddy(mood: BuddyMood.excited, size: 76),
+              const SizedBox(height: 10),
+              Text(
+                'Chip is coloring your picture…',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.body(
+                  fontWeight: FontWeight.w800,
+                  color: kStudioInk,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  minHeight: 6,
+                  color: const Color(0xFFFF5C9C),
+                  backgroundColor: kStudioInk.withValues(alpha: 0.12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// A friendly note in place of the page (loading, or something went wrong).

@@ -4,7 +4,9 @@
 // sends Real-time developer notifications through a Pub/Sub push
 // subscription. When a coin purchase is refunded or charged back, its coins
 // are taken back (as many as the player still has), and given back if
-// Apple reverses the refund.
+// Apple reverses the refund. For Chip Maestro (the monthly plan), any news
+// (a renewal, a cancellation, an expiry, a refund) refreshes the member's
+// plan from the store.
 //
 // A notification is only a nudge: nobody has to sign in to send one, so
 // what it says is checked with the store's API before anything changes.
@@ -21,6 +23,7 @@ import {
   jwsPayload,
   StoreNotConfigured,
 } from "../_shared/stores.ts";
+import { MAESTRO_PREFIX, maestroFromApple, maestroFromGoogle } from "../_shared/maestro.ts";
 
 const ok = () => new Response("ok");
 
@@ -59,12 +62,16 @@ async function fromApple(signedPayload: string): Promise<Response> {
     data?: { environment?: string; signedTransactionInfo?: string };
   }>(signedPayload);
   const signed = note.data?.signedTransactionInfo;
-  if (!APPLE_TYPES.has(note.notificationType) || !signed) return ok();
-
-  const claimed = jwsPayload<{ transactionId: string }>(signed);
+  if (!signed) return ok();
+  const claimed = jwsPayload<{ transactionId: string; productId?: string }>(signed);
   const environment = note.data?.environment === "Sandbox"
     ? "sandbox"
     : "production";
+  if (claimed.productId?.startsWith(MAESTRO_PREFIX)) {
+    await maestroFromApple(admin(), claimed.transactionId, undefined, environment);
+    return ok();
+  }
+  if (!APPLE_TYPES.has(note.notificationType)) return ok();
   const found = await appleTransaction(claimed.transactionId, environment);
   if (!found) return ok();
   const t = found.transaction;
@@ -84,8 +91,16 @@ async function fromApple(signedPayload: string): Promise<Response> {
 // ── Google ─────────────────────────────────────────────────────────────
 
 async function fromGoogle(data: string): Promise<Response> {
-  const note = JSON.parse(atob(data)) as { packageName?: string };
+  const note = JSON.parse(atob(data)) as {
+    packageName?: string;
+    subscriptionNotification?: { purchaseToken?: string; subscriptionId?: string };
+  };
   if (note.packageName && note.packageName !== googlePackage()) return ok();
+  const sub = note.subscriptionNotification;
+  if (sub?.purchaseToken) {
+    await maestroFromGoogle(admin(), sub.purchaseToken, sub.subscriptionId);
+    return ok();
+  }
   for (const v of await googleVoided()) {
     await takeBack(
       "android",

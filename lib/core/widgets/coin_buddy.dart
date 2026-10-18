@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 
 import '../theme/app_colors.dart';
 import 'utopia_loader.dart';
+import 'utopia_world.dart' show worldSeconds;
 import 'world_sets.dart';
 import 'ambient_tick.dart';
 
@@ -85,10 +86,15 @@ class CoinBuddy extends StatefulWidget {
     this.size = 96,
     this.flavor = ChipFlavor.none,
     this.lookAt,
+    this.beret,
   });
 
   final BuddyMood mood;
   final double size;
+
+  /// His artist's beret: on or off whatever the player's plan (to show it
+  /// off), or null to wear it when they're a Chip Maestro member.
+  final bool? beret;
 
   /// Where Chip looks, -1 to 1 each way (left/up negative), for moods that
   /// fix on something; null lets his eyes wander.
@@ -150,6 +156,13 @@ class _CoinBuddyState extends State<CoinBuddy>
           final angel = WorldSets.heaven.amount;
           final devil = WorldSets.hell.amount;
           final fighter = WorldSets.dragon.amount;
+          final dj = WorldSets.music.amount;
+          final pumpkin = WorldSets.halloween.amount;
+          final artist = switch (widget.beret) {
+            true => 1.0,
+            false => 0.0,
+            null => WorldSets.maestro.amount,
+          };
           final pose = _ChipPose.compute(
             mood: widget.mood,
             flavor: widget.flavor,
@@ -159,6 +172,7 @@ class _CoinBuddyState extends State<CoinBuddy>
             zombie: zombie,
             fighter: fighter,
             angel: angel,
+            dj: dj,
           );
           final body = s * 0.72;
           final center = Offset(s / 2, s * 0.5 - pose.lift * s);
@@ -179,7 +193,7 @@ class _CoinBuddyState extends State<CoinBuddy>
                   ),
                 ),
               ),
-              if (angel > 0 || devil > 0)
+              if (angel > 0 || devil > 0 || dj > 0 || pumpkin > 0)
                 Positioned.fill(
                   child: CustomPaint(
                     painter: _CostumeBackPainter(
@@ -188,6 +202,8 @@ class _CoinBuddyState extends State<CoinBuddy>
                       radius: body / 2,
                       angel: angel,
                       devil: devil,
+                      dj: dj,
+                      pumpkin: pumpkin,
                     ),
                   ),
                 ),
@@ -221,6 +237,9 @@ class _CoinBuddyState extends State<CoinBuddy>
                       angel: angel,
                       devil: devil,
                       fighter: fighter,
+                      artist: artist,
+                      dj: dj,
+                      pumpkin: pumpkin,
                     ),
                   ),
                 ),
@@ -359,6 +378,7 @@ class _ChipPose {
     double zombie = 0,
     double fighter = 0,
     double angel = 0,
+    double dj = 0,
   }) {
     var pose = _forMood(
       mood: mood,
@@ -385,6 +405,7 @@ class _ChipPose {
     if (fighter > 0 && mood != BuddyMood.hot) {
       pose = lerp(pose, _fight(t), fighter);
     }
+    if (dj > 0 && mood != BuddyMood.hot) pose = lerp(pose, _dj(t), dj);
     if (zombie > 0) pose = lerp(pose, _shamble(t), zombie);
     return pose;
   }
@@ -407,6 +428,27 @@ class _ChipPose {
       look: const Offset(0, 0.1),
       leftHand: Offset(0.12, -0.15 + 0.02 * math.sin(t * 7)),
       rightHand: Offset(-0.1 - 0.12 * jab, -0.12 - 0.05 * jab),
+    );
+  }
+
+  /// On the decks: nodding hard on the Music world's beat (so every Chip
+  /// keeps time with the show), one hand pressing a headphone cup to his
+  /// ear, the other scratching.
+  static _ChipPose _dj(double t) {
+    final beats = worldSeconds * 2;
+    final nod = math.exp(-(beats % 1.0) * 6);
+    final blinkPhase = t % 3.7;
+    return _ChipPose(
+      lift: 0.01 + nod * 0.022,
+      yaw: 0.1 * math.sin(t * 1.1),
+      pitch: 0.03 + 0.12 * nod,
+      roll: 0.07 * math.sin(beats * math.pi / 2),
+      scaleX: 1 + 0.03 * nod,
+      scaleY: 1 - 0.04 * nod,
+      blink: blinkPhase < 0.12 ? math.sin(blinkPhase / 0.12 * math.pi) : 0.0,
+      look: const Offset(0, 0.2),
+      leftHand: Offset(0.07, -0.12 + 0.01 * nod),
+      rightHand: Offset(-0.04 + 0.05 * math.sin(t * 9), 0.05),
     );
   }
 
@@ -794,6 +836,9 @@ class _FacePainter extends CustomPainter {
     this.angel = 0,
     this.devil = 0,
     this.fighter = 0,
+    this.artist = 0,
+    this.dj = 0,
+    this.pumpkin = 0,
   });
 
   final BuddyMood mood;
@@ -811,6 +856,16 @@ class _FacePainter extends CustomPainter {
   final double angel;
   final double devil;
   final double fighter;
+
+  /// Chip Maestro's beret and brush, 0 to 1.
+  final double artist;
+
+  /// DJ Chip (the Music world's set): headphones and neon shades, 0 to 1.
+  final double dj;
+
+  /// Jack-o'-lantern Chip (the Halloween world's set): carved and lit from
+  /// inside, in a witch's hat, 0 to 1.
+  final double pumpkin;
 
   /// Turned far enough that his face is a zombie's, whatever his mood.
   bool get _dead => zombie >= 0.5;
@@ -871,14 +926,19 @@ class _FacePainter extends CustomPainter {
     // On a light world the theme color is ink, which would hide the face,
     // so Chip's face goes paper-white there, like a drawing of him.
     final accent = Color.lerp(
-      mood == BuddyMood.evil
-          ? const Color(0xFFB0244A)
-          : AppColors.light
-          ? const Color(0xFFF4EFE2)
-          : AppColors.accent,
-      // Grey-green dead skin once he's turned.
-      const Color(0xFF8C9C74),
-      zombie * (mood == BuddyMood.evil ? 0.7 : 1),
+      Color.lerp(
+        mood == BuddyMood.evil
+            ? const Color(0xFFB0244A)
+            : AppColors.light
+            ? const Color(0xFFF4EFE2)
+            : AppColors.accent,
+        // Grey-green dead skin once he's turned.
+        const Color(0xFF8C9C74),
+        zombie * (mood == BuddyMood.evil ? 0.7 : 1),
+      ),
+      // Pumpkin orange once he's carved.
+      const Color(0xFFE8701A),
+      pumpkin.clamp(0.0, 1.0),
     )!;
     canvas.drawCircle(
       c,
@@ -904,8 +964,11 @@ class _FacePainter extends CustomPainter {
     );
 
     if (zombie > 0) _rot(canvas, c, r);
+    if (pumpkin > 0) _ribs(canvas, c, enamelR);
     if (_dead) {
       _zombieFace(canvas, c, r);
+    } else if (pumpkin >= 0.5) {
+      _carved(canvas, c, r);
     } else {
       _cheeks(canvas, c, r);
       _eyes(canvas, c, r);
@@ -919,8 +982,16 @@ class _FacePainter extends CustomPainter {
         _glasses(canvas, c, r);
       }
     }
+    if (dj > 0 && !_dead) _shades(canvas, c, r);
     if (mood == BuddyMood.vibing || mood == BuddyMood.listening) {
       _headphones(canvas, c, r);
+    } else if (dj > 0) {
+      canvas.saveLayer(
+        null,
+        Paint()..color = Colors.black.withValues(alpha: dj.clamp(0.0, 1.0)),
+      );
+      _headphones(canvas, c, r);
+      canvas.restore();
     }
     if (mood == BuddyMood.hot) _heat(canvas, c, r);
 
@@ -952,7 +1023,103 @@ class _FacePainter extends CustomPainter {
       canvas.restore();
     }
     if (fighter > 0) _headband(canvas, c, r);
+    if (artist > 0) _beret(canvas, c, r);
     if (angel > 0) _halo(canvas, c, r);
+    if (pumpkin > 0) _witchHat(canvas, c, r);
+  }
+
+  /// Chip Maestro: a red artist's beret tipped over one side (his sprout
+  /// grows out of the top), and a paintbrush tucked behind him, its tip
+  /// slowly changing color.
+  void _beret(Canvas canvas, Offset c, double r) {
+    final a = artist.clamp(0.0, 1.0);
+    final sway = math.sin(t * 1.3) * 0.03;
+
+    // The brush, behind the beret, angled up and out on his right.
+    canvas.save();
+    canvas.translate(c.dx + r * 0.8, c.dy - r * 0.46);
+    canvas.rotate(0.6 + sway);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(-r * 0.045, -r * 0.72, r * 0.09, r * 0.72),
+        Radius.circular(r * 0.045),
+      ),
+      Paint()..color = const Color(0xFFC98A4B).withValues(alpha: a),
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(-r * 0.055, -r * 0.84, r * 0.11, r * 0.13),
+      Paint()..color = const Color(0xFFCFD6E0).withValues(alpha: a),
+    );
+    final paint = Color.lerp(
+      const Color(0xFFFF5C9C),
+      const Color(0xFF4DA3FF),
+      (math.sin(t * 0.7) + 1) / 2,
+    )!;
+    canvas.drawPath(
+      Path()
+        ..moveTo(-r * 0.055, -r * 0.84)
+        ..quadraticBezierTo(-r * 0.065, -r * 1.0, 0, -r * 1.1)
+        ..quadraticBezierTo(r * 0.065, -r * 1.0, r * 0.055, -r * 0.84)
+        ..close(),
+      Paint()..color = paint.withValues(alpha: a),
+    );
+    canvas.restore();
+
+    // The beret.
+    canvas.save();
+    canvas.translate(c.dx + r * 0.1, c.dy - r * 0.86);
+    canvas.rotate(-0.22 + sway);
+    final crown = Rect.fromCenter(
+      center: Offset.zero,
+      width: r * 1.55,
+      height: r * 0.62,
+    );
+    canvas.drawOval(
+      crown.shift(Offset(0, r * 0.05)),
+      Paint()
+        ..color = Colors.black.withValues(alpha: 0.18 * a)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, r * 0.05),
+    );
+    canvas.drawOval(
+      crown,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-0.35, -0.5),
+          radius: 0.9,
+          colors: [
+            const Color(0xFFE5484D).withValues(alpha: a),
+            const Color(0xFFB3202B).withValues(alpha: a),
+            const Color(0xFF7A1018).withValues(alpha: a),
+          ],
+          stops: const [0, 0.55, 1],
+        ).createShader(crown),
+    );
+    // The band where it sits on his head.
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: Offset(0, r * 0.2),
+        width: r * 1.15,
+        height: r * 0.22,
+      ),
+      0.1,
+      math.pi - 0.2,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.07
+        ..strokeCap = StrokeCap.round
+        ..color = const Color(0xFF5E0C12).withValues(alpha: a),
+    );
+    // A soft shine across the top.
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(-r * 0.3, -r * 0.12),
+        width: r * 0.42,
+        height: r * 0.13,
+      ),
+      Paint()..color = Colors.white.withValues(alpha: 0.22 * a),
+    );
+    canvas.restore();
   }
 
   /// Fully turned, his face is a zombie's whatever his mood: one eye
@@ -1896,6 +2063,245 @@ class _FacePainter extends CustomPainter {
     }
   }
 
+  /// A pumpkin's ribs curving down his face.
+  void _ribs(Canvas canvas, Offset c, double enamelR) {
+    final a = pumpkin.clamp(0.0, 1.0);
+    canvas.save();
+    canvas.clipPath(
+      Path()..addOval(Rect.fromCircle(center: c, radius: enamelR)),
+    );
+    final rib = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = enamelR * 0.05
+      ..color = const Color(0xFF8A3A08).withValues(alpha: 0.45 * a);
+    for (final k in const [-0.62, -0.25, 0.25, 0.62]) {
+      canvas.drawArc(
+        Rect.fromCenter(
+          center: c.translate(enamelR * k * 0.4, 0),
+          width: enamelR * 2 * k.abs(),
+          height: enamelR * 2.1,
+        ),
+        k < 0 ? math.pi * 0.6 : -math.pi * 0.4,
+        math.pi * 0.8,
+        false,
+        rib,
+      );
+    }
+    canvas.restore();
+  }
+
+  /// Carved: triangle eyes, a triangle nose and a jagged grin, all lit by
+  /// a candle flickering inside him. The eyes still look about.
+  void _carved(Canvas canvas, Offset c, double r) {
+    final a = ((pumpkin - 0.5) * 2).clamp(0.0, 1.0);
+    final flicker = 0.75 + 0.25 * math.sin(t * 9.3) * math.sin(t * 4.1 + 1.3);
+    final shift = Offset(look.dx * r * 0.05, look.dy * r * 0.04);
+    final cut = Path();
+    for (final side in const [-1.0, 1.0]) {
+      final e = c.translate(side * r * 0.3, -r * 0.1) + shift;
+      final shut = blink > 0.5;
+      if (shut) {
+        cut.addRect(
+          Rect.fromCenter(center: e, width: r * 0.3, height: r * 0.05),
+        );
+      } else {
+        cut
+          ..moveTo(e.dx - r * 0.15, e.dy + r * 0.1)
+          ..lineTo(e.dx + side * r * 0.04, e.dy - r * 0.16)
+          ..lineTo(e.dx + r * 0.15, e.dy + r * 0.1)
+          ..close();
+      }
+    }
+    cut
+      ..moveTo(c.dx - r * 0.06, c.dy + r * 0.1)
+      ..lineTo(c.dx, c.dy)
+      ..lineTo(c.dx + r * 0.06, c.dy + r * 0.1)
+      ..close();
+    // The grin, with two square teeth left in.
+    cut.moveTo(c.dx - r * 0.5, c.dy + r * 0.16);
+    cut.quadraticBezierTo(
+      c.dx,
+      c.dy + r * 0.66,
+      c.dx + r * 0.5,
+      c.dy + r * 0.16,
+    );
+    for (final (x, y) in const [
+      (0.32, 0.24),
+      (0.22, 0.18),
+      (0.12, 0.3),
+      (-0.06, 0.22),
+      (-0.16, 0.3),
+      (-0.28, 0.2),
+      (-0.36, 0.26),
+    ]) {
+      cut.lineTo(c.dx + r * x, c.dy + r * y);
+    }
+    cut.close();
+    final spill = Rect.fromCircle(
+      center: c.translate(0, r * 0.1),
+      radius: r * 0.7,
+    );
+    canvas.drawOval(
+      spill,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            const Color(0xFFFFB02A).withValues(alpha: 0.4 * a * flicker),
+            const Color(0x00FFB02A),
+          ],
+        ).createShader(spill),
+    );
+    canvas.drawPath(
+      cut,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            const Color(0xFFFFF4B8).withValues(alpha: a),
+            const Color(0xFFFFC23D).withValues(alpha: a * flicker),
+            const Color(0xFFFF7A1A).withValues(alpha: a * flicker),
+          ],
+          stops: const [0, 0.45, 1],
+        ).createShader(Rect.fromCircle(center: c, radius: r * 0.7)),
+    );
+  }
+
+  /// A crooked witch's hat, its tip bent over, an orange band and buckle.
+  void _witchHat(Canvas canvas, Offset c, double r) {
+    final a = pumpkin.clamp(0.0, 1.0);
+    final sway = math.sin(t * 1.2) * 0.04;
+    canvas.save();
+    canvas.translate(c.dx - r * 0.05, c.dy - r * 0.8);
+    canvas.rotate(-0.16 + sway);
+    final felt = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          const Color(0xFF4A2A66).withValues(alpha: a),
+          const Color(0xFF1C0E2A).withValues(alpha: a),
+        ],
+      ).createShader(Rect.fromLTWH(-r, -r * 1.4, r * 2, r * 1.6));
+    // The brim.
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(0, r * 0.08),
+        width: r * 1.9,
+        height: r * 0.34,
+      ),
+      felt,
+    );
+    // The cone, bending over at the tip.
+    canvas.drawPath(
+      Path()
+        ..moveTo(-r * 0.52, r * 0.06)
+        ..quadraticBezierTo(-r * 0.3, -r * 0.6, -r * 0.05, -r * 0.95)
+        ..quadraticBezierTo(r * 0.2, -r * 1.3, r * 0.62 + sway * r, -r * 1.12)
+        ..quadraticBezierTo(r * 0.28, -r * 1.05, r * 0.18, -r * 0.78)
+        ..quadraticBezierTo(r * 0.36, -r * 0.4, r * 0.52, r * 0.06)
+        ..close(),
+      felt,
+    );
+    canvas.drawRect(
+      Rect.fromLTRB(-r * 0.47, -r * 0.14, r * 0.47, r * 0.02),
+      Paint()..color = const Color(0xFFE8701A).withValues(alpha: a),
+    );
+    canvas.drawRect(
+      Rect.fromCenter(
+        center: Offset(0, -r * 0.06),
+        width: r * 0.18,
+        height: r * 0.16,
+      ),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.04
+        ..color = const Color(0xFFFFD447).withValues(alpha: a),
+    );
+    canvas.restore();
+  }
+
+  /// DJ shades: two wide neon-rimmed lenses with the stage lights sliding
+  /// across them.
+  void _shades(Canvas canvas, Offset c, double r) {
+    final a = dj.clamp(0.0, 1.0);
+    final lenses = <Path>[];
+    for (final side in const [-1.0, 1.0]) {
+      final e = c.translate(side * r * 0.3, -r * 0.1);
+      lenses.add(
+        Path()..addRRect(
+          RRect.fromRectAndCorners(
+            Rect.fromCenter(center: e, width: r * 0.46, height: r * 0.3),
+            topLeft: Radius.circular(r * (side < 0 ? 0.06 : 0.04)),
+            topRight: Radius.circular(r * (side < 0 ? 0.04 : 0.06)),
+            bottomLeft: Radius.circular(r * (side < 0 ? 0.16 : 0.1)),
+            bottomRight: Radius.circular(r * (side < 0 ? 0.1 : 0.16)),
+          ),
+        ),
+      );
+    }
+    final frame = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = r * 0.05
+      ..strokeJoin = StrokeJoin.round
+      ..shader = LinearGradient(
+        colors: [
+          const Color(0xFFFF2E9A).withValues(alpha: a),
+          const Color(0xFF00E5FF).withValues(alpha: a),
+        ],
+      ).createShader(Rect.fromCircle(center: c, radius: r * 0.6));
+    // The bridge and the arms back to the headphones.
+    canvas.drawLine(
+      c.translate(-r * 0.08, -r * 0.14),
+      c.translate(r * 0.08, -r * 0.14),
+      frame,
+    );
+    for (final side in const [-1.0, 1.0]) {
+      canvas.drawLine(
+        c.translate(side * r * 0.53, -r * 0.16),
+        c.translate(side * r * 0.78, -r * 0.12),
+        frame,
+      );
+    }
+    final slide = (t * 0.45) % 1.6 - 0.3;
+    for (final lens in lenses) {
+      final box = lens.getBounds();
+      canvas.drawPath(
+        lens,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF2A1450).withValues(alpha: a),
+              const Color(0xFF0A0618).withValues(alpha: a),
+            ],
+          ).createShader(box),
+      );
+      canvas.save();
+      canvas.clipPath(lens);
+      final x = c.dx - r * 0.6 + slide * r * 1.2;
+      canvas.drawPath(
+        Path()
+          ..moveTo(x, box.top)
+          ..lineTo(x + r * 0.12, box.top)
+          ..lineTo(x - r * 0.02, box.bottom)
+          ..lineTo(x - r * 0.14, box.bottom)
+          ..close(),
+        Paint()..color = Colors.white.withValues(alpha: 0.45 * a),
+      );
+      canvas.drawRect(
+        Rect.fromLTRB(
+          box.left,
+          box.bottom - box.height * 0.3,
+          box.right,
+          box.bottom,
+        ),
+        Paint()..color = const Color(0xFFFF2E9A).withValues(alpha: 0.25 * a),
+      );
+      canvas.restore();
+      canvas.drawPath(lens, frame);
+    }
+  }
+
   /// Round study glasses over the eyes.
   void _glasses(Canvas canvas, Offset c, double r) {
     final frame = Paint()
@@ -2289,6 +2695,8 @@ class _CostumeBackPainter extends CustomPainter {
     required this.radius,
     required this.angel,
     required this.devil,
+    this.dj = 0,
+    this.pumpkin = 0,
   });
 
   final double t;
@@ -2296,11 +2704,103 @@ class _CostumeBackPainter extends CustomPainter {
   final double radius;
   final double angel;
   final double devil;
+  final double dj;
+  final double pumpkin;
 
   @override
   void paint(Canvas canvas, Size size) {
     if (angel > 0) _wings(canvas);
     if (devil > 0) _tail(canvas);
+    if (dj > 0) _beatNotes(canvas);
+    if (pumpkin > 0) _bats(canvas);
+  }
+
+  /// Jack-o'-lantern Chip: two little bats circling him.
+  void _bats(Canvas canvas) {
+    final r = radius;
+    final ink = Paint()
+      ..color = const Color(
+        0xFF14081E,
+      ).withValues(alpha: pumpkin.clamp(0.0, 1.0));
+    for (var i = 0; i < 2; i++) {
+      final a = t * 1.6 + i * math.pi;
+      final p =
+          center +
+          Offset(math.cos(a) * r * 1.5, math.sin(a) * r * 0.5 - r * 0.7);
+      final s = r * 0.13;
+      final flap = math.sin(t * 16 + i);
+      canvas.drawPath(
+        Path()
+          ..moveTo(p.dx, p.dy)
+          ..quadraticBezierTo(
+            p.dx - s,
+            p.dy - s * (0.4 + flap),
+            p.dx - s * 2,
+            p.dy - s * 0.2 * flap,
+          )
+          ..lineTo(p.dx - s * 1.4, p.dy + s * 0.2)
+          ..lineTo(p.dx - s * 0.8, p.dy)
+          ..lineTo(p.dx - s * 0.4, p.dy + s * 0.4)
+          ..lineTo(p.dx, p.dy + s * 0.15)
+          ..lineTo(p.dx + s * 0.4, p.dy + s * 0.4)
+          ..lineTo(p.dx + s * 0.8, p.dy)
+          ..lineTo(p.dx + s * 1.4, p.dy + s * 0.2)
+          ..lineTo(p.dx + s * 2, p.dy - s * 0.2 * flap)
+          ..quadraticBezierTo(p.dx + s, p.dy - s * (0.4 + flap), p.dx, p.dy)
+          ..close(),
+        ink,
+      );
+    }
+  }
+
+  /// DJ Chip: notes popping out of his headphones on the beat and floating
+  /// away, and a ring of sound pulsing out behind him.
+  void _beatNotes(Canvas canvas) {
+    final r = radius;
+    final beats = worldSeconds * 2;
+    final hit = math.exp(-(beats % 1.0) * 5);
+    canvas.drawCircle(
+      center,
+      r * (1.2 + 0.25 * (beats % 1.0)),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.06
+        ..color = const Color(0xFF00E5FF).withValues(alpha: 0.35 * dj * hit),
+    );
+    const colors = [Color(0xFFFF2E9A), Color(0xFF00E5FF), Color(0xFFC6FF3D)];
+    for (var i = 0; i < 4; i++) {
+      final k = ((beats + i) / 4) % 1.0;
+      final side = i.isEven ? -1.0 : 1.0;
+      final p = center.translate(
+        side * r * (1.05 + 0.5 * k),
+        -r * (0.1 + 1.3 * k) + math.sin(k * 9) * r * 0.06,
+      );
+      final s = r * 0.22 * (0.6 + 0.4 * math.sin(k * math.pi));
+      final paint = Paint()
+        ..color = colors[i % 3].withValues(alpha: dj * math.sin(k * math.pi));
+      canvas.drawOval(
+        Rect.fromCenter(center: p, width: s, height: s * 0.72),
+        paint,
+      );
+      canvas.drawRect(
+        Rect.fromLTWH(p.dx + s * 0.34, p.dy - s * 1.5, s * 0.16, s * 1.5),
+        paint,
+      );
+      canvas.drawPath(
+        Path()
+          ..moveTo(p.dx + s * 0.5, p.dy - s * 1.5)
+          ..quadraticBezierTo(
+            p.dx + s * 1.1,
+            p.dy - s * 1.1,
+            p.dx + s * 0.85,
+            p.dy - s * 0.6,
+          ),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = s * 0.16
+          ..color = paint.color,
+      );
+    }
   }
 
   void _wings(Canvas canvas) {

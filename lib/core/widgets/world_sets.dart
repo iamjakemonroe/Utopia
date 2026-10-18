@@ -45,4 +45,20 @@ abstract final class WorldSets {
 
   /// Inferno in Hell: Chip grows horns, the fires rise.
   static final hell = SetBonus();
+
+  /// Encore in the Music world: Chip puts on his headphones and shades and
+  /// the show peaks, with fireworks, confetti and the crowd jumping.
+  static final music = SetBonus();
+
+  /// Jack's Lantern in the Halloween world: Chip is carved into a
+  /// jack-o'-lantern in a witch's hat, and the night turns.
+  static final halloween = SetBonus();
+
+  /// Not a set: the player's own music is playing, so the Music world
+  /// dances harder.
+  static final musicLive = SetBonus();
+
+  /// Not a world's set but the same idea: a Chip Maestro member's Chip
+  /// wears his artist's beret, with a brush tucked behind him.
+  static final maestro = SetBonus();
 }

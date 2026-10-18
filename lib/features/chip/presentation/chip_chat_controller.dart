@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/audio/game_audio.dart';
@@ -84,30 +87,91 @@ class ChipChatController extends StateNotifier<ChipChatState> {
     );
   }
 
-  /// Starts over: Chip forgets this chat.
+  /// Starts over: Chip forgets this chat (and the photos sent in it).
   void clear() {
     if (state.thinking) return;
     state = const ChipChatState();
+    _photo = null;
     final prefs = _prefs, player = _player;
     if (prefs != null && player != null) unawaited(prefs.remove(_key(player)));
+    unawaited(_forgetPhotos());
   }
 
-  Future<void> send(String text) async {
+  /// The last photo sent, until Chip draws from it (they may say "yes,
+  /// draw it" a message later). Only this session, and not for long.
+  ({Uint8List bytes, DateTime at})? _photo;
+  static const _photoKeptFor = Duration(minutes: 20);
+
+  /// Where this player's chat photos are kept on the phone.
+  Future<Directory?> _photoFolder() async {
+    final player = _player;
+    if (player == null) return null;
+    final docs = await getApplicationDocumentsDirectory();
+    return Directory('${docs.path}/chip_photos/$player');
+  }
+
+  Future<String?> _keepPhoto(Uint8List bytes) async {
+    try {
+      final folder = await _photoFolder();
+      if (folder == null) return null;
+      await folder.create(recursive: true);
+      final file = File(
+        '${folder.path}/${DateTime.now().microsecondsSinceEpoch}.jpg',
+      );
+      await file.writeAsBytes(bytes, flush: true);
+      return file.path;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _forgetPhotos() async {
+    try {
+      final folder = await _photoFolder();
+      if (folder != null && await folder.exists()) {
+        await folder.delete(recursive: true);
+      }
+    } catch (_) {}
+  }
+
+  /// Sends [text] to Chip, with [photo] (a JPEG or PNG) when they attached
+  /// one.
+  Future<void> send(String text, {Uint8List? photo}) async {
     final message = text.trim();
-    if (message.isEmpty || state.thinking) return;
+    if ((message.isEmpty && photo == null) || state.thinking) return;
     final history = state.lines;
     final context = _context(history);
+    final path = photo == null ? null : await _keepPhoto(photo);
+    if (!mounted) return;
+    if (photo != null) _photo = (bytes: photo, at: DateTime.now());
+    final waiting = _photo;
+    final sendPhoto =
+        waiting != null && DateTime.now().difference(waiting.at) < _photoKeptFor
+        ? waiting.bytes
+        : null;
     state = ChipChatState(
       lines: [
         ...history,
-        ChipLine(fromChip: false, text: message, at: DateTime.now()),
+        ChipLine(
+          fromChip: false,
+          text: message,
+          at: DateTime.now(),
+          photo: path ?? (photo != null ? '' : null),
+        ),
       ],
       thinking: true,
     );
     final reply = await _ref
         .read(chipBrainProvider)
-        .chat(message, history: history, context: context);
+        .chat(
+          message,
+          history: history,
+          context: context,
+          photo: sendPhoto,
+          photoIsNew: photo != null,
+        );
     if (!mounted) return;
+    if (reply.picture?.fromPhoto ?? false) _photo = null;
     final lines = [...state.lines, reply];
     state = ChipChatState(
       lines: lines.length > _maxLines
@@ -116,6 +180,66 @@ class ChipChatController extends StateNotifier<ChipChatState> {
     );
     _keep();
     _ref.read(gameAudioProvider).play(Sfx.chat);
+  }
+
+  /// Takes the real-portrait offer in line [index]: uses one of their
+  /// portraits, starts it, and Chip says so in the chat (the picture shows
+  /// up there when it's ready). 'photo' when the offer needs the photo and
+  /// it's gone.
+  Future<ChipPortraitAsk> takePortrait(int index) async {
+    final offer = index < state.lines.length
+        ? state.lines[index].portrait
+        : null;
+    if (offer == null || state.thinking) return const ChipPortraitAsk('busy');
+    Uint8List? photo;
+    if (offer.fromPhoto) {
+      final waiting = _photo;
+      if (waiting == null ||
+          DateTime.now().difference(waiting.at) > _photoKeptFor) {
+        return const ChipPortraitAsk('photo');
+      }
+      photo = waiting.bytes;
+    }
+    state = ChipChatState(lines: state.lines, thinking: true);
+    final ask = await _ref
+        .read(chipBrainProvider)
+        .portrait(offer.subject, photo: photo);
+    if (!mounted) return ask;
+    final id = ask.id;
+    if ((ask.status != 'drawing' && ask.status != 'ready') || id == null) {
+      state = ChipChatState(lines: state.lines);
+      return ask;
+    }
+    if (offer.fromPhoto) _photo = null;
+    // The offer's taken: its button goes, and Chip gets drawing.
+    final lines = [
+      for (final (i, l) in state.lines.indexed)
+        i == index ? l.withoutPortrait() : l,
+      ChipLine(
+        fromChip: true,
+        text: ask.status == 'ready'
+            ? 'Here they are, ready to color!'
+            : offer.state == 'free'
+            ? 'Here comes your free real portrait! Give me about a minute.'
+            : 'On it! Your real portrait will be ready in about a minute.',
+        mood: 'excited',
+        picture: ChipPicture(
+          status: ask.status,
+          subject: offer.subject,
+          id: id,
+          fromPhoto: offer.fromPhoto,
+        ),
+        at: DateTime.now(),
+      ),
+    ];
+    state = ChipChatState(
+      lines: lines.length > _maxLines
+          ? lines.sublist(lines.length - _maxLines)
+          : lines,
+    );
+    _keep();
+    _ref.read(gameAudioProvider).play(Sfx.purchase);
+    return ask;
   }
 
   static const _days = [

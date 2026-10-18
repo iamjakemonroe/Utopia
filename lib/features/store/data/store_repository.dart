@@ -68,6 +68,33 @@ class StoreRepository {
     }
   }
 
+  /// Has the server check a Chip Maestro subscription with the store and
+  /// start (or refresh) the plan: 'active', 'expired', 'other' (another
+  /// account's), 'pending', or 'retry' when it couldn't be checked now.
+  Future<String> verifyMaestro({
+    required String platform,
+    required String productId,
+    required String purchaseId,
+  }) async {
+    try {
+      final res = await _client.functions.invoke(
+        'verify-purchase',
+        body: {
+          'platform': platform,
+          'product_id': productId,
+          'purchase_id': purchaseId,
+        },
+      );
+      final status = res.data is Map ? res.data['status'] : null;
+      return switch (status) {
+        'active' || 'expired' || 'other' || 'pending' => status as String,
+        _ => 'retry',
+      };
+    } catch (_) {
+      return 'retry';
+    }
+  }
+
   /// Whether this player can still buy the starter pack.
   Future<bool> starterOffer() async {
     final offers = await _client.rpc('coin_shop_offers');

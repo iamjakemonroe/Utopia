@@ -33,7 +33,7 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Utopia saves your drawings and paintings to your photos when you ask it to.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Utopia uses your photo library to let you set a profile picture.</string>
+	<string>Utopia uses your photo library so you can set a profile picture or send Chip a photo to turn into a coloring page.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

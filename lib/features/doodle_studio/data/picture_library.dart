@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
 import '../domain/coloring_pages.dart';
+import '../domain/line_art.dart';
 
 /// A picture in the library Chip draws for players (coloring_pages).
 class LibraryPicture {
@@ -16,6 +18,7 @@ class LibraryPicture {
     required this.status,
     required this.title,
     this.paths = const [],
+    this.art,
   });
 
   final String id;
@@ -27,13 +30,17 @@ class LibraryPicture {
   /// The outlines, SVG path data in page units.
   final List<String> paths;
 
-  bool get ready => status == 'ready' && paths.isNotEmpty;
+  /// A real portrait's line art (where it's kept), instead of outlines.
+  final String? art;
+
+  bool get ready => status == 'ready' && (paths.isNotEmpty || art != null);
 
   /// Library pictures go by 'p:' and their id among the built-in pages.
   String get pageId => '$kLibraryPrefix$id';
 
-  ColoringPage get page =>
-      ColoringPage.fromSvg(id: pageId, name: title, paths: paths);
+  ColoringPage get page => art != null
+      ? ColoringPage.fromArt(id: pageId, name: title, artPath: art!)
+      : ColoringPage.fromSvg(id: pageId, name: title, paths: paths);
 
   static LibraryPicture? fromJson(Object? json) {
     if (json is! Map) return null;
@@ -45,6 +52,7 @@ class LibraryPicture {
       status: json['status'] as String? ?? 'ready',
       title: json['title'] as String? ?? '',
       paths: paths is List ? paths.whereType<String>().toList() : const [],
+      art: json['art'] as String?,
     );
   }
 
@@ -53,6 +61,7 @@ class LibraryPicture {
     'status': status,
     'title': title,
     'paths': paths,
+    if (art != null) 'art': art,
   };
 }
 
@@ -76,7 +85,7 @@ class PictureLibrary {
 
   final SupabaseClient _client;
 
-  static const _columns = 'id, status, title, paths';
+  static const _columns = 'id, status, title, paths, art';
 
   /// Ready pictures matching every word of [query], most asked for first;
   /// the most asked for of all when [query] is empty.
@@ -220,11 +229,29 @@ class PictureLibrary {
 
   /// Keeps [p] now, before art is made from it.
   Future<void> keep(LibraryPicture p) => _keep(p);
+
+  /// A real portrait's line art: from the phone if it's here, otherwise
+  /// fetched (it's private to the player) and kept for next time.
+  Future<Uint8List> artBytes(String path) async {
+    final docs = await getApplicationDocumentsDirectory();
+    final safe = path.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+    final file = File('${docs.path}/pictures/art_$safe');
+    if (await file.exists()) return file.readAsBytes();
+    final bytes = await _client.storage.from('coloring-art').download(path);
+    try {
+      await file.parent.create(recursive: true);
+      await file.writeAsBytes(bytes, flush: true);
+    } catch (_) {}
+    return bytes;
+  }
 }
 
-final pictureLibraryProvider = Provider<PictureLibrary>(
-  (ref) => PictureLibrary(ref.watch(supabaseClientProvider)),
-);
+final pictureLibraryProvider = Provider<PictureLibrary>((ref) {
+  final library = PictureLibrary(ref.watch(supabaseClientProvider));
+  // Portraits' line art comes from here wherever a page is drawn.
+  LineArt.source = library.artBytes;
+  return library;
+});
 
 /// Library pictures matching a search ('' for the most asked for).
 final pictureSearchProvider = FutureProvider.autoDispose

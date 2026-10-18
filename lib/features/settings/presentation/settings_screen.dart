@@ -28,6 +28,10 @@ import '../../../core/notifications/local_notifications.dart';
 import '../../../core/now_playing/now_playing.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../store/presentation/coin_shop.dart';
+import '../../../core/config/env.dart';
+import '../../maestro/presentation/maestro_providers.dart';
+import '../../maestro/presentation/maestro_sheet.dart';
+import '../../store/presentation/store_controller.dart';
 
 /// "Show my coins" while the change is on its way to the server, so the
 /// switch moves at once.
@@ -245,6 +249,29 @@ class SettingsScreen extends ConsumerWidget {
                     trailing: const CoinIcon(size: 20),
                     onTap: () => showCoinShop(context),
                   ),
+                  _LinkRow(
+                    icon: Icons.brush_rounded,
+                    color: const Color(0xFFFF5C9C),
+                    title: 'Chip Maestro',
+                    subtitle:
+                        (ref.watch(maestroProvider).valueOrNull?.active ??
+                            false)
+                        ? "You're a member"
+                        : 'Real portraits and more from Chip',
+                    onTap: () => showMaestroSheet(context),
+                  ),
+                  // App stores require a way to get a subscription back on
+                  // a new phone or after a reinstall.
+                  if (Env.realMoneyStore)
+                    _LinkRow(
+                      icon: Icons.restore_rounded,
+                      color: AppColors.sky,
+                      title: 'Restore purchases',
+                      subtitle:
+                          'Got Chip Maestro on another phone? Get it here',
+                      onTap: () =>
+                          ref.read(storeControllerProvider.notifier).restore(),
+                    ),
                 ],
               ),
               _Section(

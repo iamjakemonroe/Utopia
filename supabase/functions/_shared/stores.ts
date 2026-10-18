@@ -82,6 +82,8 @@ export interface AppleTransaction {
   appAccountToken?: string;
   environment?: string;
   revocationDate?: number;
+  /** Subscriptions: when this period ends. */
+  expiresDate?: number;
 }
 
 const APPLE_HOSTS = {
@@ -158,6 +160,63 @@ export async function appleTransaction(
       transaction: jwsPayload<AppleTransaction>(body.signedTransactionInfo),
       environment: env,
     };
+  }
+  return null;
+}
+
+/**
+ * The latest state of the subscription [transactionId] belongs to (any of
+ * its transactions will do): its newest transaction, whether it will renew,
+ * and where it was bought. Null when Apple has no such subscription.
+ */
+export async function appleSubscription(
+  transactionId: string,
+  environment?: "production" | "sandbox",
+): Promise<
+  {
+    transaction: AppleTransaction;
+    autoRenew: boolean;
+    environment: "production" | "sandbox";
+  } | null
+> {
+  if (!/^\d{1,32}$/.test(transactionId)) return null;
+  const order: ("production" | "sandbox")[] = environment
+    ? [environment]
+    : ["production", "sandbox"];
+  for (const env of order) {
+    const res = await fetch(
+      `${APPLE_HOSTS[env]}/inApps/v1/subscriptions/${transactionId}`,
+      { headers: { Authorization: `Bearer ${await appleJwt()}` } },
+    );
+    if (res.status === 404) {
+      await res.body?.cancel();
+      continue;
+    }
+    if (!res.ok) {
+      throw new Error(`App Store answered ${res.status}: ${await res.text()}`);
+    }
+    const body = await res.json() as {
+      data?: {
+        lastTransactions?: {
+          signedTransactionInfo?: string;
+          signedRenewalInfo?: string;
+        }[];
+      }[];
+    };
+    let best: { transaction: AppleTransaction; autoRenew: boolean } | null = null;
+    for (const group of body.data ?? []) {
+      for (const last of group.lastTransactions ?? []) {
+        if (!last.signedTransactionInfo) continue;
+        const t = jwsPayload<AppleTransaction>(last.signedTransactionInfo);
+        const renewal = last.signedRenewalInfo
+          ? jwsPayload<{ autoRenewStatus?: number }>(last.signedRenewalInfo)
+          : {};
+        if (!best || (t.expiresDate ?? 0) > (best.transaction.expiresDate ?? 0)) {
+          best = { transaction: t, autoRenew: renewal.autoRenewStatus === 1 };
+        }
+      }
+    }
+    if (best) return { ...best, environment: env };
   }
   return null;
 }
@@ -279,6 +338,54 @@ export async function consumeGooglePurchase(
       encodeURIComponent(token)
     }:consume`,
     { method: "POST" },
+  );
+  await res.body?.cancel();
+  return res.ok;
+}
+
+/** A subscription purchase from the Play Developer API (the fields used). */
+export interface GoogleSubscription {
+  /** SUBSCRIPTION_STATE_ACTIVE, _CANCELED (still on until it ends),
+   * _IN_GRACE_PERIOD, _ON_HOLD, _PAUSED, _EXPIRED, _PENDING... */
+  subscriptionState?: string;
+  lineItems?: {
+    productId?: string;
+    expiryTime?: string;
+    autoRenewingPlan?: { autoRenewEnabled?: boolean };
+  }[];
+  acknowledgementState?: string;
+  externalAccountIdentifiers?: { obfuscatedExternalAccountId?: string };
+  linkedPurchaseToken?: string;
+  testPurchase?: Record<string, unknown>;
+}
+
+/** Looks up a subscription with Google. Null when there's no such one. */
+export async function googleSubscription(
+  token: string,
+): Promise<GoogleSubscription | null> {
+  const res = await play(
+    `/purchases/subscriptionsv2/tokens/${encodeURIComponent(token)}`,
+  );
+  if (res.status === 400 || res.status === 404 || res.status === 410) {
+    await res.body?.cancel();
+    return null;
+  }
+  if (!res.ok) {
+    throw new Error(`Play answered ${res.status}: ${await res.text()}`);
+  }
+  return await res.json() as GoogleSubscription;
+}
+
+/** Acknowledges a new subscription, or Google refunds it after 3 days. */
+export async function acknowledgeGoogleSubscription(
+  productId: string,
+  token: string,
+): Promise<boolean> {
+  const res = await play(
+    `/purchases/subscriptions/${encodeURIComponent(productId)}/tokens/${
+      encodeURIComponent(token)
+    }:acknowledge`,
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" },
   );
   await res.body?.cancel();
   return res.ok;

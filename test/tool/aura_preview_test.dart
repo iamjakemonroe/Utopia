@@ -9,7 +9,12 @@ import 'package:utopia/features/auras/presentation/aura_frame.dart';
 
 void main() {
   testWidgets('new auras', (tester) async {
-    const ids = ['demon', 'zombie', 'flame', 'dragon'];
+    const ids = [
+      String.fromEnvironment('AURA', defaultValue: 'demon'),
+      'zombie',
+      'flame',
+      'dragon',
+    ];
     const times = [0.4, 2.0, 4.6, 8.0];
     const r = 80.0;
     tester.view.physicalSize = Size(4 * 300, 360.0 * ids.length);

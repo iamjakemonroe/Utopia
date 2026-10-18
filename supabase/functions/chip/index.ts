@@ -189,20 +189,24 @@ What Utopia has today:
   a coin entry. When the context says coin packs are on sale, they can
   also buy coins in the coin shop (only quote the prices it gives, in
   their currency); otherwise coin top-ups are coming soon. Buying is
-  always optional: never push anyone to spend, everything can be earned
-  by playing, and younger players should ask a parent first.
+  always optional: never push anyone to spend, and everything can be
+  earned by playing.
 - Welcome week: a new player's first 7 days are on us. Every world and
   the Angel Halo aura are free for that week (worn straight away); when it
   ends, they can rent the worlds they loved or unlock them for good.
-- Worlds: 14 living worlds to visit, from alien moons to a neon city, the
+- Worlds: 16 living worlds to visit, from alien moons to a neon city, the
   deep sea, an ink-drawn Doodle world, a samurai castle at sunset (the
   Dojo), a graveyard where the dead rise (the Zombie world), pearly gates
-  above the clouds (Heaven) and lava rivers under a blood-red moon (Hell),
-  plus 36 color themes (12 colors, each at dawn, dusk and midnight).
-  Some are free, others are bought or rented with coins for 3 days, a week
-  or a month. Change world from the side menu.
+  above the clouds (Heaven), lava rivers under a blood-red moon (Hell), a
+  night festival with lasers and a vinyl moon (Music) and a haunted hollow
+  under a harvest moon (Halloween), plus 36 color themes (12 colors, each
+  at dawn, dusk and midnight). Utopia Calm, Warm and Adventure are free
+  (every new player starts in one of them, picked at random), and so are
+  Noir and Azure Dusk; the rest, Utopia Twilight included, are bought or
+  rented with coins for 3 days, a week or a month. Change world from the
+  side menu.
 - Auras: frames worn around your picture for 3 days, a week or a month,
-  from common to rare, legendary and Mythic. Four make a set with a world,
+  from common to rare, legendary and Mythic. Six make a set with a world,
   and each set changes you (Chip) too:
   - Dragon Coil in the Dojo: the world's dragon flies free, and you put on
     a headband and square up to it (though you're still scared of it).
@@ -212,6 +216,14 @@ What Utopia has today:
     rainbow forms.
   - Inferno in Hell: you grow baby horns, red eyes and a tail, the volcano
     erupts and fire rains.
+  - Encore in the Music world: you take the decks in headphones and neon
+    shades, nodding to the beat, and the show peaks with fireworks,
+    confetti and the crowd jumping. When they play their own music there,
+    the whole show dances harder.
+  - Jack's Lantern in the Halloween world: you get carved into a glowing
+    jack-o'-lantern in a witch's hat, and the night turns: a blood moon,
+    the scarecrow's eyes light up, more ghosts, and the tall thing in the
+    trees comes closer.
 - Sketchbook: in the Doodle world the side menu has a Sketchbook. Draw on
   a blank page, or color a picture: tap a shape to fill it, or paint with
   pencil, pen, marker and more. Players can search for any picture; if
@@ -220,6 +232,20 @@ What Utopia has today:
   any world, but coloring happens in the Doodle world: tapping "Color it"
   carries them there through the portal, and if they don't have the Doodle
   world yet they can rent it or unlock it.
+  You can draw anyone or anything: a famous person (you look them up so
+  you get their look right), or anyone at all from a photo they send you
+  with the photo button next to the message box. A picture drawn from a
+  photo is theirs alone; nobody else sees it. And you can color any
+  picture for them in any style: your own pick, black and white shading,
+  pastel, neon, a sunset, whatever they describe. In the coloring screen
+  the "Color with Chip" button does it, or they can ask you here.
+  Your own drawings are cartoons. For a picture that looks just like the
+  real person (from their photo, or a famous person's name) there's a
+  real portrait, made by a photo-quality drawing model. Everyone's first
+  one is free; after that they come with Chip Maestro, the monthly art
+  plan (30 real portraits a month, more of your drawings and colorings,
+  and you wear your artist's beret for them). The context says where they
+  stand.
 - Friends: find people by username, send requests, and challenge them.
   Requests and challenges pop up in the app and land in Notifications.
 - The side menu (tap your picture) has Profile, Sketchbook (in the Doodle
@@ -240,9 +266,35 @@ help; most replies have none.
   subject for their Sketchbook; it shows up in the chat when it's ready.
   Use it when they ask you to draw something or want new pictures to
   color. Keep the subject short and concrete ("a lion wearing a crown",
-  "a castle on a cloud"). If it isn't right for a children's coloring
-  book, don't draw it and suggest something else. Say you're on it, but
-  don't describe the finished picture: you haven't drawn it yet.
+  "a castle on a cloud", "Burna Boy"). If it isn't right for a children's
+  coloring book, don't draw it and suggest something else. Say you're on
+  it, but don't describe the finished picture: you haven't drawn it yet.
+- Drawing a real, famous person (a singer, a footballer, a president, a
+  historical figure): look them up first so you know their look, make the
+  subject their name, and add <look>what they look like, in a sentence or
+  two: hair, face, facial hair, glasses, skin tone, a signature outfit or
+  item</look>. Always a friendly, flattering portrait: never mocking,
+  embarrassing, sexual or violent. Someone who isn't famous (them, a
+  friend, a parent) you can't look up: ask them to send a photo instead.
+- When they've sent a photo (the message says so) and want it drawn, add
+  <usephoto/> too, with a subject saying what's in it ("a girl and her
+  dog"). The picture is made from their photo and only they can see it.
+  If it isn't clear they want it drawn, ask.
+- <portrait>subject</portrait> offers a real portrait: the app shows a
+  button and they decide (you don't start it yourself). Use it when they
+  want someone to really look like themselves: a photo of people (add
+  <usephoto/> too), or a famous person by name. In a sentence, warmly and
+  without any pressure, say how it works for them (free the first time,
+  included with Chip Maestro, or that Chip Maestro unlocks it), and that a
+  free cartoon drawing is there too if they'd rather. Only when the
+  context says real portraits are on. Never say a price: the app shows it
+  in their currency.
+- <paint>style</paint> colors the latest picture you drew in this chat,
+  when they ask you to color it for them (or shade it, or make it look a
+  certain way). The style in a few words: "your pick", "black and white
+  shading", "pastel", "sunset colors", or what they described. Only when
+  a picture in this chat is finished; it opens in the coloring screen
+  with your colors.
 - <sticker>name</sticker> sends one of your stickers under your message,
   for a big moment (a win, a joke, cheering them on), not every time.
   Stickers: chip:happy, chip:excited, chip:thinking, chip:sad, chip:evil
@@ -378,11 +430,26 @@ What makes a good page:
 Plan the layout first (where the subject sits, its main shapes and their
 coordinates, then the scene), check the proportions, then draw.
 
-Who it's for: the page goes in a library every player shares, children
-included.
+Real people:
+- A real, famous person (you may be given notes on their look) is drawn as
+  a friendly, flattering cartoon portrait that's still clearly them: their
+  hairstyle, face shape, facial hair, glasses, smile and a signature
+  outfit or item. Head and shoulders or full figure, whichever shows them
+  best. Never mocking, embarrassing, sexual or violent. Title it with
+  their name.
+- From a photo: turn the photo into a coloring page. Keep what's in it
+  (the same people, pets and things, in roughly the same places) and what
+  makes each person recognisable (hair, glasses, smile, clothes), drawn in
+  the same friendly cartoon style; simplify the background into a few
+  shapes. Don't add or leave out people. Title it for what it shows ("Two
+  friends at the beach").
+
+Who it's for: library pages go in a library every player shares, children
+included; a page from a photo is only for the player who sent it.
 - If the subject isn't right for a children's coloring book (anything
-  sexual, gore, real weapons aimed at someone, drugs, hate symbols, cruelty,
-  or a real person), set ok to false and leave paths empty.
+  sexual or nude, gore, real weapons aimed at someone, drugs, hate symbols,
+  cruelty, or a real person shown in a demeaning way), or a photo shows
+  any of that, set ok to false and leave paths empty.
 - Something only a little edgy can be drawn in a friendly way: a cute
   monster, a pirate ship, a knight, a friendly ghost.
 - For a character, brand or logo owned by someone else, draw an original
@@ -434,6 +501,8 @@ Deno.serve(async (req: Request) => {
     if (body.action === "chat") return await chat(userClient, user.id, body);
     if (body.action === "vibe") return await vibe(userClient, body);
     if (body.action === "draw") return await draw(userClient, user.id, body);
+    if (body.action === "paint") return await paint(userClient, body);
+    if (body.action === "portrait") return await portrait(user.id, body);
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
     if (e instanceof Anthropic.RateLimitError) {
@@ -566,8 +635,8 @@ function readReply(raw: string) {
     .filter(Boolean)
     .slice(0, 2);
   const reply = raw
-    .replace(/<(mood|open|draw|sticker|remember)>[\s\S]*?<\/\1>/gi, "")
-    .replace(/<\/?(mood|open|draw|sticker|remember|forget)\s*\/?>/gi, "")
+    .replace(/<(mood|open|draw|sticker|remember|look|paint|portrait)>[\s\S]*?<\/\1>/gi, "")
+    .replace(/<\/?(mood|open|draw|sticker|remember|forget|look|paint|portrait|usephoto)\s*\/?>/gi, "")
     .replace(/\*\*|__/g, "")
     .replace(/\s*\u2014\s*/g, ", ")
     .replace(/[ \t]+\n/g, "\n")
@@ -581,6 +650,10 @@ function readReply(raw: string) {
     mood: MOODS.includes(mood as typeof MOODS[number]) ? mood! : "happy",
     open: place && PLACES.includes(place) ? place : null,
     draw: tag("draw") ?? null,
+    look: tag("look") ? clip(tag("look"), 400) : null,
+    usePhoto: /<usephoto\s*\/?>/i.test(raw),
+    paint: tag("paint") ? clip(tag("paint"), 80) : null,
+    portrait: tag("portrait") ? clip(tag("portrait"), 80) : null,
     sticker: sticker && STICKERS.includes(sticker) ? sticker : null,
     remember,
     forget: /<forget\s*\/?>/i.test(raw),
@@ -608,7 +681,8 @@ async function chat(
   userId: string,
   body: Record<string, unknown>,
 ): Promise<Response> {
-  const message = clip(body.message, 600);
+  const photo = readPhoto(body.photo);
+  const message = clip(body.message, 600) || (photo ? "(no message, just the photo)" : "");
   if (!message) return json({ error: "Say something to Chip" }, 400);
 
   const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "chat" });
@@ -656,6 +730,7 @@ async function chat(
       .in("id", pictureIds);
     for (const row of data ?? []) pages.set(row.id, row);
   }
+  const offer = await portraitOffer(service, userId);
   const { data: notes } = await service
     .from("chip_memories")
     .select("note")
@@ -673,6 +748,7 @@ async function chat(
     if (role === "user") {
       const at = clip(t.at, 40);
       if (at) text = `[${at}] ${text}`;
+      if (t.photo) text = `${text}\n[They sent a photo.]`;
     } else {
       const did: string[] = [];
       if (typeof t.picture_id === "string") did.push(pictureNote(pages.get(t.picture_id)));
@@ -683,15 +759,35 @@ async function chat(
     messages.push({ role, content: text });
   }
   const remembered = (notes ?? []).map((n: { note: string }) => `- ${n.note}`).reverse();
+  const portraitFact = !offer
+    ? "Real portraits aren't switched on yet, so only offer your own cartoon drawings."
+    : offer.state === "maestro"
+    ? `They're a Chip Maestro member (you're wearing your artist's beret for them): real portraits are included, ${offer.left} left this month.`
+    : offer.state === "free"
+    ? "Real portraits are on, and their first one is free."
+    : "They've had their free real portrait; more come with Chip Maestro, the monthly art plan.";
   const extra = [
-    facts,
+    `${facts} ${portraitFact}`.trim(),
     remembered.length
       ? `What you remember about them from earlier chats:\n${remembered.join("\n")}`
       : "",
   ].filter(Boolean).join("\n\n");
+  const said = extra ? `${message}\n\n(${extra})` : message;
   messages.push({
     role: "user",
-    content: extra ? `${message}\n\n(${extra})` : message,
+    content: photo
+      ? [
+        { type: "image", source: { type: "base64", media_type: photo.media, data: photo.data } },
+        {
+          type: "text",
+          text: `${said}\n\n(${
+            body.photo_new === false
+              ? "This is the photo they sent you earlier in this chat."
+              : "They sent you this photo with the message."
+          })`,
+        },
+      ]
+      : said,
   });
 
   const raw = await talk(messages);
@@ -728,10 +824,27 @@ async function chat(
   };
   if (out.open) result.open = out.open;
   if (out.sticker) result.sticker = out.sticker;
+  if (out.paint) result.paint = out.paint;
+  if (out.portrait && offer) {
+    result.portrait = {
+      subject: out.portrait,
+      photo: out.usePhoto && !!photo,
+      state: offer.state,
+      left: offer.left,
+    };
+  }
   if (out.draw) {
-    const picture = await startDrawing(db, userId, out.draw);
+    const fromPhoto = out.usePhoto && photo ? photo : undefined;
+    const picture = await startDrawing(db, userId, out.draw, {
+      look: out.look ?? undefined,
+      photo: fromPhoto,
+    });
     if (picture.status !== "invalid") {
-      result.picture = { ...picture, subject: tidySubject(out.draw) };
+      result.picture = {
+        ...picture,
+        subject: tidySubject(out.draw),
+        ...(fromPhoto ? { photo: true } : {}),
+      };
     }
   }
   return json(result);
@@ -755,6 +868,37 @@ async function draw(
     return json({ error: "Tell Chip what to draw" }, 400);
   }
   return json(picture);
+}
+
+/** A photo sent with a chat message: base64 image data, at most ~2 MB. */
+type Photo = { data: string; media: "image/jpeg" | "image/png" | "image/webp" };
+
+function readPhoto(value: unknown): Photo | undefined {
+  if (typeof value !== "string" || value.length < 100 || value.length > 2_800_000) {
+    return undefined;
+  }
+  if (!/^[A-Za-z0-9+/=]+$/.test(value)) return undefined;
+  const media = value.startsWith("/9j/")
+    ? "image/jpeg"
+    : value.startsWith("iVBOR")
+    ? "image/png"
+    : value.startsWith("UklGR")
+    ? "image/webp"
+    : undefined;
+  return media ? { data: value, media } : undefined;
+}
+
+/** What a drawing goes on beyond its subject: notes on how a real person
+ * looks, or the photo to draw from. */
+type DrawExtra = { look?: string; photo?: Photo };
+
+/** Keeps [job] running after the answer goes back (the app watches the
+ * page). */
+function inBackground(job: Promise<void>): Promise<void> | void {
+  // deno-lint-ignore no-explicit-any
+  const runtime = (globalThis as any).EdgeRuntime;
+  if (runtime?.waitUntil) runtime.waitUntil(job);
+  else return job;
 }
 
 /** The library key for a subject: lowercase words, no "a" or "the". */
@@ -782,10 +926,12 @@ async function startDrawing(
   db: any,
   userId: string,
   subject: unknown,
+  extra: DrawExtra = {},
 ): Promise<{ id?: string; status: string }> {
   const key = tidySubject(subject);
   if (key.length < 2) return { status: "invalid" };
   const service = admin();
+  if (extra.photo) return await startPhotoDrawing(db, service, userId, key, extra);
   const asked = (id: string) =>
     service.from("coloring_asks").upsert(
       { user_id: userId, page_id: id },
@@ -852,12 +998,53 @@ async function startDrawing(
 
   // Drawing takes a while: it carries on after this answer goes back, and
   // the app watches the page.
-  const job = drawPage(service, id, key);
-  // deno-lint-ignore no-explicit-any
-  const runtime = (globalThis as any).EdgeRuntime;
-  if (runtime?.waitUntil) runtime.waitUntil(job);
-  else await job;
+  await inBackground(drawPage(service, id, key, { look: extra.look }));
   return { id, status: "drawing" };
+}
+
+/** A new picture from the player's photo: always freshly drawn, and only
+ * theirs (never in the shared library). The photo itself is never kept. */
+async function startPhotoDrawing(
+  // deno-lint-ignore no-explicit-any
+  db: any,
+  // deno-lint-ignore no-explicit-any
+  service: any,
+  userId: string,
+  subject: string,
+  extra: DrawExtra,
+): Promise<{ id?: string; status: string }> {
+  const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "draw" });
+  if (error) throw error;
+  if (!allowed) return { status: "limited" };
+  const { data: made, error: failed } = await service
+    .from("coloring_pages")
+    .insert({ key: `photo:${crypto.randomUUID()}`, owner: userId })
+    .select("id")
+    .single();
+  if (failed || !made) throw failed;
+  await service.from("coloring_asks").insert({ user_id: userId, page_id: made.id });
+  await inBackground(drawPage(service, made.id, subject, extra));
+  return { id: made.id, status: "drawing" };
+}
+
+/** What to draw: the subject, with any notes on a real person's look, or
+ * the photo to draw from. */
+function drawRequest(
+  subject: string,
+  extra: DrawExtra,
+): Anthropic.Beta.BetaMessageParam["content"] {
+  const look = extra.look ? `\nWhat they look like: ${extra.look}` : "";
+  if (!extra.photo) return `Draw a coloring page of: ${subject}${look}`;
+  return [
+    {
+      type: "image",
+      source: { type: "base64", media_type: extra.photo.media, data: extra.photo.data },
+    },
+    {
+      type: "text",
+      text: `Draw a coloring page from this photo (${subject}).${look}`,
+    },
+  ];
 }
 
 /** Outlines that are SVG path data and nothing else, within size limits. */
@@ -883,6 +1070,7 @@ async function drawPage(
   service: any,
   id: string,
   subject: string,
+  extra: DrawExtra = {},
 ): Promise<void> {
   const finish = (fields: Record<string, unknown>) =>
     service
@@ -903,9 +1091,7 @@ async function drawPage(
         effort: DRAW_EFFORT,
         format: { type: "json_schema", schema: drawSchema },
       },
-      messages: [
-        { role: "user", content: `Draw a coloring page of: ${subject}` },
-      ],
+      messages: [{ role: "user", content: drawRequest(subject, extra) }],
     };
     // Streamed, so a long drawing never trips a request timeout.
     const response = await anthropic.beta.messages.stream(params).finalMessage();
@@ -947,6 +1133,361 @@ async function drawPage(
     console.error("draw", e);
     await finish({ status: "failed" });
   }
+}
+
+// ── paint ──────────────────────────────────────────────────────────────
+
+const PAINT_EFFORT = Deno.env.get("CHIP_PAINT_EFFORT") ?? "medium";
+
+// How Chip colors a picture for a player. The app traces the page's shapes
+// itself, so it sends the picture with every shape numbered, and gets back
+// a color for each number.
+const PAINT_SYSTEM = `You color in coloring pages for players of the
+Sketchbook in Utopia, a mobile game app. You get the page as a picture with
+every shape numbered at a point inside it, and a list of the shapes: its
+number, the point its label sits at (x, y), its bounding box (w by h) and
+its area, on a page 1000 wide and 1300 tall with y pointing down.
+
+Give every listed shape a color so the whole picture looks beautiful in
+the style the player asked for.
+- Work out what each shape is (sky, ground, a face, hair, an eye, a
+  pupil, a shine, a leaf, a petal, a window, a shirt) from where it sits,
+  its size and what's around it in the picture.
+- Keep matching parts consistent: both eyes alike, every leaf a green of
+  the same family, a striped shirt in the same two colors.
+- The subject should stand out: livelier colors on it, calmer ones behind.
+- Pupils and other tiny dark details stay dark; shines and the whites of
+  eyes stay white or near white.
+- People's skin: natural, warm tones in a range of shades, unless the
+  style says otherwise or it's clearly not a person.
+- "Your pick": a bright, cheerful palette that suits the subject.
+- Black and white or shading: only grays, from near white to near black,
+  lighter on the parts facing the light and nearer the viewer, darker in
+  shadow and further back, so the picture has depth.
+- Any other style (pastel, neon, sunset, autumn, ocean, gold, camouflage,
+  the colors of a flag or a team): follow it all the way.
+- To leave a shape as paper, give it #FFFFFF.
+
+fills: one entry per listed shape, r its number and c its color as
+#RRGGBB. note: one short line, at most 12 words, said as Chip, the app's
+cheerful gold-coin mascot, about the colors you picked. No emoji.`;
+
+const paintSchema = {
+  type: "object",
+  properties: {
+    fills: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { r: { type: "integer" }, c: { type: "string" } },
+        required: ["r", "c"],
+        additionalProperties: false,
+      },
+    },
+    note: { type: "string" },
+  },
+  required: ["fills", "note"],
+  additionalProperties: false,
+};
+
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+
+async function paint(
+  // deno-lint-ignore no-explicit-any
+  db: any,
+  body: Record<string, unknown>,
+): Promise<Response> {
+  const style = clip(body.style, 120) || "your pick";
+  const title = clip(body.title, 60);
+  const image = readPhoto(body.image);
+  const shapes = Array.isArray(body.regions) ? body.regions.slice(0, 400) : [];
+  const listed: string[] = [];
+  const ids = new Set<number>();
+  for (const raw of shapes) {
+    const r = raw as Record<string, unknown>;
+    const n = [r.i, r.x, r.y, r.w, r.h, r.a].map((v) => Math.round(Number(v)));
+    if (n.some((v) => !Number.isFinite(v)) || n[0] < 1) continue;
+    ids.add(n[0]);
+    listed.push(`${n[0]}: at ${n[1]},${n[2]}, ${n[3]}x${n[4]}, area ${n[5]}`);
+  }
+  if (!image || ids.size === 0) return json({ error: "Nothing to color" }, 400);
+
+  const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "paint" });
+  if (error) return json({ error: error.message }, 500);
+  if (!allowed) return json({ status: "limited" });
+
+  // deno-lint-ignore no-explicit-any
+  const params: any = {
+    model: MODEL,
+    max_tokens: 16000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    system: [
+      { type: "text", text: PAINT_SYSTEM, cache_control: { type: "ephemeral" } },
+    ],
+    output_config: {
+      effort: PAINT_EFFORT,
+      format: { type: "json_schema", schema: paintSchema },
+    },
+    messages: [{
+      role: "user",
+      content: [
+        { type: "image", source: { type: "base64", media_type: image.media, data: image.data } },
+        {
+          type: "text",
+          text: `The page${title ? ` ("${title}")` : ""}. Style: ${style}\n\nShapes:\n${listed.join("\n")}`,
+        },
+      ],
+    }],
+  };
+  const response = await anthropic.beta.messages.stream(params).finalMessage();
+  if (response.stop_reason === "refusal") return json({ status: "refused" });
+  if (response.stop_reason !== "end_turn") {
+    console.error("paint stopped", response.stop_reason);
+    return json({ status: "error" }, 502);
+  }
+  const text = response.content
+    .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text")
+    .map((b) => b.text)
+    .join("");
+  const out = JSON.parse(text) as { fills?: { r: number; c: string }[]; note?: string };
+  const fills = (out.fills ?? [])
+    .filter((f) => ids.has(f.r) && HEX_COLOR.test(f.c))
+    .map((f) => ({ r: f.r, c: f.c.toUpperCase() }));
+  if (fills.length === 0) return json({ status: "error" }, 502);
+  return json({ status: "ready", fills, note: clip(out.note, 120) });
+}
+
+// ── real portraits ─────────────────────────────────────────────────────
+
+// A photo-quality image model (Google's Nano Banana 2) draws these, so they
+// look like the real person; the app traces the line art into shapes. Each
+// one uses the player's free portrait or one of their Chip Maestro month
+// (chip_portrait_pay), and a failed one is refunded.
+const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta/interactions";
+const IMAGE_MODEL = Deno.env.get("GEMINI_IMAGE_MODEL") ?? "gemini-3.1-flash-image";
+
+const PORTRAIT_STYLE = `Clean black line art on a plain white background, like a
+page from a good coloring book: bold, even outlines; every area fully closed
+so it can be filled with one color; no shading, no gray, no hatching, no
+solid black areas, no text, no signature, no border. A simple background
+with a few large shapes. Portrait orientation.`;
+
+/** Where [userId] stands for real portraits (a member with some left this
+ * month, a free one to try, or locked), or null when they're switched off. */
+async function portraitOffer(
+  // deno-lint-ignore no-explicit-any
+  service: any,
+  userId: string,
+): Promise<{ state: "maestro" | "free" | "locked"; left: number } | null> {
+  if (!Deno.env.get("GEMINI_API_KEY")) return null;
+  const { data, error } = await service.rpc("chip_portrait_offer", { p_user: userId });
+  if (error || !data) return null;
+  const state = data.state === "maestro" || data.state === "free" ? data.state : "locked";
+  return { state, left: Number(data.left) || 0 };
+}
+
+/** Takes one of the player's portraits (their plan's, or their free one).
+ * A Response when they can't. */
+async function takePortrait(
+  // deno-lint-ignore no-explicit-any
+  service: any,
+  userId: string,
+): Promise<{ id: number; kind: string; left: number } | Response> {
+  const { data, error } = await service.rpc("chip_portrait_pay", { p_user: userId });
+  if (!error) return data as { id: number; kind: string; left: number };
+  if (error.message.includes("needs maestro")) return json({ status: "maestro" });
+  if (error.message.includes("maestro limit")) return json({ status: "limited", month: true });
+  if (error.message.includes("portrait limit")) return json({ status: "limited" });
+  throw error;
+}
+
+async function portrait(userId: string, body: Record<string, unknown>): Promise<Response> {
+  if (!Deno.env.get("GEMINI_API_KEY")) return json({ status: "off" });
+  const subject = clip(body.subject, 80);
+  const photo = readPhoto(body.photo);
+  if (!subject && !photo) return json({ error: "Who should Chip draw?" }, 400);
+
+  const service = admin();
+  const asked = (pageId: string) =>
+    service.from("coloring_asks").upsert(
+      { user_id: userId, page_id: pageId },
+      { onConflict: "user_id,page_id", ignoreDuplicates: true },
+    );
+
+  // A famous person is drawn once and shared with every member who asks
+  // (from a photo, it's always new and theirs alone).
+  const famous = photo ? null : `portrait:${tidySubject(subject)}`;
+  let reuse: { id: string; status: string } | null = null;
+  if (famous) {
+    const { data: page } = await service
+      .from("coloring_pages")
+      .select("id, status, updated_at")
+      .eq("key", famous)
+      .maybeSingle();
+    const cutoff = new Date(Date.now() - STALE_MS).toISOString();
+    if (page && (page.status === "ready" || (page.status === "drawing" && page.updated_at >= cutoff))) {
+      // Already drawn (or being drawn): it costs nothing more, so members
+      // don't use up their month on it; anyone else uses their free one.
+      const offer = await portraitOffer(service, userId);
+      if (!offer || offer.state === "locked") return json({ status: "maestro" });
+      let left = offer.left;
+      if (offer.state === "free") {
+        const took = await takePortrait(service, userId);
+        if (took instanceof Response) return took;
+        await service.from("chip_portraits").update({ page_id: page.id }).eq("id", took.id);
+        left = took.left;
+      }
+      await asked(page.id);
+      return json({ id: page.id, status: page.status, left });
+    }
+    if (page) reuse = page; // it failed (or got stuck) last time: try again
+  }
+
+  const took = await takePortrait(service, userId);
+  if (took instanceof Response) return took;
+  let pageId: string;
+  if (reuse) {
+    await service
+      .from("coloring_pages")
+      .update({ status: "drawing", updated_at: new Date().toISOString() })
+      .eq("id", reuse.id);
+    pageId = reuse.id;
+  } else {
+    const { data: page, error: failed } = await service
+      .from("coloring_pages")
+      .insert({
+        key: famous ?? `portrait:photo:${crypto.randomUUID()}`,
+        owner: famous ? null : userId,
+        premium: true,
+        title: subject || "Portrait",
+      })
+      .select("id")
+      .single();
+    if (failed || !page) {
+      await service.rpc("chip_portrait_refund", { p_id: took.id });
+      throw failed;
+    }
+    pageId = page.id;
+  }
+  await asked(pageId);
+  await service.from("chip_portraits").update({ page_id: pageId }).eq("id", took.id);
+  await inBackground(
+    drawPortrait(service, pageId, famous ? "shared" : userId, subject, photo, took.id),
+  );
+  return json({ id: pageId, status: "drawing", left: took.left });
+}
+
+/** Draws portrait [pageId] into [folder] of the coloring-art bucket (the
+ * player's own, or "shared" for a famous person's), as <page id>.jpg. */
+async function drawPortrait(
+  // deno-lint-ignore no-explicit-any
+  service: any,
+  pageId: string,
+  folder: string,
+  subject: string,
+  photo: Photo | undefined,
+  chargeId: number,
+): Promise<void> {
+  const finish = (fields: Record<string, unknown>) =>
+    service
+      .from("coloring_pages")
+      .update({ ...fields, updated_at: new Date().toISOString() })
+      .eq("id", pageId);
+  try {
+    const prompt = photo
+      ? `Turn this photo${subject ? ` (${subject})` : ""} into a coloring page. Keep every person's face, hairstyle, expression and clothes true to the photo, so they're clearly recognisable, and keep any pets and things in it. ${PORTRAIT_STYLE}`
+      : `A coloring page portrait of ${subject}, who should be clearly recognisable as the real ${subject}: their face, hairstyle and signature look, friendly and flattering. ${PORTRAIT_STYLE}`;
+    const image = await generateImage(prompt, photo);
+    if (image === "refused") {
+      await finish({ status: "refused" });
+      await service.rpc("chip_portrait_refund", { p_id: chargeId });
+      return;
+    }
+    if (!image) throw new Error("no image");
+    const path = `${folder}/${pageId}.${image.media === "image/png" ? "png" : "jpg"}`;
+    const { error } = await service.storage
+      .from("coloring-art")
+      .upload(path, image.bytes, { contentType: image.media, upsert: true });
+    if (error) throw error;
+    await finish({ status: "ready", art: path, search: subject.toLowerCase() });
+  } catch (e) {
+    console.error("portrait", e);
+    await finish({ status: "failed" });
+    await service.rpc("chip_portrait_refund", { p_id: chargeId });
+  }
+}
+
+/** An image from the model: the bytes, or "refused" when it won't draw it,
+ * or null when something went wrong. */
+async function generateImage(
+  prompt: string,
+  photo?: Photo,
+): Promise<{ bytes: Uint8Array; media: string } | "refused" | null> {
+  const headers = {
+    "x-goog-api-key": Deno.env.get("GEMINI_API_KEY")!,
+    "Content-Type": "application/json",
+  };
+  const res = await fetch(GEMINI_API, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: IMAGE_MODEL,
+      input: [
+        { type: "text", text: prompt },
+        ...(photo ? [{ type: "image", mime_type: photo.media, data: photo.data }] : []),
+      ],
+      // JPEG is the only output the model offers.
+      response_format: {
+        type: "image",
+        mime_type: "image/jpeg",
+        aspect_ratio: "3:4",
+        image_size: "1K",
+      },
+    }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("image model", res.status, text.slice(0, 500));
+    return /safety|blocked|prohibited|policy/i.test(text) ? "refused" : null;
+  }
+  // deno-lint-ignore no-explicit-any
+  let out: any = await res.json();
+  // Still going (a slow one): wait for it, up to two minutes.
+  for (let i = 0; i < 40 && ["in_progress", "queued"].includes(out?.status); i++) {
+    await new Promise((r) => setTimeout(r, 3000));
+    out = await (await fetch(`${GEMINI_API}/${out.id}`, { headers })).json();
+  }
+  const found = lastImage(out);
+  if (found) {
+    return {
+      bytes: Uint8Array.from(atob(found.data), (c) => c.charCodeAt(0)),
+      media: found.media,
+    };
+  }
+  console.error("image model gave no image", out?.status, JSON.stringify(out?.errors ?? "").slice(0, 300));
+  return out?.status === "completed" || out?.status === "failed" ? "refused" : null;
+}
+
+/** The last image anywhere in the model's answer (its newer "steps" form,
+ * or the older "candidates" one). */
+// deno-lint-ignore no-explicit-any
+function lastImage(value: any): { data: string; media: string } | null {
+  let found: { data: string; media: string } | null = null;
+  // deno-lint-ignore no-explicit-any
+  const walk = (v: any) => {
+    if (!v || typeof v !== "object") return;
+    if (Array.isArray(v)) return v.forEach(walk);
+    const inline = v.inlineData ?? v.inline_data;
+    if (inline && typeof inline.data === "string") {
+      found = { data: inline.data, media: inline.mimeType ?? inline.mime_type ?? "image/png" };
+    } else if (v.type === "image" && typeof v.data === "string" && v.data.length > 100) {
+      found = { data: v.data, media: v.mime_type ?? "image/png" };
+    }
+    for (const k of Object.keys(v)) if (k !== "input") walk(v[k]);
+  };
+  walk(value);
+  return found;
 }
 
 // ── vibe ───────────────────────────────────────────────────────────────

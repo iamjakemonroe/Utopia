@@ -12,7 +12,7 @@ import 'package:utopia/core/widgets/doodle_ink.dart';
 void main() {
   testWidgets('doodle ink strokes and fade', (tester) async {
     UtopiaThemes.active = UtopiaThemes.utopiaDoodle;
-    addTearDown(() => UtopiaThemes.active = UtopiaThemes.utopiaDark);
+    addTearDown(() => UtopiaThemes.active = UtopiaThemes.utopiaTwilight);
     tester.view.physicalSize = const Size(400, 500);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);

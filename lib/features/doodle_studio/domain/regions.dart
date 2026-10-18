@@ -111,14 +111,122 @@ class RegionMap {
   /// Traces the shapes from the outlines drawn as RGBA [pixels] (anything
   /// at least half opaque is outline). Off the UI thread: big pages take a
   /// moment.
+  ///
+  /// [seal] is for line art (a real portrait): faint lines count as lines
+  /// too, and every line is grown a pixel, so a hairline gap in the artist's
+  /// line can't let a fill spill into the next shape.
   static Future<RegionMap> trace(
     Uint8List pixels,
     int width,
     int height, {
     double scale = 1,
+    bool seal = false,
   }) {
-    return Isolate.run(() => label(pixels, width, height, scale: scale));
+    return Isolate.run(
+      () => label(
+        seal ? sealed(pixels, width, height) : pixels,
+        width,
+        height,
+        scale: scale,
+      ),
+    );
   }
+
+  /// [pixels] with every pixel that's at least a little inked, and the ones
+  /// next to it, made solid.
+  static Uint8List sealed(
+    Uint8List pixels,
+    int width,
+    int height, {
+    int minAlpha = 48,
+  }) {
+    final out = Uint8List(pixels.length);
+    for (var y = 0; y < height; y++) {
+      for (var x = 0; x < width; x++) {
+        if (pixels[(y * width + x) * 4 + 3] < minAlpha) continue;
+        for (var dy = -1; dy <= 1; dy++) {
+          for (var dx = -1; dx <= 1; dx++) {
+            final px = x + dx, py = y + dy;
+            if (px < 0 || py < 0 || px >= width || py >= height) continue;
+            out[(py * width + px) * 4 + 3] = 255;
+          }
+        }
+      }
+    }
+    return out;
+  }
+
+  /// Every shape of at least [minArea] (square page units), biggest first
+  /// and at most [limit] of them: where each one is, for Chip to color.
+  List<RegionInfo> shapes({double minArea = 120, int limit = 300}) {
+    final n = count + 1;
+    final pixels = Int32List(n);
+    final sumX = Float64List(n);
+    final sumY = Float64List(n);
+    final x0 = Int32List(n)..fillRange(0, n, width);
+    final y0 = Int32List(n)..fillRange(0, n, height);
+    final x1 = Int32List(n)..fillRange(0, n, -1);
+    final y1 = Int32List(n)..fillRange(0, n, -1);
+    for (var y = 0, i = 0; y < height; y++) {
+      for (var x = 0; x < width; x++, i++) {
+        final l = labels[i];
+        if (l == 0) continue;
+        pixels[l]++;
+        sumX[l] += x;
+        sumY[l] += y;
+        if (x < x0[l]) x0[l] = x;
+        if (x > x1[l]) x1[l] = x;
+        if (y < y0[l]) y0[l] = y;
+        if (y > y1[l]) y1[l] = y;
+      }
+    }
+    final unit = 1 / scale;
+    final big = [
+      for (var l = 1; l <= count; l++)
+        if (pixels[l] * unit * unit >= minArea) l,
+    ]..sort((a, b) => pixels[b] - pixels[a]);
+    final kept = big.take(limit).toList();
+    final keep = Uint8List(n);
+    for (final l in kept) {
+      keep[l] = 1;
+    }
+
+    // The label goes on the shape's own pixel nearest its middle, so it
+    // sits inside even a ring or a crescent.
+    final best = Float64List(n)..fillRange(0, n, double.infinity);
+    final bestX = Int32List(n);
+    final bestY = Int32List(n);
+    for (var y = 0, i = 0; y < height; y++) {
+      for (var x = 0; x < width; x++, i++) {
+        final l = labels[i];
+        if (l == 0 || keep[l] == 0) continue;
+        final dx = x - sumX[l] / pixels[l];
+        final dy = y - sumY[l] / pixels[l];
+        final d = dx * dx + dy * dy;
+        if (d < best[l]) {
+          best[l] = d;
+          bestX[l] = x;
+          bestY[l] = y;
+        }
+      }
+    }
+    return [
+      for (final l in kept)
+        RegionInfo(
+          id: l,
+          labelX: (bestX[l] + 0.5) * unit,
+          labelY: (bestY[l] + 0.5) * unit,
+          left: x0[l] * unit,
+          top: y0[l] * unit,
+          width: (x1[l] - x0[l] + 1) * unit,
+          height: (y1[l] - y0[l] + 1) * unit,
+          area: pixels[l] * unit * unit,
+        ),
+    ];
+  }
+
+  /// [shapes], off the UI thread.
+  Future<List<RegionInfo>> shapesInBackground() => Isolate.run(shapes);
 
   /// [trace], on this thread (for tests).
   static RegionMap label(
@@ -187,3 +295,28 @@ class RegionMap {
 /// Where an outline pixel looks for a fill to borrow, nearest first.
 const _reachX = [1, -1, 0, 0, 2, -2, 0, 0];
 const _reachY = [0, 0, 1, -1, 0, 0, 2, -2];
+
+/// One shape of a coloring page, in page units: a point inside it to label
+/// it by, its bounding box and its area.
+class RegionInfo {
+  const RegionInfo({
+    required this.id,
+    required this.labelX,
+    required this.labelY,
+    required this.left,
+    required this.top,
+    required this.width,
+    required this.height,
+    required this.area,
+  });
+
+  /// Its label in the RegionMap.
+  final int id;
+  final double labelX;
+  final double labelY;
+  final double left;
+  final double top;
+  final double width;
+  final double height;
+  final double area;
+}

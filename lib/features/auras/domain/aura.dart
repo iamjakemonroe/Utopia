@@ -54,6 +54,7 @@ class Aura {
     required this.color,
     required this.prices,
     this.retired = false,
+    this.includedWith,
   });
 
   final String id;
@@ -68,6 +69,13 @@ class Aura {
   /// No longer sold. Anyone renting it keeps it until their time runs out
   /// (the server refuses new purchases too).
   final bool retired;
+
+  /// Never sold on its own: it comes with this plan ("Chip Maestro"), worn
+  /// while the plan lasts.
+  final String? includedWith;
+
+  /// Not for sale (retired, or part of a plan): shown only to whoever has it.
+  bool get notSold => retired || includedWith != null;
 
   int priceFor(AuraLength length) => prices[length]!;
 
@@ -93,6 +101,7 @@ class Aura {
   };
 
   static const all = [
+    maestro,
     Aura(
       id: 'dragon',
       name: 'Dragon Coil',
@@ -150,6 +159,24 @@ class Aura {
           'Rotting hands claw up to grab you. Something took a bite. In the Zombie world, Chip gets bitten too.',
       tier: AuraTier.legendary,
       color: Color(0xFF7DFF3D),
+      prices: _legendary,
+    ),
+    Aura(
+      id: 'music',
+      name: 'Encore',
+      tagline:
+          'Your picture on a spinning record, an equalizer jumping all around it on the beat. In the Music world, Chip takes the decks.',
+      tier: AuraTier.legendary,
+      color: Color(0xFFFF2E9A),
+      prices: _legendary,
+    ),
+    Aura(
+      id: 'jack',
+      name: "Jack's Lantern",
+      tagline:
+          'Black brambles round your picture, grinning jack-o\'-lanterns on the rim, a spider on its web and bats circling. In the Halloween world, Chip gets carved.',
+      tier: AuraTier.legendary,
+      color: Color(0xFFF2761A),
       prices: _legendary,
     ),
     Aura(
@@ -341,6 +368,17 @@ class Aura {
       prices: _common,
     ),
   ];
+
+  /// Chip Maestro's frame.
+  static const maestro = Aura(
+    id: 'maestro',
+    name: 'Maestro',
+    tagline: 'A ring of wet paint, with a brush painting around you.',
+    tier: AuraTier.legendary,
+    color: Color(0xFFFF5C9C),
+    prices: _legendary,
+    includedWith: 'Chip Maestro',
+  );
 
   static Aura? byId(String? id) =>
       id == null ? null : all.where((a) => a.id == id).firstOrNull;

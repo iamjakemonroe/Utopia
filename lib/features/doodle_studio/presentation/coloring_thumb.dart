@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../domain/art_doc.dart';
 import '../domain/coloring_pages.dart';
+import '../domain/line_art.dart';
 import 'art_render.dart';
 
 /// A coloring page drawn small, outlines on paper.
@@ -20,7 +21,7 @@ class ColoringThumb extends StatelessWidget {
 }
 
 class _Thumb extends CustomPainter {
-  _Thumb(this.page);
+  _Thumb(this.page) : super(repaint: LineArt.ready);
 
   final ColoringPage page;
   static final _paths = <String, List<Path>>{};
@@ -29,7 +30,7 @@ class _Thumb extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(Offset.zero & size, Paint()..color = kPaper);
     canvas.scale(size.width / kPageSize.width);
-    ColoringPage.paintLines(canvas, _paths[page.id] ??= page.draw(), kLineInk);
+    paintPageLines(canvas, page, _paths);
   }
 
   @override

@@ -40,6 +40,7 @@ sealed class ArtOp {
   static ArtOp? fromJson(Map<String, Object?> json) => switch (json['t']) {
     's' => StrokeOp.fromJson(json),
     'f' => FillOp.fromJson(json),
+    'F' => FillsOp.fromJson(json),
     _ => null,
   };
 }
@@ -113,6 +114,38 @@ class FillOp extends ArtOp {
   }
 }
 
+/// Many shapes filled at once (Chip coloring the page): one step, so one
+/// undo takes it all back.
+class FillsOp extends ArtOp {
+  const FillsOp(this.fills);
+
+  /// Shape (see RegionMap) to ARGB color.
+  final Map<int, int> fills;
+
+  @override
+  Map<String, Object?> toJson() => {
+    't': 'F',
+    'f': [
+      for (final e in fills.entries) [e.key, e.value],
+    ],
+  };
+
+  static FillsOp? fromJson(Map<String, Object?> json) {
+    final list = json['f'];
+    if (list is! List) return null;
+    final fills = <int, int>{};
+    for (final pair in list) {
+      if (pair is List &&
+          pair.length == 2 &&
+          pair[0] is num &&
+          pair[1] is num) {
+        fills[(pair[0] as num).toInt()] = (pair[1] as num).toInt();
+      }
+    }
+    return fills.isEmpty ? null : FillsOp(fills);
+  }
+}
+
 double _round(double v) => (v * 10).roundToDouble() / 10;
 
 /// A sketch or coloring page and everything done to it. [ops] is the
@@ -181,7 +214,7 @@ class ArtDoc {
   /// order (a later fill of the same shape wins).
   Map<int, int> get fills => {
     for (final op in ops)
-      if (op is FillOp) op.region: op.color,
+      if (op is FillOp) op.region: op.color else if (op is FillsOp) ...op.fills,
   };
 
   Map<String, Object?> toJson() => {

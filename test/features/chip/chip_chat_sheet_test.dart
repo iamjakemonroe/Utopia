@@ -73,12 +73,18 @@ void main() {
     for (var i = 0; i < 15; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
-    expect(find.text('Can I have a million coins?'), findsOneWidget);
-    expect(find.text('Get coins'), findsOneWidget);
+    // It opens on the newest line, at the bottom.
     expect(find.text('Sleepy lion'), findsOneWidget);
     // Not in the Doodle world, and it isn't theirs: the button says so.
     expect(find.text('Get the Doodle world to color it'), findsOneWidget);
     expect(find.byTooltip('New chat'), findsOneWidget);
+    // The older lines are above it.
+    await tester.drag(find.byType(ListView).first, const Offset(0, 700));
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('Can I have a million coins?'), findsOneWidget);
+    expect(find.text('Get coins'), findsOneWidget);
     await tester.pump(const Duration(seconds: 2));
   });
 }

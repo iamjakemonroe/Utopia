@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/audio/game_audio.dart';
 import '../../../core/chip/chip_brain.dart';
@@ -14,6 +16,7 @@ import '../../../core/theme/theme_controller.dart';
 import '../../../core/theme/utopia_themes.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/pop_card.dart';
+import '../../../core/widgets/utopia_toast.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../doodle_studio/data/picture_library.dart';
 import '../../doodle_studio/presentation/coloring_thumb.dart';
@@ -24,6 +27,8 @@ import '../../store/presentation/store_controller.dart';
 import '../../friends/presentation/widgets/friends_popup.dart';
 import '../../notifications/presentation/notification_actions.dart';
 import '../../store/presentation/coin_shop.dart';
+import '../../maestro/presentation/maestro_providers.dart';
+import '../../maestro/presentation/maestro_sheet.dart';
 import 'chip_chat_controller.dart';
 
 /// Opens a chat with Chip: he sits on top making faces at what's said, the
@@ -50,8 +55,12 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
   final _input = TextEditingController();
   final _scroll = ScrollController();
 
+  /// A photo picked to send with the next message.
+  Uint8List? _attached;
+
   static const _starters = [
     'Draw me something to color',
+    'Turn my photo into a coloring page',
     'Tell me a joke',
     'Which world should I try?',
     'How do I play Ludo?',
@@ -76,18 +85,136 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
 
   void _send([String? text]) {
     final message = (text ?? _input.text).trim();
-    if (message.isEmpty) return;
+    final photo = text == null ? _attached : null;
+    if (message.isEmpty && photo == null) return;
     HapticFeedback.selectionClick();
     _input.clear();
-    ref.read(chipChatProvider.notifier).send(message);
+    if (photo != null) setState(() => _attached = null);
+    ref.read(chipChatProvider.notifier).send(message, photo: photo);
     _toBottom();
   }
 
+  /// Picks a photo from the phone to send Chip (to draw, or to talk about).
+  Future<void> _pickPhoto() async {
+    HapticFeedback.selectionClick();
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 82,
+      );
+      if (picked == null) return;
+      final bytes = await picked.readAsBytes();
+      if (mounted) setState(() => _attached = bytes);
+    } catch (_) {
+      if (mounted) showUtopiaToast(context, "Couldn't open that photo.");
+    }
+  }
+
+  /// Off to the coloring screen, where Chip colors picture [pictureId] in
+  /// [style] (in the Doodle world).
+  Future<void> _paint(String pictureId, String style) async {
+    HapticFeedback.selectionClick();
+    final library = ref.read(pictureLibraryProvider);
+    LibraryPicture? picture;
+    try {
+      picture = await library.fetch(pictureId);
+    } catch (_) {}
+    if (!mounted) return;
+    if (picture == null || !picture.ready) {
+      showUtopiaToast(context, "That picture isn't ready to color yet.");
+      return;
+    }
+    await library.keep(picture);
+    if (!mounted) return;
+    final container = ProviderScope.containerOf(context);
+    Navigator.of(context).pop();
+    openInDoodleWorld(
+      container,
+      '/sketchbook/new?kind=coloring'
+      '&page=${Uri.encodeQueryComponent(picture.pageId)}'
+      '&paint=${Uri.encodeQueryComponent(style)}',
+    );
+  }
+
+  /// Takes Chip's real-portrait offer in line [index]: a member's goes
+  /// straight ahead, a first-timer confirms their free one, and anyone
+  /// else sees Chip Maestro.
+  Future<void> _takePortrait(int index, ChipPortraitOffer offer) async {
+    HapticFeedback.selectionClick();
+    if (offer.state == 'locked') {
+      await showMaestroSheet(context);
+      return;
+    }
+    if (offer.state == 'free') {
+      final who = offer.fromPhoto ? 'your photo' : offer.subject;
+      final yes = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Your free real portrait'),
+          content: Text(
+            'Chip has a photo-quality coloring page made that looks just like '
+            '$who. Your first one is free; after that, real portraits come '
+            'with Chip Maestro.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Not now'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Draw it free'),
+            ),
+          ],
+        ),
+      );
+      if (yes != true || !mounted) return;
+    }
+    final ask = await ref.read(chipChatProvider.notifier).takePortrait(index);
+    if (!mounted) return;
+    ref.invalidate(maestroProvider);
+    switch (ask.status) {
+      case 'drawing' || 'ready':
+        _toBottom();
+      case 'maestro':
+        await showMaestroSheet(context);
+      case 'limited':
+        showUtopiaToast(
+          context,
+          ask.month
+              ? "That's this month's real portraits. More when your plan renews!"
+              : "That's all the real portraits for today. More tomorrow!",
+        );
+      case 'off':
+        showUtopiaToast(context, 'Real portraits are coming soon.');
+      case 'photo':
+        showUtopiaToast(context, 'Send Chip the photo again first.');
+      case 'busy':
+        break;
+      default:
+        showUtopiaToast(context, "Couldn't start the portrait. Try again?");
+    }
+  }
+
+  /// The latest picture Chip drew in the chat, up to line [upTo].
+  String? _latestPicture(List<ChipLine> lines, int upTo) {
+    for (var i = upTo; i >= 0; i--) {
+      final id = lines[i].picture?.id;
+      if (id != null) return id;
+    }
+    return null;
+  }
+
+  /// Back down to the newest line. The list runs bottom-up, so the newest
+  /// is at offset 0: it opens there, and pictures loading above never push
+  /// it out of view.
   void _toBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scroll.hasClients) return;
+      if (!_scroll.hasClients || _scroll.offset <= 0) return;
       _scroll.animateTo(
-        _scroll.position.maxScrollExtent,
+        0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -270,6 +397,8 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                         )
                       : ListView.builder(
                           controller: _scroll,
+                          // Newest at the bottom, where the chat opens.
+                          reverse: true,
                           padding: const EdgeInsets.fromLTRB(
                             AppSpacing.md,
                             AppSpacing.sm,
@@ -278,13 +407,21 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                           ),
                           itemCount:
                               chat.lines.length + (chat.thinking ? 1 : 0),
-                          itemBuilder: (context, i) {
-                            if (i == chat.lines.length) {
+                          itemBuilder: (context, at) {
+                            if (chat.thinking && at == 0) {
                               return const _Bubble.typing();
                             }
+                            final i =
+                                chat.lines.length -
+                                1 -
+                                (at - (chat.thinking ? 1 : 0));
                             final line = chat.lines[i];
                             final open = line.open;
                             final picture = line.picture;
+                            final paintStyle = line.paint;
+                            final paintId = paintStyle == null
+                                ? null
+                                : _latestPicture(chat.lines, i);
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -295,6 +432,23 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                                   _PictureCard(
                                     picture: picture,
                                     onColor: _color,
+                                  ),
+                                if (line.portrait case final offer?)
+                                  _GoButton(
+                                    label: switch (offer.state) {
+                                      'free' => 'Draw it for real · Free',
+                                      'maestro' =>
+                                        'Draw it for real · ${offer.left} left',
+                                      _ => 'Draw it for real with Chip Maestro',
+                                    },
+                                    icon: Icons.auto_awesome_rounded,
+                                    onTap: () => _takePortrait(i, offer),
+                                  ),
+                                if (paintStyle != null && paintId != null)
+                                  _GoButton(
+                                    label: 'Color it with Chip',
+                                    icon: Icons.palette_rounded,
+                                    onTap: () => _paint(paintId, paintStyle),
                                   ),
                                 if (open != null &&
                                     _places.containsKey(open) &&
@@ -308,6 +462,11 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                           },
                         ),
                 ),
+                if (_attached case final photo?)
+                  _AttachedPhoto(
+                    bytes: photo,
+                    onRemove: () => setState(() => _attached = null),
+                  ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     AppSpacing.md,
@@ -317,6 +476,12 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                   ),
                   child: Row(
                     children: [
+                      TextFieldTapRegion(
+                        child: _PhotoButton(
+                          onTap: chat.thinking ? null : _pickPhoto,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: TextField(
                           controller: _input,
@@ -334,7 +499,9 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                           style: AppTextStyles.body(),
                           decoration: InputDecoration(
                             counterText: '',
-                            hintText: 'Say something to Chip',
+                            hintText: _attached != null
+                                ? 'Tell Chip about the photo'
+                                : 'Say something to Chip',
                             hintStyle: AppTextStyles.body(
                               color: AppColors.textSecondary,
                             ),
@@ -509,13 +676,25 @@ class _Bubble extends StatelessWidget {
           ),
           child: l == null
               ? const _TypingDots()
-              : Text(
-                  l.text,
-                  style: AppTextStyles.body(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: fromChip ? AppColors.textPrimary : Colors.white,
-                  ),
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (l.photo != null) _SentPhoto(path: l.photo!),
+                    if (l.photo != null && l.text.isNotEmpty)
+                      const SizedBox(height: 8),
+                    if (l.text.isNotEmpty)
+                      Text(
+                        l.text,
+                        style: AppTextStyles.body(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: fromChip
+                              ? AppColors.textPrimary
+                              : Colors.white,
+                        ),
+                      ),
+                  ],
                 ),
         ),
       ),
@@ -608,12 +787,122 @@ class _SendButton extends StatelessWidget {
   }
 }
 
+/// The photo button beside the message box.
+class _PhotoButton extends StatelessWidget {
+  const _PhotoButton({required this.onTap});
+
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Send Chip a photo',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.surfaceElevated,
+            border: Border.all(
+              color: AppColors.glowRing.withValues(alpha: 0.4),
+            ),
+          ),
+          child: Icon(
+            Icons.add_photo_alternate_rounded,
+            color: onTap == null ? AppColors.textSecondary : AppColors.accent,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The photo waiting to go with the next message, with a way to drop it.
+class _AttachedPhoto extends StatelessWidget {
+  const _AttachedPhoto({required this.bytes, required this.onRemove});
+
+  final Uint8List bytes;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 6, AppSpacing.md, 0),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.memory(
+              bytes,
+              width: 56,
+              height: 56,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Photo for Chip',
+              style: AppTextStyles.body(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Remove the photo',
+            onPressed: onRemove,
+            icon: Icon(Icons.close_rounded, color: AppColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A photo the player sent, as it shows in their message.
+class _SentPhoto extends StatelessWidget {
+  const _SentPhoto({required this.path});
+
+  final String path;
+
+  @override
+  Widget build(BuildContext context) {
+    final missing = Container(
+      width: 150,
+      height: 110,
+      color: Colors.white.withValues(alpha: 0.15),
+      child: const Icon(Icons.image_rounded, color: Colors.white, size: 36),
+    );
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: path.isEmpty
+          ? missing
+          : Image.file(
+              File(path),
+              width: 180,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => missing,
+            ),
+    );
+  }
+}
+
 /// A button under Chip's message that takes the player where he said.
 class _GoButton extends StatelessWidget {
-  const _GoButton({required this.label, required this.onTap});
+  const _GoButton({
+    required this.label,
+    required this.onTap,
+    this.icon = Icons.arrow_forward_rounded,
+  });
 
   final String label;
   final VoidCallback onTap;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -628,11 +917,7 @@ class _GoButton extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Opacity(opacity: v.clamp(0, 1), child: child),
         ),
-        child: _ActionPill(
-          label: label,
-          icon: Icons.arrow_forward_rounded,
-          onTap: onTap,
-        ),
+        child: _ActionPill(label: label, icon: icon, onTap: onTap),
       ),
     );
   }

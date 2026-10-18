@@ -14,6 +14,7 @@ import '../data/art_store.dart';
 import '../data/picture_library.dart';
 import '../domain/art_doc.dart';
 import '../domain/coloring_pages.dart';
+import '../domain/line_art.dart';
 import 'art_render.dart';
 import 'studio_toolbar.dart';
 
@@ -878,7 +879,7 @@ class _AskChip extends StatelessWidget {
 }
 
 class _PagePreview extends CustomPainter {
-  _PagePreview(this.page);
+  _PagePreview(this.page) : super(repaint: LineArt.ready);
 
   final ColoringPage page;
   static final _paths = <String, List<Path>>{};
@@ -888,7 +889,7 @@ class _PagePreview extends CustomPainter {
     canvas.drawRect(Offset.zero & size, Paint()..color = kPaper);
     final s = size.width / kPageSize.width;
     canvas.scale(s);
-    ColoringPage.paintLines(canvas, _paths[page.id] ??= page.draw(), kLineInk);
+    paintPageLines(canvas, page, _paths);
   }
 
   @override

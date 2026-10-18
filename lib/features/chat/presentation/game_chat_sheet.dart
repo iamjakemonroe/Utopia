@@ -109,15 +109,17 @@ class _ChatSheetState extends ConsumerState<_ChatSheet> {
     super.dispose();
   }
 
+  /// Back down to the newest message. The list runs bottom-up, so the
+  /// newest is at offset 0: the chat opens there and stays there as
+  /// messages come in.
   void _scrollToEnd() {
-    Future.delayed(const Duration(milliseconds: 120), () {
-      if (_scroll.hasClients) {
-        _scroll.animateTo(
-          _scroll.position.maxScrollExtent + 80,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scroll.hasClients || _scroll.offset <= 0) return;
+      _scroll.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     });
   }
 
@@ -252,10 +254,12 @@ class _ChatSheetState extends ConsumerState<_ChatSheet> {
                       )
                     : ListView.builder(
                         controller: _scroll,
+                        // Newest at the bottom, where the chat opens.
+                        reverse: true,
                         padding: const EdgeInsets.all(AppSpacing.md),
                         itemCount: messages.length,
                         itemBuilder: (context, i) {
-                          final m = messages[i];
+                          final m = messages[messages.length - 1 - i];
                           final line = config.systemLine?.call(m);
                           if (line != null) {
                             return _SystemLine(

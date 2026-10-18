@@ -128,6 +128,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ? ArtKind.coloring
               : ArtKind.sketch,
           pageId: state.uri.queryParameters['page'],
+          paintStyle: state.uri.queryParameters['paint'],
         ),
       ),
       GoRoute(

@@ -13,6 +13,8 @@ import '../../../core/theme/theme_controller.dart';
 import '../../../core/theme/utopia_themes.dart';
 import '../../../core/widgets/utopia_icons.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
+import '../../maestro/data/maestro_repository.dart';
+import '../../maestro/presentation/maestro_providers.dart';
 import '../data/store_repository.dart';
 import '../domain/store_catalog.dart';
 
@@ -182,9 +184,10 @@ class StoreController extends StateNotifier<StoreState> {
       final available = await InAppPurchase.instance.isAvailable();
       Map<String, ProductDetails> products = const {};
       if (available) {
-        final response = await InAppPurchase.instance.queryProductDetails(
-          StoreCatalog.coinProductIds,
-        );
+        final response = await InAppPurchase.instance.queryProductDetails({
+          ...StoreCatalog.coinProductIds,
+          kMaestroProductId,
+        });
         products = {for (final d in response.productDetails) d.id: d};
       }
       if (mounted) {
@@ -278,6 +281,63 @@ class StoreController extends StateNotifier<StoreState> {
     }
   }
 
+  /// Chip Maestro's price in the player's currency, once the store answers.
+  String? get maestroPrice => state.products[kMaestroProductId]?.price;
+
+  /// Starts a Chip Maestro subscription. The plan begins once the server
+  /// has checked it with the store (see [_onPurchases]).
+  Future<void> buyMaestro() async {
+    if (state.busyProduct != null) return;
+    if (!Env.realMoneyStore) {
+      state = state.copyWith(message: 'Chip Maestro is coming soon.');
+      return;
+    }
+    final me = _ref.read(currentUserProvider)?.id;
+    if (me == null) {
+      state = state.copyWith(message: 'Sign in to join Chip Maestro.');
+      return;
+    }
+    final details = state.products[kMaestroProductId];
+    if (details == null) {
+      state = state.copyWith(
+        message: "The store isn't available right now. Try again soon.",
+      );
+      return;
+    }
+    state = state.copyWith(busyProduct: kMaestroProductId, clearMessage: true);
+    try {
+      final started = await InAppPurchase.instance.buyNonConsumable(
+        purchaseParam: PurchaseParam(
+          productDetails: details,
+          applicationUserName: me,
+        ),
+      );
+      if (!started) state = state.copyWith(clearBusy: true);
+    } catch (_) {
+      state = state.copyWith(
+        clearBusy: true,
+        message: "Couldn't start the purchase.",
+      );
+    }
+  }
+
+  /// Brings back a Chip Maestro plan bought on another phone or before a
+  /// reinstall (the store sends it again, and it's checked as usual).
+  Future<void> restore() async {
+    if (!Env.realMoneyStore) {
+      state = state.copyWith(message: 'Nothing to restore yet.');
+      return;
+    }
+    state = state.copyWith(message: 'Looking for your purchases…');
+    try {
+      await InAppPurchase.instance.restorePurchases();
+    } catch (_) {
+      if (mounted) {
+        state = state.copyWith(message: "Couldn't look for your purchases.");
+      }
+    }
+  }
+
   /// Test builds only: the old free top-up, while the store has no products.
   Future<void> _demoCoins(CoinPack pack) async {
     try {
@@ -311,16 +371,19 @@ class StoreController extends StateNotifier<StoreState> {
         StoreCatalog.starterPack,
         ...StoreCatalog.coinPacks,
       ].where((x) => x.id == p.productID).firstOrNull;
+      final maestro = p.productID.startsWith('utopia.maestro.');
       switch (p.status) {
         case PurchaseStatus.purchased || PurchaseStatus.restored:
           // Anything else (an old world bought with money) has nothing to
           // check here; finishing it stops the store sending it again.
+          if (maestro && !await _checkMaestro(p)) continue;
           if (pack != null && !await _check(p, pack)) continue;
         case PurchaseStatus.pending:
           state = state.copyWith(
             clearBusy: true,
-            message:
-                'Your payment is still going through. Your coins arrive as soon as it does.',
+            message: maestro
+                ? 'Your payment is still going through. Chip Maestro starts as soon as it does.'
+                : 'Your payment is still going through. Your coins arrive as soon as it does.',
           );
           continue;
         case PurchaseStatus.error:
@@ -338,6 +401,59 @@ class StoreController extends StateNotifier<StoreState> {
           // Unfinished, the store hands it back later and it's settled then.
         }
       }
+    }
+  }
+
+  /// Has the server check Chip Maestro purchase [p] with the store and start
+  /// the plan. Returns whether it's settled and can be finished.
+  Future<bool> _checkMaestro(PurchaseDetails p) async {
+    final id = Platform.isIOS
+        ? p.purchaseID
+        : p.verificationData.serverVerificationData;
+    if (id == null || id.isEmpty || !_checking.add(id)) return false;
+    try {
+      final status = await _repo.verifyMaestro(
+        platform: Platform.isIOS ? 'ios' : 'android',
+        productId: p.productID,
+        purchaseId: id,
+      );
+      if (!mounted) return false;
+      final fresh = p.status == PurchaseStatus.purchased;
+      switch (status) {
+        case 'active':
+          _ref.invalidate(maestroProvider);
+          state = state.copyWith(
+            clearBusy: true,
+            message: fresh
+                ? 'Welcome to Chip Maestro!'
+                : 'Your Chip Maestro plan is back.',
+          );
+          if (fresh) _ref.read(gameAudioProvider).play(Sfx.purchase);
+          return true;
+        case 'expired':
+          _ref.invalidate(maestroProvider);
+          state = state.copyWith(clearBusy: true);
+          return true;
+        case 'other':
+          state = state.copyWith(
+            clearBusy: true,
+            message:
+                'That Chip Maestro plan belongs to another Utopia account.',
+          );
+          return true;
+        case 'pending':
+          state = state.copyWith(clearBusy: true);
+          return false;
+        default:
+          state = state.copyWith(
+            clearBusy: true,
+            message:
+                'Payment received. Chip Maestro will start the next time you open Utopia.',
+          );
+          return false;
+      }
+    } finally {
+      _checking.remove(id);
     }
   }
 
@@ -444,15 +560,20 @@ class StoreController extends StateNotifier<StoreState> {
     }
   }
 
-  /// A rented world whose time ran out: back to the default world.
+  /// A rented world whose time ran out: back to Twilight if they own it,
+  /// otherwise to their own free world.
   void _leaveExpiredWorld() {
     final current = _ref.read(themeControllerProvider);
     final item = StoreCatalog.themes
         .where((i) => i.id == current.id)
         .firstOrNull;
     if (item == null || state.isOwned(item)) return;
-    _ref.read(themeControllerProvider.notifier).apply(UtopiaThemes.utopiaDark);
-    rememberTheme(UtopiaThemes.utopiaDark.id);
+    final twilight = UtopiaThemes.utopiaTwilight;
+    final home = state.owned.contains(twilight.id)
+        ? twilight
+        : UtopiaThemes.starterFor(_ref.read(currentUserProvider)?.id);
+    _ref.read(themeControllerProvider.notifier).apply(home);
+    rememberTheme(home.id);
     state = state.copyWith(
       message: 'Your time in ${current.name} ran out. Rent it again any time.',
     );

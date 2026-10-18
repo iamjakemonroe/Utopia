@@ -143,7 +143,7 @@ class AurasTab extends ConsumerWidget {
                 for (final aura in Aura.all.where(
                   (a) =>
                       a.tier == tier &&
-                      (!a.retired ||
+                      (!a.notSold ||
                           (mine[a.id]?.isAfter(DateTime.now()) ?? false)),
                 ))
                   _AuraCard(
