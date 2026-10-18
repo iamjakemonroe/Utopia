@@ -12,6 +12,9 @@
 //           Sketchbook. Pages go in a library shared by every player, so
 //           each subject is only drawn once; the drawing carries on in the
 //           background and the app watches the page until it's ready.
+//   doodle - a round of "Chip draws, you guess": Chip's quick doodle of a
+//           Guess My Doodle word, stroke by stroke, for the player to guess.
+//           Each word is drawn once and dealt to every player.
 //
 // The Anthropic key lives only here, as the ANTHROPIC_API_KEY secret.
 // Every model call is counted against the player's daily allowance first
@@ -514,6 +517,7 @@ Deno.serve(async (req: Request) => {
     if (body.action === "draw") return await draw(userClient, user.id, body);
     if (body.action === "paint") return await paint(userClient, body);
     if (body.action === "portrait") return await portrait(user.id, body);
+    if (body.action === "doodle") return await doodle(userClient, user.id);
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
     if (e instanceof Anthropic.RateLimitError) {
@@ -1146,6 +1150,147 @@ async function drawPage(
     });
   } catch (e) {
     console.error("draw", e);
+    await finish({ status: "failed" });
+  }
+}
+
+// ── doodle ─────────────────────────────────────────────────────────────
+
+const DOODLE_EFFORT = Deno.env.get("CHIP_DOODLE_EFFORT") ?? "low";
+
+const DOODLE_SYSTEM = `You draw for Guess My Doodle in Utopia, a mobile game
+app for all ages. You get a word; the player watches your drawing appear one
+stroke at a time, as if drawn by hand, and races to guess the word.
+
+Draw it the way a good player would in a drawing-and-guessing game: a quick,
+bold sketch that someone could guess within a few strokes.
+
+- Strokes appear in the order you list them. First the one or two strokes
+  that say the most (the overall outline of the thing), then the parts that
+  make it unmistakable, then a few small details.
+- 5 to 30 strokes. Each stroke is one line drawn without lifting the pen:
+  SVG path data in absolute coordinates, one M and then only L, Q and C.
+  A closed shape ends back where it started. Whole numbers.
+- The canvas is 1000 by 1000, y pointing down. Keep everything between 100
+  and 900, and fill most of that space.
+- A black pen only: outlines, with no shading, hatching or filled areas.
+- Never write letters, numbers or symbols that spell out or hint at the
+  word: no labels, no writing on signs, no "Zzz".
+- An action or idea becomes a little scene that shows it: "sleep" is a bed
+  with someone tucked in under a moon; "cold" is a person shivering in a
+  scarf beside a snowflake.
+- Everything here suits children.`;
+
+const doodleSchema = {
+  type: "object",
+  properties: {
+    strokes: { type: "array", items: { type: "string" } },
+  },
+  required: ["strokes"],
+  additionalProperties: false,
+};
+
+type Round = { word: string; strokes: string[] };
+
+/**
+ * A round for the player: a doodle of Chip's they haven't had. With none
+ * left to give, Chip draws a new word now (they wait a few seconds), or
+ * deals the one they saw longest ago. While there are words he hasn't
+ * drawn, each round also has him draw one more in the background, so the
+ * deck grows as people play. Drawing counts against the player's allowance.
+ */
+async function doodle(
+  // deno-lint-ignore no-explicit-any
+  db: any,
+  userId: string,
+): Promise<Response> {
+  const service = admin();
+  const pick = async (freshOnly: boolean): Promise<Round | null> => {
+    const { data, error } = await service.rpc("_chip_doodle_pick", {
+      p_user: userId,
+      p_fresh_only: freshOnly,
+    });
+    if (error) throw error;
+    return (data as Round[] | null)?.[0] ?? null;
+  };
+  const drawOne = async (): Promise<void> => {
+    const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "doodle" });
+    if (error) throw error;
+    if (!allowed) return;
+    const { data: word, error: claimError } = await service.rpc("_chip_doodle_claim");
+    if (claimError) throw claimError;
+    if (word) await drawDoodle(service, word as string);
+  };
+  const deal = (r: Round) => json({ word: r.word, strokes: r.strokes });
+
+  const fresh = await pick(true);
+  if (fresh) {
+    await inBackground(drawOne().catch((e) => console.error("doodle", e)));
+    return deal(fresh);
+  }
+  try {
+    await drawOne();
+  } catch (e) {
+    console.error("doodle", e);
+  }
+  const round = await pick(false);
+  if (!round) {
+    return json({ error: "Chip's sketchbook is empty. Try again in a moment!" }, 503);
+  }
+  return deal(round);
+}
+
+/** Chip's doodle of [word], saved to the deck (ready, refused or failed). */
+async function drawDoodle(
+  // deno-lint-ignore no-explicit-any
+  service: any,
+  word: string,
+): Promise<void> {
+  const finish = (fields: Record<string, unknown>) =>
+    service
+      .from("chip_doodles")
+      .update({ ...fields, updated_at: new Date().toISOString() })
+      .eq("word", word);
+  try {
+    // deno-lint-ignore no-explicit-any
+    const params: any = {
+      model: DRAW_MODEL,
+      max_tokens: 16000,
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default",
+      system: [
+        { type: "text", text: DOODLE_SYSTEM, cache_control: { type: "ephemeral" } },
+      ],
+      output_config: {
+        effort: DOODLE_EFFORT,
+        format: { type: "json_schema", schema: doodleSchema },
+      },
+      messages: [{ role: "user", content: `The word: ${word}` }],
+    };
+    const response = await anthropic.beta.messages.stream(params).finalMessage();
+    if (response.stop_reason === "refusal") {
+      await finish({ status: "refused" });
+      return;
+    }
+    if (response.stop_reason !== "end_turn") {
+      console.error("doodle stopped", response.stop_reason);
+      await finish({ status: "failed" });
+      return;
+    }
+    const text = response.content
+      .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("");
+    const strokes = cleanPaths((JSON.parse(text) as Record<string, unknown>).strokes)
+      .slice(0, 40);
+    if (strokes.length < 3) {
+      console.error("doodle too few strokes", word, strokes.length);
+      await finish({ status: "failed" });
+      return;
+    }
+    await finish({ status: "ready", strokes });
+  } catch (e) {
+    console.error("doodle draw", e);
     await finish({ status: "failed" });
   }
 }

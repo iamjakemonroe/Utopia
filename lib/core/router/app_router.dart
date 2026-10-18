@@ -26,6 +26,7 @@ import '../../features/invites/domain/game_invite.dart';
 import '../../features/invites/presentation/join_invite_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/guess_doodle/presentation/guess_doodle_lobby_screen.dart';
+import '../../features/guess_doodle/presentation/chip_doodle_screen.dart';
 import '../../features/guess_doodle/presentation/guess_doodle_screen.dart';
 import '../../features/ludo/presentation/screens/ludo_lobby_screen.dart';
 import '../../features/ludo/presentation/screens/ludo_match_screen.dart';
@@ -276,6 +277,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/guess-my-doodle',
         builder: (context, state) => const GuessDoodleLobbyScreen(),
+      ),
+      // Chip draws, you guess: Guess My Doodle on your own.
+      GoRoute(
+        path: '/guess-my-doodle/chip',
+        builder: (context, state) => const ChipDoodleScreen(),
       ),
       GoRoute(
         path: '/doodle-game/:gameId',

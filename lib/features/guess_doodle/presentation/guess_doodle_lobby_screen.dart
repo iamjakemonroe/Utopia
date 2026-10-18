@@ -131,6 +131,17 @@ class GuessDoodleLobbyScreen extends ConsumerWidget {
                   colors: const [Color(0xFFB79BFF), Color(0xFF7B5CFF)],
                   onTap: () => _openFriends(context, ref),
                 ),
+                const SizedBox(height: AppSpacing.sm),
+                CandyModeButton(
+                  icon: Icons.auto_awesome_rounded,
+                  label: 'Chip draws, you guess',
+                  subtitle: 'Guess his doodles on your own',
+                  colors: const [Color(0xFFFFE082), Color(0xFFFFA726)],
+                  onTap: () {
+                    ref.read(gameAudioProvider).play(Sfx.tap);
+                    context.push('/guess-my-doodle/chip');
+                  },
+                ),
                 const SizedBox(height: AppSpacing.md),
                 const _FactsRow(),
               ],
@@ -166,7 +177,7 @@ class _FactsRow extends StatelessWidget {
     );
     return Row(
       children: [
-        fact(Icons.groups_rounded, AppColors.sky, '2 to 8\nplayers'),
+        fact(Icons.groups_rounded, AppColors.sky, '1 to 8\nplayers'),
         fact(Icons.brush_rounded, const Color(0xFFFF5C9C), 'Draw &\nguess'),
         fact(
           Icons.bolt_rounded,

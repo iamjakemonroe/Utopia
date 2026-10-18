@@ -1,5 +1,5 @@
 // Phone screenshots of the birthday page, the event card and sheet, and
-// the rankings, into test/tool/goldens/. Run:
+// the rankings, and Chip drawing, into test/tool/goldens/. Run:
 // flutter test --run-skipped --update-goldens test/tool/new_screens_sheet_test.dart
 @Tags(['sheet'])
 library;
@@ -21,6 +21,9 @@ import 'package:utopia/features/birthday/presentation/birthday_screen.dart';
 import 'package:utopia/features/events/domain/game_event.dart';
 import 'package:utopia/features/events/presentation/event_widgets.dart';
 import 'package:utopia/features/events/presentation/events_controller.dart';
+import 'package:utopia/features/guess_doodle/data/chip_doodle_repository.dart';
+import 'package:utopia/features/guess_doodle/domain/chip_doodle.dart';
+import 'package:utopia/features/guess_doodle/presentation/chip_doodle_screen.dart';
 import 'package:utopia/features/rankings/data/rankings_repository.dart';
 import 'package:utopia/features/rankings/domain/ranking.dart';
 import 'package:utopia/features/rankings/presentation/rankings_screen.dart';
@@ -55,6 +58,26 @@ final _halloween = GameEvent(
     ),
   ],
 );
+
+/// Chip's real airplane doodle, from the deck.
+class _FakeChipDoodles implements ChipDoodleRepository {
+  @override
+  Future<ChipDoodleRound> round() async => const ChipDoodleRound(
+    word: 'airplane',
+    strokes: [
+      'M150 520 Q150 470 220 465 L780 455 Q860 455 880 500 Q860 545 780 545 L220 540 Q150 540 150 520',
+      'M450 460 L330 200 L400 200 L560 458',
+      'M450 540 L330 820 L400 820 L560 542',
+      'M220 465 L170 320 L230 320 L300 463',
+      'M200 538 L160 620 L210 620 L280 540',
+      'M820 470 Q850 480 860 500 L800 500 Q800 480 820 470',
+      'M330 490 Q330 480 340 480 Q350 480 350 490 Q350 500 340 500 Q330 500 330 490',
+      'M400 490 Q400 480 410 480 Q420 480 420 490 Q420 500 410 500 Q400 500 400 490',
+      'M470 490 Q470 480 480 480 Q490 480 490 490 Q490 500 480 500 Q470 500 470 490',
+      'M600 180 Q620 140 660 160 Q690 120 730 155 Q770 150 760 190 Q700 200 600 180',
+    ],
+  );
+}
 
 final _board = Leaderboard(
   top: [
@@ -104,6 +127,7 @@ Future<void> _phone(
         myBirthdayProvider.overrideWith((ref) async => null),
         eventsProvider.overrideWith((ref) => _Events(ref, [_halloween])),
         leaderboardProvider.overrideWith((ref, key) async => _board),
+        chipDoodleRepositoryProvider.overrideWithValue(_FakeChipDoodles()),
       ],
       child: MaterialApp(debugShowCheckedModeBanner: false, home: child),
     ),
@@ -173,6 +197,28 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/new_rankings.png'),
+    );
+  });
+
+  testWidgets('chip draws', (tester) async {
+    await _phone(tester, const ChipDoodleScreen());
+    // Chip draws for a few seconds; the player tries twice.
+    for (var i = 0; i < 40; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    for (final guess in ['bird', 'airplan']) {
+      await tester.enterText(find.byType(TextField), guess);
+      await tester.testTextInput.receiveAction(TextInputAction.send);
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+    for (var i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.runAsync(GoogleFonts.pendingFonts);
+    await tester.pump(const Duration(milliseconds: 100));
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/new_chip_draws.png'),
     );
   });
 }
