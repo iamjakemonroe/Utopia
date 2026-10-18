@@ -3,9 +3,9 @@ all public domain): the witch's laugh as she crosses the moon, and the
 scream as the wraith rushes out.
 
 Run from the repo root:  python3 tool/recorded_sfx.py
-Writes assets/sfx/hw_cackle.wav (her evil laugh, echoing off the hills and
-sweeping left to right as she flies) and hw_scream.wav (a high, falling
-horror shriek over the scare's boom and string stab, from
+Writes assets/sfx/hw_cackle_1..3.wav (three takes of her cackle, echoing
+off the hills and sweeping left to right as she flies) and hw_scream.wav
+(the scream over the scare's boom and string stab, from
 synth_world_audio.scare_hit). afconvert, built into macOS, decodes the
 sources.
 """
@@ -23,12 +23,9 @@ from synth_world_audio import SR, save, save_stereo, scale, scare_hit  # noqa: E
 
 SOURCES = os.path.join(os.path.dirname(__file__), "sfx_sources")
 
-# The laugh: where it starts in its recording, and its longest.
-LAUGH_AT = 0.08
+# The cackle's takes (start, seconds), each ending where she draws breath.
+TAKES = [0.34, 5.90, 16.68]
 LONGEST = 3.2
-
-# The scream: the recording's second shriek (the higher one).
-SCREAM_AT = 4.35
 
 
 def decode(name):
@@ -86,24 +83,24 @@ def cackle(seg):
 
 
 def scream(x):
-    """The shriek from its first breath, about 2.8 s of it trailing off,
+    """The scream from its first breath, about 2.7 s of it trailing off,
     over the boom and the strings."""
-    a = int(SCREAM_AT * SR)
-    n = int(2.8 * SR)
+    a = int(0.45 * SR)
+    n = int(2.7 * SR)
     voice = array.array("d", x[a:a + n])
     for i in range(n):
         voice[i] *= min(1.0, i / (0.01 * SR), (n - 1 - i) / (0.7 * SR))
     out = scare_hit()
-    add(out, scale(voice, 1.4), at=0.03, sr=SR)
+    add(out, scale(voice, 1.8), at=0.03, sr=SR)
     return delay_reverb(out, sr=SR, taps=((0.07, 0.2), (0.13, 0.12)), feedback=0.15)
 
 
 def main():
-    laugh = take(decode("witch_laugh_mvvoiceacting_223851.mp3"), LAUGH_AT)
-    left, right = cackle(laugh)
-    save_stereo("hw_cackle", left, right, peak=0.85, fade_out=0.6)
-    shriek = decode("horror_shrieks_aderumoro_320740.mp3")
-    save("hw_scream", scream(shriek), peak=0.97, fade_out=0.6)
+    laughs = decode("witch_cackles_tedboothinnit_707058.mp3")
+    for k, start in enumerate(TAKES, start=1):
+        left, right = cackle(take(laughs, start))
+        save_stereo(f"hw_cackle_{k}", left, right, peak=0.85, fade_out=0.6)
+    save("hw_scream", scream(decode("horror_scream_joseppujol_221547.mp3")), peak=0.97, fade_out=0.6)
 
 
 if __name__ == "__main__":

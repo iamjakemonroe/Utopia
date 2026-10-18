@@ -47,6 +47,7 @@ class WorldSoundscape {
   int _note = 2;
 
   static const _thunder = [Sfx.hwThunder1, Sfx.hwThunder2, Sfx.hwThunder3];
+  static const _cackles = [Sfx.hwCackle1, Sfx.hwCackle2, Sfx.hwCackle3];
 
   static const _notes = [
     Sfx.hwNote1,
@@ -142,7 +143,10 @@ class WorldSoundscape {
     }
     if (crossed(prev, now, witch, HalloweenTimeline.cackleAt)) {
       // Not a background sound: as loud as a sound effect.
-      _audio.play(Sfx.hwCackle, volume: (0.6 + 0.3 * night).clamp(0.0, 1.0));
+      _audio.play(
+        _cackles[_rng.nextInt(_cackles.length)],
+        volume: (0.6 + 0.3 * night).clamp(0.0, 1.0),
+      );
     }
     // The scare: the scream and a jolt as the wraith rushes out, sometimes
     // after a swell of dread that cuts to silence first; and now and then
