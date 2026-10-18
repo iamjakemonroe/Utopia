@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,6 +15,7 @@ import 'features/auth/presentation/screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  _addFontLicenses();
 
   final configError = Env.configError;
   if (configError != null) {
@@ -40,6 +43,20 @@ Future<void> main() async {
       child: const UtopiaApp(),
     ),
   );
+}
+
+/// The bundled fonts (assets/google_fonts) are under the SIL Open Font
+/// License, which travels with them.
+void _addFontLicenses() {
+  LicenseRegistry.addLicense(() async* {
+    for (final (family, file) in const [
+      ('Inter', 'Inter-OFL.txt'),
+      ('Space Grotesk', 'SpaceGrotesk-OFL.txt'),
+    ]) {
+      final text = await rootBundle.loadString('assets/google_fonts/$file');
+      yield LicenseEntryWithLineBreaks([family], text);
+    }
+  });
 }
 
 /// Loads the splash logo into the image cache. Never fails startup: if
