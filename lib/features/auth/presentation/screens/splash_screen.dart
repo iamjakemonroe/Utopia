@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/audio/game_audio.dart';
+import '../../../../core/router/app_router.dart' show SplashHandoff;
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/outlined_heading.dart';
@@ -85,7 +86,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // The menu music starts as the app opens up.
     ref.read(gameAudioProvider).setBaseTrack(MusicTrack.menu);
     final signedIn = ref.read(authRepositoryProvider).currentSession != null;
-    // Home takes the player back into any game they left unfinished.
+    SplashHandoff.done = true;
+    // Home takes the player back into any game they left unfinished (or
+    // into a friend's room, when an invite link opened the app).
     context.go(signedIn ? '/home' : '/auth');
     if (kDebugMode) _debugStartRoute();
   }

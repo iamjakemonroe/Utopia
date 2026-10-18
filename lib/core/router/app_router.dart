@@ -20,6 +20,8 @@ import '../../features/chess/presentation/screens/chess_lobby_screen.dart';
 import '../bots/bots.dart';
 import '../../features/chess/presentation/screens/chess_match_screen.dart';
 import '../../features/help/presentation/how_to_play_screen.dart';
+import '../../features/invites/domain/game_invite.dart';
+import '../../features/invites/presentation/join_invite_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/guess_doodle/presentation/guess_doodle_lobby_screen.dart';
 import '../../features/guess_doodle/presentation/guess_doodle_screen.dart';
@@ -62,8 +64,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/splash',
     observers: [PopupTracker.instance],
     refreshListenable: GoRouterRefreshStream(authRepository.onAuthStateChange),
-    redirect: (context, state) =>
-        _redirect(authRepository, state.matchedLocation),
+    redirect: (context, state) => _redirect(authRepository, state),
     routes: [
       GoRoute(
         path: '/splash',
@@ -235,6 +236,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             LudoMatchScreen(matchId: state.pathParameters['matchId']!),
       ),
+      // Invite links (https://utopia.kaivon.app/join?game=ludo&code=...),
+      // opened by the phone straight into the app.
+      GoRoute(
+        path: '/join',
+        builder: (context, state) =>
+            JoinInviteScreen(invite: GameInvite.fromUri(state.uri)),
+      ),
       GoRoute(
         path: '/guess-my-doodle',
         builder: (context, state) => const GuessDoodleLobbyScreen(),
@@ -278,12 +286,27 @@ abstract final class SignInTrip {
   static bool holding = false;
 }
 
-String? _redirect(AuthRepository authRepository, String location) {
+/// Whether the splash has handed off yet. A link that opens the app starts
+/// it at the link instead of the splash.
+abstract final class SplashHandoff {
+  static bool done = false;
+}
+
+String? _redirect(AuthRepository authRepository, GoRouterState state) {
+  final location = state.matchedLocation;
   // The splash plays its intro and then routes itself (see SplashScreen).
   // Redirecting away from it here would skip it before its first frame.
   if (location == '/splash') return null;
 
   final hasSession = authRepository.currentSession != null;
+
+  // An invite opened before the app is ready for it (still starting, or
+  // nobody signed in yet) waits, and is taken up on the way home (below).
+  if (location == '/join' && (!SplashHandoff.done || !hasSession)) {
+    final invite = GameInvite.fromUri(state.uri);
+    if (invite != null) PendingInvite.hold(invite);
+    return SplashHandoff.done ? '/auth' : '/splash';
+  }
 
   if (!hasSession) {
     // Signed-out users may only see the choice screen or the email-link
@@ -297,6 +320,10 @@ String? _redirect(AuthRepository authRepository, String location) {
   // signed in — that's the "save your account" upgrade path for anonymous
   // users, reached explicitly from the home screen banner.
   if (location == '/auth' && SignInTrip.holding) return null;
+  if (location == '/auth' || location == '/home') {
+    final invite = PendingInvite.take();
+    if (invite != null) return invite.location;
+  }
   return location == '/auth' ? '/home' : null;
 }
 

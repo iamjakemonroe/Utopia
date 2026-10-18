@@ -18,6 +18,7 @@ import 'widgets/doodle_chat.dart';
 import 'widgets/doodle_header.dart';
 import 'widgets/doodle_overlays.dart';
 import 'widgets/doodle_tools.dart';
+import '../../invites/domain/game_invite.dart';
 
 /// Name colors, given out in drawing order.
 const _nameColors = [
@@ -200,7 +201,9 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
     final box = context.findRenderObject() as RenderBox?;
     await SharePlus.instance.share(
       ShareParams(
-        text: 'Come play Guess My Doodle with me in Utopia! Game code: $code',
+        text:
+            'Come play Guess My Doodle with me in Utopia! Tap to join, or use '
+            'game code $code: ${GameInvite(InviteGame.doodle, code).link}',
         subject: 'Guess My Doodle in Utopia',
         sharePositionOrigin: box == null
             ? null

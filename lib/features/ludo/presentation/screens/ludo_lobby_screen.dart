@@ -37,7 +37,7 @@ import '../widgets/ludo_setup_widgets.dart';
 import '../../../../core/widgets/ambient_tick.dart';
 
 /// Turns backend errors into something a player can act on.
-String _friendly(Object e) {
+String ludoErrorText(Object e) {
   final text = e.toString();
   if (text.contains('insufficient balance:')) {
     return 'Someone in the room needs more coins for this game.';
@@ -120,7 +120,7 @@ class _LudoLobbyScreenState extends ConsumerState<LudoLobbyScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _searching = false);
-      showUtopiaToast(context, _friendly(e), kind: ToastKind.error);
+      showUtopiaToast(context, ludoErrorText(e), kind: ToastKind.error);
       return;
     }
 
@@ -216,7 +216,7 @@ class _LudoLobbyScreenState extends ConsumerState<LudoLobbyScreen> {
           if (mounted) context.push('/ludo/room/${room.id}');
         } catch (e) {
           if (mounted) {
-            showUtopiaToast(context, _friendly(e), kind: ToastKind.error);
+            showUtopiaToast(context, ludoErrorText(e), kind: ToastKind.error);
           }
         }
       case _JoinRoom(:final code):
@@ -229,7 +229,7 @@ class _LudoLobbyScreenState extends ConsumerState<LudoLobbyScreen> {
           if (mounted) context.push('/ludo/room/$roomId');
         } catch (e) {
           if (mounted) {
-            showUtopiaToast(context, _friendly(e), kind: ToastKind.error);
+            showUtopiaToast(context, ludoErrorText(e), kind: ToastKind.error);
           }
         }
     }

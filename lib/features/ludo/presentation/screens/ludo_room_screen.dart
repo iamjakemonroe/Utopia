@@ -29,6 +29,7 @@ import '../controllers/ludo_match_controller.dart';
 import '../widgets/ludo_pieces.dart';
 import '../widgets/ludo_setup_widgets.dart';
 import 'ludo_lobby_screen.dart';
+import '../../../invites/domain/game_invite.dart';
 
 /// A friends' room: the code to share, a seat for each color filling up as
 /// friends join, and the host's start button. Everyone is taken to the game
@@ -146,7 +147,9 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
     final box = context.findRenderObject() as RenderBox?;
     await SharePlus.instance.share(
       ShareParams(
-        text: 'Come play Ludo with me in Utopia! Room code: $code',
+        text:
+            'Come play Ludo with me in Utopia! Tap to join, or use room code '
+            '$code: ${GameInvite(InviteGame.ludo, code).link}',
         subject: 'Ludo in Utopia',
         sharePositionOrigin: box == null
             ? null

@@ -21,7 +21,7 @@ import '../../ludo/presentation/screens/ludo_lobby_screen.dart' show CodeTiles;
 import '../data/doodle_game_repository.dart';
 
 /// Server errors in words a player can use.
-String _friendly(Object e) {
+String doodleErrorText(Object e) {
   final text = e.toString();
   if (text.contains('no game with that code')) {
     return "We couldn't find that game. Check the code.";
@@ -48,7 +48,7 @@ class GuessDoodleLobbyScreen extends ConsumerWidget {
       if (context.mounted) context.push('/doodle-game/$id');
     } catch (e) {
       if (context.mounted) {
-        showUtopiaToast(context, _friendly(e), kind: ToastKind.error);
+        showUtopiaToast(context, doodleErrorText(e), kind: ToastKind.error);
       }
     }
   }
@@ -76,7 +76,7 @@ class GuessDoodleLobbyScreen extends ConsumerWidget {
       if (context.mounted) context.push('/doodle-game/$id');
     } catch (e) {
       if (context.mounted) {
-        showUtopiaToast(context, _friendly(e), kind: ToastKind.error);
+        showUtopiaToast(context, doodleErrorText(e), kind: ToastKind.error);
       }
     }
   }
