@@ -44,7 +44,7 @@ class _AuraSheet extends ConsumerStatefulWidget {
 }
 
 class _AuraSheetState extends ConsumerState<_AuraSheet> {
-  AuraLength _length = AuraLength.days3;
+  AuraLength _length = AuraLength.week;
   bool _busy = false;
   int _celebrate = 0;
 
@@ -220,7 +220,7 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
                     Row(
                       children: [
                         for (final (i, length)
-                            in AuraLength.values.indexed) ...[
+                            in AuraLength.offered.indexed) ...[
                           if (i > 0) const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: _LengthTile(

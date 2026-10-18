@@ -22,8 +22,8 @@ import '../../../../core/widgets/utopia_world.dart';
 import '../../../auras/domain/aura.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../friends/presentation/widgets/friends_popup.dart';
+import '../../../help/presentation/help_sheet.dart';
 import '../../../notifications/data/notification_repository.dart';
-import '../../../store/presentation/coin_shop.dart';
 
 /// Slides the side menu in from the left with a springy overshoot, items
 /// popping in one after another, over a blurred backdrop.
@@ -83,11 +83,6 @@ class _SideMenu extends ConsumerWidget {
       context.push(location);
     }
 
-    // A report says which screen it came from.
-    final from = Uri.encodeQueryComponent(
-      currentPath(ref.read(goRouterProvider)),
-    );
-
     final items = <_MenuItem>[
       _MenuItem(
         Icons.person_rounded,
@@ -109,13 +104,6 @@ class _SideMenu extends ConsumerWidget {
         () => go('/store'),
       ),
       _MenuItem(
-        Icons.auto_awesome_rounded,
-        'Auras',
-        const Color(0xFFFF8A3D),
-        () => go('/store?tab=auras'),
-        badge: 'NEW',
-      ),
-      _MenuItem(
         Icons.collections_bookmark_rounded,
         'Collection',
         AppColors.mint,
@@ -133,10 +121,6 @@ class _SideMenu extends ConsumerWidget {
           Navigator.of(context).pop();
           showFriendsPopup(context);
         }),
-      _MenuItem(Icons.add_circle_rounded, 'Get coins', AppColors.coinGold, () {
-        Navigator.of(context).pop();
-        showCoinShop(context);
-      }),
       _MenuItem(
         Icons.settings_rounded,
         'Settings',
@@ -144,22 +128,13 @@ class _SideMenu extends ConsumerWidget {
         () => go('/settings'),
       ),
       _MenuItem(
-        Icons.menu_book_rounded,
-        'How to play',
+        Icons.support_rounded,
+        'Help & feedback',
         const Color(0xFFFF8A3D),
-        () => go('/how-to-play'),
-      ),
-      _MenuItem(
-        Icons.bug_report_rounded,
-        'Report a bug',
-        AppColors.coral,
-        () => go('/report-bug?from=$from'),
-      ),
-      _MenuItem(
-        Icons.lightbulb_rounded,
-        'Suggest a feature',
-        AppColors.coinGold,
-        () => go('/report-bug?kind=idea&from=$from'),
+        () {
+          Navigator.of(context).pop();
+          showHelpSheet(context, from: currentPath(ref.read(goRouterProvider)));
+        },
       ),
       if (isGuest)
         _MenuItem(

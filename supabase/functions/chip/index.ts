@@ -202,7 +202,7 @@ What Utopia has today:
   themes (12 colors, each at dawn, dusk and midnight). Utopia Calm, Warm
   and Adventure are free (every new player starts in one of them, picked
   at random), and so are Noir and Azure Dusk; the rest, Utopia Twilight
-  included, are bought or rented with coins for 3 days, a week or a month.
+  included, are bought with coins for good or rented for a week.
   Their Collection (side menu) has everything they own: change world or
   frame there.
 - Events: some worlds and frames are never sold, only earned free in an
@@ -216,7 +216,7 @@ What Utopia has today:
   year) in Settings. On their birthday they get a world nobody else ever
   sees, a party in the sky with a cake and fireworks, and the Birthday
   Party frame, all day; you wear a party hat. Wish them happy birthday.
-- Auras: frames worn around your picture for 3 days, a week or a month,
+- Auras: frames worn around your picture for a week or a month,
   from common to rare, legendary and Mythic. Six make a set with a world,
   and each set changes you (Chip) too:
   - Dragon Coil in the Dojo: the world's dragon flies free, and you put on

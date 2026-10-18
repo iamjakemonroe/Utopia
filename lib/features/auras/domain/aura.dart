@@ -26,8 +26,15 @@ extension AuraTierInfo on AuraTier {
   };
 }
 
-/// How long an aura can be bought for.
-enum AuraLength { days3, week, month }
+/// How long an aura can be bought for. Only [offered] are sold now (the
+/// server still reports a 3-day price).
+enum AuraLength {
+  days3,
+  week,
+  month;
+
+  static const offered = [week, month];
+}
 
 extension AuraLengthInfo on AuraLength {
   int get days => switch (this) {

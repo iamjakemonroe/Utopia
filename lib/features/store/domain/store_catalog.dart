@@ -123,6 +123,7 @@ class StoreCatalog {
       fallbackPrice: r'$49.99',
       art: 4,
     ),
+    // The biggest pack: nothing above $99.99.
     CoinPack(
       id: 'utopia.coins.hoard',
       name: "Dragon's Hoard",
@@ -130,22 +131,6 @@ class StoreCatalog {
       bonusPercent: 60,
       fallbackPrice: r'$99.99',
       art: 5,
-    ),
-    CoinPack(
-      id: 'utopia.coins.treasury',
-      name: 'Sky Treasury',
-      coins: 3500000,
-      bonusPercent: 75,
-      fallbackPrice: r'$199.99',
-      art: 6,
-    ),
-    CoinPack(
-      id: 'utopia.coins.kingdom',
-      name: 'Sky Kingdom',
-      coins: 8000000,
-      bonusPercent: 100,
-      fallbackPrice: r'$399.99',
-      art: 7,
       badge: 'Best value',
     ),
   ];
@@ -387,12 +372,8 @@ class StoreCatalog {
   static int? worldRentPrice(String worldId, int days) {
     if (freeThemeIds.contains(worldId)) return null;
     final premium = premiumWorldIds.contains(worldId);
-    return switch (days) {
-      3 => premium ? 2500 : 1200,
-      7 => premium ? 6000 : 3000,
-      30 => premium ? 20000 : 10000,
-      _ => null,
-    };
+    // A week at a time (the server agrees, see _world_rent_price).
+    return days == 7 ? (premium ? 6000 : 3000) : null;
   }
 
   static StoreItem? ludoSet(String id) =>

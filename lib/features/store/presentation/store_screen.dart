@@ -396,7 +396,7 @@ class _WorldsTab extends ConsumerWidget {
                               style: AppTextStyles.display(fontSize: 18),
                             ),
                             Text(
-                              'All ${UtopiaThemes.all.where((t) => UtopiaThemes.sold(t.id)).length} worlds, now and forever.',
+                              'All ${UtopiaThemes.utopia.where((t) => UtopiaThemes.sold(t.id)).length} worlds and ${UtopiaThemes.colors.length} colors, now and forever.',
                               style: AppTextStyles.body(
                                 fontSize: 13,
                                 color: AppColors.textSecondary,
@@ -854,10 +854,9 @@ class _RentWorld extends ConsumerStatefulWidget {
 }
 
 class _RentWorldState extends ConsumerState<_RentWorld> {
-  int _days = 3;
+  /// Worlds are rented by the week (or bought for good).
+  static const _days = 7;
   bool _busy = false;
-
-  static const _lengths = [(3, '3 days'), (7, '1 week'), (30, '1 month')];
 
   Future<void> _rent() async {
     final theme = widget.theme;
@@ -881,7 +880,7 @@ class _RentWorldState extends ConsumerState<_RentWorld> {
     if (here) {
       showUtopiaToast(
         context,
-        'More time in ${theme.name}',
+        'A week more in ${theme.name}',
         kind: ToastKind.success,
         icon: Icons.timer_rounded,
       );
@@ -909,7 +908,7 @@ class _RentWorldState extends ConsumerState<_RentWorld> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 until == null
-                    ? 'or rent it with coins'
+                    ? 'or rent it for a week'
                     : 'Rented · ${auraTimeLeft(until)}',
                 style: AppTextStyles.body(
                   fontSize: 12,
@@ -926,61 +925,10 @@ class _RentWorldState extends ConsumerState<_RentWorld> {
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            for (final (i, (days, label)) in _lengths.indexed) ...[
-              if (i > 0) const SizedBox(width: 8),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => setState(() => _days = days),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.fromLTRB(10, 8, 6, 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      color: days == _days
-                          ? theme.accent.withValues(alpha: 0.35)
-                          : Colors.black.withValues(alpha: 0.2),
-                      border: Border.all(
-                        color: days == _days
-                            ? theme.trim
-                            : Colors.white.withValues(alpha: 0.12),
-                        width: days == _days ? 1.8 : 1,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          label,
-                          style: AppTextStyles.body(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: theme.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        CoinAmount(
-                          StoreCatalog.worldRentPrice(theme.id, days) ?? 0,
-                          size: 12,
-                          // Pale gold vanishes on a paper world's panel.
-                          color: theme.light
-                              ? const Color(0xFF9A6A00)
-                              : AppColors.coinGoldBright,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
         PrimaryButton(
           label: until == null
-              ? 'Rent for ${_lengths.firstWhere((l) => l.$1 == _days).$2} · ${formatCoins(price)}'
-              : 'Add ${_lengths.firstWhere((l) => l.$1 == _days).$2} · ${formatCoins(price)}',
+              ? 'Rent for a week · ${formatCoins(price)}'
+              : 'Add a week · ${formatCoins(price)}',
           color: AppColors.success,
           isLoading: _busy,
           onPressed: _busy ? null : _rent,

@@ -128,7 +128,7 @@ class AurasTab extends ConsumerWidget {
                     auraPrice(
                       prices,
                       Aura.all.firstWhere((a) => a.tier == tier),
-                      AuraLength.days3,
+                      AuraLength.week,
                     ),
                     size: 13,
                     color: AppColors.coinGoldBright,
@@ -155,7 +155,7 @@ class AurasTab extends ConsumerWidget {
                     aura: aura,
                     profile: profile,
                     name: name,
-                    price: auraPrice(prices, aura, AuraLength.days3),
+                    price: auraPrice(prices, aura, AuraLength.week),
                     ownedUntil: mine[aura.id],
                     wearing: wearing?.id == aura.id,
                   ),

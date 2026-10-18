@@ -99,10 +99,13 @@ class _WorldsTab extends ConsumerWidget {
       return null;
     }
 
-    final worlds = [
-      for (final t in [...UtopiaThemes.secret, ...UtopiaThemes.all])
+    List<(UtopiaTheme, _Hold)> held(List<UtopiaTheme> themes) => [
+      for (final t in themes)
         if (hold(t) case final h?) (t, h),
     ]..sort((a, b) => a.$2.index.compareTo(b.$2.index));
+    // Worlds and colors apart: a color is a recolor, not a world of its own.
+    final worlds = held([...UtopiaThemes.secret, ...UtopiaThemes.utopia]);
+    final colors = held(UtopiaThemes.colors);
     final waiting = [
       for (final s in seasonal)
         if (s.isWorld && store.rentedUntil(s.itemId) == null) s,
@@ -127,6 +130,25 @@ class _WorldsTab extends ConsumerWidget {
             ],
           ),
         ),
+        if (colors.isNotEmpty) ...[
+          const _Header(
+            title: 'Your colors',
+            subtitle: 'Utopia recolored, at dawn, dusk or midnight.',
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            sliver: SliverGrid.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: AppSpacing.sm,
+              crossAxisSpacing: AppSpacing.sm,
+              childAspectRatio: 0.78,
+              children: [
+                for (final (theme, h) in colors)
+                  _WorldCard(theme: theme, hold: h),
+              ],
+            ),
+          ),
+        ],
         if (waiting.isNotEmpty) ...[
           const _Header(
             title: 'Back next season',
