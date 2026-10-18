@@ -37,6 +37,7 @@ import '../../../ludo/domain/ludo_engine.dart';
 import '../../../ludo/presentation/controllers/ludo_match_controller.dart';
 import '../../../ludo/presentation/widgets/ludo_pieces.dart';
 import '../../../rankings/domain/ranking.dart';
+import '../../../rankings/presentation/rankings_widgets.dart';
 import '../../../store/domain/store_catalog.dart';
 import '../../../store/presentation/coin_shop.dart';
 import '../username_dialog.dart';
@@ -47,10 +48,11 @@ final _myStatsProvider = FutureProvider.autoDispose
       (ref, userId) => ref.watch(ludoRepositoryProvider).playerStats(userId),
     );
 
-/// One finished game, chess or Ludo, from my side.
+/// One finished game (chess, checkers or Ludo) from my side.
 class _RecentGame {
   const _RecentGame({
-    required this.isChess,
+    required this.game,
+    this.ratingDelta,
     required this.endedAt,
     required this.won,
     required this.draw,
@@ -59,7 +61,11 @@ class _RecentGame {
     required this.opponents,
   });
 
-  final bool isChess;
+  /// 'chess', 'checkers' or 'ludo'.
+  final String game;
+
+  /// How it moved my rating, when it was rated.
+  final int? ratingDelta;
   final DateTime endedAt;
   final bool won;
   final bool draw;
@@ -75,7 +81,7 @@ final _recentGamesProvider = FutureProvider.autoDispose
       final chess = await client
           .from('matches')
           .select(
-            'ended_at, created_at, stake, winner_id, result, player_white, player_black',
+            'id, game, ended_at, created_at, stake, winner_id, result, player_white, player_black',
           )
           .eq('status', 'completed')
           .order('ended_at', ascending: false)
@@ -87,6 +93,21 @@ final _recentGamesProvider = FutureProvider.autoDispose
           .order('ended_at', ascending: false)
           .limit(8);
 
+      // What each rated game did to my rating.
+      final ids = [for (final row in chess) row['id'] as String];
+      final changes = ids.isEmpty
+          ? const <Map<String, dynamic>>[]
+          : await client
+                .from('rating_changes')
+                .select('match_id, before, after')
+                .eq('user_id', me)
+                .inFilter('match_id', ids);
+      final delta = {
+        for (final c in changes)
+          c['match_id'] as String:
+              (c['after'] as num).toInt() - (c['before'] as num).toInt(),
+      };
+
       DateTime when(Map row) =>
           DateTime.tryParse(
             (row['ended_at'] ?? row['created_at']) as String,
@@ -97,7 +118,8 @@ final _recentGamesProvider = FutureProvider.autoDispose
         for (final row in chess)
           if (row['result'] != 'aborted')
             _RecentGame(
-              isChess: true,
+              game: row['game'] == 'checkers' ? 'checkers' : 'chess',
+              ratingDelta: delta[row['id']],
               endedAt: when(row),
               won: row['winner_id'] == me,
               draw: row['winner_id'] == null,
@@ -110,7 +132,7 @@ final _recentGamesProvider = FutureProvider.autoDispose
             ),
         for (final row in ludo)
           _RecentGame(
-            isChess: false,
+            game: 'ludo',
             endedAt: when(row),
             won: row['winner_id'] == me,
             draw: row['winner_id'] == null,
@@ -291,13 +313,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    Center(
-                      child: _StatusBadge(
-                        isGuest: isGuest,
-                        since: DateTime.tryParse(
-                          stats?['member_since'] as String? ?? '',
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        _StatusBadge(
+                          isGuest: isGuest,
+                          since: DateTime.tryParse(
+                            stats?['member_since'] as String? ?? '',
+                          ),
                         ),
-                      ),
+                        _BestRank(stats: stats),
+                      ],
                     ),
                     if (isGuest) ...[
                       const SizedBox(height: AppSpacing.md),
@@ -698,21 +726,22 @@ class _StatsRow extends StatelessWidget {
           checkersPlayed: _n('checkers_played'),
           checkersWon: _n('checkers_won'),
         ),
+        const SizedBox(height: AppSpacing.lg),
+        const _SectionTitle(icon: Icons.leaderboard_rounded, text: 'Ranks'),
         const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            _RatingTile(
-              game: 'chess',
-              label: 'Chess',
-              rating: (stats?['chess_rating'] as num?)?.toInt(),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            _RatingTile(
-              game: 'checkers',
-              label: 'Checkers',
-              rating: (stats?['checkers_rating'] as num?)?.toInt(),
-            ),
-          ],
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final (i, game) in rankedGames.indexed) ...[
+                if (i > 0) const SizedBox(width: AppSpacing.sm),
+                _RatingTile(
+                  game: game,
+                  rating: (stats?['${game}_rating'] as num?)?.toInt(),
+                ),
+              ],
+            ],
+          ),
         ),
       ],
     );
@@ -888,24 +917,19 @@ class _CheckersDiscArt extends CustomPainter {
   bool shouldRepaint(covariant _CheckersDiscArt old) => false;
 }
 
-/// A game's rating and tier; tap for the rankings.
+/// A game's rank: its tier badge and rating; tap for the rankings.
 class _RatingTile extends StatelessWidget {
-  const _RatingTile({
-    required this.game,
-    required this.label,
-    required this.rating,
-  });
+  const _RatingTile({required this.game, required this.rating});
 
   final String game;
-  final String label;
 
-  /// Null until they've played a rated (online) game.
+  /// Null until they've played a rated game.
   final int? rating;
 
   @override
   Widget build(BuildContext context) {
     final r = rating;
-    final tier = r == null ? null : RankTier.of(r);
+    final tier = RankTier.of(r ?? 1000);
     return Expanded(
       child: GestureDetector(
         onTap: () => context.push('/rankings?game=$game'),
@@ -913,40 +937,82 @@ class _RatingTile extends StatelessWidget {
           borderRadius: 20,
           depth: 3,
           borderWidth: 1.5,
-          padding: const EdgeInsets.fromLTRB(10, 10, 4, 10),
-          child: Row(
+          tint: r == null ? null : tier.color,
+          padding: const EdgeInsets.fromLTRB(6, 12, 6, 10),
+          child: Column(
             children: [
-              GlossyBadge(
-                icon: Icons.military_tech_rounded,
-                color: tier?.color ?? AppColors.textSecondary,
-                size: 34,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tier == null ? label : '$label · ${tier.label}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    Text(
-                      r == null ? 'Unrated' : '$r',
-                      style: AppTextStyles.display(
-                        fontSize: r == null ? 16 : 20,
-                      ),
-                    ),
-                  ],
+              TierEmblem(tier: tier, size: 44, dim: r == null),
+              const SizedBox(height: 6),
+              Text(
+                rankedGameName(game),
+                style: AppTextStyles.body(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+              Text(
+                r == null ? 'Unrated' : '$r',
+                style: AppTextStyles.display(fontSize: r == null ? 15 : 20),
+              ),
+              Text(
+                r == null ? 'Play online' : tier.label,
+                style: AppTextStyles.body(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: r == null ? AppColors.textSecondary : tier.color,
+                ),
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Their best rank anywhere, by their name: "Gold in Chess".
+class _BestRank extends StatelessWidget {
+  const _BestRank({required this.stats});
+
+  final Map<String, dynamic>? stats;
+
+  @override
+  Widget build(BuildContext context) {
+    String? best;
+    var top = 0;
+    for (final game in rankedGames) {
+      final r = (stats?['${game}_rating'] as num?)?.toInt();
+      if (r != null && r > top) {
+        top = r;
+        best = game;
+      }
+    }
+    if (best == null) return const SizedBox.shrink();
+    final tier = RankTier.of(top);
+    return GestureDetector(
+      onTap: () => context.push('/rankings?game=$best'),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(4, 3, 10, 3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: tier.color.withValues(alpha: 0.15),
+          border: Border.all(color: tier.color.withValues(alpha: 0.6)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TierEmblem(tier: tier, size: 20),
+            const SizedBox(width: 5),
+            Text(
+              '${tier.label} in ${rankedGameName(best)}',
+              style: AppTextStyles.body(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: tier.color,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1223,8 +1289,9 @@ class _RecentRow extends ConsumerWidget {
         : game.won
         ? ('Won', AppColors.success)
         : ('Lost', AppColors.error);
-    final prize =
-        game.players * game.stake - (game.players * game.stake * 500) ~/ 10000;
+    // There's no house cut: the winner takes the whole pot.
+    final prize = game.players * game.stake;
+    final delta = game.ratingDelta;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -1233,17 +1300,22 @@ class _RecentRow extends ConsumerWidget {
           SizedBox.square(
             dimension: 34,
             child: Center(
-              child: game.isChess
-                  ? ChessPieceArt(
-                      type: PieceType.knight,
-                      finish: ChessPieceStyle.byId('classic').white,
-                      size: 32,
-                    )
-                  : const _LudoTokenArt(
-                      setId: 'classic',
-                      color: LudoColor.yellow,
-                      size: 24,
-                    ),
+              child: switch (game.game) {
+                'chess' => ChessPieceArt(
+                  type: PieceType.knight,
+                  finish: ChessPieceStyle.byId('classic').white,
+                  size: 32,
+                ),
+                'checkers' => const SizedBox.square(
+                  dimension: 28,
+                  child: CustomPaint(painter: _CheckersDiscArt()),
+                ),
+                _ => const _LudoTokenArt(
+                  setId: 'classic',
+                  color: LudoColor.yellow,
+                  size: 24,
+                ),
+              },
             ),
           ),
           const SizedBox(width: 10),
@@ -1251,12 +1323,41 @@ class _RecentRow extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: AppTextStyles.body(
-                    fontWeight: FontWeight.w900,
-                    color: color,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      label,
+                      style: AppTextStyles.body(
+                        fontWeight: FontWeight.w900,
+                        color: color,
+                      ),
+                    ),
+                    if (delta != null) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color:
+                              (delta >= 0 ? AppColors.success : AppColors.error)
+                                  .withValues(alpha: 0.18),
+                        ),
+                        child: Text(
+                          '${delta >= 0 ? '+' : ''}$delta rating',
+                          style: AppTextStyles.body(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: delta >= 0
+                                ? AppColors.success
+                                : AppColors.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 Text(
                   vs,

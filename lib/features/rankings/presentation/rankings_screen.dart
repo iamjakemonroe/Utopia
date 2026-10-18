@@ -22,7 +22,7 @@ import '../data/rankings_repository.dart';
 import '../domain/ranking.dart';
 import 'rankings_widgets.dart';
 
-/// The chess and checkers boards. At the top, the player: their tier badge,
+/// The chess, checkers and Guess My Doodle boards. At the top, the player: their tier badge,
 /// rating (and how it's moved this week), their rating line and record,
 /// and the tier ladder. Then the board: the top three on a podium and
 /// everyone after, worldwide or among friends, with the player's own place
@@ -37,7 +37,8 @@ class RankingsScreen extends StatefulWidget {
 }
 
 class _RankingsScreenState extends State<RankingsScreen> {
-  late String _game = rankedGames[widget.initialTab.clamp(0, 1)];
+  late String _game =
+      rankedGames[widget.initialTab.clamp(0, rankedGames.length - 1)];
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +81,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
   }
 }
 
-String _gameName(String game) => game == 'checkers' ? 'Checkers' : 'Chess';
+String _gameName(String game) => rankedGameName(game);
 
 class _Board extends ConsumerStatefulWidget {
   const _Board({super.key, required this.game});
@@ -302,6 +303,10 @@ class _GameSwitch extends StatelessWidget {
               dimension: 24,
               child: CustomPaint(painter: _DiscArt()),
             ),
+          ),
+          tab(
+            'doodle',
+            const Icon(Icons.brush_rounded, size: 22, color: Color(0xFFFF6FAE)),
           ),
         ],
       ),
@@ -679,16 +684,21 @@ class _NobodyYet extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Play $kGamesToRank online games to get on the board. '
-                'The top spot is waiting!',
+                game == 'doodle'
+                    ? 'Play $kGamesToRank public games to the end to get on '
+                          'the board. The top spot is waiting!'
+                    : 'Play $kGamesToRank online games to get on the board. '
+                          'The top spot is waiting!',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
               const SizedBox(height: AppSpacing.md),
               PrimaryButton(
-                label: 'Play ${_gameName(game).toLowerCase()} online',
+                label: game == 'doodle'
+                    ? 'Play Guess My Doodle'
+                    : 'Play ${_gameName(game).toLowerCase()} online',
                 color: AppColors.success,
-                onPressed: () => context.push('/$game'),
+                onPressed: () => context.push(rankedGameRoute(game)),
               ),
             ],
           ),

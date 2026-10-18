@@ -126,7 +126,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/rankings',
         builder: (context, state) => RankingsScreen(
-          initialTab: state.uri.queryParameters['game'] == 'checkers' ? 1 : 0,
+          initialTab: switch (state.uri.queryParameters['game']) {
+            'checkers' => 1,
+            'doodle' => 2,
+            _ => 0,
+          },
         ),
       ),
       GoRoute(

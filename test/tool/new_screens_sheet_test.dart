@@ -1,5 +1,5 @@
 // Phone screenshots of the birthday page, the event card and sheet, and
-// the rankings, and Chip drawing, into test/tool/goldens/. Run:
+// the rankings, Chip drawing and the profile, into test/tool/goldens/. Run:
 // flutter test --run-skipped --update-goldens test/tool/new_screens_sheet_test.dart
 @Tags(['sheet'])
 library;
@@ -24,6 +24,12 @@ import 'package:utopia/features/events/presentation/events_controller.dart';
 import 'package:utopia/features/guess_doodle/data/chip_doodle_repository.dart';
 import 'package:utopia/features/guess_doodle/domain/chip_doodle.dart';
 import 'package:utopia/features/guess_doodle/presentation/chip_doodle_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:utopia/core/profiles/profile_providers.dart';
+import 'package:utopia/features/coins/presentation/providers/coin_balance_provider.dart';
+import 'package:utopia/features/ludo/data/ludo_repository.dart';
+import 'package:utopia/features/ludo/presentation/controllers/ludo_match_controller.dart';
+import 'package:utopia/features/profile/presentation/screens/profile_screen.dart';
 import 'package:utopia/features/rankings/data/rankings_repository.dart';
 import 'package:utopia/features/rankings/domain/ranking.dart';
 import 'package:utopia/features/rankings/presentation/rankings_screen.dart';
@@ -100,6 +106,25 @@ final _history = [
       DateTime.now().subtract(Duration(days: 11 - i)),
     ),
 ];
+
+class _FakeLudo implements LudoRepository {
+  @override
+  Future<Map<String, dynamic>> playerStats(String userId) async => {
+    'ludo_played': 14,
+    'ludo_won': 6,
+    'chess_played': 22,
+    'chess_won': 13,
+    'checkers_played': 9,
+    'checkers_won': 4,
+    'chess_rating': 1342,
+    'checkers_rating': 1118,
+    'doodle_rating': null,
+    'member_since': '2026-09-02T10:00:00Z',
+  };
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 final _board = Leaderboard(
   top: [
@@ -294,6 +319,71 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/new_legend_badge.png'),
+    );
+  });
+
+  testWidgets('profile', (tester) async {
+    tester.view.physicalSize = const Size(1290, 2796);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    SharedPreferences.setMockInitialValues({
+      'sound.sfx': false,
+      'sound.music': false,
+    });
+    final prefs = await SharedPreferences.getInstance();
+    // No Supabase here: recent games shows its empty state.
+    const me = User(
+      id: 'me',
+      appMetadata: {},
+      userMetadata: {},
+      aud: 'authenticated',
+      createdAt: '2026-09-02T10:00:00Z',
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          currentUserProvider.overrideWithValue(me),
+          profileByIdProvider.overrideWith(
+            (ref, id) async => {
+              'id': id,
+              'display_name': 'Jake',
+              'username': 'jakem',
+              'avatar_seed': 7,
+            },
+          ),
+          ludoRepositoryProvider.overrideWithValue(_FakeLudo()),
+          coinBalanceProvider.overrideWith((ref) => Stream.value(48200)),
+        ],
+        child: const MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: ProfileScreen(),
+        ),
+      ),
+    );
+    await tester.runAsync(() async {
+      final artifacts = File(Platform.resolvedExecutable).parent.parent.parent;
+      final icons = File(
+        '${artifacts.path}/material_fonts/MaterialIcons-Regular.otf',
+      ).readAsBytesSync();
+      await (FontLoader(
+        'MaterialIcons',
+      )..addFont(Future.value(ByteData.sublistView(icons)))).load();
+      await GoogleFonts.pendingFonts();
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    });
+    await tester.pump(const Duration(milliseconds: 1500));
+    await tester.runAsync(GoogleFonts.pendingFonts);
+    await tester.pump(const Duration(milliseconds: 100));
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/new_profile.png'),
+    );
+    await tester.drag(find.byType(ListView).first, const Offset(0, -1100));
+    await tester.pump(const Duration(milliseconds: 800));
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/new_profile_ranks.png'),
     );
   });
 }

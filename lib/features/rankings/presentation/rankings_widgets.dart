@@ -1131,10 +1131,12 @@ Future<void> showTierGuide(BuildContext context) {
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                'Everyone starts at 1000 in chess and in checkers. Win an '
-                'online game and your rating goes up; lose and it goes down. '
-                'Beating someone rated higher earns more. After '
-                '$kGamesToRank games you get a place on the board.',
+                'Everyone starts at 1000 in chess, checkers and Guess My '
+                'Doodle. Win an online game and your rating goes up; lose '
+                'and it goes down. Beating someone rated higher earns more. '
+                'After $kGamesToRank games you get a place on the board.\n\n'
+                'Guess My Doodle counts public games played to the end, '
+                'ranking everyone by their final score.',
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
               const SizedBox(height: AppSpacing.md),

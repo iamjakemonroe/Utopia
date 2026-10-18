@@ -3,8 +3,20 @@ import 'dart:ui';
 /// Players are ranked once they've played this many rated games.
 const kGamesToRank = 5;
 
-/// The games with a rating: online chess and checkers.
-const rankedGames = ['chess', 'checkers'];
+/// The games with a rating: online chess and checkers, and public Guess My
+/// Doodle games.
+const rankedGames = ['chess', 'checkers', 'doodle'];
+
+/// A ranked game's name.
+String rankedGameName(String game) => switch (game) {
+  'checkers' => 'Checkers',
+  'doodle' => 'Doodle',
+  _ => 'Chess',
+};
+
+/// Where a ranked game is played online.
+String rankedGameRoute(String game) =>
+    game == 'doodle' ? '/guess-my-doodle' : '/$game';
 
 /// Where a rating sits, from Bronze (everyone starts at 1000) to Legend.
 enum RankTier {
