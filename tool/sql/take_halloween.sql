@@ -1,13 +1,12 @@
 -- Testing: undoes give_halloween.sql, so the player can earn Halloween
--- again from the start. Put the player's email below, then Run.
+-- again from the start. Put the player's user ID below, then Run.
 do $$
 declare
-  v_email text := 'you@example.com';   -- <- the player's email
-  v_user uuid;
+  v_user uuid := '00000000-0000-0000-0000-000000000000';  -- <- the player's user ID
 begin
-  select id into v_user from auth.users where lower(email) = lower(v_email);
-  if v_user is null then
-    raise exception 'No account with the email %', v_email;
+  perform 1 from auth.users where id = v_user;
+  if not found then
+    raise exception 'No account with the ID %', v_user;
   end if;
   delete from public.season_items where user_id = v_user and event_id = 'halloween_2026';
   delete from public.event_claims where user_id = v_user and event_id = 'halloween_2026';
@@ -15,8 +14,10 @@ begin
   delete from public.world_rentals where user_id = v_user and world_id = 'utopia_halloween';
   delete from public.user_auras where user_id = v_user and aura_id = 'jack';
   update public.profiles
-     set equipped_theme = case when equipped_theme = 'utopia_halloween' then null else equipped_theme end,
-         equipped_aura = case when equipped_aura = 'jack' then null else equipped_aura end
+     -- Back to a free world: a player always has one on.
+     set equipped_theme = case when equipped_theme = 'utopia_halloween' then 'utopia_calm' else equipped_theme end,
+         equipped_aura = case when equipped_aura = 'jack' then null else equipped_aura end,
+         aura_expires_at = case when equipped_aura = 'jack' then null else aura_expires_at end
    where id = v_user;
   raise notice 'Halloween taken back';
 end $$;
