@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -13,10 +16,14 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../store/presentation/theme_teleport.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
+import '../widgets/game_fan.dart';
 import '../../../../core/layout/responsive.dart';
 
+const _privacyUrl = 'https://utopia.kaivon.app/privacy';
+
 /// Entry point for signed-out users: play immediately as a guest, or go
-/// straight to email sign-in/sign-up. Either way Chip carries them into
+/// straight to email sign-in/sign-up. The games fan out between, so it's
+/// clear at a glance what's inside. Either way Chip carries them into
 /// their world through the portal, and home appears under its flash.
 class AuthChoiceScreen extends ConsumerStatefulWidget {
   const AuthChoiceScreen({super.key});
@@ -72,118 +79,178 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              return SingleChildScrollView(
-                padding: context.readablePadding(
-                  maxWidth: 520,
-                  min: AppSpacing.lg,
-                  top: AppSpacing.md,
-                  bottom: AppSpacing.md,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - AppSpacing.md * 2,
-                  ),
+              final padding = context.readablePadding(
+                maxWidth: 520,
+                min: AppSpacing.lg,
+                top: AppSpacing.sm,
+                bottom: AppSpacing.xs,
+              );
+              final compact = constraints.maxHeight < 720;
+              // Tall enough (and text not enlarged much): the games fan
+              // out between the title and the buttons. Otherwise it all
+              // scrolls, without them.
+              final roomy =
+                  constraints.maxHeight >= 640 &&
+                  MediaQuery.textScalerOf(context).scale(16) <= 18.5;
+              if (!roomy) {
+                return SingleChildScrollView(
+                  padding: padding,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Column(
-                        children: [
-                          const SizedBox(height: AppSpacing.xl),
-                          const RiseIn(child: Center(child: AuthHero())),
-                          const SizedBox(height: AppSpacing.sm),
-                          const RiseIn(
-                            delay: 0.15,
-                            child: Center(
-                              child: OutlinedHeading('Utopia', fontSize: 56),
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          RiseIn(
-                            delay: 0.25,
-                            child: Text(
-                              'Games with friends, in a world that feels alive.',
-                              textAlign: TextAlign.center,
-                              style:
-                                  AppTextStyles.body(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ).copyWith(
-                                    shadows: const [
-                                      Shadow(
-                                        color: Color(0xCC000000),
-                                        blurRadius: 10,
-                                      ),
-                                      Shadow(
-                                        color: Color(0x88000000),
-                                        blurRadius: 3,
-                                      ),
-                                    ],
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      _title(compact: true),
                       const SizedBox(height: AppSpacing.xl),
-                      RiseIn(
-                        delay: 0.4,
-                        child: GlassPanel(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              PrimaryButton(
-                                label: 'Play now',
-                                isLoading: _isSigningInAsGuest,
-                                onPressed: _playAsGuest,
-                              ),
-                              const SizedBox(height: AppSpacing.sm),
-                              _GlassButton(
-                                icon: Icons.mail_rounded,
-                                label: 'Log in or sign up',
-                                onTap: () => context.push('/auth/link'),
-                              ),
-                              const SizedBox(height: AppSpacing.sm),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.bolt_rounded,
-                                    size: 15,
-                                    color: AppColors.coinGold,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'No account needed. Save it any time.',
-                                    style: AppTextStyles.body(
-                                      fontSize: 12,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              if (_error != null) ...[
-                                const SizedBox(height: AppSpacing.sm),
-                                Text(
-                                  _error!,
-                                  style: const TextStyle(
-                                    color: AppColors.error,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
+                      _actions(),
                     ],
                   ),
+                );
+              }
+              return Padding(
+                padding: padding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _title(compact: compact),
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, c) {
+                          final height = math.min(c.maxHeight - 24, 236.0);
+                          if (height < 110) return const SizedBox.shrink();
+                          return Center(
+                            child: RiseIn(
+                              delay: 0.3,
+                              child: GameFan(height: height),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    _actions(),
+                  ],
                 ),
               );
             },
           ),
         ),
       ),
+    );
+  }
+
+  /// Chip at the gateway, the name, and what Utopia is.
+  Widget _title({required bool compact}) {
+    return Column(
+      children: [
+        SizedBox(height: compact ? 0 : AppSpacing.sm),
+        RiseIn(
+          child: Center(child: AuthHero(size: compact ? 96 : 116)),
+        ),
+        RiseIn(
+          delay: 0.12,
+          child: Center(
+            child: OutlinedHeading('Utopia', fontSize: compact ? 50 : 60),
+          ),
+        ),
+        const SizedBox(height: 2),
+        RiseIn(
+          delay: 0.2,
+          child: Text(
+            'Games with friends,\nin a world that feels alive.',
+            textAlign: TextAlign.center,
+            style:
+                AppTextStyles.body(
+                  fontSize: compact ? 16 : 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ).copyWith(
+                  height: 1.3,
+                  shadows: const [
+                    Shadow(color: Color(0xCC000000), blurRadius: 10),
+                    Shadow(color: Color(0x88000000), blurRadius: 3),
+                  ],
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Play straight away, or sign in; and the privacy policy.
+  Widget _actions() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        RiseIn(
+          delay: 0.45,
+          child: GlassPanel(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                PrimaryButton(
+                  label: 'Play now',
+                  isLoading: _isSigningInAsGuest,
+                  onPressed: _playAsGuest,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _GlassButton(
+                  icon: Icons.mail_rounded,
+                  label: 'Log in or sign up',
+                  onTap: () => context.push('/auth/link'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      size: 15,
+                      color: AppColors.coinGold,
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        'No account needed. Save it any time.',
+                        style: AppTextStyles.body(
+                          fontSize: 12.5,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (_error != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    _error!,
+                    style: const TextStyle(color: AppColors.error),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        RiseIn(
+          delay: 0.55,
+          child: Center(
+            child: TextButton(
+              onPressed: () => launchUrl(
+                Uri.parse(_privacyUrl),
+                mode: LaunchMode.externalApplication,
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white.withValues(alpha: 0.75),
+                minimumSize: const Size(0, 36),
+                textStyle: AppTextStyles.body(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              child: const Text('Privacy Policy'),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

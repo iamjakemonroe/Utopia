@@ -18,6 +18,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_background.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/widgets/utopia_icons.dart';
 import '../../../birthday/data/birthday_repository.dart';
 import '../guest_transfer.dart';
 import '../providers/auth_providers.dart';
@@ -340,6 +341,8 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
 
   List<Widget> _buildEmailStep() {
     return [
+      const _WhyPerks(),
+      const SizedBox(height: AppSpacing.lg),
       UtopiaTextField(
         controller: _emailController,
         icon: Icons.mail_rounded,
@@ -374,32 +377,101 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
         onPressed: _isLoading ? null : _verifyCode,
       ),
       const SizedBox(height: AppSpacing.sm),
+      // Each shrinks to fit if it must (big text, a narrow screen).
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          TextButton.icon(
-            onPressed: _isLoading
-                ? null
-                : () => setState(() {
-                    _codeController.clear();
-                    _step = _Step.enterEmail;
-                  }),
-            icon: const Icon(Icons.edit_rounded, size: 16),
-            label: const Text('Change email'),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: TextButton.icon(
+                onPressed: _isLoading
+                    ? null
+                    : () => setState(() {
+                        _codeController.clear();
+                        _step = _Step.enterEmail;
+                      }),
+                icon: const Icon(Icons.edit_rounded, size: 16),
+                label: const Text('Change email'),
+              ),
+            ),
           ),
-          TextButton.icon(
-            onPressed: _isLoading || _resendIn > 0
-                ? null
-                : () async {
-                    await _sendCode();
-                    if (mounted) _startCooldown();
-                  },
-            icon: const Icon(Icons.refresh_rounded, size: 16),
-            label: Text(_resendIn > 0 ? 'Resend in ${_resendIn}s' : 'Resend'),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: TextButton.icon(
+                onPressed: _isLoading || _resendIn > 0
+                    ? null
+                    : () async {
+                        await _sendCode();
+                        if (mounted) _startCooldown();
+                      },
+                icon: const Icon(Icons.refresh_rounded, size: 16),
+                label: Text(
+                  _resendIn > 0 ? 'Resend in ${_resendIn}s' : 'Resend',
+                ),
+              ),
+            ),
           ),
         ],
       ),
+      Text(
+        "Not there? It can take a minute, or land in spam.",
+        textAlign: TextAlign.center,
+        style: AppTextStyles.body(
+          fontSize: 12.5,
+          color: AppColors.textSecondary,
+        ),
+      ),
     ];
+  }
+}
+
+/// Why give an email, before they do.
+class _WhyPerks extends StatelessWidget {
+  const _WhyPerks();
+
+  @override
+  Widget build(BuildContext context) {
+    final perks = [
+      (
+        Icons.savings_rounded,
+        AppColors.coinGold,
+        'Keep your coins, worlds and friends',
+      ),
+      (
+        Icons.devices_rounded,
+        AppColors.mint,
+        'Play on any phone, or in your browser',
+      ),
+      (
+        Icons.key_rounded,
+        AppColors.accent,
+        'No password. We email you a code.',
+      ),
+    ];
+    return Column(
+      children: [
+        for (final (i, (icon, color, label)) in perks.indexed) ...[
+          if (i > 0) const SizedBox(height: 10),
+          Row(
+            children: [
+              GlossyBadge(icon: icon, color: color, size: 32),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.body(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
   }
 }
 
