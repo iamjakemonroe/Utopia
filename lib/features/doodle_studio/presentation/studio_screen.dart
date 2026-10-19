@@ -951,30 +951,32 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.display(fontSize: 18, color: kStudioInk),
                 ),
+                // Saving happens quietly in the background: no "Saving…"
+                // while drawing (it read as if the work had to stop for it).
+                // Only a failed save says anything.
                 ValueListenableBuilder<_Save>(
                   valueListenable: _save,
-                  builder: (context, s, _) => AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    child: Text(
-                      switch (s) {
-                        _Save.idle =>
-                          _stored
-                              ? 'Saved in Utopia'
-                              : _doc?.kind == ArtKind.coloring
-                              ? 'Tap a shape to fill it'
-                              : 'Draw anything',
-                        _Save.pending || _Save.saving => 'Saving…',
-                        _Save.saved => 'Saved in Utopia',
-                        _Save.failed => "Couldn't save, will try again",
-                      },
-                      key: ValueKey(s),
-                      style: AppTextStyles.body(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: kStudioInk.withValues(alpha: 0.6),
+                  builder: (context, s, _) {
+                    final line = s == _Save.failed
+                        ? "Couldn't save, will try again"
+                        : _stored
+                        ? 'Saved in Utopia'
+                        : _doc?.kind == ArtKind.coloring
+                        ? 'Tap a shape to fill it'
+                        : 'Draw anything';
+                    return AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: Text(
+                        line,
+                        key: ValueKey(line),
+                        style: AppTextStyles.body(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: kStudioInk.withValues(alpha: 0.6),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ],
             ),

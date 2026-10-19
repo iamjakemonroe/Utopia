@@ -1,6 +1,8 @@
 import 'dart:isolate';
 import 'dart:math';
 
+import '../../../core/platform/bot_worker.dart';
+import '../../../core/platform/off_main.dart';
 import 'chess_engine.dart';
 import 'chess_move.dart';
 import 'chess_position.dart';
@@ -21,13 +23,51 @@ enum BotLevel {
 const _engine = ChessEngine();
 
 /// Picks the computer's move for [position], off the main thread so the
-/// board keeps animating while it thinks. Null when there are no moves.
-Future<ChessMove?> findBotMove(ChessPosition position, BotLevel level) {
+/// board keeps animating while it thinks (an isolate in the apps, a Web
+/// Worker in a browser). Null when there are no moves.
+Future<ChessMove?> findBotMove(ChessPosition position, BotLevel level) async {
   final fen = position.toFen();
   final seed = Random().nextInt(1 << 30);
+  if (kOnWeb) {
+    try {
+      final index = await botMoveInWorker({
+        'game': 'chess',
+        'position': fen,
+        'level': level.name,
+        'seed': seed,
+      });
+      final moves = _engine.legalMoves(ChessPosition.fromFen(fen));
+      return index == null || index >= moves.length ? null : moves[index];
+    } catch (_) {
+      // No worker: the same thinking, here.
+      return offMainThread(
+        () => ChessBot(level, seed: seed).choose(ChessPosition.fromFen(fen)),
+      );
+    }
+  }
   return Isolate.run(
     () => ChessBot(level, seed: seed).choose(ChessPosition.fromFen(fen)),
   );
+}
+
+/// For the browser's worker: the index of the bot's move for [fen] among
+/// the legal moves, or null when there are none.
+int? chessBotMoveIndex(String fen, String level, int seed) {
+  final position = ChessPosition.fromFen(fen);
+  final move = ChessBot(
+    BotLevel.values.byName(level),
+    seed: seed,
+  ).choose(position);
+  if (move == null) return null;
+  // Moves have no equality of their own: the same squares and promotion.
+  return _engine
+      .legalMoves(position)
+      .indexWhere(
+        (m) =>
+            m.from == move.from &&
+            m.to == move.to &&
+            m.promotion == move.promotion,
+      );
 }
 
 /// A small chess engine: negamax with alpha-beta pruning, a capture search

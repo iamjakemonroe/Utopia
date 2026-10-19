@@ -14,6 +14,9 @@ SITE=../utopia-landingpage
 BUILD=$(date -u +%Y%m%d%H%M%S)
 flutter build web --release --wasm --no-web-resources-cdn --base-href /game/ \
   --dart-define-from-file=env/local.json --dart-define=WEB_BUILD="$BUILD"
+# The bots think in a Web Worker in a browser (it can't start isolates).
+dart compile js -O4 lib/web_workers/bot_worker.dart -o build/web/bot_worker.js
+rm -f build/web/bot_worker.js.deps build/web/bot_worker.js.map
 printf '{"build":"%s"}\n' "$BUILD" > build/web/build.json
 rm -rf "$SITE/public/game"
 cp -R build/web "$SITE/public/game"

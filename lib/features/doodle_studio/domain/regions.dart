@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'dart:typed_data';
+import '../../../core/platform/off_main.dart';
 import 'dart:ui' as ui;
 
 /// The shapes of a coloring page: every pixel of the page (at [width] by
@@ -96,7 +96,7 @@ class RegionMap {
   /// [fillPixels] as an image to draw.
   Future<ui.Image> fillImage(Map<int, int> fills) async {
     // Worked out off the UI thread, so a tap of the bucket never stutters.
-    final pixels = await Isolate.run(() => fillPixels(fills));
+    final pixels = await offMainThread(() => fillPixels(fills));
     final done = Completer<ui.Image>();
     ui.decodeImageFromPixels(
       pixels,
@@ -122,7 +122,7 @@ class RegionMap {
     double scale = 1,
     bool seal = false,
   }) {
-    return Isolate.run(
+    return offMainThread(
       () => label(
         seal ? sealed(pixels, width, height) : pixels,
         width,
@@ -226,7 +226,7 @@ class RegionMap {
   }
 
   /// [shapes], off the UI thread.
-  Future<List<RegionInfo>> shapesInBackground() => Isolate.run(shapes);
+  Future<List<RegionInfo>> shapesInBackground() => offMainThread(shapes);
 
   /// [trace], on this thread (for tests).
   static RegionMap label(

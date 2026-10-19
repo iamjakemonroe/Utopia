@@ -1,6 +1,8 @@
 import 'dart:isolate';
 import 'dart:math';
 
+import '../../../core/platform/bot_worker.dart';
+import '../../../core/platform/off_main.dart';
 import '../../chess/domain/chess_bot.dart' show BotLevel;
 import 'checkers_engine.dart';
 
@@ -8,17 +10,51 @@ export '../../chess/domain/chess_bot.dart' show BotLevel;
 
 const _engine = CheckersEngine();
 
-/// Picks the computer's checkers move off the main thread. Null when it
-/// has no moves.
+/// Picks the computer's checkers move off the main thread (an isolate in
+/// the apps, a Web Worker in a browser). Null when it has no moves.
 Future<CheckersMove?> findCheckersBotMove(
   CheckersPosition position,
   BotLevel level,
-) {
+) async {
   final code = position.encode();
   final seed = Random().nextInt(1 << 30);
+  if (kOnWeb) {
+    try {
+      final index = await botMoveInWorker({
+        'game': 'checkers',
+        'position': code,
+        'level': level.name,
+        'seed': seed,
+      });
+      final moves = _engine.legalMoves(CheckersPosition.decode(code));
+      return index == null || index >= moves.length ? null : moves[index];
+    } catch (_) {
+      // No worker: the same thinking, here.
+      return offMainThread(
+        () => CheckersBot(
+          level,
+          seed: seed,
+        ).choose(CheckersPosition.decode(code)),
+      );
+    }
+  }
   return Isolate.run(
     () => CheckersBot(level, seed: seed).choose(CheckersPosition.decode(code)),
   );
+}
+
+/// For the browser's worker: the index of the bot's move for [code] among
+/// the legal moves, or null when there are none.
+int? checkersBotMoveIndex(String code, String level, int seed) {
+  final position = CheckersPosition.decode(code);
+  final move = CheckersBot(
+    BotLevel.values.byName(level),
+    seed: seed,
+  ).choose(position);
+  if (move == null) return null;
+  return _engine
+      .legalMoves(position)
+      .indexWhere((m) => m.notation == move.notation);
 }
 
 /// Negamax with alpha-beta, iterative deepening against a time budget, and

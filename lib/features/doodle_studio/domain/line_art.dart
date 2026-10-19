@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -7,6 +6,7 @@ import 'package:flutter/foundation.dart';
 
 import 'art_doc.dart';
 import 'coloring_pages.dart';
+import '../../../core/platform/off_main.dart';
 
 /// Line-art pages (real portraits): each page's image, made ready once per
 /// session as ink on clear paper, so it can be drawn over the colors.
@@ -60,7 +60,7 @@ class LineArt {
     final w = art.width, h = art.height;
     art.dispose();
     final pixels = data!.buffer.asUint8List();
-    final ink = await Isolate.run(() => inkOf(pixels));
+    final ink = await offMainThread(() => inkOf(pixels));
     final done = Completer<ui.Image>();
     ui.decodeImageFromPixels(ink, w, h, ui.PixelFormat.rgba8888, done.complete);
     return done.future;

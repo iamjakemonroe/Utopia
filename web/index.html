@@ -97,7 +97,11 @@
         set: function (value) {
           cap = value;
           try { localStorage.setItem('utopia_render_cap', String(value)); } catch (e) {}
-          window.dispatchEvent(new Event('resize'));
+          // Flutter takes its size from the visual viewport's resize (not the
+          // window's): told there, it redraws at the new sharpness at the
+          // same size. (Told only the window, its canvas kept its old pixel
+          // size and grew on screen, like a zoom that couldn't be undone.)
+          (window.visualViewport || window).dispatchEvent(new Event('resize'));
         },
       };
     })();
