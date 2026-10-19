@@ -12,6 +12,7 @@ import 'package:record/record.dart';
 
 import '../../../core/platform/recording_bytes.dart';
 import '../../../core/audio/game_audio.dart';
+import '../../../core/audio/room_sound.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/utopia_toast.dart';
@@ -408,6 +409,12 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
       return;
     }
     await ref.read(voicePlaybackProvider.notifier).stop();
+    // The Music world stops listening to the room while this records (one
+    // recording at a time), and lets go of the microphone first.
+    _holdRoom(true);
+    for (var waited = 0; RoomSound.listening && waited < 800; waited += 40) {
+      await Future<void>.delayed(const Duration(milliseconds: 40));
+    }
     // The apps record AAC to a file. A browser records WAV (what every
     // phone and browser plays: Chrome's own WebM won't play on an iPhone),
     // at 16 kHz so 30 seconds stays under 1 MB, and hands back a link.
@@ -432,6 +439,7 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
         path: path,
       );
     } catch (_) {
+      _holdRoom(false);
       audio.reclaimSession();
       if (mounted) {
         showUtopiaToast(
@@ -456,7 +464,17 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
     widget.onRecordingChanged(true);
   }
 
+  bool _holdingRoom = false;
+
+  /// Keeps the Music world off the microphone while recording.
+  void _holdRoom(bool on) {
+    if (on == _holdingRoom) return;
+    _holdingRoom = on;
+    RoomSound.hold.value += on ? 1 : -1;
+  }
+
   void _reset() {
+    _holdRoom(false);
     _limit?.cancel();
     _amps?.cancel();
     _clock.stop();

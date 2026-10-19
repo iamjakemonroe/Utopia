@@ -31,7 +31,7 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Utopia shows the song you're listening to, so Chip can vibe along and you can skip tracks without leaving the app.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Utopia uses the microphone when you record a voice note in game chat.</string>
+	<string>Utopia uses the microphone when you record a voice note in game chat, and, if you turn it on, to let the Music world react to the sound around you (it only measures how loud it is; nothing is recorded).</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Utopia saves your drawings and paintings to your photos when you ask it to.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

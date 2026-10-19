@@ -11,6 +11,7 @@ import '../../doodle_studio/data/art_store.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../core/audio/game_audio.dart';
+import '../../../core/audio/room_sound.dart';
 import '../../../core/settings/gameplay_settings.dart';
 import '../../../core/platform/web_install.dart';
 import '../../../core/settings/web_scale.dart';
@@ -116,6 +117,19 @@ class SettingsScreen extends ConsumerWidget {
                     value: sound.sfxVolume,
                     onChanged: soundCtl.setSfxVolume,
                     onChangeEnd: (_) => audio.play(Sfx.tap),
+                  ),
+                  _ToggleRow(
+                    icon: Icons.mic_rounded,
+                    color: const Color(0xFFFF4FD8),
+                    title: 'Music world hears the room',
+                    subtitle:
+                        'The show dances to the sound around you. Nothing is '
+                        'recorded.',
+                    value: ref.watch(musicWorldListensProvider),
+                    onChanged: (v) {
+                      ref.read(musicWorldListensProvider.notifier).set(v);
+                      if (v) audio.play(Sfx.toggleOn);
+                    },
                   ),
                 ],
               ),

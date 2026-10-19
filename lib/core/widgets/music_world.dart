@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../theme/utopia_themes.dart';
+import '../audio/room_sound.dart';
 import 'world_sets.dart';
 
 /// Stable pseudo-random 0-1 from an index.
@@ -33,6 +34,16 @@ class _Beat {
     bar = count ~/ 4;
   }
 
+  /// The room's beat (see [RoomSound]): each one heard is a beat, the
+  /// pulse falling away after it.
+  _Beat.room(double t) {
+    final since = (t - RoomSound.beatAt).clamp(0.0, 10.0);
+    count = RoomSound.beats;
+    phase = (since / 0.5).clamp(0.0, 1.0);
+    pulse = math.exp(-since * 7);
+    bar = count ~/ 4;
+  }
+
   late final int count;
   late final double phase;
   late final double pulse;
@@ -43,7 +54,9 @@ class _Beat {
 /// sky, lasers sweep from the stage, the skyline is an equalizer bouncing
 /// to the beat, speakers pump, a screen shows the waveform, notes drift up
 /// and the crowd bounces with their hands in the air. When the player's
-/// own music is playing ([WorldSets.musicLive]) it all dances harder.
+/// own music is playing ([WorldSets.musicLive]) it all dances harder; and
+/// when it's allowed to hear the room ([RoomSound]), it dances to that:
+/// the beats it hears and how loud it is.
 ///
 /// With the set on (Encore worn here, [WorldSets.music]) the show peaks:
 /// fireworks, confetti, bass shockwaves from the stage, twice the lasers,
@@ -59,8 +72,15 @@ void paintMusicScene(
   final h = size.height;
   final encore = WorldSets.music.amount;
   final live = WorldSets.musicLive.amount;
-  final energy = (0.55 + 0.25 * live + 0.45 * encore).clamp(0.0, 1.25);
-  final beat = _Beat(t, 120);
+  // The room, when the world's allowed to hear it and something's playing:
+  // its loudness lifts the whole show, and its beats are the show's.
+  final hearing = RoomSound.hearing;
+  final room = hearing ? RoomSound.level : 0.0;
+  final energy = (0.55 + 0.25 * live + 0.45 * encore + 0.75 * room).clamp(
+    0.0,
+    1.5,
+  );
+  final beat = hearing ? _Beat.room(t) : _Beat(t, 120);
   final stage = Offset(w * 0.5, h * 0.74);
 
   // The whole night lifts a little on every beat.

@@ -28,6 +28,7 @@ import 'core/analytics/screen_views.dart';
 import 'core/audio/world_soundscape.dart';
 import 'features/dev/screen_tour.dart';
 import 'features/friends/data/presence.dart';
+import 'features/music/presentation/room_ears.dart';
 
 class UtopiaApp extends ConsumerWidget {
   const UtopiaApp({super.key});
@@ -167,6 +168,8 @@ class UtopiaApp extends ConsumerWidget {
             if (kIsWeb) const WebFrameWatch(),
             // Tells friends the player's around while the app is open.
             const PresenceBeat(),
+            // The Music world hearing the room, when the player lets it.
+            const RoomEars(),
           ],
         );
         // In a browser, at the size chosen in Settings (phone-sized on a
