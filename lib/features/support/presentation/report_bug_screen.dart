@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -159,7 +160,7 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
             );
       }
       final build = await ref.read(_buildProvider.future).catchError((_) => '');
-      await client.rpc(
+      final reportId = await client.rpc(
         'submit_bug_report',
         params: {
           'p_description': text,
@@ -174,6 +175,16 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
           'p_screenshot_path': shotPath,
         },
       );
+      // Its screenshot as a link the team can open (the bucket's private,
+      // so the server signs one); not waited for, and tool/reports.sh links
+      // catches any that don't make it.
+      if (shotPath != null && reportId is String) {
+        unawaited(
+          client.functions
+              .invoke('report-shot', body: {'report_id': reportId})
+              .then<void>((_) {}, onError: (_) {}),
+        );
+      }
       ref.read(gameAudioProvider).play(Sfx.reaction);
       ref.invalidate(myReportsProvider);
       if (mounted) setState(() => _sent = true);

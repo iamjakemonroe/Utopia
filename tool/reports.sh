@@ -6,6 +6,7 @@
 #   tool/reports.sh                       new reports, oldest first
 #   tool/reports.sh all                   every report
 #   tool/reports.sh shot <id> [dir]       download its screenshot (to build/report-shots)
+#   tool/reports.sh links                 give older reports' screenshots a link (a year)
 #   tool/reports.sh mark <id> <status> [note]
 #       status: triaged (seen, on the list), fixed (done), wontfix
 #       note:   shown to the player under their report ("Fixed in 1.0.0+15")
@@ -38,7 +39,9 @@ for r in rows:
     bits = [b for b in (r.get('app_version'), r.get('platform'), r.get('screen'), r.get('world')) if b]
     if bits:
         print(' / '.join(bits))
-    if r.get('screenshot_path'):
+    if r.get('screenshot_url'):
+        print('screenshot: ' + r['screenshot_url'])
+    elif r.get('screenshot_path'):
         print('screenshot: tool/reports.sh shot ' + r['id'])
     if r.get('contact'):
         print('contact: ' + r['contact'])
@@ -65,14 +68,31 @@ case "${1:-new}" in
     ;;
   shot)
     id=${2:?id}; dest=${3:-build/report-shots}
-    path=$(rest "$URL/rest/v1/bug_reports?select=screenshot_path&id=eq.$id" |
+    # (Not "path": in zsh that's the PATH itself.)
+    file=$(rest "$URL/rest/v1/bug_reports?select=screenshot_path&id=eq.$id" |
       python3 -c 'import json,sys;r=json.load(sys.stdin);print((r[0].get("screenshot_path") or "") if isinstance(r,list) and r else "")')
-    [[ -z "$path" ]] && { echo "No screenshot on that report."; exit 1; }
+    [[ -z "$file" ]] && { echo "No screenshot on that report."; exit 1; }
     mkdir -p "$dest"
-    out="$dest/$id.${path##*.}"
+    out="$dest/$id.${file##*.}"
     curl -sS -f -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
-      "$URL/storage/v1/object/bug-screenshots/$path" -o "$out"
+      "$URL/storage/v1/object/bug-screenshots/$file" -o "$out"
     echo "$out"
+    ;;
+  links)
+    # Screenshots sent before the app asked for links (or when that
+    # failed): a signed link each, good for a year, on the report.
+    rest "$URL/rest/v1/bug_reports?select=id,screenshot_path&screenshot_path=not.is.null&screenshot_url=is.null" |
+      python3 -c 'import json,sys
+for r in json.load(sys.stdin): print(r["id"], r["screenshot_path"])' |
+      while read -r id file; do
+        signed=$(curl -sS -f -X POST -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+          -H "Content-Type: application/json" -d '{"expiresIn": 31536000}' \
+          "$URL/storage/v1/object/sign/bug-screenshots/$file" |
+          python3 -c 'import json,sys;print(json.load(sys.stdin).get("signedURL",""))')
+        [[ -z "$signed" ]] && { echo "couldn't sign $id"; continue; }
+        body=$(python3 -c 'import json,sys;print(json.dumps({"screenshot_url":sys.argv[1]}))' "$URL/storage/v1$signed")
+        rest -X PATCH "$URL/rest/v1/bug_reports?id=eq.$id" -d "$body" >/dev/null && echo "linked $id"
+      done
     ;;
   mark)
     id=${2:?id}; st=${3:?status}; note=${4:-}
@@ -85,7 +105,7 @@ print(json.dumps(d))' "$st" "$note")
       python3 -c 'import json,sys;r=json.load(sys.stdin);print("marked", r[0]["status"] if isinstance(r,list) and r else r)'
     ;;
   *)
-    sed -n 2,14p "$0"
+    sed -n 2,15p "$0"
     exit 1
     ;;
 esac
