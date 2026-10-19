@@ -11,3 +11,10 @@ Future<String?> liveWebBuild() => impl.liveWebBuild();
 
 /// Loads the page again, with the newest build.
 void reloadPage() => impl.reloadPage();
+
+/// Calls [callback] whenever the page comes back into view: shown again,
+/// restored, or focused (an installed app on a phone often only does
+/// these, without the app hearing it resumed). Returns a function that
+/// stops it.
+void Function() onPageShown(void Function() callback) =>
+    impl.onPageShown(callback);

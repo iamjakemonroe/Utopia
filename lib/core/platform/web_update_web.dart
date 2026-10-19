@@ -18,3 +18,18 @@ Future<String?> liveWebBuild() async {
 }
 
 void reloadPage() => web.window.location.reload();
+
+void Function() onPageShown(void Function() callback) {
+  final onVisible = ((web.Event _) {
+    if (web.document.visibilityState == 'visible') callback();
+  }).toJS;
+  final onShow = ((web.Event _) => callback()).toJS;
+  web.document.addEventListener('visibilitychange', onVisible);
+  web.window.addEventListener('pageshow', onShow);
+  web.window.addEventListener('focus', onShow);
+  return () {
+    web.document.removeEventListener('visibilitychange', onVisible);
+    web.window.removeEventListener('pageshow', onShow);
+    web.window.removeEventListener('focus', onShow);
+  };
+}
