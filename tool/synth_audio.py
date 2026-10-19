@@ -424,8 +424,8 @@ def make_sfx_hologram_ambience():
     """Each tier's aura as a far-off sound, looping under the hologram
     while it's open: Bronze dust swirling, Silver's liquid trickling, Gold's
     fire crackling, Diamond's crystals chiming, Legend's electricity
-    crackling. Muffled (low-passed), roomy (reverb) and soft, so it sounds
-    far away in the world but still there. Each wraps round on itself, so
+    crackling. Muffled (low-passed hard), mostly echo and quiet, so it
+    sounds far away in the world but still there. Each wraps round on itself, so
     it loops without a seam. 22 kHz, like the music, to stay small."""
     sr = MUSIC_SR
     seconds = 5.0
@@ -444,14 +444,16 @@ def make_sfx_hologram_ambience():
         return biquad(twice, kind, freq, q, sr)[n:]
 
     def loop_out(name, x, cutoff, peak):
-        x = circ(x, "lp", cutoff, 0.6)
+        # Far off: muffled (the highs don't carry), mostly the room's echo
+        # rather than the sound itself, and quiet.
+        x = circ(x, "lp", cutoff * 0.55, 0.6)
+        y = array.array("d", (v * 0.55 for v in x))
         # Reverb that also wraps, so the tail carries over the seam.
-        y = array.array("d", x)
-        for d, g in ((0.11, 0.35), (0.19, 0.28), (0.29, 0.2), (0.43, 0.13)):
+        for d, g in ((0.13, 0.42), (0.23, 0.36), (0.37, 0.3), (0.53, 0.22), (0.71, 0.15)):
             k = int(d * sr)
             for i in range(n):
                 y[(i + k) % n] += x[i] * g
-        write(f"{OUT_SFX}/{name}.wav", normalize(y, peak), sr)
+        write(f"{OUT_SFX}/{name}.wav", normalize(y, peak * 0.6), sr)
 
     random.seed(41)
 
@@ -491,7 +493,7 @@ def make_sfx_hologram_ambience():
     for _ in range(70):
         pop = biquad(noise(random.uniform(0.004, 0.012), 0.004, sr=sr), "bp", random.uniform(1200, 3600), 2, sr)
         wrap(x, pop, random.uniform(0, seconds), random.uniform(0.15, 0.5))
-    loop_out("holo_amb_gold", x, 3000, 0.5)
+    loop_out("holo_amb_gold", x, 3000, 0.35)
 
     # Diamond: crystals chiming far off, over a faint glassy air.
     x = buf(seconds, sr)
@@ -521,7 +523,7 @@ def make_sfx_hologram_ambience():
         at = random.uniform(0, seconds)
         for k in range(random.randint(1, 4)):
             wrap(x, arc, at + k * random.uniform(0.02, 0.06), random.uniform(0.3, 0.8))
-    loop_out("holo_amb_legend", x, 4200, 0.5)
+    loop_out("holo_amb_legend", x, 4200, 0.29)
 
 
 # ── music ──────────────────────────────────────────────────────────────────
