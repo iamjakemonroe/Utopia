@@ -4,12 +4,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../analytics/analytics.dart';
-import '../platform/web_render.dart';
+import '../router/app_router.dart';
 
-/// In a browser: watches how fast the game draws while it's animating,
-/// and on a device that can't keep up (under about 35 frames a second),
-/// draws a step less sharp (2x, 1.75x, 1.5x) until it can. Once a visit it
-/// records the frame rate it got, so slow devices show up in analytics.
+/// In a browser: measures how fast the game draws while it's animating,
+/// and records it once a visit for each screen (by its path, without ids),
+/// so slow screens and devices show up in analytics. It never changes how
+/// anything is drawn.
 class WebFrameWatch extends ConsumerStatefulWidget {
   const WebFrameWatch({super.key});
 
@@ -18,19 +18,17 @@ class WebFrameWatch extends ConsumerStatefulWidget {
 }
 
 class _WebFrameWatchState extends ConsumerState<WebFrameWatch> {
-  static const _steps = [2.0, 1.75, 1.5];
-  static const _slowMs = 28.0;
-
   Duration? _last;
   final _gaps = <double>[];
+  String? _screen;
   DateTime _settled = DateTime.now().add(const Duration(seconds: 5));
-  bool _reported = false;
+  final _reported = <String>{};
   bool _on = true;
 
   @override
   void initState() {
     super.initState();
-    if (!kIsWeb || !WebRender.available) return;
+    if (!kIsWeb) return;
     SchedulerBinding.instance.addPersistentFrameCallback(_onFrame);
   }
 
@@ -40,33 +38,55 @@ class _WebFrameWatchState extends ConsumerState<WebFrameWatch> {
     super.dispose();
   }
 
+  /// The screen showing, e.g. /chess/match/:id.
+  String _path() {
+    try {
+      final path = ref
+          .read(goRouterProvider)
+          .routerDelegate
+          .currentConfiguration
+          .uri
+          .path;
+      return path
+          .split('/')
+          .map(
+            (part) =>
+                RegExp(r'^[0-9a-f-]{16,}$|^\d+$').hasMatch(part) ? ':id' : part,
+          )
+          .join('/');
+    } catch (_) {
+      return '?';
+    }
+  }
+
   void _onFrame(Duration stamp) {
     if (!_on) return;
     final last = _last;
     _last = stamp;
     if (last == null) return;
+    final screen = _path();
+    if (screen != _screen) {
+      // A new screen: give it a moment to settle before judging it.
+      _screen = screen;
+      _gaps.clear();
+      _settled = DateTime.now().add(const Duration(seconds: 2));
+      return;
+    }
     final ms = (stamp - last).inMicroseconds / 1000;
     // Back-to-back frames only: a longer pause is the app sitting still.
     if (ms <= 0 || ms > 250 || DateTime.now().isBefore(_settled)) return;
+    if (_reported.contains(screen)) return;
     _gaps.add(ms);
     if (_gaps.length < 120) return;
     final average = _gaps.reduce((a, b) => a + b) / _gaps.length;
     _gaps.clear();
-    final cap = WebRender.cap;
-    if (!_reported) {
-      _reported = true;
-      ref.read(analyticsProvider).log('web_fps', {
-        'fps': (1000 / average).round(),
-        'sharpness': cap,
-        'screen': WebRender.screen,
-      });
-    }
-    if (average <= _slowMs) return;
-    final next = _steps.where((s) => s < cap - 0.01).firstOrNull;
-    if (next == null || WebRender.screen <= next) return;
-    WebRender.lower(next);
-    // Let it redraw at the new size before judging again.
-    _settled = DateTime.now().add(const Duration(seconds: 3));
+    _reported.add(screen);
+    final view = WidgetsBinding.instance.platformDispatcher.views.firstOrNull;
+    ref.read(analyticsProvider).log('web_fps', {
+      'fps': (1000 / average).round(),
+      'screen': view?.devicePixelRatio,
+      'path': screen,
+    });
   }
 
   @override

@@ -72,39 +72,9 @@
     });
   </script>
   <script>
-    // How sharp the game draws. A phone's screen is 3x, and redrawing three
-    // million pixels a frame is what made the game lag in a browser: it
-    // draws at 2x at most (still sharp), and the game lowers it a step at a
-    // time on a device that still can't keep up (remembered here).
-    // ?hires draws at the screen's full sharpness.
-    window.utopiaRender = (function () {
-      var desc = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio') ||
-        Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
-      if (!desc || !desc.get || /[?&]hires/.test(location.search)) return null;
-      var cap = 2;
-      try {
-        var saved = Number(localStorage.getItem('utopia_render_cap'));
-        if (saved >= 1 && saved <= 2) cap = saved;
-      } catch (e) {}
-      var real = function () { return desc.get.call(window); };
-      Object.defineProperty(window, 'devicePixelRatio', {
-        configurable: true,
-        get: function () { return Math.min(cap, real()); },
-      });
-      return {
-        cap: function () { return cap; },
-        real: real,
-        set: function (value) {
-          cap = value;
-          try { localStorage.setItem('utopia_render_cap', String(value)); } catch (e) {}
-          // Flutter takes its size from the visual viewport's resize (not the
-          // window's): told there, it redraws at the new sharpness at the
-          // same size. (Told only the window, its canvas kept its old pixel
-          // size and grew on screen, like a zoom that couldn't be undone.)
-          (window.visualViewport || window).dispatchEvent(new Event('resize'));
-        },
-      };
-    })();
+    // The game draws at the screen's full sharpness. (It once drew less
+    // sharp on a device that lagged, and remembered that: forgotten here.)
+    try { localStorage.removeItem('utopia_render_cap'); } catch (e) {}
 
     // The browser's offer to install Utopia (Chrome, Edge, Android), kept
     // for the game's own Install button instead of the browser's banner.

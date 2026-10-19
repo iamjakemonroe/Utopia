@@ -162,7 +162,7 @@ class UtopiaApp extends ConsumerWidget {
             if (kIsWeb) const Positioned.fill(child: WebUpdateBanner()),
             // In a browser: back from paying for coins.
             if (kIsWeb) const WebPaymentReturn(),
-            // In a browser: drawing less sharp on a device that lags.
+            // In a browser: how fast each screen draws, for analytics.
             if (kIsWeb) const WebFrameWatch(),
           ],
         );
