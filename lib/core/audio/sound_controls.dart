@@ -9,6 +9,13 @@ import '../widgets/pop_card.dart';
 import '../settings/gameplay_settings.dart';
 import 'game_audio.dart';
 
+/// Whether a game's sound buttons are open. They fold away when anything
+/// else is tapped, and the chat closes them as it opens (open, they took
+/// the chat button's place, so tapping it did nothing).
+final soundTrayOpen = ValueNotifier<bool>(false);
+
+void closeSoundTray() => soundTrayOpen.value = false;
+
 /// The full sound settings: music and effects switches with volumes.
 Future<void> showSoundSettings(BuildContext context) {
   return showModalBottomSheet<void>(
@@ -191,7 +198,11 @@ class SoundQuickToggle extends ConsumerStatefulWidget {
 }
 
 class _SoundQuickToggleState extends ConsumerState<SoundQuickToggle> {
-  bool _open = false;
+  @override
+  void dispose() {
+    closeSoundTray();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,101 +211,107 @@ class _SoundQuickToggleState extends ConsumerState<SoundQuickToggle> {
     final audio = ref.read(gameAudioProvider);
     final anyOn = settings.musicOn || settings.sfxOn;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 520),
-      curve: Curves.elasticOut,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        color: AppColors.surface.withValues(alpha: 0.92),
-        border: Border.all(color: AppColors.goldBorder, width: 1.6),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.glowRing.withValues(alpha: 0.35),
-            blurRadius: 12,
+    return ValueListenableBuilder<bool>(
+      valueListenable: soundTrayOpen,
+      builder: (context, open, _) => TapRegion(
+        onTapOutside: (_) => closeSoundTray(),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 520),
+          curve: Curves.elasticOut,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            color: AppColors.surface.withValues(alpha: 0.92),
+            border: Border.all(color: AppColors.goldBorder, width: 1.6),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.glowRing.withValues(alpha: 0.35),
+                blurRadius: 12,
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
-            onTap: () {
-              audio.play(Sfx.tap);
-              setState(() => _open = !_open);
-            },
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  center: const Alignment(-0.3, -0.4),
-                  colors: [
-                    Color.lerp(AppColors.accent, Colors.white, 0.35)!,
-                    AppColors.accent,
-                  ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  audio.play(Sfx.tap);
+                  soundTrayOpen.value = !soundTrayOpen.value;
+                },
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      center: const Alignment(-0.3, -0.4),
+                      colors: [
+                        Color.lerp(AppColors.accent, Colors.white, 0.35)!,
+                        AppColors.accent,
+                      ],
+                    ),
+                  ),
+                  child: Icon(
+                    anyOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+                    color: Colors.white,
+                    size: 20,
+                    semanticLabel: 'Sound settings',
+                  ),
                 ),
               ),
-              child: Icon(
-                anyOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-                color: Colors.white,
-                size: 20,
-                semanticLabel: 'Sound settings',
+              AnimatedSize(
+                duration: const Duration(milliseconds: 520),
+                curve: Curves.elasticOut,
+                child: open
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(width: 10),
+                          BubbleToggle(
+                            width: 54,
+                            value: settings.musicOn,
+                            onIcon: Icons.music_note_rounded,
+                            offIcon: Icons.music_off_rounded,
+                            semanticLabel: 'Music',
+                            onChanged: (v) {
+                              controller.setMusicOn(v);
+                              audio.play(v ? Sfx.toggleOn : Sfx.toggleOff);
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          BubbleToggle(
+                            width: 54,
+                            value: settings.sfxOn,
+                            onIcon: Icons.graphic_eq_rounded,
+                            offIcon: Icons.volume_off_rounded,
+                            semanticLabel: 'Sound effects',
+                            onChanged: (v) {
+                              controller.setSfxOn(v);
+                              if (v) audio.play(Sfx.toggleOn);
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          BubbleToggle(
+                            width: 54,
+                            value: ref.watch(gameplaySettingsProvider).haptics,
+                            onIcon: Icons.vibration_rounded,
+                            offIcon: Icons.mobile_off_rounded,
+                            semanticLabel: 'Vibration',
+                            onChanged: (v) {
+                              ref
+                                  .read(gameplaySettingsProvider.notifier)
+                                  .setHaptics(v);
+                              audio.play(v ? Sfx.toggleOn : Sfx.toggleOff);
+                            },
+                          ),
+                          const SizedBox(width: 6),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
               ),
-            ),
+            ],
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 520),
-            curve: Curves.elasticOut,
-            child: _open
-                ? Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(width: 10),
-                      BubbleToggle(
-                        width: 54,
-                        value: settings.musicOn,
-                        onIcon: Icons.music_note_rounded,
-                        offIcon: Icons.music_off_rounded,
-                        semanticLabel: 'Music',
-                        onChanged: (v) {
-                          controller.setMusicOn(v);
-                          audio.play(v ? Sfx.toggleOn : Sfx.toggleOff);
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      BubbleToggle(
-                        width: 54,
-                        value: settings.sfxOn,
-                        onIcon: Icons.graphic_eq_rounded,
-                        offIcon: Icons.volume_off_rounded,
-                        semanticLabel: 'Sound effects',
-                        onChanged: (v) {
-                          controller.setSfxOn(v);
-                          if (v) audio.play(Sfx.toggleOn);
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      BubbleToggle(
-                        width: 54,
-                        value: ref.watch(gameplaySettingsProvider).haptics,
-                        onIcon: Icons.vibration_rounded,
-                        offIcon: Icons.mobile_off_rounded,
-                        semanticLabel: 'Vibration',
-                        onChanged: (v) {
-                          ref
-                              .read(gameplaySettingsProvider.notifier)
-                              .setHaptics(v);
-                          audio.play(v ? Sfx.toggleOn : Sfx.toggleOff);
-                        },
-                      ),
-                      const SizedBox(width: 6),
-                    ],
-                  )
-                : const SizedBox.shrink(),
-          ),
-        ],
+        ),
       ),
     );
   }

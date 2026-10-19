@@ -17,6 +17,7 @@ import '../domain/chat_message.dart';
 import '../domain/voice_note.dart';
 import 'chat_sticker.dart';
 import 'voice_notes.dart';
+import '../../../core/audio/sound_controls.dart';
 
 /// A centered note in the chat instead of a bubble ("Red chose war!").
 class ChatSystemLine {
@@ -66,6 +67,7 @@ Future<void> showGameChat({
   required GameChatConfig config,
   required Set<String> muted,
 }) {
+  closeSoundTray();
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
