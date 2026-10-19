@@ -71,6 +71,31 @@ class WebAudio {
     if (_unlocked) assets.forEach(buffer);
   }
 
+  /// Loops [asset] at [volume], fading in, until the loop is stopped.
+  WebLoop loop(String asset, double volume) {
+    final loop = WebLoop._();
+    if (!_running) return loop;
+    buffer(asset).then((buffer) {
+      if (buffer == null || !_running || loop._stopped) return;
+      final ctx = context;
+      final now = ctx.currentTime;
+      final gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.7);
+      final source = ctx.createBufferSource()
+        ..buffer = buffer
+        ..loop = true;
+      source.connect(gain);
+      gain.connect(ctx.destination);
+      source.start();
+      loop
+        .._context = ctx
+        .._source = source
+        .._gain = gain;
+    });
+    return loop;
+  }
+
   /// Plays [asset] once at [volume]. Not before the first touch: they'd
   /// all play at once when sound comes on.
   void effect(String asset, double volume) {
@@ -84,6 +109,31 @@ class WebAudio {
       gain.connect(ctx.destination);
       source.start();
     });
+  }
+}
+
+/// A sound looping until [stop] (a hologram's aura), faded in and out.
+class WebLoop {
+  WebLoop._();
+
+  bool _stopped = false;
+  web.AudioContext? _context;
+  web.AudioBufferSourceNode? _source;
+  web.GainNode? _gain;
+
+  /// Fades it out and ends it (before it's begun: it never does).
+  void stop() {
+    if (_stopped) return;
+    _stopped = true;
+    final ctx = _context;
+    final gain = _gain;
+    final source = _source;
+    if (ctx == null || gain == null || source == null) return;
+    final now = ctx.currentTime;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(gain.gain.value, now);
+    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+    source.stop(now + 0.35);
   }
 }
 

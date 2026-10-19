@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import '../../domain/rank_insights.dart';
 import '../../domain/ranking.dart';
 import '../rankings_widgets.dart';
 import 'hologram_painters.dart';
+import 'reveal.dart';
 
 /// The player's stats as a hologram: projected up from a glowing disc,
 /// alive with their tier's aura (bronze dust, liquid silver, golden fire,
@@ -27,7 +29,9 @@ Future<void> showRankHologram(
   List<int> line = const [],
 }) {
   final container = ProviderScope.containerOf(context);
-  container.read(gameAudioProvider).play(Sfx.teleport);
+  // A soft power-up as it projects; the readouts then make their own
+  // sounds as they come up (see _In and _CountUp).
+  container.read(gameAudioProvider).play(Sfx.holoOn);
   HapticFeedback.mediumImpact();
   container.invalidate(rankInsightsProvider(game));
   return showGeneralDialog<void>(
@@ -61,9 +65,54 @@ class _RankHologram extends ConsumerStatefulWidget {
 class _RankHologramState extends ConsumerState<_RankHologram>
     with TickerProviderStateMixin {
   final _clock = ValueNotifier<double>(0);
-  late final Ticker _ticker = createTicker(
-    (elapsed) => _clock.value = elapsed.inMicroseconds / 1e6,
-  );
+  late final Ticker _ticker = createTicker((elapsed) {
+    _clock.value = elapsed.inMicroseconds / 1e6;
+    _thunder();
+  });
+
+  /// The tier's aura, far off, under the hologram while it's open.
+  AmbientLoop? _aura;
+  RankTier? _auraTier;
+
+  /// Legend: the next big strike to thunder for.
+  int _strike = 0;
+  RankTier _tier = RankTier.bronze;
+
+  /// Legend's thunder, on the beat of its big strikes (the flash and the
+  /// boom together: the painter draws from the same clock).
+  void _thunder() {
+    if (_tier != RankTier.legend) return;
+    final t = _clock.value;
+    while (legendStrikeAt(_strike) <= t) {
+      // Only if it's just struck (not caught up after a pause).
+      if (t - legendStrikeAt(_strike) < 0.25) {
+        ref
+            .read(gameAudioProvider)
+            .play(
+              const [Sfx.hwThunder1, Sfx.hwThunder2, Sfx.hwThunder3][_strike %
+                  3],
+              volume: 0.8,
+            );
+      }
+      _strike++;
+    }
+  }
+
+  /// The aura's sound for [tier], started (or changed) once it's known.
+  void _playAura(RankTier tier) {
+    if (_auraTier == tier) return;
+    _auraTier = tier;
+    _aura?.stop();
+    final sfx = switch (tier) {
+      RankTier.bronze => Sfx.holoAmbBronze,
+      RankTier.silver => Sfx.holoAmbSilver,
+      RankTier.gold => Sfx.holoAmbGold,
+      RankTier.diamond => Sfx.holoAmbDiamond,
+      RankTier.legend => Sfx.holoAmbLegend,
+    };
+    _aura = ref.read(gameAudioProvider).startAmbient(sfx, volume: 0.7);
+  }
+
   late final AnimationController _reveal = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 900),
@@ -83,6 +132,7 @@ class _RankHologramState extends ConsumerState<_RankHologram>
 
   @override
   void dispose() {
+    _aura?.stop();
     _ticker.dispose();
     _reveal.dispose();
     _clock.dispose();
@@ -93,7 +143,12 @@ class _RankHologramState extends ConsumerState<_RankHologram>
   Widget build(BuildContext context) {
     final insights = ref.watch(rankInsightsProvider(widget.game));
     final rating = insights.valueOrNull?.rating ?? widget.rating;
-    final tier = RankTier.of(rating);
+    final tier = _tier = RankTier.of(rating);
+    if (_auraTier != tier) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _playAura(tier);
+      });
+    }
     return LayoutBuilder(
       builder: (context, c) {
         final pad = MediaQuery.paddingOf(context);
@@ -199,7 +254,7 @@ class _RankHologramState extends ConsumerState<_RankHologram>
 Color _hi(RankTier tier) => Color.lerp(tier.color, Colors.white, 0.25)!;
 
 /// What the hologram says.
-class _Readout extends StatelessWidget {
+class _Readout extends StatefulWidget {
   const _Readout({
     required this.tier,
     required this.game,
@@ -217,7 +272,22 @@ class _Readout extends StatelessWidget {
   final AsyncValue<RankInsights> insights;
 
   @override
+  State<_Readout> createState() => _ReadoutState();
+}
+
+class _ReadoutState extends State<_Readout> {
+  /// Each readout comes up as it comes into view, scrolled to or not.
+  final _reveals = ReadoutReveals();
+
+  @override
+  void dispose() {
+    _reveals.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final _Readout(:tier, :game, :rating, :place, :line, :insights) = widget;
     final i = insights.valueOrNull;
     final sections = <Widget>[
       _Header(tier: tier, game: game, rating: rating, place: place, i: i),
@@ -285,50 +355,26 @@ class _Readout extends StatelessWidget {
         colors: [Colors.white, Colors.white, Colors.transparent],
         stops: [0, 0.9, 1],
       ).createShader(bounds),
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 22, 20, 40),
-        children: [
-          for (final (n, s) in sections.indexed)
-            _In(
-              index: n,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: s,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (_) {
+          _reveals.look();
+          return false;
+        },
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 22, 20, 40),
+          children: [
+            for (final (n, s) in sections.indexed)
+              RevealOnView(
+                index: n,
+                reveals: _reveals,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: s,
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
-}
-
-/// Materializes in after the hologram does, one readout after another.
-class _In extends StatelessWidget {
-  const _In({required this.index, required this.child});
-
-  final int index;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final delay = 450 + math.min(index, 10) * 90;
-    final total = delay + 380;
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: Duration(milliseconds: total),
-      builder: (context, v, child) {
-        final p = ((v * total - delay) / 380).clamp(0.0, 1.0);
-        // A flicker as it comes on, like a projection catching.
-        final flicker = p < 1 && (p * 10).floor().isOdd ? 0.55 : 1.0;
-        return Opacity(
-          opacity: p * flicker,
-          child: Transform.translate(
-            offset: Offset(0, 10 * (1 - p)),
-            child: child,
-          ),
-        );
-      },
-      child: child,
     );
   }
 }
@@ -428,11 +474,14 @@ class _Header extends StatelessWidget {
                 '${tier.label.toUpperCase()} · ${rankedGameName(game).toUpperCase()}',
                 style: _label(tier),
               ),
-              TweenAnimationBuilder<int>(
-                tween: IntTween(begin: 0, end: rating),
+              // Counting up as the header comes on, ticking like a counter.
+              Grow(
+                to: rating.toDouble(),
                 duration: const Duration(milliseconds: 1300),
-                curve: Curves.easeOutCubic,
-                builder: (context, v, _) => Text('$v', style: _value(tier, 46)),
+                ticks: 28,
+                tickVolume: 0.45,
+                builder: (context, v) =>
+                    Text('${v.round()}', style: _value(tier, 46)),
               ),
               for (final line in where) Text(line, style: _small(tier)),
             ],
@@ -487,11 +536,10 @@ class _HoloBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = tier.color;
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: value),
+    return Grow(
+      to: value,
       duration: const Duration(milliseconds: 1100),
-      curve: Curves.easeOutCubic,
-      builder: (context, v, _) => Container(
+      builder: (context, v) => Container(
         height: 9,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
@@ -573,11 +621,10 @@ class _Trend extends StatelessWidget {
           SizedBox(
             height: 64,
             width: double.infinity,
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: 1),
+            child: Grow(
+              to: 1,
               duration: const Duration(milliseconds: 1200),
-              curve: Curves.easeOutCubic,
-              builder: (context, v, _) => CustomPaint(
+              builder: (context, v) => CustomPaint(
                 painter: _SparkPainter(line: line, color: tier.color, drawn: v),
               ),
             ),
@@ -675,11 +722,12 @@ class _Record extends StatelessWidget {
         children: [
           SizedBox.square(
             dimension: 92,
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: i.winRate),
+            child: Grow(
+              to: i.winRate,
               duration: const Duration(milliseconds: 1300),
-              curve: Curves.easeOutCubic,
-              builder: (context, v, _) => CustomPaint(
+              ticks: 14,
+              tickVolume: 0.35,
+              builder: (context, v) => CustomPaint(
                 painter: _RingPainter(value: v, color: tier.color),
                 child: Center(
                   child: Column(

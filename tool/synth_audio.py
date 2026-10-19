@@ -385,6 +385,145 @@ def _two_tone(a, b):
     return x
 
 
+def make_sfx_hologram():
+    """The rank hologram reading out a player's stats: a soft power-up as it
+    projects, a data blip as each readout comes up (four pitches, climbing
+    through them as the readouts appear) and a tiny counter tick while the
+    rating counts up. The app plays them as the stats animate, so the sound
+    stops when the animation does."""
+    random.seed(31)
+
+    # Power-up: a hum swelling and rising, a shimmer of air, a chirp on top.
+    x = buf(0.6)
+    add(x, tone(lambda t: 180 + 520 * (t / 0.42) ** 1.6, 0.42, 0.5, shape="tri",
+                attack=0.12, harmonics=[(1, 1), (2, 0.3)]), 0.0, 0.5)
+    add(x, biquad(noise(0.4, 0.3, attack=0.15), "bp", lambda t: 1200 + 4000 * t / 0.4, 2.5), 0.0, 0.12)
+    add(x, tone(lambda t: 1760 + 900 * t / 0.06, 0.07, 0.025, attack=0.002), 0.4, 0.35)
+    add(x, tone(lambda _: 2637, 0.09, 0.03, attack=0.002), 0.46, 0.25)
+    x = biquad(x, "lp", 5200, 0.6)
+    sfx("holo_on", delay_reverb(x, feedback=0.18), 0.5)
+
+    # Data blips: two quick bleeps, the second a fifth up, with a click.
+    for i, name in enumerate(("A5", "C6", "D6", "E6")):
+        f = note(name)
+        x = buf(0.16)
+        add(x, tone(lambda _: f, 0.05, 0.022, shape="tri", attack=0.001), 0.0, 0.55)
+        add(x, tone(lambda _: f * 1.5, 0.05, 0.02, shape="tri", attack=0.001), 0.038, 0.45)
+        add(x, biquad(noise(0.012, 0.003), "bp", 5200, 3), 0.0, 0.25)
+        x = biquad(x, "lp", 6500, 0.6)
+        sfx(f"holo_blip_{i + 1}", delay_reverb(x, taps=((0.05, 0.18), (0.09, 0.1)), feedback=0.1), 0.42)
+
+    # Counter tick: a tiny high bleep, very short.
+    x = buf(0.05)
+    add(x, tone(lambda _: 3135, 0.028, 0.009, attack=0.0008), 0.0, 0.6)
+    add(x, biquad(noise(0.006, 0.0015), "hp", 4000), 0.0, 0.2)
+    sfx("holo_tick", x, 0.3)
+
+
+def make_sfx_hologram_ambience():
+    """Each tier's aura as a far-off sound, looping under the hologram
+    while it's open: Bronze dust swirling, Silver's liquid trickling, Gold's
+    fire crackling, Diamond's crystals chiming, Legend's electricity
+    crackling. Muffled (low-passed), roomy (reverb) and soft, so it sounds
+    far away in the world but still there. Each wraps round on itself, so
+    it loops without a seam. 22 kHz, like the music, to stay small."""
+    sr = MUSIC_SR
+    seconds = 5.0
+    n = int(seconds * sr)
+
+    def wrap(dst, src, at, gain=1.0):
+        start = int(at * sr)
+        for i in range(len(src)):
+            dst[(start + i) % n] += src[i] * gain
+
+    def circ(x, kind, freq, q):
+        """Filtered as a loop: run over two copies, keep the second, so the
+        end flows into the start without a click."""
+        twice = array.array("d", x)
+        twice.extend(x)
+        return biquad(twice, kind, freq, q, sr)[n:]
+
+    def loop_out(name, x, cutoff, peak):
+        x = circ(x, "lp", cutoff, 0.6)
+        # Reverb that also wraps, so the tail carries over the seam.
+        y = array.array("d", x)
+        for d, g in ((0.11, 0.35), (0.19, 0.28), (0.29, 0.2), (0.43, 0.13)):
+            k = int(d * sr)
+            for i in range(n):
+                y[(i + k) % n] += x[i] * g
+        write(f"{OUT_SFX}/{name}.wav", normalize(y, peak), sr)
+
+    random.seed(41)
+
+    # Bronze: dust swirling, a soft whoosh coming and going, grains ticking.
+    x = buf(seconds, sr)
+    for i in range(n):
+        x[i] = random.uniform(-1, 1)
+    swirl = array.array("d", bytes(8 * n))
+    for i in range(n):
+        t = i / sr
+        swirl[i] = 0.5 + 0.5 * math.sin(2 * math.pi * t / seconds * 2 + 1.1 * math.sin(2 * math.pi * t / seconds))
+    x = circ(x, "bp", lambda t: 500 + 900 * (0.5 + 0.5 * math.sin(2 * math.pi * t / seconds * 2)), 1.3)
+    for i in range(n):
+        x[i] *= 0.25 + 0.75 * swirl[i]
+    for _ in range(55):
+        wrap(x, biquad(noise(0.01, 0.003, sr=sr), "bp", random.uniform(2500, 5000), 3, sr), random.uniform(0, seconds), random.uniform(0.05, 0.15))
+    loop_out("holo_amb_bronze", x, 2600, 0.45)
+
+    # Silver: liquid trickling, droplets falling into it.
+    x = buf(seconds, sr)
+    trickle = circ(array.array("d", [random.uniform(-1, 1) for _ in range(n)]), "bp", 1400, 2.5)
+    for i in range(n):
+        t = i / sr
+        x[i] = trickle[i] * (0.35 + 0.25 * math.sin(2 * math.pi * 7 * t) * math.sin(2 * math.pi * 0.4 * t))
+    for _ in range(26):
+        f = random.uniform(700, 1500)
+        drop = tone(lambda t, f=f: f * (1 + 1.8 * math.exp(-t / 0.012)), 0.09, 0.03, sr=sr, attack=0.001)
+        wrap(x, drop, random.uniform(0, seconds), random.uniform(0.25, 0.55))
+    loop_out("holo_amb_silver", x, 3200, 0.45)
+
+    # Gold: a fire, a warm low roar with crackles popping through it.
+    x = buf(seconds, sr)
+    roar = circ(array.array("d", [random.uniform(-1, 1) for _ in range(n)]), "lp", 260, 0.7)
+    for i in range(n):
+        t = i / sr
+        x[i] = roar[i] * (0.8 + 0.2 * math.sin(2 * math.pi * t / seconds * 3))
+    for _ in range(70):
+        pop = biquad(noise(random.uniform(0.004, 0.012), 0.004, sr=sr), "bp", random.uniform(1200, 3600), 2, sr)
+        wrap(x, pop, random.uniform(0, seconds), random.uniform(0.15, 0.5))
+    loop_out("holo_amb_gold", x, 3000, 0.5)
+
+    # Diamond: crystals chiming far off, over a faint glassy air.
+    x = buf(seconds, sr)
+    air = circ(array.array("d", [random.uniform(-1, 1) for _ in range(n)]), "bp", 5200, 1.5)
+    for i in range(n):
+        x[i] = air[i] * 0.06
+    for _ in range(14):
+        f = random.choice([note(m) for m in ("E6", "G6", "B6", "D7", "F#7")])
+        chime = tone(lambda _, f=f: f, 1.2, 0.35, sr=sr, attack=0.002,
+                     harmonics=[(1, 1), (2.76, 0.4), (5.4, 0.18)])
+        wrap(x, chime, random.uniform(0, seconds), random.uniform(0.12, 0.3))
+    loop_out("holo_amb_diamond", x, 7000, 0.4)
+
+    # Legend: electricity, a buzzing hum flickering, arcs crackling.
+    x = buf(seconds, sr)
+    phase = 0.0
+    for i in range(n):
+        t = i / sr
+        phase += 2 * math.pi * 60 / sr
+        hum = sum(math.sin(phase * h) / h for h in (1, 2, 3, 5, 7))
+        flicker = 0.55 + 0.45 * math.sin(2 * math.pi * t * 11) * math.sin(2 * math.pi * t / seconds * 4)
+        x[i] = hum * 0.18 * flicker
+    for _ in range(40):
+        length = random.uniform(0.02, 0.12)
+        arc = biquad(noise(length, length / 2, sr=sr), "hp", 1800, 0.7, sr)
+        # Arcs come in bursts of snaps.
+        at = random.uniform(0, seconds)
+        for k in range(random.randint(1, 4)):
+            wrap(x, arc, at + k * random.uniform(0.02, 0.06), random.uniform(0.3, 0.8))
+    loop_out("holo_amb_legend", x, 4200, 0.5)
+
+
 # ── music ──────────────────────────────────────────────────────────────────
 
 
@@ -474,7 +613,16 @@ def make_music():
 
 
 if __name__ == "__main__":
+    import sys
+
+    if sys.argv[1:] == ["hologram"]:
+        # Only the hologram's sounds, leaving the rest as they are.
+        make_sfx_hologram()
+        make_sfx_hologram_ambience()
+        sys.exit(0)
     make_sfx()
     make_music()
     make_sfx_extra()
     make_sfx_drawer()
+    make_sfx_hologram()
+    make_sfx_hologram_ambience()

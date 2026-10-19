@@ -9,7 +9,13 @@ class WebAudio {
 
   void effect(String asset, double volume) {}
 
+  WebLoop loop(String asset, double volume) => WebLoop();
+
   void preloadOnUnlock(Iterable<String> assets) {}
+}
+
+class WebLoop {
+  void stop() {}
 }
 
 class WebMusic {

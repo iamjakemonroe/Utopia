@@ -13,6 +13,25 @@ double _rand(int i, int salt) {
 Color _a(Color c, double alpha) =>
     c.withValues(alpha: (c.a * alpha).clamp(0.0, 1.0));
 
+/// Legend's big strikes, in seconds after the hologram opens: the first
+/// just after it's up, then every seven seconds or so. Its thunder plays
+/// on the same beat (the hologram listens for them), so the boom lands
+/// with the flash.
+double legendStrikeAt(int k) => 1.2 + k * 7.0 + _rand(k, 77) * 1.6;
+
+/// Which big strike is lighting things at [t], and how brightly (1 the
+/// moment it hits, fading over half a second), or null between them.
+({int k, double glow})? legendStrike(double t) {
+  for (var k = 0; ; k++) {
+    final at = legendStrikeAt(k);
+    if (at > t) return null;
+    if (t - at < 0.55) {
+      final f = 1 - (t - at) / 0.55;
+      return (k: k, glow: f * f);
+    }
+  }
+}
+
 /// Where the hologram is: its panel, and the projector under it.
 class HoloStage {
   const HoloStage({required this.panel, required this.projector});
@@ -362,6 +381,63 @@ class HoloBackPainter extends CustomPainter {
             );
           }
         }
+        // A big strike: one bold bolt out of the sky into the hologram,
+        // branching, with the thunder (see legendStrikeAt).
+        if (legendStrike(t) case (:final k, :final glow)) {
+          final from = Offset(size.width * (0.2 + 0.6 * _rand(k, 80)), -20);
+          final to = Offset(
+            panel.left + panel.width * (0.3 + 0.4 * _rand(k, 81)),
+            panel.top + 4,
+          );
+          final main = Path()..moveTo(from.dx, from.dy);
+          final points = <Offset>[];
+          const steps = 12;
+          for (var s = 1; s <= steps; s++) {
+            final q = Offset.lerp(from, to, s / steps)!;
+            final j = s == steps ? 0.0 : (_rand(k * 50 + s, 82) - 0.5) * 70;
+            points.add(Offset(q.dx + j, q.dy));
+            main.lineTo(q.dx + j, q.dy);
+          }
+          final bolt = [main];
+          for (var b = 0; b < 3; b++) {
+            final start = points[2 + (_rand(k * 9 + b, 83) * 6).floor()];
+            final branch = Path()..moveTo(start.dx, start.dy);
+            var p = start;
+            for (var s = 0; s < 4; s++) {
+              p += Offset((_rand(k * 31 + b * 7 + s, 84) - 0.5) * 60, 24);
+              branch.lineTo(p.dx, p.dy);
+            }
+            bolt.add(branch);
+          }
+          for (final (path, main) in [
+            for (final (i, p) in bolt.indexed) (p, i == 0),
+          ]) {
+            for (final (width, alpha, c) in [
+              (main ? 26.0 : 12.0, 0.22, color),
+              (main ? 9.0 : 4.0, 0.7, color),
+              (main ? 3.2 : 1.6, 1.0, Colors.white),
+            ]) {
+              canvas.drawPath(
+                path,
+                Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = width
+                  ..strokeJoin = StrokeJoin.round
+                  ..strokeCap = StrokeCap.round
+                  ..color = _a(c, alpha * glow * r),
+              );
+            }
+          }
+          // Where it hits the hologram, a burst.
+          canvas.drawCircle(
+            to,
+            40 * glow,
+            Paint()
+              ..shader = RadialGradient(
+                colors: [_a(Colors.white, 0.9 * glow * r), _a(color, 0)],
+              ).createShader(Rect.fromCircle(center: to, radius: 40)),
+          );
+        }
         // Sparks spitting off the projector.
         for (var i = 0; i < 10; i++) {
           final k = ((t * 1.6) + _rand(i, 7)) % 1;
@@ -488,6 +564,15 @@ class HoloFrontPainter extends CustomPainter {
       }
       _bolt(canvas, path, color, r);
       canvas.drawCircle(to, 3, Paint()..color = _a(Colors.white, 0.9 * r));
+    }
+
+    // A big strike's flash: the whole sky lit, white into red.
+    if (legendStrike(t) case (k: _, :final glow)) {
+      canvas.drawRect(
+        Offset.zero & size,
+        Paint()
+          ..color = _a(Color.lerp(color, Colors.white, 0.6)!, 0.45 * glow * r),
+      );
     }
 
     // A flash now and then.

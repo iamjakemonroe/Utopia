@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
@@ -44,6 +45,22 @@ enum Sfx {
   chessCapture('chess_capture'),
   chessCheck('chess_check'),
 
+  // The rank hologram reading out stats (played as they animate in).
+  holoOn('holo_on'),
+  holoBlip1('holo_blip_1'),
+  holoBlip2('holo_blip_2'),
+  holoBlip3('holo_blip_3'),
+  holoBlip4('holo_blip_4'),
+  holoTick('holo_tick'),
+
+  // Each tier's aura, far off, looping under the hologram while it's open
+  // (loaded when first wanted, not with the rest).
+  holoAmbBronze('holo_amb_bronze'),
+  holoAmbSilver('holo_amb_silver'),
+  holoAmbGold('holo_amb_gold'),
+  holoAmbDiamond('holo_amb_diamond'),
+  holoAmbLegend('holo_amb_legend'),
+
   // The Halloween world's music is a soundscape (tool/synth_world_audio.py):
   // these play over its bed, in step with the scene (WorldSoundscape).
   hwNote1('hw_note_1'),
@@ -78,6 +95,11 @@ enum Sfx {
   /// scale so a long move sounds like it's bubbling upward.
   static Sfx step(int n) =>
       const [step1, step2, step3, step4, step5, step6][n % 6];
+
+  /// The hologram's blip for its [n]th readout: climbing through four
+  /// pitches as the readouts come up.
+  static Sfx holoBlip(int n) =>
+      const [holoBlip1, holoBlip2, holoBlip3, holoBlip4][n % 4];
 }
 
 enum MusicTrack {
@@ -179,7 +201,8 @@ class GameAudio {
     // memory), switched on by the page's first touch.
     if (kIsWeb) {
       WebAudio.instance.preloadOnUnlock([
-        for (final sfx in Sfx.values) _effectAsset(sfx),
+        for (final sfx in Sfx.values)
+          if (!sfx.file.startsWith('holo_amb')) _effectAsset(sfx),
       ]);
     }
   }
@@ -275,6 +298,57 @@ class GameAudio {
   void playWithMusic(Sfx sfx, {double volume = 1}) {
     if (!_onScreen || !_settings.musicOn || _quiet) return;
     _start(sfx, _settings.musicVolume * volume * (_ducked ? 0.25 : 1));
+  }
+
+  /// [sfx] looping, fading in, until the returned loop is stopped (it
+  /// fades out). Nothing with sound effects off or the app hidden.
+  AmbientLoop startAmbient(Sfx sfx, {double volume = 1}) {
+    if (!_onScreen || !_settings.sfxOn) return AmbientLoop(() {});
+    final target = (_settings.sfxVolume * volume).clamp(0.0, 1.0).toDouble();
+    if (kIsWeb) {
+      final loop = WebAudio.instance.loop(_effectAsset(sfx), target);
+      return AmbientLoop(loop.stop);
+    }
+    AudioPlayer? player;
+    Timer? fade;
+    var level = 0.0;
+    var stopped = false;
+    // Its own fades (the music's are the music's).
+    void fadeTo(double to, int ms, [void Function()? then]) {
+      fade?.cancel();
+      final from = level;
+      final steps = math.max(1, ms ~/ 40);
+      var i = 0;
+      fade = Timer.periodic(const Duration(milliseconds: 40), (timer) {
+        i++;
+        level = from + (to - from) * (i / steps);
+        player?.setVolume(level.clamp(0, 1).toDouble());
+        if (i >= steps) {
+          timer.cancel();
+          then?.call();
+        }
+      });
+    }
+
+    _guard(() async {
+      await _ensureContext();
+      if (stopped) return;
+      final p = AudioPlayer();
+      await p.setReleaseMode(ReleaseMode.loop);
+      await p.play(AssetSource('sfx/${sfx.file}.wav'), volume: 0);
+      if (stopped) {
+        await p.dispose();
+        return;
+      }
+      player = p;
+      fadeTo(target, 700);
+    });
+    return AmbientLoop(() {
+      stopped = true;
+      final p = player;
+      if (p == null) return;
+      fadeTo(0, 300, () => p.stop().whenComplete(p.dispose));
+    });
   }
 
   /// Vibration, from the gameplay settings. Works with sound off too.
@@ -562,4 +636,20 @@ class _MusicTrackScopeState extends ConsumerState<MusicTrackScope> {
 
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+/// A sound looping until [stop] (see [GameAudio.startAmbient]).
+class AmbientLoop {
+  /// A loop that [stop] ends.
+  AmbientLoop(this._stop);
+
+  final void Function() _stop;
+  bool _stopped = false;
+
+  /// Fades it out and ends it; once.
+  void stop() {
+    if (_stopped) return;
+    _stopped = true;
+    _stop();
+  }
 }
