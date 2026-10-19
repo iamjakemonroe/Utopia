@@ -110,8 +110,9 @@ class _RankHologramState extends ConsumerState<_RankHologram>
       RankTier.diamond => Sfx.holoAmbDiamond,
       RankTier.legend => Sfx.holoAmbLegend,
     };
-    // Far off: barely there under the readout.
-    _aura = ref.read(gameAudioProvider).startAmbient(sfx, volume: 0.3);
+    // Far off: barely there under the readout (a quarter of what it was
+    // at first, which still sounded too near).
+    _aura = ref.read(gameAudioProvider).startAmbient(sfx, volume: 0.075);
   }
 
   late final AnimationController _reveal = AnimationController(
