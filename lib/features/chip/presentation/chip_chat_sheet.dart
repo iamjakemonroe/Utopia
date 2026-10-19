@@ -266,6 +266,7 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
     'checkers': ('Play checkers', '/checkers'),
     'ludo': ('Play Ludo', '/ludo'),
     'guess_my_doodle': ('Play Guess My Doodle', '/guess-my-doodle'),
+    'save_account': ('Save your account', '/auth/link'),
     'report_bug': ('Report a bug', null),
     'suggest_feature': ('Suggest a feature', null),
   };
@@ -450,9 +451,20 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                                     icon: Icons.palette_rounded,
                                     onTap: () => _paint(paintId, paintStyle),
                                   ),
+                                if (line.limit == 'coins' &&
+                                    i == chat.lines.length - 1)
+                                  _GoButton(
+                                    label:
+                                        'Keep chatting · ${line.price ?? 20} coins',
+                                    icon: Icons.monetization_on_rounded,
+                                    onTap: () => ref
+                                        .read(chipChatProvider.notifier)
+                                        .keepChattingForCoins(),
+                                  ),
                                 if (open != null &&
                                     _places.containsKey(open) &&
-                                    !(open == 'friends' && isGuest))
+                                    !(open == 'friends' && isGuest) &&
+                                    !(open == 'save_account' && !isGuest))
                                   _GoButton(
                                     label: _places[open]!.$1,
                                     onTap: () => _go(open),

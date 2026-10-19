@@ -100,6 +100,23 @@ class ChipChatController extends StateNotifier<ChipChatState> {
     unawaited(_forgetPhotos());
   }
 
+  /// Out of today's chats, the player chose to keep going for coins: every
+  /// chat past the day's costs coins from then on (only past it).
+  bool _paying = false;
+
+  /// Keeps chatting for coins, starting with the message Chip couldn't
+  /// answer (his "I'm tired" goes, and he answers it).
+  Future<void> keepChattingForCoins() async {
+    if (state.thinking) return;
+    _paying = true;
+    final lines = state.lines;
+    final asked = lines.lastIndexWhere((l) => !l.fromChip);
+    if (asked < 0) return;
+    final text = lines[asked].text;
+    state = ChipChatState(lines: lines.sublist(0, asked));
+    await send(text);
+  }
+
   /// The last photo sent, until Chip draws from it (they may say "yes,
   /// draw it" a message later). Only this session, and not for long.
   ({Uint8List bytes, DateTime at})? _photo;
@@ -189,6 +206,7 @@ class ChipChatController extends StateNotifier<ChipChatState> {
           context: context,
           photo: sendPhoto,
           photoIsNew: photo != null,
+          pay: _paying,
         );
     if (!mounted) return;
     if (reply.picture?.fromPhoto ?? false) _photo = null;

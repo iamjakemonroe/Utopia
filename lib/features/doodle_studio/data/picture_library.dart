@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/platform/device_key.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../domain/coloring_pages.dart';
 import '../domain/line_art.dart';
@@ -130,7 +131,7 @@ class PictureLibrary {
     try {
       final res = await _client.functions.invoke(
         'chip',
-        body: {'action': 'draw', 'subject': subject},
+        body: {'action': 'draw', 'device': DeviceKey.value, 'subject': subject},
       );
       final data = res.data;
       if (data is Map && data['status'] is String) {

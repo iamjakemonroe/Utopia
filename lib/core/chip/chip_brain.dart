@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../platform/device_key.dart';
+
 import '../supabase/supabase_providers.dart';
 
 /// A picture Chip started drawing (or found) for the player.
@@ -114,10 +116,18 @@ class ChipLine {
     this.photo,
     this.paint,
     this.portrait,
+    this.limit,
+    this.price,
   });
 
   final bool fromChip;
   final String text;
+
+  /// Chip out of today's chats, and what the player can do: 'coins' (keep
+  /// chatting, [price] coins a message), 'coins_short' (not enough coins)
+  /// or 'guest' (save the account to chat more).
+  final String? limit;
+  final int? price;
 
   /// A photo the player sent with it: where it's kept on the phone.
   final String? photo;
@@ -287,6 +297,7 @@ class ChipBrain {
     Map<String, String> context = const {},
     Uint8List? photo,
     bool photoIsNew = true,
+    bool pay = false,
   }) async {
     try {
       final res = await _client.functions
@@ -294,6 +305,8 @@ class ChipBrain {
             'chip',
             body: {
               'action': 'chat',
+              'device': DeviceKey.value,
+              if (pay) 'pay': true,
               'message': message,
               'history': [for (final l in history) l.toJson()],
               'context': context,
@@ -315,6 +328,8 @@ class ChipBrain {
           sticker: data['sticker'] as String?,
           paint: data['paint'] as String?,
           portrait: ChipPortraitOffer.fromJson(data['portrait']),
+          limit: data['limited'] is String ? data['limited'] as String : null,
+          price: data['price'] is int ? data['price'] as int : null,
           at: DateTime.now(),
         );
       }
@@ -351,6 +366,7 @@ class ChipBrain {
             'chip',
             body: {
               'action': 'portrait',
+              'device': DeviceKey.value,
               'subject': subject,
               if (photo != null) 'photo': base64Encode(photo),
             },
@@ -386,6 +402,7 @@ class ChipBrain {
             'chip',
             body: {
               'action': 'paint',
+              'device': DeviceKey.value,
               'style': style,
               'title': ?title,
               'image': base64Encode(image),
@@ -427,7 +444,7 @@ class ChipBrain {
     try {
       final res = await _client.functions.invoke(
         'chip',
-        body: {'action': 'vibe', 'clues': clues},
+        body: {'action': 'vibe', 'device': DeviceKey.value, 'clues': clues},
       );
       return ChipVibe.fromJson(res.data);
     } catch (_) {

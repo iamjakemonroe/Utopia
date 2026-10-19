@@ -18,13 +18,104 @@
 //
 // The Anthropic key lives only here, as the ANTHROPIC_API_KEY secret.
 // Every model call is counted against the player's daily allowance first
-// (chip_take), so a runaway client can't run up the bill.
+// (chip_allow: by who's asking, guests sharing one per device, within the
+// day's budget), so a runaway client can't run up the bill. What each call
+// cost goes in the day's log (chip_costs).
 
 import Anthropic from "npm:@anthropic-ai/sdk@0.135.0";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const MODEL = Deno.env.get("CHIP_MODEL") ?? "claude-opus-5-5";
-const DRAW_MODEL = Deno.env.get("CHIP_DRAW_MODEL") ?? MODEL;
+// Who gets which brain: Chip Maestro members the smartest; everyone else
+// the fast one to chat (about 40 times cheaper) and the middle one to draw
+// and color. The shared doodle deck (each word drawn once, for everyone)
+// stays smart, and reading what's playing is the fast one's job.
+const SMART_MODEL = Deno.env.get("CHIP_MODEL") ?? "claude-opus-5-5";
+const MID_MODEL = Deno.env.get("CHIP_MID_MODEL") ?? "claude-sonnet-5-5";
+const FAST_MODEL = Deno.env.get("CHIP_FAST_MODEL") ?? "claude-haiku-5-5";
+const DOODLE_MODEL = Deno.env.get("CHIP_DRAW_MODEL") ?? SMART_MODEL;
+
+/** Who's asking: a guest, a free account or a Chip Maestro member. */
+type Tier = "guest" | "free" | "maestro";
+const chatModel = (tier: Tier) => tier === "maestro" ? SMART_MODEL : FAST_MODEL;
+const artModel = (tier: Tier) => tier === "maestro" ? SMART_MODEL : MID_MODEL;
+
+/** Refusal fallback: if a safety classifier declines, the API retries on
+ * Anthropic's recommended fallback model inside the same call. Haiku has
+ * none, so it goes without. */
+// deno-lint-ignore no-explicit-any
+function withFallback(params: any): any {
+  if (String(params.model).startsWith("claude-haiku")) return params;
+  return { ...params, betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" };
+}
+
+/** Dollars per million tokens: input, output, cache read, cache write.
+ * (Haiku's cache prices are estimates: a tenth and 1.25 times its input.) */
+const PRICES: [string, [number, number, number, number]][] = [
+  ["claude-opus-5-5", [4, 20, 0.2, 5]],
+  ["claude-sonnet-5-5", [2, 10, 0.2, 2.5]],
+  ["claude-haiku-5-5", [0.1, 0.5, 0.01, 0.125]],
+];
+const SEARCH_USD = 0.01;
+
+/** What a call cost, added to the day's log (chip_costs). A model not in
+ * the list (a fallback) is priced as the most expensive, to be safe. */
+async function logCost(
+  feature: string,
+  tier: Tier,
+  response: Anthropic.Beta.BetaMessage,
+): Promise<void> {
+  try {
+    const u = response.usage;
+    const model = String(response.model ?? "unknown");
+    const [inUsd, outUsd, readUsd, writeUsd] =
+      PRICES.find(([id]) => model.startsWith(id))?.[1] ?? PRICES[0][1];
+    const read = u.cache_read_input_tokens ?? 0;
+    const write = u.cache_creation_input_tokens ?? 0;
+    const searches = u.server_tool_use?.web_search_requests ?? 0;
+    const usd = (u.input_tokens * inUsd + u.output_tokens * outUsd + read * readUsd +
+      write * writeUsd) / 1e6 + searches * SEARCH_USD;
+    await admin().rpc("chip_log_cost", {
+      p_feature: feature,
+      p_model: model,
+      p_tier: tier,
+      p_input: u.input_tokens,
+      p_output: u.output_tokens,
+      p_cache_read: read,
+      p_cache_write: write,
+      p_searches: searches,
+      p_usd: Number(usd.toFixed(5)),
+    });
+  } catch (e) {
+    console.error("cost log", e);
+  }
+}
+
+/** The player asking, as the database sees them, and the key of the device
+ * they're on (guests on one device share one allowance). */
+// deno-lint-ignore no-explicit-any
+type Who = { db: any; userId: string; device: string | null };
+
+type Allowance = { ok: boolean; tier: Tier; paid: boolean; why: string | null; price: number };
+
+/** Takes one of today's [kind] for [who] (chip_allow). [pay]: an account
+ * that's out of chats pays coins for one. */
+async function allow(who: Who, kind: string, pay = false): Promise<Allowance> {
+  const { data, error } = await who.db.rpc("chip_allow", {
+    p_kind: kind,
+    p_device: who.device,
+    p_pay: pay,
+  });
+  if (error) throw error;
+  const d = (data ?? {}) as Record<string, unknown>;
+  const tier = ["guest", "free", "maestro"].includes(d.tier as string) ? d.tier as Tier : "free";
+  return {
+    ok: d.ok === true,
+    tier,
+    paid: d.paid === true,
+    why: typeof d.why === "string" ? d.why : null,
+    price: typeof d.price === "number" ? d.price : 20,
+  };
+}
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -367,23 +458,21 @@ async function ask(
   system: string,
   messages: Anthropic.Beta.BetaMessageParam[],
   schema: Record<string, unknown>,
+  feature: string,
+  tier: Tier,
 ): Promise<Record<string, unknown> | null> {
-  // Refusal fallback is on: if a safety classifier declines, the API retries
-  // on Anthropic's recommended fallback model inside the same call.
-  // deno-lint-ignore no-explicit-any
-  const params: any = {
-    model: MODEL,
+  const params = withFallback({
+    model: FAST_MODEL,
     max_tokens: 2000,
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
     system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
     output_config: {
       effort: "low",
       format: { type: "json_schema", schema },
     },
     messages,
-  };
+  });
   const response = await anthropic.beta.messages.create(params);
+  await logCost(feature, tier, response);
   if (response.stop_reason === "refusal") return null;
   const text = response.content
     .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text")
@@ -511,13 +600,18 @@ Deno.serve(async (req: Request) => {
     return json({ error: "Bad JSON" }, 400);
   }
 
+  const who: Who = {
+    db: userClient,
+    userId: user.id,
+    device: typeof body.device === "string" ? body.device.slice(0, 64) : null,
+  };
   try {
-    if (body.action === "chat") return await chat(userClient, user.id, body);
-    if (body.action === "vibe") return await vibe(userClient, body);
-    if (body.action === "draw") return await draw(userClient, user.id, body);
-    if (body.action === "paint") return await paint(userClient, body);
+    if (body.action === "chat") return await chat(who, body);
+    if (body.action === "vibe") return await vibe(who, body);
+    if (body.action === "draw") return await draw(who, body);
+    if (body.action === "paint") return await paint(who, body);
     if (body.action === "portrait") return await portrait(user.id, body);
-    if (body.action === "doodle") return await doodle(userClient, user.id);
+    if (body.action === "doodle") return await doodle(who);
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
     if (e instanceof Anthropic.RateLimitError) {
@@ -578,31 +672,32 @@ function searchTool(model: string) {
 /** What Chip says to [messages], tags and all. Null on refusal. */
 async function talk(
   messages: Anthropic.Beta.BetaMessageParam[],
+  tier: Tier,
 ): Promise<string | null> {
-  // Refusal fallback is on: if a safety classifier declines, the API
-  // retries on Anthropic's recommended fallback model inside the call.
-  // deno-lint-ignore no-explicit-any
-  const params: any = {
-    model: MODEL,
+  // Members' Chip can search the web; everyone else's answers from what he
+  // knows (searching is the dearest part of a message).
+  const model = chatModel(tier);
+  const params = withFallback({
+    model,
     max_tokens: 4000,
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
     system: [
       { type: "text", text: CHIP_SYSTEM, cache_control: { type: "ephemeral" } },
     ],
     output_config: { effort: "low" },
-    tools: [searchTool(MODEL)],
+    ...(tier === "maestro" ? { tools: [searchTool(model)] } : {}),
     messages,
-  };
+  });
   let response: Anthropic.Beta.BetaMessage;
   try {
     response = await anthropic.beta.messages.create(params);
+    await logCost("chat", tier, response);
   } catch (e) {
     // Web search can be switched off for the account: answer without it.
     if (!(e instanceof Anthropic.BadRequestError)) throw e;
     console.error("chat without search", e.message);
     delete params.tools;
     response = await anthropic.beta.messages.create(params);
+    await logCost("chat", tier, response);
   }
   // A long search can pause the turn; let it carry on where it stopped.
   for (let i = 0; i < 2 && response.stop_reason === "pause_turn"; i++) {
@@ -611,6 +706,7 @@ async function talk(
       { role: "assistant", content: response.content },
     ];
     response = await anthropic.beta.messages.create(params);
+    await logCost("chat", tier, response);
   }
   if (response.stop_reason === "refusal") return null;
   // Only what he says after his last search ("let me check" and the like
@@ -690,25 +786,44 @@ function pictureNote(page: { status: string; title: string } | undefined) {
   }
 }
 
-async function chat(
-  // deno-lint-ignore no-explicit-any
-  db: any,
-  userId: string,
-  body: Record<string, unknown>,
-): Promise<Response> {
+/** What Chip says when today's chats are used up, by why. */
+function outOfChats(a: Allowance): Record<string, unknown> {
+  if (a.why === "guest") {
+    return {
+      reply: "That's all my chatting with guests for today! Save your account and we can keep talking.",
+      mood: "sad",
+      open: "save_account",
+      limited: "guest",
+    };
+  }
+  if (a.why === "coins") {
+    return {
+      reply: `Another chat is ${a.price} coins, and you're a little short. Grab some coins, or let's talk tomorrow!`,
+      mood: "sad",
+      open: "coins",
+      limited: "coins_short",
+    };
+  }
+  return {
+    reply: a.why === "busy"
+      ? `So many players are chatting with me today that I'm resting my sprout. I can keep going for ${a.price} coins a message, or we chat again tomorrow!`
+      : a.tier === "maestro"
+      ? `We've talked so much today! I can keep going for ${a.price} coins a message, or we chat again tomorrow.`
+      : `I've talked so much today my sprout is tired. I can keep going for ${a.price} coins a message, or we chat again tomorrow!`,
+    mood: "sad",
+    limited: "coins",
+    price: a.price,
+  };
+}
+
+async function chat(who: Who, body: Record<string, unknown>): Promise<Response> {
+  const { userId } = who;
   const photo = readPhoto(body.photo);
   const message = clip(body.message, 600) || (photo ? "(no message, just the photo)" : "");
   if (!message) return json({ error: "Say something to Chip" }, 400);
 
-  const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "chat" });
-  if (error) return json({ error: error.message }, 500);
-  if (!allowed) {
-    return json({
-      reply: "I've talked so much today my sprout is tired. Let's chat again tomorrow!",
-      mood: "sad",
-      limited: true,
-    });
-  }
+  const allowance = await allow(who, "chat", body.pay === true);
+  if (!allowance.ok) return json(outOfChats(allowance));
 
   const context = (body.context ?? {}) as Record<string, unknown>;
   const facts = [
@@ -809,9 +924,17 @@ async function chat(
       : said,
   });
 
-  const raw = await talk(messages);
+  // A chat paid for with coins that Chip can't answer is given back.
+  let raw: string | null;
+  try {
+    raw = await talk(messages, allowance.tier);
+  } catch (e) {
+    if (allowance.paid) await service.rpc("chip_refund_chat", { p_user: userId });
+    throw e;
+  }
   const out = raw ? readReply(raw) : null;
   if (!out || !out.reply) {
+    if (allowance.paid) await service.rpc("chip_refund_chat", { p_user: userId });
     return json({ reply: "Hmm, let's talk about something else.", mood: "thinking" });
   }
 
@@ -841,6 +964,7 @@ async function chat(
     reply: clip(out.reply, 1200),
     mood: out.mood,
   };
+  if (allowance.paid) result.paid = allowance.price;
   if (out.open) result.open = out.open;
   if (out.sticker) result.sticker = out.sticker;
   if (out.paint) result.paint = out.paint;
@@ -854,7 +978,7 @@ async function chat(
   }
   if (out.draw) {
     const fromPhoto = out.usePhoto && photo ? photo : undefined;
-    const picture = await startDrawing(db, userId, out.draw, {
+    const picture = await startDrawing(who, out.draw, {
       look: out.look ?? undefined,
       photo: fromPhoto,
     });
@@ -876,13 +1000,8 @@ const DRAW_EFFORT = Deno.env.get("CHIP_DRAW_EFFORT") ?? "medium";
 /** A drawing that hasn't finished in this long has been lost. */
 const STALE_MS = 5 * 60 * 1000;
 
-async function draw(
-  // deno-lint-ignore no-explicit-any
-  db: any,
-  userId: string,
-  body: Record<string, unknown>,
-): Promise<Response> {
-  const picture = await startDrawing(db, userId, body.subject);
+async function draw(who: Who, body: Record<string, unknown>): Promise<Response> {
+  const picture = await startDrawing(who, body.subject);
   if (picture.status === "invalid") {
     return json({ error: "Tell Chip what to draw" }, 400);
   }
@@ -941,16 +1060,15 @@ function tidySubject(value: unknown): string {
  * new drawings there are today.
  */
 async function startDrawing(
-  // deno-lint-ignore no-explicit-any
-  db: any,
-  userId: string,
+  who: Who,
   subject: unknown,
   extra: DrawExtra = {},
 ): Promise<{ id?: string; status: string }> {
+  const { userId } = who;
   const key = tidySubject(subject);
   if (key.length < 2) return { status: "invalid" };
   const service = admin();
-  if (extra.photo) return await startPhotoDrawing(db, service, userId, key, extra);
+  if (extra.photo) return await startPhotoDrawing(who, service, key, extra);
   const asked = (id: string) =>
     service.from("coloring_asks").upsert(
       { user_id: userId, page_id: id },
@@ -975,9 +1093,8 @@ async function startDrawing(
     return { id: page.id, status: page.status };
   }
 
-  const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "draw" });
-  if (error) throw error;
-  if (!allowed) return { status: "limited" };
+  const allowance = await allow(who, "draw");
+  if (!allowance.ok) return { status: "limited" };
 
   let id: string;
   if (page) {
@@ -1017,24 +1134,22 @@ async function startDrawing(
 
   // Drawing takes a while: it carries on after this answer goes back, and
   // the app watches the page.
-  await inBackground(drawPage(service, id, key, { look: extra.look }));
+  await inBackground(drawPage(service, id, key, { look: extra.look }, allowance.tier));
   return { id, status: "drawing" };
 }
 
 /** A new picture from the player's photo: always freshly drawn, and only
  * theirs (never in the shared library). The photo itself is never kept. */
 async function startPhotoDrawing(
-  // deno-lint-ignore no-explicit-any
-  db: any,
+  who: Who,
   // deno-lint-ignore no-explicit-any
   service: any,
-  userId: string,
   subject: string,
   extra: DrawExtra,
 ): Promise<{ id?: string; status: string }> {
-  const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "draw" });
-  if (error) throw error;
-  if (!allowed) return { status: "limited" };
+  const { userId } = who;
+  const allowance = await allow(who, "draw");
+  if (!allowance.ok) return { status: "limited" };
   const { data: made, error: failed } = await service
     .from("coloring_pages")
     .insert({ key: `photo:${crypto.randomUUID()}`, owner: userId })
@@ -1042,7 +1157,7 @@ async function startPhotoDrawing(
     .single();
   if (failed || !made) throw failed;
   await service.from("coloring_asks").insert({ user_id: userId, page_id: made.id });
-  await inBackground(drawPage(service, made.id, subject, extra));
+  await inBackground(drawPage(service, made.id, subject, extra, allowance.tier));
   return { id: made.id, status: "drawing" };
 }
 
@@ -1089,7 +1204,8 @@ async function drawPage(
   service: any,
   id: string,
   subject: string,
-  extra: DrawExtra = {},
+  extra: DrawExtra,
+  tier: Tier,
 ): Promise<void> {
   const finish = (fields: Record<string, unknown>) =>
     service
@@ -1097,12 +1213,9 @@ async function drawPage(
       .update({ ...fields, updated_at: new Date().toISOString() })
       .eq("id", id);
   try {
-    // deno-lint-ignore no-explicit-any
-    const params: any = {
-      model: DRAW_MODEL,
+    const params = withFallback({
+      model: artModel(tier),
       max_tokens: 32000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
       system: [
         { type: "text", text: DRAW_SYSTEM, cache_control: { type: "ephemeral" } },
       ],
@@ -1111,9 +1224,10 @@ async function drawPage(
         format: { type: "json_schema", schema: drawSchema },
       },
       messages: [{ role: "user", content: drawRequest(subject, extra) }],
-    };
+    });
     // Streamed, so a long drawing never trips a request timeout.
     const response = await anthropic.beta.messages.stream(params).finalMessage();
+    await logCost("draw", tier, response);
     if (response.stop_reason === "refusal") {
       await finish({ status: "refused" });
       return;
@@ -1199,11 +1313,8 @@ type Round = { word: string; strokes: string[] };
  * drawn, each round also has him draw one more in the background, so the
  * deck grows as people play. Drawing counts against the player's allowance.
  */
-async function doodle(
-  // deno-lint-ignore no-explicit-any
-  db: any,
-  userId: string,
-): Promise<Response> {
+async function doodle(who: Who): Promise<Response> {
+  const { userId } = who;
   const service = admin();
   const pick = async (freshOnly: boolean): Promise<Round | null> => {
     const { data, error } = await service.rpc("_chip_doodle_pick", {
@@ -1214,12 +1325,11 @@ async function doodle(
     return (data as Round[] | null)?.[0] ?? null;
   };
   const drawOne = async (): Promise<void> => {
-    const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "doodle" });
-    if (error) throw error;
-    if (!allowed) return;
+    const allowance = await allow(who, "doodle");
+    if (!allowance.ok) return;
     const { data: word, error: claimError } = await service.rpc("_chip_doodle_claim");
     if (claimError) throw claimError;
-    if (word) await drawDoodle(service, word as string);
+    if (word) await drawDoodle(service, word as string, allowance.tier);
   };
   const deal = (r: Round) => json({ word: r.word, strokes: r.strokes });
 
@@ -1245,6 +1355,7 @@ async function drawDoodle(
   // deno-lint-ignore no-explicit-any
   service: any,
   word: string,
+  tier: Tier,
 ): Promise<void> {
   const finish = (fields: Record<string, unknown>) =>
     service
@@ -1252,12 +1363,9 @@ async function drawDoodle(
       .update({ ...fields, updated_at: new Date().toISOString() })
       .eq("word", word);
   try {
-    // deno-lint-ignore no-explicit-any
-    const params: any = {
-      model: DRAW_MODEL,
+    const params = withFallback({
+      model: DOODLE_MODEL,
       max_tokens: 16000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
       system: [
         { type: "text", text: DOODLE_SYSTEM, cache_control: { type: "ephemeral" } },
       ],
@@ -1266,8 +1374,9 @@ async function drawDoodle(
         format: { type: "json_schema", schema: doodleSchema },
       },
       messages: [{ role: "user", content: `The word: ${word}` }],
-    };
+    });
     const response = await anthropic.beta.messages.stream(params).finalMessage();
+    await logCost("doodle", tier, response);
     if (response.stop_reason === "refusal") {
       await finish({ status: "refused" });
       return;
@@ -1352,11 +1461,7 @@ const paintSchema = {
 
 const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
 
-async function paint(
-  // deno-lint-ignore no-explicit-any
-  db: any,
-  body: Record<string, unknown>,
-): Promise<Response> {
+async function paint(who: Who, body: Record<string, unknown>): Promise<Response> {
   const style = clip(body.style, 120) || "your pick";
   const title = clip(body.title, 60);
   const image = readPhoto(body.image);
@@ -1372,16 +1477,12 @@ async function paint(
   }
   if (!image || ids.size === 0) return json({ error: "Nothing to color" }, 400);
 
-  const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "paint" });
-  if (error) return json({ error: error.message }, 500);
-  if (!allowed) return json({ status: "limited" });
+  const allowance = await allow(who, "paint");
+  if (!allowance.ok) return json({ status: "limited" });
 
-  // deno-lint-ignore no-explicit-any
-  const params: any = {
-    model: MODEL,
+  const params = withFallback({
+    model: artModel(allowance.tier),
     max_tokens: 16000,
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
     system: [
       { type: "text", text: PAINT_SYSTEM, cache_control: { type: "ephemeral" } },
     ],
@@ -1399,8 +1500,9 @@ async function paint(
         },
       ],
     }],
-  };
+  });
   const response = await anthropic.beta.messages.stream(params).finalMessage();
+  await logCost("paint", allowance.tier, response);
   if (response.stop_reason === "refusal") return json({ status: "refused" });
   if (response.stop_reason !== "end_turn") {
     console.error("paint stopped", response.stop_reason);
@@ -1652,8 +1754,7 @@ function lastImage(value: any): { data: string; media: string } | null {
 
 // ── vibe ───────────────────────────────────────────────────────────────
 
-// deno-lint-ignore no-explicit-any
-async function vibe(db: any, body: Record<string, unknown>): Promise<Response> {
+async function vibe(who: Who, body: Record<string, unknown>): Promise<Response> {
   const c = (body.clues ?? {}) as Record<string, unknown>;
   const clues = {
     title: clip(c.title, 200),
@@ -1682,14 +1783,15 @@ async function vibe(db: any, body: Record<string, unknown>): Promise<Response> {
     .maybeSingle();
   if (cached?.result) return json({ ...cached.result, cached: true });
 
-  const { data: allowed, error } = await db.rpc("chip_take", { p_kind: "vibe" });
-  if (error) return json({ error: error.message }, 500);
-  if (!allowed) return json({ error: "Daily limit reached" }, 429);
+  const allowance = await allow(who, "vibe");
+  if (!allowance.ok) return json({ error: "Daily limit reached" }, 429);
 
   const out = await ask(
     VIBE_SYSTEM,
     [{ role: "user", content: JSON.stringify(clues) }],
     vibeSchema,
+    "vibe",
+    allowance.tier,
   );
   if (!out) return json({ error: "Couldn't read that one" }, 422);
 

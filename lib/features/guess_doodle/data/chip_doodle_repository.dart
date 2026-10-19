@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/platform/device_key.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../domain/chip_doodle.dart';
 
@@ -26,7 +27,7 @@ class ChipDoodleRepository {
     try {
       final res = await _client.functions.invoke(
         'chip',
-        body: {'action': 'doodle'},
+        body: {'action': 'doodle', 'device': DeviceKey.value},
       );
       final round = ChipDoodleRound.fromJson(res.data);
       if (round != null && round.strokes.isNotEmpty) return round;
