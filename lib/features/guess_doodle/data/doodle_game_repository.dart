@@ -78,6 +78,17 @@ class DoodleGameRepository {
 
   /// Checks in, moves the game on if it's due, and returns the server's
   /// clock.
+  /// The game's players as they are now (scores and all), straight from
+  /// the database: what [watchPlayers] shows, for when its live updates
+  /// don't all arrive.
+  Future<List<DoodlePlayer>> fetchPlayers(String gameId) async {
+    final rows = await _client
+        .from('doodle_players')
+        .select()
+        .eq('game_id', gameId);
+    return [for (final r in rows) DoodlePlayer.fromRow(r)];
+  }
+
   Future<DateTime?> tick(String gameId) async {
     final result = await _client.rpc('tick_doodle', params: {'p_game': gameId});
     return DateTime.tryParse(

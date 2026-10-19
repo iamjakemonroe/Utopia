@@ -69,6 +69,10 @@ class _FakeRepo implements DoodleGameRepository {
   @override
   DoodleInkLink inkLink(String gameId) => link;
 
+  // The streams above are the truth here: a reload finds nothing new.
+  @override
+  Future<List<DoodlePlayer>> fetchPlayers(String gameId) async => const [];
+
   @override
   Future<DateTime?> tick(String gameId) async => DateTime.now();
 

@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -24,6 +23,7 @@ import '../../../chat/presentation/voice_notes.dart';
 import '../../../rankings/data/rankings_repository.dart';
 import '../../../rankings/domain/ranking.dart';
 import '../../domain/time_control.dart';
+import '../../../../core/widgets/frosted.dart';
 
 /// The parts of a live board game's screen that chess and checkers share:
 /// the chat button, a player's chat bubble and clock, the strip of moves,
@@ -643,8 +643,8 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
           children: [
             GestureDetector(
               onTap: widget.onReview,
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 6 * fade, sigmaY: 6 * fade),
+              child: Frosted(
+                sigma: 6 * fade,
                 child: ColoredBox(
                   color: Colors.black.withValues(alpha: 0.55 * fade),
                 ),

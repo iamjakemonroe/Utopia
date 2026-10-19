@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import '../domain/voice_note.dart';
 
 /// Which game a chat belongs to. Each game keeps its messages in its own
 /// table, behind its own send function, with the same shape.
@@ -77,7 +78,7 @@ class ChatRepository {
         .uploadBinary(
           path,
           bytes,
-          fileOptions: const FileOptions(contentType: 'audio/mp4'),
+          fileOptions: FileOptions(contentType: VoiceNote.contentType(path)),
         );
   }
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -112,29 +113,13 @@ class _WorldsTab extends ConsumerWidget {
         if (s.isWorld && store.rentedUntil(s.itemId) == null) s,
     ];
 
-    return CustomScrollView(
-      slivers: [
-        _Header(
-          title: 'Your worlds',
-          subtitle: 'Tap one to travel there. Chip takes you through a portal!',
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          sliver: SliverGrid.count(
-            crossAxisCount: context.gridColumns(),
-            mainAxisSpacing: AppSpacing.sm,
-            crossAxisSpacing: AppSpacing.sm,
-            childAspectRatio: 0.78,
-            children: [
-              for (final (theme, h) in worlds)
-                _WorldCard(theme: theme, hold: h),
-            ],
-          ),
-        ),
-        if (colors.isNotEmpty) ...[
-          const _Header(
-            title: 'Your colors',
-            subtitle: 'Utopia recolored, at dawn, dusk or midnight.',
+    return _LiveWorldArea(
+      child: CustomScrollView(
+        slivers: [
+          _Header(
+            title: 'Your worlds',
+            subtitle:
+                'Tap one to travel there. Chip takes you through a portal!',
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -144,41 +129,185 @@ class _WorldsTab extends ConsumerWidget {
               crossAxisSpacing: AppSpacing.sm,
               childAspectRatio: 0.78,
               children: [
-                for (final (theme, h) in colors)
+                for (final (theme, h) in worlds)
                   _WorldCard(theme: theme, hold: h),
               ],
             ),
           ),
-        ],
-        if (waiting.isNotEmpty) ...[
-          const _Header(
-            title: 'Back next season',
-            subtitle: "Yours for good. They open again when their event's on.",
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            sliver: SliverGrid.count(
-              crossAxisCount: context.gridColumns(),
-              mainAxisSpacing: AppSpacing.sm,
-              crossAxisSpacing: AppSpacing.sm,
-              childAspectRatio: 0.78,
-              children: [
-                for (final s in waiting)
-                  _WorldCard(
-                    theme: UtopiaThemes.byId(s.itemId),
-                    hold: null,
-                    season: s,
-                  ),
-              ],
+          if (colors.isNotEmpty) ...[
+            const _Header(
+              title: 'Your colors',
+              subtitle: 'Utopia recolored, at dawn, dusk or midnight.',
             ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              sliver: SliverGrid.count(
+                crossAxisCount: context.gridColumns(),
+                mainAxisSpacing: AppSpacing.sm,
+                crossAxisSpacing: AppSpacing.sm,
+                childAspectRatio: 0.78,
+                children: [
+                  for (final (theme, h) in colors)
+                    _WorldCard(theme: theme, hold: h),
+                ],
+              ),
+            ),
+          ],
+          if (waiting.isNotEmpty) ...[
+            const _Header(
+              title: 'Back next season',
+              subtitle:
+                  "Yours for good. They open again when their event's on.",
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              sliver: SliverGrid.count(
+                crossAxisCount: context.gridColumns(),
+                mainAxisSpacing: AppSpacing.sm,
+                crossAxisSpacing: AppSpacing.sm,
+                childAspectRatio: 0.78,
+                children: [
+                  for (final s in waiting)
+                    _WorldCard(
+                      theme: UtopiaThemes.byId(s.itemId),
+                      hold: null,
+                      season: s,
+                    ),
+                ],
+              ),
+            ),
+          ],
+          const _MoreInStore(
+            text: 'Find more worlds in the store',
+            location: '/store?tab=worlds',
           ),
         ],
-        const _MoreInStore(
-          text: 'Find more worlds in the store',
-          location: '/store?tab=worlds',
-        ),
-      ],
+      ),
     );
+  }
+}
+
+/// In a browser, only the world card nearest the middle of the screen
+/// moves; the rest hold still. Every live world is a whole scene to draw
+/// each frame, and a browser can't keep up with a screenful of them. The
+/// apps animate them all.
+class _LiveWorldArea extends StatefulWidget {
+  const _LiveWorldArea({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_LiveWorldArea> createState() => _LiveWorldAreaState();
+}
+
+class _LiveWorldAreaState extends State<_LiveWorldArea> {
+  final _live = _LiveWorld();
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _live.pick());
+    }
+  }
+
+  @override
+  void dispose() {
+    _live.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scope = _LiveWorldScope(live: _live, child: widget.child);
+    if (!kIsWeb) return scope;
+    return NotificationListener<ScrollNotification>(
+      onNotification: (n) {
+        if (n is ScrollUpdateNotification || n is ScrollEndNotification) {
+          _live.pick();
+        }
+        return false;
+      },
+      child: scope,
+    );
+  }
+}
+
+/// The world cards on screen, and which one is live.
+class _LiveWorld extends ChangeNotifier {
+  final _cards = <Object, BuildContext>{};
+  Object? live;
+
+  void add(Object id, BuildContext context) => _cards[id] = context;
+
+  void remove(Object id) => _cards.remove(id);
+
+  /// The card nearest the middle of the screen goes live.
+  void pick() {
+    Object? best;
+    var nearest = double.infinity;
+    for (final MapEntry(key: id, value: context) in _cards.entries) {
+      final box = context.findRenderObject() as RenderBox?;
+      if (box == null || !box.attached || !box.hasSize) continue;
+      final middle = MediaQuery.sizeOf(context).height / 2;
+      final centre = box.localToGlobal(box.size.center(Offset.zero)).dy;
+      final away = (centre - middle).abs();
+      if (away < nearest) {
+        nearest = away;
+        best = id;
+      }
+    }
+    if (best != live) {
+      live = best;
+      notifyListeners();
+    }
+  }
+}
+
+class _LiveWorldScope extends InheritedNotifier<_LiveWorld> {
+  const _LiveWorldScope({required _LiveWorld live, required super.child})
+    : super(notifier: live);
+
+  static _LiveWorld? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_LiveWorldScope>()?.notifier;
+}
+
+/// A world card's moving world: in a browser it moves only while it's the
+/// live one (and holds its last frame otherwise).
+class _LiveWorldCard extends StatefulWidget {
+  const _LiveWorldCard({required this.id, required this.child});
+
+  final Object id;
+  final Widget child;
+
+  @override
+  State<_LiveWorldCard> createState() => _LiveWorldCardState();
+}
+
+class _LiveWorldCardState extends State<_LiveWorldCard> {
+  _LiveWorld? _live;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final live = _LiveWorldScope.of(context);
+    if (live != _live) {
+      _live?.remove(widget.id);
+      _live = live?..add(widget.id, context);
+    }
+  }
+
+  @override
+  void dispose() {
+    _live?.remove(widget.id);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final live = _LiveWorldScope.of(context);
+    if (!kIsWeb || live == null) return widget.child;
+    return TickerMode(enabled: live.live == widget.id, child: widget.child);
   }
 }
 
@@ -244,7 +373,10 @@ class _WorldCard extends ConsumerWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                UtopiaWorld(style: theme.world),
+                _LiveWorldCard(
+                  id: theme.id,
+                  child: UtopiaWorld(style: theme.world),
+                ),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(

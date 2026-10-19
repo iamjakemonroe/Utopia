@@ -6,6 +6,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bubble_toggle.dart';
 import '../widgets/pop_card.dart';
+import '../settings/gameplay_settings.dart';
 import 'game_audio.dart';
 
 /// The full sound settings: music and effects switches with volumes.
@@ -69,6 +70,18 @@ class _SoundSettingsCard extends ConsumerWidget {
             onVolume: controller.setSfxVolume,
             onVolumeEnd: (_) => audio.play(Sfx.tap),
           ),
+          const SizedBox(height: AppSpacing.md),
+          _SoundRow(
+            icon: Icons.vibration_rounded,
+            offIcon: Icons.mobile_off_rounded,
+            title: 'Vibration',
+            subtitle: 'Dice, captures, your turn',
+            on: ref.watch(gameplaySettingsProvider).haptics,
+            onToggle: (v) {
+              ref.read(gameplaySettingsProvider.notifier).setHaptics(v);
+              audio.play(v ? Sfx.toggleOn : Sfx.toggleOff);
+            },
+          ),
         ],
       ),
     );
@@ -81,9 +94,10 @@ class _SoundRow extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.on,
-    required this.volume,
+    this.volume,
     required this.onToggle,
-    required this.onVolume,
+    this.onVolume,
+    this.offIcon = Icons.volume_off_rounded,
     this.onVolumeEnd,
   });
 
@@ -91,9 +105,12 @@ class _SoundRow extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool on;
-  final double volume;
+
+  /// Null for a switch with no volume (vibration).
+  final double? volume;
+  final IconData offIcon;
   final ValueChanged<bool> onToggle;
-  final ValueChanged<double> onVolume;
+  final ValueChanged<double>? onVolume;
   final ValueChanged<double>? onVolumeEnd;
 
   @override
@@ -135,29 +152,30 @@ class _SoundRow extends StatelessWidget {
               value: on,
               onChanged: onToggle,
               onIcon: icon,
-              offIcon: Icons.volume_off_rounded,
+              offIcon: offIcon,
               semanticLabel: title,
             ),
           ],
         ),
-        AnimatedOpacity(
-          opacity: on ? 1 : 0.35,
-          duration: const Duration(milliseconds: 200),
-          child: SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTrackColor: AppColors.accent,
-              inactiveTrackColor: AppColors.surfaceElevated,
-              thumbColor: AppColors.goldBorderBright,
-              overlayColor: AppColors.accent.withValues(alpha: 0.2),
-              trackHeight: 5,
-            ),
-            child: Slider(
-              value: volume,
-              onChanged: on ? onVolume : null,
-              onChangeEnd: onVolumeEnd,
+        if (volume case final volume?)
+          AnimatedOpacity(
+            opacity: on ? 1 : 0.35,
+            duration: const Duration(milliseconds: 200),
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: AppColors.accent,
+                inactiveTrackColor: AppColors.surfaceElevated,
+                thumbColor: AppColors.goldBorderBright,
+                overlayColor: AppColors.accent.withValues(alpha: 0.2),
+                trackHeight: 5,
+              ),
+              child: Slider(
+                value: volume,
+                onChanged: on ? onVolume : null,
+                onChangeEnd: onVolumeEnd,
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -255,6 +273,20 @@ class _SoundQuickToggleState extends ConsumerState<SoundQuickToggle> {
                         onChanged: (v) {
                           controller.setSfxOn(v);
                           if (v) audio.play(Sfx.toggleOn);
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      BubbleToggle(
+                        width: 54,
+                        value: ref.watch(gameplaySettingsProvider).haptics,
+                        onIcon: Icons.vibration_rounded,
+                        offIcon: Icons.mobile_off_rounded,
+                        semanticLabel: 'Vibration',
+                        onChanged: (v) {
+                          ref
+                              .read(gameplaySettingsProvider.notifier)
+                              .setHaptics(v);
+                          audio.play(v ? Sfx.toggleOn : Sfx.toggleOff);
                         },
                       ),
                       const SizedBox(width: 6),

@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/utopia_icons.dart';
+import '../../../../core/widgets/frosted.dart';
 
 /// The Utopia gateway floating in a halo of turning light, with Chip
 /// hovering beside it.
@@ -151,8 +151,8 @@ class GlassPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+      child: Frosted(
+        sigma: 18,
         child: Container(
           padding: padding ?? const EdgeInsets.all(22),
           decoration: BoxDecoration(

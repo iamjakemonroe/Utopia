@@ -7,7 +7,9 @@ import '../theme/theme_controller.dart';
 @immutable
 class GameplaySettings {
   const GameplaySettings({
-    this.haptics = true,
+    // Off in a browser to start (a slow frame put it out of step with the
+    // game there); it's in Settings and the game's sound controls.
+    this.haptics = !kIsWeb,
     this.moveHints = true,
     this.timerTicks = true,
     this.autoPlayVoice = true,
@@ -62,7 +64,7 @@ class GameplaySettingsController extends StateNotifier<GameplaySettings> {
   GameplaySettingsController(this._prefs)
     : super(
         GameplaySettings(
-          haptics: _prefs.getBool('play.haptics') ?? true,
+          haptics: _prefs.getBool('play.haptics') ?? !kIsWeb,
           moveHints: _prefs.getBool('play.moveHints') ?? true,
           timerTicks: _prefs.getBool('play.timerTicks') ?? true,
           autoPlayVoice: _prefs.getBool('play.autoPlayVoice') ?? true,

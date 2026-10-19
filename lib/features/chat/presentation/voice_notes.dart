@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:audioplayers/audioplayers.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
+import '../../../core/platform/recording_bytes.dart';
 import '../../../core/audio/game_audio.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -395,15 +395,6 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
   }
 
   Future<void> _start() async {
-    // Recording keeps the note in a file first: the app's, not a browser's.
-    if (kIsWeb) {
-      showUtopiaToast(
-        context,
-        'Voice notes record in the Utopia app. You can still listen here.',
-        icon: Icons.mic_off_rounded,
-      );
-      return;
-    }
     final audio = ref.read(gameAudioProvider);
     if (!await _recorder.hasPermission()) {
       if (mounted) {
@@ -417,17 +408,27 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
       return;
     }
     await ref.read(voicePlaybackProvider.notifier).stop();
-    final dir = await getTemporaryDirectory();
-    final path =
-        '${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+    // The apps record AAC to a file. A browser records WAV (what every
+    // phone and browser plays: Chrome's own WebM won't play on an iPhone),
+    // at 16 kHz so 30 seconds stays under 1 MB, and hands back a link.
+    final path = kIsWeb
+        ? ''
+        : '${(await getTemporaryDirectory()).path}'
+              '/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
     try {
       await _recorder.start(
-        const RecordConfig(
-          encoder: AudioEncoder.aacLc,
-          bitRate: 48000,
-          sampleRate: 22050,
-          numChannels: 1,
-        ),
+        kIsWeb
+            ? const RecordConfig(
+                encoder: AudioEncoder.wav,
+                sampleRate: 16000,
+                numChannels: 1,
+              )
+            : const RecordConfig(
+                encoder: AudioEncoder.aacLc,
+                bitRate: 48000,
+                sampleRate: 22050,
+                numChannels: 1,
+              ),
         path: path,
       );
     } catch (_) {
@@ -480,9 +481,14 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
     if (path == null || ms < VoiceNote.minLength.inMilliseconds) return;
 
     setState(() => _sending = true);
-    final bytes = await File(path).readAsBytes();
+    final Uint8List bytes;
+    try {
+      bytes = await takeRecording(path);
+    } catch (_) {
+      if (mounted) setState(() => _sending = false);
+      return;
+    }
     final error = await widget.onSend(bytes, ms: ms, wave: wave);
-    File(path).delete().ignore();
     if (!mounted) return;
     setState(() => _sending = false);
     if (error != null) {

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math' as math;
-import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +13,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../chip/presentation/chip_chat_sheet.dart';
+import '../../../../core/widgets/frosted.dart';
 
 /// Little bars bouncing to the music.
 class EqualizerBars extends StatefulWidget {
@@ -218,11 +218,8 @@ class _NowPlayingPopupState extends ConsumerState<_NowPlayingPopup>
             child: Stack(
               fit: StackFit.expand,
               children: [
-                BackdropFilter(
-                  filter: ImageFilter.blur(
-                    sigmaX: 16 * fade,
-                    sigmaY: 16 * fade,
-                  ),
+                Frosted(
+                  sigma: 16 * fade,
                   child: ColoredBox(
                     color: AppColors.background.withValues(alpha: 0.5 * fade),
                   ),

@@ -678,7 +678,8 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     required List<int> wave,
   }) async {
     final note = VoiceNote(
-      path: VoiceNote.newPath(_matchId),
+      // A browser records WAV, the apps AAC.
+      path: VoiceNote.newPath(_matchId, wav: VoiceNote.isWav(bytes)),
       ms: ms,
       wave: wave,
     );

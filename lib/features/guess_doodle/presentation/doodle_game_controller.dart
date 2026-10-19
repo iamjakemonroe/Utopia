@@ -160,7 +160,21 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
 
   // ── the server's side ────────────────────────────────────────────────────
 
+  /// The players (and their scores) from the database. Live updates of
+  /// other players' rows didn't always arrive, so their scores could sit
+  /// at 0 on your screen: this keeps everyone's right, on every tick and
+  /// whenever the turn or phase moves on.
+  Future<void> _refreshPlayers() async {
+    try {
+      final players = await _repo.fetchPlayers(gameId);
+      if (_disposed || players.isEmpty) return;
+      players.sort((a, b) => a.joinSeq.compareTo(b.joinSeq));
+      state = state.copyWith(players: players);
+    } catch (_) {}
+  }
+
   Future<void> _tick() async {
+    unawaited(_refreshPlayers());
     try {
       final now = await _repo.tick(gameId);
       if (_disposed || now == null) return;
@@ -200,6 +214,9 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
       clearWord: newTurn,
       secretTurn: newTurn ? -1 : null,
     );
+    // Scores change as a turn ends and a game finishes: fresh ones for
+    // every new turn or phase (the reveal, the final standings).
+    if (newTurn || before.phase != game.phase) unawaited(_refreshPlayers());
 
     // The canvas follows the turn and its clears.
     if (ink.turn != game.turn) {

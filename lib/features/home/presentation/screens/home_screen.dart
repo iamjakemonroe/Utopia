@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'dart:math' as math;
-import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +60,7 @@ import '../../../events/presentation/events_controller.dart';
 import '../../../../core/analytics/analytics.dart';
 import '../../../../core/layout/responsive.dart';
 import '../../../../core/layout/tile_grid.dart';
+import '../../../../core/widgets/frosted.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -603,8 +603,8 @@ class _GreetingPopupState extends State<_GreetingPopup>
           child: Stack(
             fit: StackFit.expand,
             children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 14 * fade, sigmaY: 14 * fade),
+              Frosted(
+                sigma: 14 * fade,
                 child: ColoredBox(
                   color: AppColors.background.withValues(alpha: 0.45 * fade),
                 ),
@@ -900,8 +900,8 @@ class _GreetingBubbleState extends State<_GreetingBubble>
       children: [
         ClipPath(
           clipper: const _BubbleClipper(),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+          child: Frosted(
+            sigma: 14,
             child: CustomPaint(
               painter: _BubblePainter(
                 fill: AppColors.surface,

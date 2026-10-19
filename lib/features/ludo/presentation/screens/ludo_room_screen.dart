@@ -58,25 +58,43 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
   void initState() {
     super.initState();
     final repo = _repo = ref.read(ludoRepositoryProvider);
-    _roomSub = repo.watchRoom(widget.roomId).listen((room) {
-      if (!mounted) return;
-      setState(() => _room = room);
-      final matchId = room?['match_id'] as String?;
-      if (room?['status'] == 'started' && matchId != null) {
-        _left = true; // the room is done; don't "leave" it on the way out
-        context.go('/ludo/$matchId');
-      }
+    _roomSub = repo.watchRoom(widget.roomId).listen(_onRoom);
+    _membersSub = repo.watchRoomMembers(widget.roomId).listen(_onMembers);
+    // Live updates don't always all arrive (a friend joining, the game
+    // starting): the room is read again every few seconds as well.
+    _recheck = Timer.periodic(const Duration(seconds: 4), (_) async {
+      try {
+        final room = await _repo.fetchRoom(widget.roomId);
+        final members = await _repo.fetchRoomMembers(widget.roomId);
+        _onMembers(members);
+        _onRoom(room);
+      } catch (_) {}
     });
-    _membersSub = repo.watchRoomMembers(widget.roomId).listen((rows) {
-      if (!mounted) return;
-      final joined = rows.length > _members.length && _members.isNotEmpty;
-      setState(() => _members = rows);
-      if (joined) ref.read(gameAudioProvider).play(Sfx.reaction);
-    });
+  }
+
+  Timer? _recheck;
+
+  void _onRoom(Map<String, dynamic>? room) {
+    if (!mounted || _left) return;
+    setState(() => _room = room);
+    final matchId = room?['match_id'] as String?;
+    if (room?['status'] == 'started' && matchId != null) {
+      _left = true; // the room is done; don't "leave" it on the way out
+      _recheck?.cancel();
+      context.go('/ludo/$matchId');
+    }
+  }
+
+  void _onMembers(List<Map<String, dynamic>> rows) {
+    if (!mounted) return;
+    final joined = rows.length > _members.length && _members.isNotEmpty;
+    setState(() => _members = rows);
+    if (joined) ref.read(gameAudioProvider).play(Sfx.reaction);
   }
 
   @override
   void dispose() {
+    _recheck?.cancel();
     _roomSub?.cancel();
     _membersSub?.cancel();
     if (!_left) _repo.leaveRoom(widget.roomId).ignore();

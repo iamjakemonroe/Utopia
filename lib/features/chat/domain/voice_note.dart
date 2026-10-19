@@ -33,7 +33,18 @@ class VoiceNote {
   String encode() => 'voice:$path|$ms|${wave.join()}';
 
   /// A new storage path for a note in [matchId].
-  static String newPath(String matchId) => '$matchId/${_uuid()}.m4a';
+  static String newPath(String matchId, {bool wav = false}) =>
+      '$matchId/${_uuid()}.${wav ? 'wav' : 'm4a'}';
+
+  /// Whether [bytes] are a WAV recording (a browser's), not the apps' AAC.
+  static bool isWav(List<int> bytes) =>
+      bytes.length > 12 &&
+      String.fromCharCodes(bytes.sublist(0, 4)) == 'RIFF' &&
+      String.fromCharCodes(bytes.sublist(8, 12)) == 'WAVE';
+
+  /// The upload's content type, from [path]'s extension.
+  static String contentType(String path) =>
+      path.endsWith('.wav') ? 'audio/wav' : 'audio/mp4';
 
   /// Squeezes live loudness samples (dBFS) into [bars] digits.
   static List<int> waveFrom(List<double> dbfs) {

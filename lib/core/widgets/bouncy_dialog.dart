@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../audio/game_audio.dart';
@@ -8,6 +6,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_theme.dart';
 import 'pop_card.dart';
 import 'primary_button.dart';
+import 'frosted.dart';
 
 /// Shows [builder]'s content in a dialog that springs in like a bubble
 /// (and shrinks away), over a softly blurred backdrop.
@@ -30,11 +29,8 @@ Future<T?> showBouncyDialog<T>({
       final pop = animation.status == AnimationStatus.reverse
           ? Curves.easeInBack.transform(animation.value)
           : Curves.elasticOut.transform(animation.value);
-      return BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: 6 * animation.value,
-          sigmaY: 6 * animation.value,
-        ),
+      return Frosted(
+        sigma: 6 * animation.value,
         child: Opacity(
           opacity: Curves.easeOut.transform(animation.value.clamp(0, 1)),
           child: Transform.scale(scale: 0.6 + 0.4 * pop, child: child),

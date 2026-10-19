@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../chat/domain/voice_note.dart';
 
 /// A friend lobby, as the backend's create_ludo_room returns it.
 class LudoRoomRef {
@@ -205,6 +206,17 @@ class LudoRepository {
         .map((rows) => rows.isEmpty ? null : rows.first);
   }
 
+  /// The room and its members as they are now: what the streams show,
+  /// for when a live update doesn't arrive.
+  Future<Map<String, dynamic>?> fetchRoom(String roomId) =>
+      _client.from('ludo_rooms').select().eq('id', roomId).maybeSingle();
+
+  Future<List<Map<String, dynamic>>> fetchRoomMembers(String roomId) => _client
+      .from('ludo_room_members')
+      .select()
+      .eq('room_id', roomId)
+      .order('seat', ascending: true);
+
   Stream<List<Map<String, dynamic>>> watchRoomMembers(String roomId) {
     return _client
         .from('ludo_room_members')
@@ -246,7 +258,7 @@ class LudoRepository {
         .uploadBinary(
           path,
           bytes,
-          fileOptions: const FileOptions(contentType: 'audio/mp4'),
+          fileOptions: FileOptions(contentType: VoiceNote.contentType(path)),
         );
   }
 

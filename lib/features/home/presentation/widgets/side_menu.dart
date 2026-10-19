@@ -1,7 +1,5 @@
 import 'dart:math' as math;
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +25,7 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../friends/presentation/widgets/friends_popup.dart';
 import '../../../help/presentation/help_sheet.dart';
 import '../../../notifications/data/notification_repository.dart';
+import '../../../../core/widgets/frosted.dart';
 
 /// Slides the side menu in from the left with a springy overshoot, items
 /// popping in one after another, over a blurred backdrop.
@@ -43,11 +42,8 @@ Future<void> showSideMenu(BuildContext context, WidgetRef ref) {
       final slide = animation.status == AnimationStatus.reverse
           ? Curves.easeInBack.transform(animation.value)
           : Curves.elasticOut.transform(animation.value).clamp(0.0, 1.06);
-      return BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: 5 * animation.value,
-          sigmaY: 5 * animation.value,
-        ),
+      return Frosted(
+        sigma: 5 * animation.value,
         child: FractionalTranslation(
           translation: Offset(slide - 1, 0),
           child: child,
