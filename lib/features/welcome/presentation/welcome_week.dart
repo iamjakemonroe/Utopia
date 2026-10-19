@@ -23,9 +23,10 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../store/presentation/store_controller.dart';
 import '../data/welcome_repository.dart';
 
-/// Once a session on home: starts a new player's welcome week and welcomes
-/// them to it, reminds them on its last day, and says goodbye once (when it
-/// has ended). Never throws.
+/// Once a session on home: starts a new player's welcome pass (everything
+/// in the store, free for three days) and welcomes them to it, reminds
+/// them on its last day, and says goodbye once (when it has ended). Never
+/// throws.
 Future<void> showWelcomeIfDue(BuildContext context, WidgetRef ref) async {
   final me = ref.read(currentUserProvider)?.id;
   if (me == null) return;
@@ -40,7 +41,7 @@ Future<void> showWelcomeIfDue(BuildContext context, WidgetRef ref) async {
   if (!context.mounted) return;
 
   if (week.fresh) {
-    // The free worlds and the halo, shown straight away.
+    // Everything lent, and the halo on, shown straight away.
     unawaited(ref.read(storeControllerProvider.notifier).refresh());
     ref.invalidate(profileByIdProvider(me));
     ref.read(gameAudioProvider).play(Sfx.drawer);
@@ -78,7 +79,7 @@ Future<void> showWelcomeIfDue(BuildContext context, WidgetRef ref) async {
     if (!context.mounted) return;
     showUtopiaToast(
       context,
-      'Last day of your welcome week. Rent the worlds you love to keep them.',
+      'Last day of your welcome pass. Keep the things you love from the store.',
       icon: Icons.timer_rounded,
     );
   }
@@ -230,6 +231,11 @@ class WelcomeWeekSheet extends ConsumerWidget {
         ? null
         : ref.watch(profileByIdProvider(me)).valueOrNull;
     final name = profile?['display_name'] as String? ?? 'U';
+    // The pass's length, as the server set it.
+    final days = (until.difference(DateTime.now()).inHours / 24).ceil().clamp(
+      1,
+      30,
+    );
     const worlds = [
       UtopiaThemes.utopiaHeaven,
       UtopiaThemes.utopiaDojo,
@@ -253,14 +259,14 @@ class WelcomeWeekSheet extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
-          'Your first week is on us',
+          'Everything’s yours for $days days',
           textAlign: TextAlign.center,
           style: AppTextStyles.display(fontSize: 24),
         ),
         const SizedBox(height: 6),
         Text(
-          'Every world in Utopia and the Angel Halo are yours, free for 7 days. '
-          'Explore them all, then keep the ones you love.',
+          'Every world, frame, chess set and piece set in Utopia is free to '
+          'use for $days days. Try them all, then keep the ones you love.',
           textAlign: TextAlign.center,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
@@ -305,12 +311,12 @@ class WelcomeWeekSheet extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: 'Explore the worlds',
+          label: 'Explore everything',
           onPressed: () {
             HapticFeedback.mediumImpact();
             final router = ref.read(goRouterProvider);
             Navigator.of(context).pop();
-            router.push('/store?tab=worlds');
+            router.push('/store');
           },
         ),
         const SizedBox(height: 4),
@@ -329,7 +335,7 @@ class WelcomeWeekSheet extends ConsumerWidget {
   }
 }
 
-/// Goodbye to the welcome week, and how to keep a favourite world.
+/// Goodbye to the welcome pass, and how to keep a favourite.
 class WelcomeOverSheet extends ConsumerWidget {
   const WelcomeOverSheet({super.key});
 
@@ -340,25 +346,25 @@ class WelcomeOverSheet extends ConsumerWidget {
         const CoinBuddy(mood: BuddyMood.peaceful, size: 96),
         const SizedBox(height: AppSpacing.sm),
         Text(
-          'Your welcome week is over',
+          'Your welcome pass is over',
           textAlign: TextAlign.center,
           style: AppTextStyles.display(fontSize: 24),
         ),
         const SizedBox(height: 6),
         Text(
-          'Hope you loved exploring. Your coins and everything you won stay '
-          'with you. Rent a favourite world from 1,200 coins, or unlock it for '
-          'good.',
+          'Hope you loved it. Your coins, and everything you bought or won, '
+          'stay yours. Keep a favourite from the store any time: worlds can be '
+          'rented from 1,200 coins.',
           textAlign: TextAlign.center,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: 'See the worlds',
+          label: 'See the store',
           onPressed: () {
             final router = ref.read(goRouterProvider);
             Navigator.of(context).pop();
-            router.push('/store?tab=worlds');
+            router.push('/store');
           },
         ),
         const SizedBox(height: 4),

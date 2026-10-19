@@ -18,6 +18,7 @@ import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/utopia_world.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
+import '../../welcome/data/welcome_repository.dart';
 import '../../auras/presentation/auras_tab.dart';
 import '../../chess/domain/chess_types.dart';
 import '../../chess/presentation/widgets/animated_chess_board.dart';
@@ -571,9 +572,9 @@ class _WorldCard extends ConsumerWidget {
                       const _StatusPill(label: 'Owned')
                     else if (owned)
                       _StatusPill(
-                        label: live
-                            ? 'Rented · ${auraTimeLeft(store.rentedUntil(item.id)!).replaceAll(' left', '')}'
-                            : 'Rented',
+                        label:
+                            '${store.onPass(item.id, ref.watch(welcomeWeekProvider)?.until) ? 'Free' : 'Rented'}'
+                            '${live ? ' · ${auraTimeLeft(store.rentedUntil(item.id)!).replaceAll(' left', '')}' : ''}',
                         icon: Icons.timer_rounded,
                       )
                     else if (live && product != null)
@@ -910,7 +911,7 @@ class _RentWorldState extends ConsumerState<_RentWorld> {
               child: Text(
                 until == null
                     ? 'or rent it for a week'
-                    : 'Rented · ${auraTimeLeft(until)}',
+                    : '${store.onPass(theme.id, ref.watch(welcomeWeekProvider)?.until) ? 'Free on your welcome pass' : 'Rented'} · ${auraTimeLeft(until)}',
                 style: AppTextStyles.body(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -1087,9 +1088,15 @@ class _PieceSetCardState extends ConsumerState<_PieceSetCard> {
     final store = ref.watch(storeControllerProvider);
     final owned = store.isOwned(widget.item);
     final product = StoreCatalog.productFor(widget.item.id);
+    // Lent for a while (the welcome pass): it can still be bought to keep.
+    final lentUntil = store.isOwnedForever(widget.item)
+        ? null
+        : store.rentedUntil(widget.item.id);
 
     Widget action;
-    if (widget.equipped) {
+    if (widget.equipped && lentUntil != null && product != null) {
+      action = _BuyButton(product: product);
+    } else if (widget.equipped) {
       action = const _StatusPill(
         label: 'Equipped',
         highlight: true,
@@ -1153,6 +1160,17 @@ class _PieceSetCardState extends ConsumerState<_PieceSetCard> {
                     ),
                   ),
                   widget.preview,
+                  if (lentUntil != null)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: _StatusPill(
+                        label:
+                            '${store.onPass(widget.item.id, ref.watch(welcomeWeekProvider)?.until) ? 'Free' : 'Lent'}'
+                            ' · ${auraTimeLeft(lentUntil).replaceAll(' left', '')}',
+                        icon: Icons.timer_rounded,
+                      ),
+                    ),
                   if (widget.item.free)
                     const Positioned(
                       top: 8,

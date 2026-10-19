@@ -52,7 +52,7 @@ friend, other, asker = (harness.new_user(db, f"{n}@example.com") for n in ("fay"
 admin("update profiles set username = 'me_for_real', display_name = 'Me' where id = %s", account)
 admin("update profiles set username = 'guesty', display_name = 'Guesty' where id = %s", guest)
 
-# The guest's week: the welcome week, winnings, things bought and rented,
+# The guest's days: the welcome pass, winnings, things bought and rented,
 # Maestro, an event, rankings, games, friends, Chip.
 harness.as_user(db, guest)
 q("select start_welcome_week()")
@@ -63,7 +63,8 @@ admin("insert into user_entitlements (user_id, item_id, source) values (%s, 'uto
 # (Renting a world the welcome week lent them makes it longer.)
 admin("insert into world_rentals values (%s, 'utopia_tech', now() + interval '30 days') on conflict (user_id, world_id) do update set expires_at = excluded.expires_at", guest)
 admin("insert into world_rentals values (%s, 'utopia_tech', now() + interval '2 days')", account)
-admin("insert into user_auras values (%s, 'zombie', now() + interval '20 days')", guest)
+# (Renting a frame the welcome pass lent them makes it longer.)
+admin("insert into user_auras values (%s, 'zombie', now() + interval '20 days') on conflict (user_id, aura_id) do update set expires_at = excluded.expires_at", guest)
 admin("select maestro_record(%s, 'ios', 'utopia.maestro.monthly', 'apple-1', now() + interval '25 days', true, 'production')", guest)
 admin("insert into purchase_receipts (user_id, platform, product_id, transaction_id) values (%s, 'ios', 'utopia.coins.pouch', 't-1')", guest)
 admin("insert into event_progress (user_id, event_id, games, days, last_day) values (%s, 'halloween_2026', 12, 3, current_date)", guest)
@@ -104,9 +105,9 @@ check("things bought move (and no duplicates)",
       sorted(r[0] for r in admin("select item_id from user_entitlements where user_id = %s", account)) == ["chess_neon", "utopia_alien"])
 check("a rental moves at its longer length",
       one("select expires_at > now() + interval '29 days' from world_rentals where user_id = %s and world_id = 'utopia_tech'", account))
-check("the welcome week's free worlds don't move",
+check("the welcome pass's lent worlds and sets don't move",
       one("select count(*) from world_rentals where user_id = %s and expires_at = %s", account, welcome_until) == 0)
-check("a rented frame moves; the welcome halo doesn't",
+check("a rented frame moves; the pass's frames (the halo) don't",
       one("select count(*) from user_auras where user_id = %s and aura_id = 'zombie'", account) == 1
       and one("select count(*) from user_auras where user_id = %s and aura_id = 'halo'", account) == 0)
 check("Maestro moves, with its frame",

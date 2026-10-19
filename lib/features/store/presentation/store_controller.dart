@@ -56,6 +56,15 @@ class StoreState {
   /// Worlds rented with coins, and when each rental runs out.
   final Map<String, DateTime> rentals;
 
+  /// Lent by the welcome pass (ends when [passUntil] does) rather than
+  /// rented with coins.
+  bool onPass(String itemId, DateTime? passUntil) {
+    final until = rentedUntil(itemId);
+    return until != null &&
+        passUntil != null &&
+        until.difference(passUntil).abs() < const Duration(minutes: 1);
+  }
+
   /// When the rental of [itemId] runs out, if it's still going.
   DateTime? rentedUntil(String itemId) {
     final until = rentals[itemId];
@@ -181,6 +190,7 @@ class StoreController extends StateNotifier<StoreState> {
       if (mounted) {
         state = state.copyWith(owned: owned, rentals: rentals);
         _leaveExpiredWorld();
+        unawaited(_takeOffExpiredSets());
       }
     } catch (_) {
       // Offline: keep what we knew, and never kick anyone out of a world
@@ -654,6 +664,38 @@ class StoreController extends StateNotifier<StoreState> {
       return null;
     } catch (_) {
       return "Couldn't equip that. Try again?";
+    }
+  }
+
+  /// Chess or piece sets that were only lent (the welcome pass) and whose
+  /// time ran out: back to the classic ones, at once (the server does it
+  /// too, a little later).
+  Future<void> _takeOffExpiredSets() async {
+    final me = _ref.read(currentUserProvider)?.id;
+    if (me == null) return;
+    try {
+      final profile = await _ref.read(profileByIdProvider(me).future);
+      var changed = false;
+      for (final (column, sets) in [
+        ('equipped_ludo_pieces', StoreCatalog.ludoPieceSets),
+        ('equipped_chess_pieces', StoreCatalog.chessPieceSets),
+      ]) {
+        final item = sets.where((i) => i.id == profile?[column]).firstOrNull;
+        if (item == null || state.isOwned(item)) continue;
+        final classic = sets.firstWhere((i) => i.free);
+        await _repo.equip(item.kind, classic.id);
+        changed = true;
+      }
+      if (changed && mounted) {
+        _ref.invalidate(profileByIdProvider(me));
+        state = state.copyWith(
+          message:
+              'Your welcome pass has ended: back to your own pieces. '
+              'Keep a favourite set from the store any time.',
+        );
+      }
+    } catch (_) {
+      // Offline: the server takes them off soon anyway.
     }
   }
 

@@ -359,7 +359,8 @@ class ChipChatController extends StateNotifier<ChipChatState> {
     if (week != null) {
       final left = week.until.difference(DateTime.now()).inDays + 1;
       out['welcome'] = welcomeOn
-          ? 'every world and the Angel Halo are free, $left day${left == 1 ? '' : 's'} left'
+          ? 'their welcome pass: every world, frame, chess set and piece set '
+                'is free to use (not Chip Maestro), $left day${left == 1 ? '' : 's'} left'
           : 'over';
     }
     if (_ref.read(birthdayTodayProvider)) out['birthday'] = 'today';

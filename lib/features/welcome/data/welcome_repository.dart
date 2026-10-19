@@ -3,7 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
 
-/// A player's welcome week: when it ends, and whether it only just started.
+/// A player's welcome pass (the welcome week before it): when it ends, and
+/// whether it only just started.
 class WelcomeWeek {
   const WelcomeWeek({required this.until, required this.fresh});
 
@@ -15,8 +16,9 @@ class WelcomeWeek {
   bool get over => DateTime.now().isAfter(until);
 }
 
-/// Starts the welcome week the first time it's asked (every paid world and
-/// the Angel Halo, free for seven days) and after that says when it ends.
+/// Starts the welcome pass the first time it's asked (everything in the
+/// store but Chip Maestro, free for three days) and after that says when it
+/// ends.
 class WelcomeRepository {
   WelcomeRepository(this._client);
 
