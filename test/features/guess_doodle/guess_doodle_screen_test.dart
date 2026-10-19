@@ -69,9 +69,15 @@ class _FakeRepo implements DoodleGameRepository {
   @override
   DoodleInkLink inkLink(String gameId) => link;
 
-  // The streams above are the truth here: a reload finds nothing new.
+  // A reload finds the players the test last sent.
+  List<DoodlePlayer> _lastPlayers = const [];
+  late final _keepLast = players.stream.listen((p) => _lastPlayers = p);
+
   @override
-  Future<List<DoodlePlayer>> fetchPlayers(String gameId) async => const [];
+  Future<List<DoodlePlayer>> fetchPlayers(String gameId) async {
+    _keepLast;
+    return List.of(_lastPlayers);
+  }
 
   @override
   Future<DateTime?> tick(String gameId) async => DateTime.now();

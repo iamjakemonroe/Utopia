@@ -133,8 +133,14 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
     _gameSub = _repo.watchGame(gameId).listen(_onGame, onError: (_) {});
     _playersSub = _repo.watchPlayers(gameId).listen((players) {
       if (_disposed) return;
-      players.sort((a, b) => a.joinSeq.compareTo(b.joinSeq));
-      state = state.copyWith(players: players);
+      // Shown straight away the first time; after that a live update only
+      // says the players changed, and who has what comes from the
+      // database (the live copies could hold someone's score at 0).
+      if (state.players.isEmpty) {
+        players.sort((a, b) => a.joinSeq.compareTo(b.joinSeq));
+        state = state.copyWith(players: players);
+      }
+      _refreshPlayersSoon();
     }, onError: (_) {});
     _messagesSub = _repo.watchMessages(gameId).listen((messages) {
       if (!_disposed) state = state.copyWith(messages: messages);
@@ -164,6 +170,16 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
   /// other players' rows didn't always arrive, so their scores could sit
   /// at 0 on your screen: this keeps everyone's right, on every tick and
   /// whenever the turn or phase moves on.
+  Timer? _playersTimer;
+
+  void _refreshPlayersSoon() {
+    _playersTimer?.cancel();
+    _playersTimer = Timer(
+      const Duration(milliseconds: 120),
+      () => unawaited(_refreshPlayers()),
+    );
+  }
+
   Future<void> _refreshPlayers() async {
     try {
       final players = await _repo.fetchPlayers(gameId);
@@ -521,6 +537,7 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
     _disposed = true;
     _gameSub?.cancel();
     _playersSub?.cancel();
+    _playersTimer?.cancel();
     _messagesSub?.cancel();
     _heartbeat?.cancel();
     _deadline?.cancel();

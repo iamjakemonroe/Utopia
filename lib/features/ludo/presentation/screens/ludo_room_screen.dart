@@ -59,20 +59,38 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
     super.initState();
     final repo = _repo = ref.read(ludoRepositoryProvider);
     _roomSub = repo.watchRoom(widget.roomId).listen(_onRoom);
-    _membersSub = repo.watchRoomMembers(widget.roomId).listen(_onMembers);
-    // Live updates don't always all arrive (a friend joining, the game
-    // starting): the room is read again every few seconds as well.
+    // Who sits where comes from the database itself: a live update only
+    // says something changed (piecing the seats together from the updates
+    // could show someone twice). And every few seconds as well, for an
+    // update that never arrives (a friend joining, the game starting).
+    _membersSub = repo
+        .watchRoomMembers(widget.roomId)
+        .listen((_) => _syncSoon());
     _recheck = Timer.periodic(const Duration(seconds: 4), (_) async {
       try {
-        final room = await _repo.fetchRoom(widget.roomId);
-        final members = await _repo.fetchRoomMembers(widget.roomId);
-        _onMembers(members);
-        _onRoom(room);
+        _onRoom(await _repo.fetchRoom(widget.roomId));
       } catch (_) {}
+      await _syncMembers();
     });
   }
 
   Timer? _recheck;
+  Timer? _syncTimer;
+
+  /// The seat this player is moving to, shown there straight away until
+  /// the server has it.
+  int? _movingTo;
+
+  void _syncSoon() {
+    _syncTimer?.cancel();
+    _syncTimer = Timer(const Duration(milliseconds: 120), _syncMembers);
+  }
+
+  Future<void> _syncMembers() async {
+    try {
+      _onMembers(await _repo.fetchRoomMembers(widget.roomId));
+    } catch (_) {}
+  }
 
   void _onRoom(Map<String, dynamic>? room) {
     if (!mounted || _left) return;
@@ -87,14 +105,22 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
 
   void _onMembers(List<Map<String, dynamic>> rows) {
     if (!mounted) return;
-    final joined = rows.length > _members.length && _members.isNotEmpty;
-    setState(() => _members = rows);
+    final me = ref.read(currentUserProvider)?.id;
+    final moving = _movingTo;
+    // One seat per player, whatever arrives.
+    final members = [
+      for (final m in {for (final m in rows) m['user_id']: m}.values)
+        if (moving != null && m['user_id'] == me) {...m, 'seat': moving} else m,
+    ];
+    final joined = members.length > _members.length && _members.isNotEmpty;
+    setState(() => _members = members);
     if (joined) ref.read(gameAudioProvider).play(Sfx.reaction);
   }
 
   @override
   void dispose() {
     _recheck?.cancel();
+    _syncTimer?.cancel();
     _roomSub?.cancel();
     _membersSub?.cancel();
     if (!_left) _repo.leaveRoom(widget.roomId).ignore();
@@ -136,10 +162,17 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
       await _share(code);
       return;
     }
+    // Moved straight away; the server confirms (or puts it back).
+    _movingTo = seat;
+    _onMembers(_members);
+    ref.read(gameAudioProvider).play(Sfx.drop);
     try {
       await _repo.takeSeat(widget.roomId, seat);
-      ref.read(gameAudioProvider).play(Sfx.drop);
+      _movingTo = null;
+      await _syncMembers();
     } catch (e) {
+      _movingTo = null;
+      await _syncMembers();
       if (!mounted) return;
       showUtopiaToast(
         context,
