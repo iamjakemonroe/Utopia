@@ -16,6 +16,7 @@ import '../../../notifications/presentation/answer_buttons.dart';
 import '../../../notifications/presentation/notification_actions.dart';
 import '../../data/friend_repository.dart';
 import '../../data/presence.dart';
+import 'online_bubble.dart';
 import '../providers/friends_providers.dart';
 import '../../../../core/widgets/utopia_toast.dart';
 import '../../../coins/presentation/providers/coin_balance_provider.dart';
@@ -229,6 +230,20 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
                               online: online,
                               statusOf: data.statusOf,
                               onAdd: add,
+                              // Pulled down: who's around, asked now.
+                              onRefresh: () async {
+                                ref.invalidate(friendsOnlineProvider);
+                                try {
+                                  await Future.wait<void>([
+                                    controller.refresh(),
+                                    ref
+                                        .read(friendsOnlineProvider.future)
+                                        .then((_) {}),
+                                  ]).timeout(const Duration(seconds: 8));
+                                } catch (_) {
+                                  // Offline: it stays as it was.
+                                }
+                              },
                               onGift: (f) => showSendCoinsSheet(context, (
                                 id: f.id,
                                 name: f.name,
@@ -456,9 +471,13 @@ class _PeopleList extends StatelessWidget {
     required this.emptyLabel,
     this.online,
     this.onGift,
+    this.onRefresh,
   });
 
   final List<SocialProfile> people;
+
+  /// Pull down to refresh (the Friends tab: who's around now).
+  final Future<void> Function()? onRefresh;
 
   /// Send a friend coins (the Friends tab).
   final ValueChanged<SocialProfile>? onGift;
@@ -472,8 +491,27 @@ class _PeopleList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (people.isEmpty) return _Empty(emptyLabel);
+    final refresh = onRefresh;
+    if (refresh == null) return _list(context);
+    return RefreshIndicator(
+      onRefresh: refresh,
+      color: AppColors.coinGoldBright,
+      backgroundColor: AppColors.surface,
+      child: _list(context),
+    );
+  }
+
+  Widget _list(BuildContext context) {
+    if (people.isEmpty) {
+      if (onRefresh == null) return _Empty(emptyLabel);
+      // Still pulls down when there's nobody yet.
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [SizedBox(height: 240, child: _Empty(emptyLabel))],
+      );
+    }
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       itemCount: people.length,
       itemBuilder: (context, index) {
@@ -525,10 +563,12 @@ class _PersonRow extends ConsumerWidget {
               clipBehavior: Clip.none,
               children: [
                 avatar,
+                // The bubble's box has room for its glow: it sits a
+                // little past the picture's corner.
                 Positioned(
-                  right: -2,
-                  bottom: -2,
-                  child: OnlineDot(online: online!),
+                  right: -6,
+                  bottom: -6,
+                  child: OnlineBubble(online: online!),
                 ),
               ],
             ),
@@ -656,44 +696,6 @@ class _GiftButton extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           backgroundColor: AppColors.coinGold.withValues(alpha: 0.18),
           foregroundColor: AppColors.coinGoldBright,
-        ),
-      ),
-    );
-  }
-}
-
-/// On a friend's picture: green while they're around, an empty ring
-/// when they're not.
-class OnlineDot extends StatelessWidget {
-  const OnlineDot({super.key, required this.online});
-
-  final bool online;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: online ? 'Online' : 'Offline',
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        width: 13,
-        height: 13,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: online ? AppColors.success : Colors.transparent,
-          border: Border.all(
-            color: online
-                ? AppColors.surface
-                : Colors.white.withValues(alpha: 0.55),
-            width: online ? 2.5 : 1.8,
-          ),
-          boxShadow: online
-              ? [
-                  BoxShadow(
-                    color: AppColors.success.withValues(alpha: 0.6),
-                    blurRadius: 6,
-                  ),
-                ]
-              : null,
         ),
       ),
     );
