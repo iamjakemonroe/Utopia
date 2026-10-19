@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'sprite_cache.dart';
+
 /// Utopia drawn in ink on paper: the Doodle world. Everything is a pen
 /// line on a warm sheet, and the lines "boil" (redraw with a fresh wobble a
 /// few times a second) the way hand-drawn animation does, so the page feels
@@ -15,6 +17,11 @@ const _pencil = Color(0xFF8E8A80);
 
 /// Lines redraw this many times a second.
 const _boilRate = 6.0;
+
+/// In a browser, the lines boil through this many drawings, over and
+/// over, the way a hand-drawn boil loops (each kept as pixels: see
+/// [DoodleScenePainter.dpr]).
+const _boilLoop = 4;
 
 double _rand(int i, int salt) {
   final x = math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
@@ -184,9 +191,16 @@ class DoodleSkyPainter extends CustomPainter {
 
 /// Everything drawn on the page, in ink.
 class DoodleScenePainter extends CustomPainter {
-  DoodleScenePainter(this.clock) : super(repaint: clock);
+  DoodleScenePainter(this.clock, {this.dpr}) : super(repaint: clock);
 
   final ValueListenable<double> clock;
+
+  /// In a browser, the screen's pixels a point: the islands, trees,
+  /// clouds, balloon and hills are kept as pixels for each drawing of the
+  /// boil (see [SpriteCache]), and only what moves on its own (birds, the
+  /// plane, stars, the sun's rays, grass, flowers, water and smoke) is
+  /// drawn each frame. Null in the apps, which draw it all each frame.
+  final double? dpr;
 
   late double _t;
   late int _boil;
@@ -227,6 +241,42 @@ class DoodleScenePainter extends CustomPainter {
     }
     if (close) path.close();
     return path;
+  }
+
+  /// Draws [paint]'s drawing of something that, until the boil redraws
+  /// it, only moves as a whole: around [at] (or, [absolute], where it is
+  /// now), turned [angle], within [bounds] of [at]. In a browser it's kept
+  /// as pixels for each [key] and drawing of the boil.
+  void _still(
+    Canvas canvas,
+    Object key,
+    Rect bounds,
+    void Function(Canvas canvas) paint, {
+    Offset at = Offset.zero,
+    double angle = 0,
+    bool absolute = false,
+  }) {
+    final dpr = this.dpr;
+    if (dpr != null) {
+      worldSprites.draw(
+        canvas,
+        ('doodle', key, _boil),
+        bounds: bounds,
+        dpr: dpr,
+        paint: paint,
+        at: at,
+        angle: angle,
+        absolute: absolute,
+      );
+    } else if (absolute) {
+      paint(canvas);
+    } else {
+      canvas.save();
+      canvas.translate(at.dx, at.dy);
+      if (angle != 0) canvas.rotate(angle);
+      paint(canvas);
+      canvas.restore();
+    }
   }
 
   /// Points around an ellipse, for wobbly circles.
@@ -293,6 +343,7 @@ class DoodleScenePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     _t = clock.value;
     _boil = (_t * _boilRate).floor();
+    if (dpr != null) _boil %= _boilLoop;
     final w = size.width;
     final h = size.height;
 
@@ -325,37 +376,46 @@ class DoodleScenePainter extends CustomPainter {
       final outer = c + d * r * (i.isEven ? 1.95 : 1.7);
       canvas.drawPath(_wobble([inner, outer], amp: 0.8, salt: i), _pen(2.2));
     }
-    _sketch(canvas, _ring(c, r, r), 2.6, salt: 3, fill: _paper);
-    // A face: it's Utopia.
-    final eye = _pen(2.4);
-    canvas.drawPath(
-      _wobble([
-        c + Offset(-r * 0.38, -r * 0.18),
-        c + Offset(-r * 0.38, -r * 0.02),
-      ], amp: 0.3),
-      eye,
-    );
-    canvas.drawPath(
-      _wobble([
-        c + Offset(r * 0.38, -r * 0.18),
-        c + Offset(r * 0.38, -r * 0.02),
-      ], amp: 0.3),
-      eye,
-    );
-    canvas.drawPath(
-      _wobble(
-        [
-          for (var i = 0; i <= 6; i++)
-            c +
-                Offset(
-                  -r * 0.42 + r * 0.84 * i / 6,
-                  r * 0.22 + math.sin(i / 6 * math.pi) * r * 0.22,
-                ),
-        ],
-        amp: 0.5,
-        close: false,
-      ),
-      _pen(2.2),
+    _still(
+      canvas,
+      ('sun', r),
+      Rect.fromCircle(center: Offset.zero, radius: r + 6),
+      at: c,
+      absolute: true,
+      (canvas) {
+        _sketch(canvas, _ring(c, r, r), 2.6, salt: 3, fill: _paper);
+        // A face: it's Utopia.
+        final eye = _pen(2.4);
+        canvas.drawPath(
+          _wobble([
+            c + Offset(-r * 0.38, -r * 0.18),
+            c + Offset(-r * 0.38, -r * 0.02),
+          ], amp: 0.3),
+          eye,
+        );
+        canvas.drawPath(
+          _wobble([
+            c + Offset(r * 0.38, -r * 0.18),
+            c + Offset(r * 0.38, -r * 0.02),
+          ], amp: 0.3),
+          eye,
+        );
+        canvas.drawPath(
+          _wobble(
+            [
+              for (var i = 0; i <= 6; i++)
+                c +
+                    Offset(
+                      -r * 0.42 + r * 0.84 * i / 6,
+                      r * 0.22 + math.sin(i / 6 * math.pi) * r * 0.22,
+                    ),
+            ],
+            amp: 0.5,
+            close: false,
+          ),
+          _pen(2.2),
+        );
+      },
     );
   }
 
@@ -406,10 +466,15 @@ class DoodleScenePainter extends CustomPainter {
       final span = size.width + w * 1.4;
       final x = (_rand(i, 32) * span + _t * speed) % span - w * 0.7;
       final puff = bank ? _Puff.bank(i, w) : _Puff.cumulus(i, w);
-      canvas.save();
-      canvas.translate(x, size.height * y + math.sin(_t * 0.3 + i) * 3);
-      _drawPuff(canvas, puff, weight: 1.3 + w / 90, alpha: alpha, salt: 40 + i);
-      canvas.restore();
+      final weight = 1.3 + w / 90;
+      _still(
+        canvas,
+        ('cloud', i, w),
+        puff.shape.getBounds().inflate(weight * 3 + 4),
+        at: Offset(x, size.height * y + math.sin(_t * 0.3 + i) * 3),
+        (canvas) =>
+            _drawPuff(canvas, puff, weight: weight, alpha: alpha, salt: 40 + i),
+      );
     }
   }
 
@@ -599,149 +664,161 @@ class DoodleScenePainter extends CustomPainter {
       );
     }
 
-    // The rock: a craggy cone of broken facets under the grass.
-    const outline = [
-      (-1.0, 0.0),
-      (-0.9, 0.14),
-      (-0.8, 0.2),
-      (-0.7, 0.36),
-      (-0.55, 0.42),
-      (-0.46, 0.6),
-      (-0.3, 0.68),
-      (-0.2, 0.86),
-      (0.0, 0.94),
-      (0.08, 0.8),
-      (0.2, 0.7),
-      (0.32, 0.56),
-      (0.46, 0.5),
-      (0.6, 0.36),
-      (0.74, 0.28),
-      (0.86, 0.15),
-      (1.0, 0.0),
-    ];
-    final rock = <Offset>[
-      for (final (i, (x, y)) in outline.indexed)
-        c +
-            Offset(
-              x * half,
-              y * depth * (1 + (_rand(seed * 11 + i, 83) - 0.5) * 0.16),
-            ),
-    ];
-    rock[8] = tip;
-    final rockPath = Path()..addPolygon(rock, true);
-    canvas.drawPath(rockPath, Paint()..color = _paper);
-    // Facets: ridges run from the rim down to the rock's corners, and each
-    // plane is hatched for how much light it gets: dense on the shadowed
-    // left, lighter in the middle, bare stone toward the sun.
-    Offset rim(double u) =>
-        c + Offset(u * half, half * 0.22 * math.sqrt(1 - u * u) + half * 0.04);
-    final ridges = [
-      (rim(-0.5), rock[6]),
-      (rim(-0.05), rock[8]),
-      (rim(0.36), rock[11]),
-      (rim(0.7), rock[14]),
-    ];
-    canvas.save();
-    canvas.clipPath(rockPath);
-    // (gap, ink, how far up the plane the strokes reach, crossed?)
-    const planes = [
-      (2.6, 0.75, 1.0, true),
-      (3.4, 0.6, 1.0, false),
-      (5.0, 0.5, 0.55, false),
-      (7.5, 0.4, 0.3, false),
-    ];
-    for (final (band, (gap, ink, reachUp, crossed)) in planes.indexed) {
-      final left = band == 0
-          ? (
-              c + Offset(-half * 1.2, -half),
-              c + Offset(-half * 1.2, depth * 1.2),
-            )
-          : ridges[band - 1];
-      final right = ridges[band];
-      final plane = Path()
-        ..addPolygon([
-          left.$1.translate(0, -half),
-          right.$1.translate(0, -half),
-          right.$1,
-          right.$2,
-          right.$2.translate(0, depth),
-          left.$2.translate(0, depth),
-          left.$2,
-          left.$1,
-        ], true);
-      canvas.save();
-      canvas.clipPath(plane);
-      final b = plane.getBounds();
-      // Lit planes are only shaded low down, toward the point.
-      final cutoff = c.dy + depth * (1 - reachUp);
-      void hatch(Offset along, double alpha) {
-        final across = Offset(-along.dy, along.dx);
-        final reach = b.longestSide * 1.5;
-        for (var d = -reach; d < reach; d += gap) {
-          final o = b.center + across * d;
-          final j =
-              (_rand(_boil + seed * 31 + band * 7 + d.round(), 87) - 0.5) * 0.7;
-          var p0 = o - along * reach;
-          var p1 = o + along * reach;
-          if (reachUp < 1) {
-            // Clip the stroke to below the cutoff.
-            if (p1.dy < cutoff) continue;
-            final t = ((cutoff - p0.dy) / (p1.dy - p0.dy)).clamp(0.0, 1.0);
-            p0 = Offset.lerp(p0, p1, t)!;
+    // The rock and its grass top: the same until the boil redraws them.
+    _still(
+      canvas,
+      ('rock', seed, width),
+      Rect.fromLTRB(-half - 6, -half * 0.22 - 6, half + 6, depth * 1.1 + 6),
+      at: c,
+      absolute: true,
+      (canvas) {
+        // The rock: a craggy cone of broken facets under the grass.
+        const outline = [
+          (-1.0, 0.0),
+          (-0.9, 0.14),
+          (-0.8, 0.2),
+          (-0.7, 0.36),
+          (-0.55, 0.42),
+          (-0.46, 0.6),
+          (-0.3, 0.68),
+          (-0.2, 0.86),
+          (0.0, 0.94),
+          (0.08, 0.8),
+          (0.2, 0.7),
+          (0.32, 0.56),
+          (0.46, 0.5),
+          (0.6, 0.36),
+          (0.74, 0.28),
+          (0.86, 0.15),
+          (1.0, 0.0),
+        ];
+        final rock = <Offset>[
+          for (final (i, (x, y)) in outline.indexed)
+            c +
+                Offset(
+                  x * half,
+                  y * depth * (1 + (_rand(seed * 11 + i, 83) - 0.5) * 0.16),
+                ),
+        ];
+        rock[8] = tip;
+        final rockPath = Path()..addPolygon(rock, true);
+        canvas.drawPath(rockPath, Paint()..color = _paper);
+        // Facets: ridges run from the rim down to the rock's corners, and each
+        // plane is hatched for how much light it gets: dense on the shadowed
+        // left, lighter in the middle, bare stone toward the sun.
+        Offset rim(double u) =>
+            c +
+            Offset(u * half, half * 0.22 * math.sqrt(1 - u * u) + half * 0.04);
+        final ridges = [
+          (rim(-0.5), rock[6]),
+          (rim(-0.05), rock[8]),
+          (rim(0.36), rock[11]),
+          (rim(0.7), rock[14]),
+        ];
+        canvas.save();
+        canvas.clipPath(rockPath);
+        // (gap, ink, how far up the plane the strokes reach, crossed?)
+        const planes = [
+          (2.6, 0.75, 1.0, true),
+          (3.4, 0.6, 1.0, false),
+          (5.0, 0.5, 0.55, false),
+          (7.5, 0.4, 0.3, false),
+        ];
+        for (final (band, (gap, ink, reachUp, crossed)) in planes.indexed) {
+          final left = band == 0
+              ? (
+                  c + Offset(-half * 1.2, -half),
+                  c + Offset(-half * 1.2, depth * 1.2),
+                )
+              : ridges[band - 1];
+          final right = ridges[band];
+          final plane = Path()
+            ..addPolygon([
+              left.$1.translate(0, -half),
+              right.$1.translate(0, -half),
+              right.$1,
+              right.$2,
+              right.$2.translate(0, depth),
+              left.$2.translate(0, depth),
+              left.$2,
+              left.$1,
+            ], true);
+          canvas.save();
+          canvas.clipPath(plane);
+          final b = plane.getBounds();
+          // Lit planes are only shaded low down, toward the point.
+          final cutoff = c.dy + depth * (1 - reachUp);
+          void hatch(Offset along, double alpha) {
+            final across = Offset(-along.dy, along.dx);
+            final reach = b.longestSide * 1.5;
+            for (var d = -reach; d < reach; d += gap) {
+              final o = b.center + across * d;
+              final j =
+                  (_rand(_boil + seed * 31 + band * 7 + d.round(), 87) - 0.5) *
+                  0.7;
+              var p0 = o - along * reach;
+              var p1 = o + along * reach;
+              if (reachUp < 1) {
+                // Clip the stroke to below the cutoff.
+                if (p1.dy < cutoff) continue;
+                final t = ((cutoff - p0.dy) / (p1.dy - p0.dy)).clamp(0.0, 1.0);
+                p0 = Offset.lerp(p0, p1, t)!;
+              }
+              canvas.drawLine(p0 + across * j, p1, _pen(0.85, alpha));
+            }
           }
-          canvas.drawLine(p0 + across * j, p1, _pen(0.85, alpha));
+
+          hatch(const Offset(0.42, 0.91), ink);
+          if (crossed) hatch(const Offset(0.93, -0.36), ink * 0.7);
+          canvas.restore();
         }
-      }
-
-      hatch(const Offset(0.42, 0.91), ink);
-      if (crossed) hatch(const Offset(0.93, -0.36), ink * 0.7);
-      canvas.restore();
-    }
-    // A few cracks across the lit faces.
-    for (var k = 0; k < 3; k++) {
-      final from =
-          c + Offset(half * (0.1 + 0.22 * k), depth * (0.2 + 0.12 * k));
-      canvas.drawPath(
-        _wobble(
-          [
-            from,
-            from + Offset(half * 0.12, depth * 0.03),
-            from + Offset(half * 0.18, depth * 0.09),
-          ],
-          amp: 0.5,
-          salt: 240 + seed * 7 + k,
-        ),
-        _pen(1.1, 0.7),
-      );
-    }
-    canvas.restore();
-    for (final (from, to) in ridges) {
-      canvas.drawPath(
-        _wobble(
-          [from, Offset.lerp(from, to, 0.5)! + const Offset(-2, 0), to],
-          amp: 0.6,
-          salt: 250 + seed * 5 + from.dx.round(),
-        ),
-        _pen(1.7, 0.9),
-      );
-    }
-    _sketch(canvas, rock, 2.2, salt: 80 + seed, close: false);
-
-    // The grass top, with the soil showing along its front lip.
-    final top = _ring(c, half, half * 0.22, n: 26);
-    final lip = <Offset>[
-      for (var i = 0; i <= 12; i++)
-        c +
-            Offset(
-              math.cos(i / 12 * math.pi) * half,
-              math.sin(i / 12 * math.pi) * half * 0.22 + half * 0.07,
+        // A few cracks across the lit faces.
+        for (var k = 0; k < 3; k++) {
+          final from =
+              c + Offset(half * (0.1 + 0.22 * k), depth * (0.2 + 0.12 * k));
+          canvas.drawPath(
+            _wobble(
+              [
+                from,
+                from + Offset(half * 0.12, depth * 0.03),
+                from + Offset(half * 0.18, depth * 0.09),
+              ],
+              amp: 0.5,
+              salt: 240 + seed * 7 + k,
             ),
-    ];
-    canvas.drawPath(
-      _wobble(lip, amp: 0.6, salt: 95 + seed, close: false),
-      _pen(1.6, 0.85),
+            _pen(1.1, 0.7),
+          );
+        }
+        canvas.restore();
+        for (final (from, to) in ridges) {
+          canvas.drawPath(
+            _wobble(
+              [from, Offset.lerp(from, to, 0.5)! + const Offset(-2, 0), to],
+              amp: 0.6,
+              salt: 250 + seed * 5 + from.dx.round(),
+            ),
+            _pen(1.7, 0.9),
+          );
+        }
+        _sketch(canvas, rock, 2.2, salt: 80 + seed, close: false);
+
+        // The grass top, with the soil showing along its front lip.
+        final top = _ring(c, half, half * 0.22, n: 26);
+        final lip = <Offset>[
+          for (var i = 0; i <= 12; i++)
+            c +
+                Offset(
+                  math.cos(i / 12 * math.pi) * half,
+                  math.sin(i / 12 * math.pi) * half * 0.22 + half * 0.07,
+                ),
+        ];
+        canvas.drawPath(
+          _wobble(lip, amp: 0.6, salt: 95 + seed, close: false),
+          _pen(1.6, 0.85),
+        );
+        _sketch(canvas, top, 2.4, salt: 90 + seed, fill: _paper);
+      },
     );
-    _sketch(canvas, top, 2.4, salt: 90 + seed, fill: _paper);
     // Grass tufts along the front edge.
     final grass = _pen(1.3, 0.8);
     for (var i = 0; i < 11; i++) {
@@ -781,9 +858,31 @@ class DoodleScenePainter extends CustomPainter {
 
   void _tree(Canvas canvas, Offset foot, double size, int seed) {
     final sway = math.sin(_t * 1.1 + seed) * 0.03;
-    canvas.save();
-    canvas.translate(foot.dx, foot.dy);
-    canvas.rotate(sway);
+    final crown = _Puff.canopy(seed, size);
+    final bounds =
+        Rect.fromLTRB(
+          -size * 0.13 - 6,
+          -size * 0.66 - 6,
+          size * 0.13 + 6,
+          6,
+        ).expandToInclude(
+          crown.shape
+              .getBounds()
+              .shift(Offset(0, -size * 0.82))
+              .inflate(2 * 3 + 4),
+        );
+    _still(
+      canvas,
+      ('tree', seed, size),
+      bounds,
+      at: foot,
+      angle: sway,
+      (canvas) => _treeShape(canvas, crown, size, seed),
+    );
+  }
+
+  /// A tree standing on the origin.
+  void _treeShape(Canvas canvas, _Puff crown, double size, int seed) {
     // The trunk, wider at the foot, forking into two branches.
     final trunk = [
       Offset(-size * 0.05, 0),
@@ -805,8 +904,8 @@ class DoodleScenePainter extends CustomPainter {
         _pen(0.9, 0.6),
       );
     }
+    canvas.save();
     canvas.translate(0, -size * 0.82);
-    final crown = _Puff.canopy(seed, size);
     _drawPuff(canvas, crown, weight: 2.0, shade: 1.3, salt: 310 + seed);
     // Leaves: little scallops scattered through the shade.
     for (var k = 0; k < 7; k++) {
@@ -849,6 +948,25 @@ class DoodleScenePainter extends CustomPainter {
   }
 
   void _cottage(Canvas canvas, Offset foot, double s) {
+    _still(
+      canvas,
+      ('cottage', s),
+      Rect.fromLTRB(-s * 0.65 - 6, -s * 1.25 - 6, s * 0.65 + 6, 6),
+      at: foot,
+      absolute: true,
+      (canvas) => _house(canvas, foot, s),
+    );
+    // Smoke curling up from the chimney.
+    final chimney = foot.translate(s * 0.3, -s * 1.0);
+    final smoke = <Offset>[
+      for (var i = 0; i <= 8; i++)
+        chimney.translate(math.sin(i * 0.9 - _t * 2) * 4, -i * 4.0),
+    ];
+    canvas.drawPath(_wobble(smoke, amp: 0.4, salt: 143), _pen(1.3, 0.5));
+  }
+
+  /// The cottage itself, standing on [foot].
+  void _house(Canvas canvas, Offset foot, double s) {
     final body = [
       foot.translate(-s / 2, 0),
       foot.translate(-s / 2, -s * 0.7),
@@ -879,13 +997,6 @@ class DoodleScenePainter extends CustomPainter {
       salt: 142,
       close: false,
     );
-    // Smoke curling up from the chimney.
-    final chimney = foot.translate(s * 0.3, -s * 1.0);
-    final smoke = <Offset>[
-      for (var i = 0; i <= 8; i++)
-        chimney.translate(math.sin(i * 0.9 - _t * 2) * 4, -i * 4.0),
-    ];
-    canvas.drawPath(_wobble(smoke, amp: 0.4, salt: 143), _pen(1.3, 0.5));
   }
 
   void _balloon(Canvas canvas, Size size) {
@@ -893,6 +1004,18 @@ class DoodleScenePainter extends CustomPainter {
     final y = size.height * 0.26 + math.sin(_t * 0.6) * 10;
     final r = size.width * 0.07;
     final c = Offset(x, y);
+    _still(
+      canvas,
+      ('balloon', r),
+      Rect.fromLTRB(-r - 6, -r * 1.05 - 6, r + 6, r * 2.15 + 6),
+      at: c,
+      absolute: true,
+      (canvas) => _balloonShape(canvas, c, r),
+    );
+  }
+
+  /// The balloon around [c], [r] across its envelope.
+  void _balloonShape(Canvas canvas, Offset c, double r) {
     final env = <Offset>[
       for (var i = 0; i <= 20; i++)
         c +
@@ -999,18 +1122,26 @@ class DoodleScenePainter extends CustomPainter {
           h * 0.9 - math.sin(i / 16 * math.pi * 1.6 + 0.4) * h * 0.035,
         ),
     ];
-    final area = Path()
-      ..addPolygon([...top, Offset(w, h + 4), Offset(0, h + 4)], true);
-    canvas.drawPath(area, Paint()..color = _paper);
-    _hatch(
+    _still(
       canvas,
-      area,
-      Rect.fromLTRB(0, h * 0.84, w, h),
-      gap: 9,
-      alpha: 0.18,
-      salt: 3,
+      ('hills', w, h),
+      Rect.fromLTRB(-6, h * 0.86 - 6, w + 6, h + 4),
+      absolute: true,
+      (canvas) {
+        final area = Path()
+          ..addPolygon([...top, Offset(w, h + 4), Offset(0, h + 4)], true);
+        canvas.drawPath(area, Paint()..color = _paper);
+        _hatch(
+          canvas,
+          area,
+          Rect.fromLTRB(0, h * 0.84, w, h),
+          gap: 9,
+          alpha: 0.18,
+          salt: 3,
+        );
+        canvas.drawPath(_wobble(top, salt: 170, close: false), _pen(2.2));
+      },
     );
-    canvas.drawPath(_wobble(top, salt: 170, close: false), _pen(2.2));
     // Flowers swaying on the hill.
     for (var i = 0; i < 6; i++) {
       final fx = w * (0.08 + 0.16 * i) + _rand(i, 71) * 14;
@@ -1031,5 +1162,5 @@ class DoodleScenePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant DoodleScenePainter old) => false;
+  bool shouldRepaint(covariant DoodleScenePainter old) => old.dpr != dpr;
 }

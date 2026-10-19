@@ -103,6 +103,9 @@ class _UtopiaWorldState extends State<UtopiaWorld>
   @override
   Widget build(BuildContext context) {
     final style = widget.style ?? UtopiaThemes.active.world;
+    // In a browser, the busiest worlds keep their slow parts as pixels at
+    // the screen's sharpness (see SpriteCache).
+    final dpr = kIsWeb ? MediaQuery.devicePixelRatioOf(context) : null;
     return IgnorePointer(
       child: ClipRect(
         child: Stack(
@@ -117,14 +120,21 @@ class _UtopiaWorldState extends State<UtopiaWorld>
                 const CustomPaint(painter: DoodleSkyPainter()),
               ),
               RepaintBoundary(
-                child: CustomPaint(painter: DoodleScenePainter(_time)),
+                child: CustomPaint(
+                  painter: DoodleScenePainter(_time, dpr: dpr),
+                ),
               ),
             ] else ...[
               _still(style, CustomPaint(painter: _SkyPainter(style))),
               RepaintBoundary(
                 child: CustomPaint(
                   key: _sceneKey,
-                  painter: _ScenePainter(_time, style, origin: _origin),
+                  painter: _ScenePainter(
+                    _time,
+                    style,
+                    origin: _origin,
+                    dpr: dpr,
+                  ),
                 ),
               ),
             ],
@@ -399,11 +409,15 @@ class _SkyPainter extends CustomPainter {
 }
 
 class _ScenePainter extends CustomPainter {
-  _ScenePainter(this.clock, this.style, {this.origin}) : super(repaint: clock);
+  _ScenePainter(this.clock, this.style, {this.origin, this.dpr})
+    : super(repaint: clock);
 
   final ValueListenable<double> clock;
   final WorldStyle style;
   final Offset Function()? origin;
+
+  /// In a browser, the screen's pixels a point (see [DoodleScenePainter.dpr]).
+  final double? dpr;
 
   static const _starCount = 70;
 
@@ -474,6 +488,7 @@ class _ScenePainter extends CustomPainter {
           t,
           style,
           moon: _celestialAnchor(style, size),
+          dpr: dpr,
         );
       case WorldBiome.birthday:
         paintBirthdayScene(
@@ -2573,7 +2588,9 @@ class _ScenePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ScenePainter oldDelegate) =>
-      oldDelegate.clock != clock || oldDelegate.style != style;
+      oldDelegate.clock != clock ||
+      oldDelegate.style != style ||
+      oldDelegate.dpr != dpr;
 
   // ── Dojo: a mountain temple at dusk ──────────────────────────────────────
 

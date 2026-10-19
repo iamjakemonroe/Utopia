@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../theme/utopia_themes.dart';
+import 'sprite_cache.dart';
 import 'world_sets.dart';
 
 /// Stable pseudo-random 0-1 from an index.
@@ -151,12 +152,16 @@ double _flash(double t, double period) {
 /// night turns: the moon goes blood-orange, every lantern blazes and
 /// watches you, the scarecrow's eyes light, the ghosts multiply, the
 /// witch comes round again and again, and the tall thing comes closer.
+///
+/// In a browser, [dpr] is the screen's pixels a point: the trees and the
+/// fence are kept as pixels (see [SpriteCache]).
 void paintHalloweenScene(
   Canvas canvas,
   Size size,
   double t,
   WorldStyle style, {
   required Offset moon,
+  double? dpr,
 }) {
   final w = size.width;
   final h = size.height;
@@ -183,11 +188,22 @@ void paintHalloweenScene(
 
   _hill(canvas, size, t, night, flash);
   _fogBand(canvas, size, t, h * 0.6, 0.5, 0.06);
-  _forest(canvas, size, t, night, flash);
+  _forest(canvas, size, t, night, flash, dpr);
   _ghosts(canvas, size, t, HalloweenTimeline.ghostCount(night), night);
   _ground(canvas, size);
   _scarecrow(canvas, Offset(w * 0.8, h * 0.79), h * 0.2, t, night);
-  _fence(canvas, size, h * 0.83);
+  if (dpr == null) {
+    _fence(canvas, size, h * 0.83);
+  } else {
+    worldSprites.draw(
+      canvas,
+      ('halloween fence', w, h),
+      bounds: Rect.fromLTRB(-4, h * 0.83 - 60, w + 10, h * 0.83 + 4),
+      dpr: dpr,
+      absolute: true,
+      paint: (canvas) => _fence(canvas, size, h * 0.83),
+    );
+  }
   _wisps(canvas, size, t, 7 + (night * 5).round());
   _fogBand(canvas, size, t, h * 0.8, 0.75, 0.09);
   // Darkness pressing in from the edges.
@@ -809,20 +825,16 @@ void _hill(Canvas canvas, Size size, double t, double night, double flash) {
 
 /// A gnarled dead tree: a tapered, twisting trunk forking into crooked
 /// branches.
-void _tree(
-  Canvas canvas,
+/// A tree's roots and branches, each a curve from [from] to [to] bending
+/// through [mid], [width] thick.
+void _treeLines(
   Offset base,
   double height,
   double lean,
   int seed,
-  Color color,
-  double t,
+  double sway,
+  void Function(Offset from, Offset mid, Offset to, double width) line,
 ) {
-  final paint = Paint()
-    ..style = PaintingStyle.stroke
-    ..strokeCap = StrokeCap.round
-    ..color = color;
-  final sway = math.sin(t * 0.6 + seed) * 0.02;
   void branch(Offset from, double angle, double len, double width, int depth) {
     final bend = (_rand(seed * 31 + depth * 7 + len.round(), 540) - 0.5) * 0.9;
     final mid =
@@ -838,13 +850,7 @@ void _tree(
             ) *
             len *
             0.5;
-    paint.strokeWidth = width;
-    canvas.drawPath(
-      Path()
-        ..moveTo(from.dx, from.dy)
-        ..quadraticBezierTo(mid.dx, mid.dy, to.dx, to.dy),
-      paint,
-    );
+    line(from, mid, to, width);
     if (depth == 0 || width < 0.8) return;
     final forks = depth > 2 ? 2 : 3;
     for (var k = 0; k < forks; k++) {
@@ -863,25 +869,98 @@ void _tree(
 
   // The roots clawing into the ground.
   for (final dir in const [-1.0, 1.0]) {
-    paint.strokeWidth = height * 0.035;
-    canvas.drawPath(
-      Path()
-        ..moveTo(base.dx, base.dy - height * 0.05)
-        ..quadraticBezierTo(
-          base.dx + dir * height * 0.06,
-          base.dy,
-          base.dx + dir * height * 0.13,
-          base.dy + height * 0.02,
-        ),
-      paint,
+    line(
+      Offset(base.dx, base.dy - height * 0.05),
+      Offset(base.dx + dir * height * 0.06, base.dy),
+      Offset(base.dx + dir * height * 0.13, base.dy + height * 0.02),
+      height * 0.035,
     );
   }
   branch(base, -math.pi / 2 + lean, height * 0.42, height * 0.075, 4);
 }
 
+void _tree(
+  Canvas canvas,
+  Offset base,
+  double height,
+  double lean,
+  int seed,
+  Color color,
+  double t, {
+  double? sway,
+}) {
+  final paint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeCap = StrokeCap.round
+    ..color = color;
+  _treeLines(
+    base,
+    height,
+    lean,
+    seed,
+    sway ?? math.sin(t * 0.6 + seed) * 0.02,
+    (from, mid, to, width) {
+      paint.strokeWidth = width;
+      canvas.drawPath(
+        Path()
+          ..moveTo(from.dx, from.dy)
+          ..quadraticBezierTo(mid.dx, mid.dy, to.dx, to.dy),
+        paint,
+      );
+    },
+  );
+}
+
+/// A tree, in a browser ([dpr]) kept as pixels and turned about its foot
+/// as it sways (its branch tips travel as far as when each branch bends).
+/// Lightning recolors it, so then it's drawn as it is.
+void _treeAt(
+  Canvas canvas,
+  Size size,
+  Offset base,
+  double height,
+  double lean,
+  int seed,
+  Color color,
+  double t,
+  double? dpr, {
+  required bool lit,
+}) {
+  if (dpr == null || lit) {
+    _tree(canvas, base, height, lean, seed, color, t);
+    return;
+  }
+  var box = Rect.fromPoints(base, base);
+  _treeLines(base, height, lean, seed, 0, (from, mid, to, width) {
+    box = box
+        .expandToInclude(Rect.fromPoints(from, mid).inflate(width / 2 + 2))
+        .expandToInclude(Rect.fromPoints(mid, to).inflate(width / 2 + 2));
+  });
+  // Off the screen, it's never seen.
+  box = box.intersect((Offset.zero & size).inflate(height * 0.05 + 8));
+  worldSprites.draw(
+    canvas,
+    ('halloween tree', seed, height, lean, color),
+    bounds: box.shift(-base).inflate(2),
+    dpr: dpr,
+    at: base,
+    angle: math.sin(t * 0.6 + seed) * 0.02 * 0.6,
+    absolute: true,
+    paint: (canvas) =>
+        _tree(canvas, base, height, lean, seed, color, t, sway: 0),
+  );
+}
+
 /// The twisted forest on both sides, eyes blinking between the trees, and
 /// in the lightning, something tall standing among them.
-void _forest(Canvas canvas, Size size, double t, double night, double flash) {
+void _forest(
+  Canvas canvas,
+  Size size,
+  double t,
+  double night,
+  double flash,
+  double? dpr,
+) {
   final w = size.width;
   final h = size.height;
   final far = Color.lerp(
@@ -894,14 +973,17 @@ void _forest(Canvas canvas, Size size, double t, double night, double flash) {
   for (var i = 0; i < spots.length; i++) {
     final x = w * (spots[i] + 0.03 * _rand(i, 550));
     final ground = h * (0.63 - 0.03 * math.sin(i * 1.7));
-    _tree(
+    _treeAt(
       canvas,
+      size,
       Offset(x, ground),
       h * (0.14 + 0.05 * _rand(i, 551)),
       (_rand(i, 552) - 0.5) * 0.4,
       100 + i,
       far,
       t,
+      dpr,
+      lit: flash > 0,
     );
   }
 
@@ -953,8 +1035,23 @@ void _forest(Canvas canvas, Size size, double t, double night, double flash) {
   }
 
   final near = Color.lerp(_ink, const Color(0xFF2A2040), flash)!;
-  _tree(canvas, Offset(w * 0.06, h * 0.78), h * 0.42, 0.18, 7, near, t);
-  _tree(canvas, Offset(w * 0.97, h * 0.74), h * 0.36, -0.22, 11, near, t);
+  for (final (base, height, lean, seed) in [
+    (Offset(w * 0.06, h * 0.78), h * 0.42, 0.18, 7),
+    (Offset(w * 0.97, h * 0.74), h * 0.36, -0.22, 11),
+  ]) {
+    _treeAt(
+      canvas,
+      size,
+      base,
+      height,
+      lean,
+      seed,
+      near,
+      t,
+      dpr,
+      lit: flash > 0,
+    );
+  }
 
   // Eyes in the dark, blinking, appearing and gone.
   final pairs = HalloweenTimeline.eyePairs(night);
