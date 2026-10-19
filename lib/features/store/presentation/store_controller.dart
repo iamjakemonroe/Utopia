@@ -219,6 +219,11 @@ class StoreController extends StateNotifier<StoreState> {
       (kDebugMode || Env.testStore) &&
       !state.storeAvailable;
 
+  /// Store purchases go through the phone's store, so a browser points
+  /// there (what was bought on the phone is here too, on the same account).
+  static const _onPhonesOnly =
+      'Purchases are made in the Utopia app on your phone.';
+
   /// Buys [product] with coins. [focus] is the item on screen when they
   /// tapped buy (one world of a pack), so the celebration can take them
   /// there.
@@ -246,6 +251,10 @@ class StoreController extends StateNotifier<StoreState> {
     if (state.busyProduct != null) return;
     if (!Env.realMoneyStore) {
       state = state.copyWith(message: 'Coin top-ups are coming soon.');
+      return;
+    }
+    if (kIsWeb) {
+      state = state.copyWith(message: _onPhonesOnly);
       return;
     }
     final me = _ref.read(currentUserProvider)?.id;
@@ -296,6 +305,10 @@ class StoreController extends StateNotifier<StoreState> {
       state = state.copyWith(message: 'Chip Maestro is coming soon.');
       return;
     }
+    if (kIsWeb) {
+      state = state.copyWith(message: _onPhonesOnly);
+      return;
+    }
     final me = _ref.read(currentUserProvider)?.id;
     if (me == null) {
       state = state.copyWith(message: 'Sign in to join Chip Maestro.');
@@ -330,6 +343,10 @@ class StoreController extends StateNotifier<StoreState> {
   Future<void> restore() async {
     if (!Env.realMoneyStore) {
       state = state.copyWith(message: 'Nothing to restore yet.');
+      return;
+    }
+    if (kIsWeb) {
+      state = state.copyWith(message: _onPhonesOnly);
       return;
     }
     state = state.copyWith(message: 'Looking for your purchases…');

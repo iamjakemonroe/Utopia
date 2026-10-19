@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/audio/game_audio.dart';
 import '../../../core/chip/chip_brain.dart';
@@ -641,6 +643,24 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
     if (render == null || _exporting) return;
     setState(() => _exporting = true);
     try {
+      if (kIsWeb) {
+        // No photo library in a browser: a phone's browser offers its share
+        // sheet (with Save Image), a computer's downloads the picture.
+        final png = await render.toPng(2);
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [
+              XFile.fromData(
+                png,
+                mimeType: 'image/png',
+                name: 'utopia-${_doc!.id}.png',
+              ),
+            ],
+          ),
+        );
+        if (mounted) ref.read(gameAudioProvider).play(Sfx.reaction);
+        return;
+      }
       if (!await Gal.hasAccess()) {
         if (!await Gal.requestAccess()) {
           if (mounted) {
@@ -976,7 +996,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
           ),
           const SizedBox(width: 6),
           StudioButton(
-            tooltip: 'Save to Photos',
+            tooltip: kIsWeb ? 'Save picture' : 'Save to Photos',
             size: 42,
             enabled: doc != null && !doc.isEmpty,
             onTap: _saveToPhotos,

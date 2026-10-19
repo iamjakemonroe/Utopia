@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../core/audio/game_audio.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/share_invite.dart';
 import '../../../core/widgets/app_background.dart';
 import '../../../core/widgets/confetti_burst.dart';
 import '../../../core/widgets/utopia_toast.dart';
@@ -208,16 +208,13 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
     ref.read(analyticsProvider).log('invite_shared', {'game': 'doodle'});
     _play(Sfx.tap);
     final box = context.findRenderObject() as RenderBox?;
-    await SharePlus.instance.share(
-      ShareParams(
-        text:
-            'Come play Guess My Doodle with me in Utopia! Tap to join, or use '
-            'game code $code: ${GameInvite(InviteGame.doodle, code).link}',
-        subject: 'Guess My Doodle in Utopia',
-        sharePositionOrigin: box == null
-            ? null
-            : box.localToGlobal(Offset.zero) & box.size,
-      ),
+    await shareInvite(
+      context,
+      text:
+          'Come play Guess My Doodle with me in Utopia! Tap to join, or use '
+          'game code $code: ${GameInvite(InviteGame.doodle, code).link}',
+      subject: 'Guess My Doodle in Utopia',
+      origin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
     );
   }
 

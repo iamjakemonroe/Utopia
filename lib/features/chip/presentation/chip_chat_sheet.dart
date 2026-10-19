@@ -882,6 +882,16 @@ class _SentPhoto extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: path.isEmpty
           ? missing
+          : path.startsWith('web:')
+          ? switch (ChipChatController.webPhoto(path)) {
+              final bytes? => Image.memory(
+                bytes,
+                width: 180,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => missing,
+              ),
+              null => missing,
+            }
           : Image.file(
               File(path),
               width: 180,

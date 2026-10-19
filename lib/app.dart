@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -138,6 +140,9 @@ class UtopiaApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
       routerConfig: router,
+      // A computer's mouse drags lists and pages the way a finger does
+      // (a browser's default only lets touch drag them).
+      scrollBehavior: kIsWeb ? const _DragWithMouse() : null,
       // The teleport plays above the router, so the rebuild a theme switch
       // triggers underneath never interrupts it.
       builder: (context, child) {
@@ -178,4 +183,14 @@ class UtopiaApp extends ConsumerWidget {
       },
     );
   }
+}
+
+class _DragWithMouse extends MaterialScrollBehavior {
+  const _DragWithMouse();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    ...super.dragDevices,
+    PointerDeviceKind.mouse,
+  };
 }

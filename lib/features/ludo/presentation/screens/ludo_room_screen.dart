@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/profiles/profile_freshness.dart';
@@ -14,6 +13,7 @@ import '../../../../core/profiles/profile_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/share_invite.dart';
 import '../../../../core/widgets/app_background.dart';
 import '../../../../core/widgets/entry_selector.dart';
 import '../../../../core/widgets/pop_card.dart';
@@ -148,16 +148,13 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
     ref.read(analyticsProvider).log('invite_shared', {'game': 'ludo'});
     ref.read(gameAudioProvider).play(Sfx.tap);
     final box = context.findRenderObject() as RenderBox?;
-    await SharePlus.instance.share(
-      ShareParams(
-        text:
-            'Come play Ludo with me in Utopia! Tap to join, or use room code '
-            '$code: ${GameInvite(InviteGame.ludo, code).link}',
-        subject: 'Ludo in Utopia',
-        sharePositionOrigin: box == null
-            ? null
-            : box.localToGlobal(Offset.zero) & box.size,
-      ),
+    await shareInvite(
+      context,
+      text:
+          'Come play Ludo with me in Utopia! Tap to join, or use room code '
+          '$code: ${GameInvite(InviteGame.ludo, code).link}',
+      subject: 'Ludo in Utopia',
+      origin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
     );
   }
 

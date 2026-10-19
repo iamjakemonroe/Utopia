@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -174,6 +175,31 @@ final soundSettingsProvider =
 class GameAudio {
   GameAudio(this._settings) {
     _lifecycle = AppLifecycleListener(onStateChange: _onLifecycle);
+    if (kIsWeb) {
+      GestureBinding.instance.pointerRouter.addGlobalRoute(_onWebTap);
+      _listeningForTaps = true;
+    }
+  }
+
+  bool _listeningForTaps = false;
+
+  /// A browser plays nothing until the page has been touched, so the music
+  /// asked for before then is refused (and would stay off). Until it's
+  /// playing, each tap, the moment a browser allows sound, asks again.
+  void _onWebTap(PointerEvent event) {
+    if (event is! PointerUpEvent || _wanted.asset == null) return;
+    if (_music?.state == PlayerState.playing) {
+      _stopListeningForTaps();
+      return;
+    }
+    _playing = MusicTrack.none;
+    _syncMusic();
+  }
+
+  void _stopListeningForTaps() {
+    if (!_listeningForTaps) return;
+    _listeningForTaps = false;
+    GestureBinding.instance.pointerRouter.removeGlobalRoute(_onWebTap);
   }
 
   SoundSettings _settings;
@@ -446,6 +472,7 @@ class GameAudio {
   void dispose() {
     _fade?.cancel();
     _lifecycle.dispose();
+    _stopListeningForTaps();
     _guard(() async => _music?.dispose());
     for (final pool in _pools.values) {
       _guard(() async => (await pool).dispose());

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -113,7 +113,19 @@ class ChipChatController extends StateNotifier<ChipChatState> {
     return Directory('${docs.path}/chip_photos/$player');
   }
 
+  /// A browser has no folder to keep photos in: they're kept in memory,
+  /// under a `web:` key, until the page goes.
+  static final Map<String, Uint8List> _webPhotos = {};
+
+  /// The photo kept under [key] in a browser, if it's still here.
+  static Uint8List? webPhoto(String key) => _webPhotos[key];
+
   Future<String?> _keepPhoto(Uint8List bytes) async {
+    if (kIsWeb) {
+      final key = 'web:${DateTime.now().microsecondsSinceEpoch}';
+      _webPhotos[key] = bytes;
+      return key;
+    }
     try {
       final folder = await _photoFolder();
       if (folder == null) return null;
@@ -129,6 +141,10 @@ class ChipChatController extends StateNotifier<ChipChatState> {
   }
 
   Future<void> _forgetPhotos() async {
+    if (kIsWeb) {
+      _webPhotos.clear();
+      return;
+    }
     try {
       final folder = await _photoFolder();
       if (folder != null && await folder.exists()) {

@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/platform/session_memory.dart';
 import '../../../../core/router/popup_tracker.dart';
 import '../../../coins/presentation/daily_reward_sheet.dart';
 import '../../../birthday/presentation/birthday_party.dart';
@@ -73,8 +74,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   static String? _resumeCheckedFor;
 
   /// The player today's welcome and reward have been offered to this
-  /// session (per player, so switching accounts offers them again).
-  static String? _rewardOfferedTo;
+  /// session (per player, so switching accounts offers them again). In a
+  /// browser a refresh is the same session, not a new visit.
+  static String? _offeredTo;
+  static String? get _rewardOfferedTo =>
+      _offeredTo ??= SessionMemory.read('home_offered_to');
+  static set _rewardOfferedTo(String? me) {
+    _offeredTo = me;
+    SessionMemory.write('home_offered_to', me);
+  }
 
   /// The player whose visit the events have counted this session.
   static String? _eventsVisitedBy;
