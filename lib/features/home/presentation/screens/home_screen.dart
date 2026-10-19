@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/platform/session_memory.dart';
 import '../../../../core/router/popup_tracker.dart';
+import '../../../auth/presentation/guest_transfer.dart';
 import '../../../coins/presentation/daily_reward_sheet.dart';
 import '../../../birthday/presentation/birthday_party.dart';
 import '../../../birthday/presentation/birthday_providers.dart';
@@ -107,6 +108,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(analyticsProvider).log('app_open', {
         'guest': ref.read(isAnonymousProvider),
       });
+      // A guest's things that couldn't come over at sign-in (offline) come
+      // now.
+      unawaited(finishGuestTransfer(ref));
     }
     _offerRewardSoon();
   }

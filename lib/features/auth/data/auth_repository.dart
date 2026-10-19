@@ -13,7 +13,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 ///  - "Save your account" from an active anonymous session uses [linkEmail] /
 ///    [verifyLinkOtp] (`OtpType.emailChange`) — this attaches the email to the
 ///    *current* `auth.users.id` via Supabase's anonymous-linking flow, which
-///    is what carries the coin balance over instead of losing it.
+///    is what carries the coin balance over instead of losing it. When the
+///    email already has an account, the guest signs in to that instead, and
+///    [startGuestTransfer] / [finishGuestTransfer] bring the guest's things.
 class AuthRepository {
   AuthRepository(this._client);
 
@@ -56,6 +58,23 @@ class AuthRepository {
       email: email,
       token: token,
     );
+  }
+
+  /// As a guest about to sign in to an account that already exists: a
+  /// one-time ticket to everything the guest has, for [finishGuestTransfer]
+  /// once signed in.
+  Future<String> startGuestTransfer() async =>
+      (await _client.rpc('guest_transfer_start')) as String;
+
+  /// Signed in now: moves everything the guest with [ticket] had (coins,
+  /// purchases, worlds, frames, progress, games, friends...) into this
+  /// account. Whether anything moved.
+  Future<bool> finishGuestTransfer(String ticket) async {
+    final result = await _client.rpc(
+      'guest_transfer_finish',
+      params: {'p_ticket': ticket},
+    );
+    return result is Map && result['moved'] == true;
   }
 
   Future<void> signOut() {

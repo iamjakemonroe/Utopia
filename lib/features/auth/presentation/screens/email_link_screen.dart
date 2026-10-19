@@ -19,6 +19,7 @@ import '../../../../core/widgets/app_background.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../birthday/data/birthday_repository.dart';
+import '../guest_transfer.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
 import '../../../../core/analytics/analytics.dart';
@@ -39,6 +40,10 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
 
   _Step _step = _Step.enterEmail;
   bool _isLinking = false;
+
+  /// Signed in to an existing account from a guest session, and the guest's
+  /// things came along: to the player, their account is simply saved.
+  bool _broughtGuest = false;
   bool _isLoading = false;
   String? _error;
 
@@ -72,11 +77,11 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
           await repo.linkEmail(email);
         } on AuthException catch (e) {
           if (!_alreadyRegistered(e)) rethrow;
-          // A guest giving an email that already has an account: they want
-          // back into that account, so the code signs them in to it. (Two
-          // separate accounts can't be merged, so the guest session's
-          // progress stays behind.)
+          // A guest giving an email that already has an account: the code
+          // signs them in to it, and everything the guest has moves into it
+          // (the ticket taken now, as the guest, is used once signed in).
           _isLinking = false;
+          await holdGuestTicket(ref);
           await repo.signInWithEmailOtp(email);
         }
       } else {
@@ -143,6 +148,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
         await repo.verifyLinkOtp(email: email, token: code);
       } else {
         await repo.verifySignInOtp(email: email, token: code);
+        _broughtGuest = await finishGuestTransfer(ref);
       }
       if (!mounted) return;
       _cooldown?.cancel();
@@ -150,7 +156,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       ref.read(gameAudioProvider).play(Sfx.purchase);
       ref
           .read(analyticsProvider)
-          .log(_isLinking ? 'account_saved' : 'signed_in');
+          .log(_isLinking || _broughtGuest ? 'account_saved' : 'signed_in');
       setState(() {
         _step = _Step.done;
         _isLoading = false;
@@ -257,7 +263,9 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
                   duration: const Duration(milliseconds: 300),
                   child: Text(
                     done
-                        ? (_isLinking ? 'Account saved!' : "You're in!")
+                        ? (_isLinking || _broughtGuest
+                              ? 'Account saved!'
+                              : "You're in!")
                         : codeStep
                         ? 'Check your email'
                         : (ref.watch(isAnonymousProvider)
@@ -271,7 +279,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
                 const SizedBox(height: 4),
                 Text(
                   done
-                      ? (_isLinking
+                      ? (_isLinking || _broughtGuest
                             ? 'Your coins and worlds are safe on any phone now.'
                             : 'Signed in as ${_emailController.text.trim()}')
                       : codeStep
