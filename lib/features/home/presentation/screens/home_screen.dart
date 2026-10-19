@@ -45,6 +45,7 @@ import '../../../chess/presentation/widgets/time_control_style.dart';
 import '../../../chip/presentation/chip_chat_sheet.dart';
 import '../../../coins/presentation/providers/coin_balance_provider.dart';
 import '../../../store/presentation/coin_shop.dart';
+import '../../../notifications/data/notification_repository.dart';
 import '../../../store/presentation/store_controller.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../chess/presentation/controllers/chess_match_controller.dart';
@@ -179,6 +180,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (path == '/home') {
       ref.invalidate(activeGameProvider);
       _offerRewardSoon();
+    }
+  }
+
+  /// Pulled down: everything on home asked for again (coins, profile and
+  /// frame, events, challenges, notifications, what they own, and any game
+  /// still on). It all updates by itself too; this is for when they want
+  /// it now.
+  Future<void> _refresh() async {
+    ref.read(gameAudioProvider).play(Sfx.tap);
+    final me = ref.read(currentUserProvider)?.id;
+    ref.invalidate(activeGameProvider);
+    ref.invalidate(coinBalanceProvider);
+    ref.invalidate(notificationsProvider);
+    if (me != null) {
+      ref.invalidate(profileByIdProvider(me));
+      ref.invalidate(incomingInvitesProvider(me));
+    }
+    try {
+      await Future.wait<void>([
+        ref.read(eventsProvider.notifier).visit(),
+        ref.read(storeControllerProvider.notifier).refresh(),
+        ref.read(activeGameProvider.future).then((_) {}),
+        if (me != null) ref.read(profileByIdProvider(me).future).then((_) {}),
+      ]).timeout(const Duration(seconds: 8));
+    } catch (_) {
+      // Offline, or slow: what could be fetched is in.
     }
   }
 
@@ -325,26 +352,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: DoodleInk(
         child: AppBackground(
           child: SafeArea(
-            child: ListView(
-              // On a tablet: centered, wide enough for all the games in a
-              // row.
-              padding: context.readablePadding(
-                maxWidth: 1040,
-                min: AppSpacing.lg,
-                top: MediaQuery.of(context).padding.top > 0
-                    ? AppSpacing.md
-                    : AppSpacing.lg,
-                bottom: AppSpacing.lg,
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.coinGoldBright,
+              backgroundColor: AppColors.surface,
+              child: ListView(
+                // Pulls down even when it all fits.
+                physics: const AlwaysScrollableScrollPhysics(),
+                // On a tablet: centered, wide enough for all the games in a
+                // row.
+                padding: context.readablePadding(
+                  maxWidth: 1040,
+                  min: AppSpacing.lg,
+                  top: MediaQuery.of(context).padding.top > 0
+                      ? AppSpacing.md
+                      : AppSpacing.lg,
+                  bottom: AppSpacing.lg,
+                ),
+                children: [
+                  // On a tablet: two columns, you on the left (Chip, your
+                  // cards, the sketchbook and store) and the games on the
+                  // right. On a phone, one after the other.
+                  ...about,
+                  _GamesGrid(columns: context.screenSize.width >= 760 ? 4 : 2),
+                  const SizedBox(height: AppSpacing.md),
+                  ...extras,
+                ],
               ),
-              children: [
-                // On a tablet: two columns, you on the left (Chip, your
-                // cards, the sketchbook and store) and the games on the
-                // right. On a phone, one after the other.
-                ...about,
-                _GamesGrid(columns: context.screenSize.width >= 760 ? 4 : 2),
-                const SizedBox(height: AppSpacing.md),
-                ...extras,
-              ],
             ),
           ),
         ),
