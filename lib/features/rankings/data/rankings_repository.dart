@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import '../domain/rank_insights.dart';
 import '../domain/ranking.dart';
 
 /// Ratings for online chess and checkers. The server rates each finished
@@ -29,6 +30,15 @@ class RankingsRepository {
       },
     );
     return Leaderboard.fromJson(Map<String, dynamic>.from(data as Map));
+  }
+
+  /// Everything worth knowing from the player's games in [game].
+  Future<RankInsights> insights(String game) async {
+    final data = await _client.rpc(
+      'get_rank_insights',
+      params: {'p_game': game},
+    );
+    return RankInsights.fromJson(Map<String, dynamic>.from(data as Map));
   }
 
   /// The player's record in [game], or null before their first rated game.
@@ -116,7 +126,8 @@ class BoardMore {
 class BoardMoreController extends StateNotifier<BoardMore> {
   BoardMoreController(this._repo, this._key) : super(const BoardMore());
 
-  final RankingsRepository _repo;
+  /// Read only when a page is brought in.
+  final RankingsRepository Function() _repo;
   final (String, bool) _key;
 
   /// Brings the next page after the first one ([firstPage] places) and
@@ -132,7 +143,7 @@ class BoardMoreController extends StateNotifier<BoardMore> {
     if (state.loading || !more || offset >= 100) return;
     state = BoardMore(entries: state.entries, hasMore: more, loading: true);
     try {
-      final page = await _repo.leaderboard(
+      final page = await _repo().leaderboard(
         _key.$1,
         friends: _key.$2,
         offset: offset,
@@ -159,7 +170,7 @@ class BoardMoreController extends StateNotifier<BoardMore> {
 final boardMoreProvider = StateNotifierProvider.autoDispose
     .family<BoardMoreController, BoardMore, (String, bool)>(
       (ref, key) =>
-          BoardMoreController(ref.watch(rankingsRepositoryProvider), key),
+          BoardMoreController(() => ref.read(rankingsRepositoryProvider), key),
     );
 
 /// A board's first page (the rest comes as the player scrolls:
@@ -187,4 +198,10 @@ final ratingHistoryProvider = FutureProvider.autoDispose
 final ratingChangeProvider = FutureProvider.autoDispose
     .family<RatingChange?, String>(
       (ref, matchId) => ref.watch(rankingsRepositoryProvider).change(matchId),
+    );
+
+/// The player's insights in a game, for the hologram.
+final rankInsightsProvider = FutureProvider.autoDispose
+    .family<RankInsights, String>(
+      (ref, game) => ref.watch(rankingsRepositoryProvider).insights(game),
     );

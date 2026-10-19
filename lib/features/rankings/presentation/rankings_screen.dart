@@ -20,6 +20,7 @@ import '../../chess/presentation/widgets/chess_piece_art.dart';
 import '../../chess/presentation/widgets/chess_piece_styles.dart';
 import '../data/rankings_repository.dart';
 import '../domain/ranking.dart';
+import 'hologram/rank_hologram.dart';
 import 'rankings_widgets.dart';
 import '../../../core/layout/responsive.dart';
 
@@ -156,6 +157,7 @@ class _BoardState extends ConsumerState<_Board> {
               children: [
                 switch (board) {
                   AsyncData(:final value) => _MyRankCard(
+                    game: game,
                     board: value,
                     record: record,
                     history: history,
@@ -375,12 +377,14 @@ class _DiscArt extends CustomPainter {
 /// The player at a glance: badge, rating, place, how they're doing lately.
 class _MyRankCard extends StatelessWidget {
   const _MyRankCard({
+    required this.game,
     required this.board,
     required this.record,
     required this.history,
     required this.friends,
   });
 
+  final String game;
   final Leaderboard board;
   final PlayerRecord? record;
   final List<RatingStep> history;
@@ -396,92 +400,146 @@ class _MyRankCard extends StatelessWidget {
     final r = record;
     final form = history.reversed.take(6).toList();
 
-    return PopCard(
-      borderRadius: 28,
-      tint: tier.color,
-      glow: tier.color,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Column(
-                children: [
-                  TierEmblem(tier: tier, size: 82),
-                  const SizedBox(height: 2),
-                  Text(
-                    tier.label.toUpperCase(),
-                    style: AppTextStyles.body(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: tier.color,
-                    ).copyWith(letterSpacing: 1.5),
-                  ),
-                ],
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    // Tapped: the player's stats as a hologram, in their tier's aura.
+    return GestureDetector(
+      onTap: () => showRankHologram(
+        context,
+        game: game,
+        rating: rating,
+        place: place,
+        line: line,
+      ),
+      child: PopCard(
+        borderRadius: 28,
+        tint: tier.color,
+        glow: tier.color,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Column(
                   children: [
+                    TierEmblem(tier: tier, size: 82),
+                    const SizedBox(height: 2),
                     Text(
-                      'YOUR RATING',
+                      tier.label.toUpperCase(),
                       style: AppTextStyles.body(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textSecondary,
-                      ).copyWith(letterSpacing: 1.2),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        color: tier.color,
+                      ).copyWith(letterSpacing: 1.5),
                     ),
-                    CountUp(rating, style: AppTextStyles.display(fontSize: 40)),
-                    if (week != 0) ...[
-                      TrendChip(week),
-                      const SizedBox(height: 6),
-                    ],
-                    _Where(board: board, friends: friends),
                   ],
                 ),
-              ),
-            ],
-          ),
-          if (place == null) ...[
-            const SizedBox(height: AppSpacing.md),
-            _Placement(games: board.myGames),
-          ],
-          if (line.length >= 3) ...[
-            const SizedBox(height: AppSpacing.md),
-            Row(
-              children: [
-                Text(
-                  'Last ${history.length} games',
-                  style: AppTextStyles.body(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'YOUR RATING',
+                              style: AppTextStyles.body(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textSecondary,
+                              ).copyWith(letterSpacing: 1.2),
+                            ),
+                          ),
+                          _InsightsHint(tier: tier),
+                        ],
+                      ),
+                      CountUp(
+                        rating,
+                        style: AppTextStyles.display(fontSize: 40),
+                      ),
+                      if (week != 0) ...[
+                        TrendChip(week),
+                        const SizedBox(height: 6),
+                      ],
+                      _Where(board: board, friends: friends),
+                    ],
                   ),
                 ),
-                const Spacer(),
-                for (final s in form)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4),
-                    child: _FormPip(s.change.delta),
+              ],
+            ),
+            if (place == null) ...[
+              const SizedBox(height: AppSpacing.md),
+              _Placement(games: board.myGames),
+            ],
+            if (line.length >= 3) ...[
+              const SizedBox(height: AppSpacing.md),
+              Row(
+                children: [
+                  Text(
+                    'Last ${history.length} games',
+                    style: AppTextStyles.body(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            RatingSparkline(values: line, color: tier.color),
+                  const Spacer(),
+                  for (final s in form)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: _FormPip(s.change.delta),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              RatingSparkline(values: line, color: tier.color),
+            ],
+            if (r != null && r.games > 0) ...[
+              const SizedBox(height: AppSpacing.md),
+              Row(
+                children: [
+                  _MiniStat('${r.wins}', 'Wins', AppColors.success),
+                  _MiniStat('${r.losses}', 'Losses', AppColors.error),
+                  _MiniStat('${r.draws}', 'Draws', AppColors.sky),
+                  _MiniStat('${r.best}', 'Best', AppColors.coinGold),
+                ],
+              ),
+            ],
           ],
-          if (r != null && r.games > 0) ...[
-            const SizedBox(height: AppSpacing.md),
-            Row(
-              children: [
-                _MiniStat('${r.wins}', 'Wins', AppColors.success),
-                _MiniStat('${r.losses}', 'Losses', AppColors.error),
-                _MiniStat('${r.draws}', 'Draws', AppColors.sky),
-                _MiniStat('${r.best}', 'Best', AppColors.coinGold),
-              ],
+        ),
+      ),
+    );
+  }
+}
+
+/// "Insights": the card opens a hologram.
+class _InsightsHint extends StatelessWidget {
+  const _InsightsHint({required this.tier});
+
+  final RankTier tier;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: tier.color.withValues(alpha: 0.14),
+        border: Border.all(color: tier.color.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.auto_awesome_rounded, size: 13, color: tier.color),
+          const SizedBox(width: 4),
+          Text(
+            'Insights',
+            style: AppTextStyles.body(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w800,
+              color: tier.color,
             ),
-          ],
+          ),
         ],
       ),
     );
