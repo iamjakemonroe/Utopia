@@ -63,6 +63,23 @@ class _UtopiaWorldState extends State<UtopiaWorld>
     return box.localToGlobal(Offset.zero);
   }
 
+  /// In a browser, the sky is kept as a picture (see [_still]).
+  final _sky = SnapshotController(allowSnapshotting: true);
+
+  /// A layer that never moves. In the apps Flutter keeps it as a picture
+  /// by itself; a browser redraws everything every frame, so there it's
+  /// drawn once into a picture that's shown from then on (the same pixels,
+  /// a fraction of the work). A snapshot isn't retaken when what's in it
+  /// changes, so each world's sky is a snapshot of its own ([world]).
+  Widget _still(Object world, Widget child) => kIsWeb
+      ? SnapshotWidget(
+          key: ObjectKey(world),
+          controller: _sky,
+          autoresize: true,
+          child: child,
+        )
+      : RepaintBoundary(child: child);
+
   late final Ticker _ticker = createTicker(
     ambientTick((_) => _time.value = worldSeconds),
   );
@@ -79,6 +96,7 @@ class _UtopiaWorldState extends State<UtopiaWorld>
   void dispose() {
     _ticker.dispose();
     _time.dispose();
+    _sky.dispose();
     super.dispose();
   }
 
@@ -94,14 +112,15 @@ class _UtopiaWorldState extends State<UtopiaWorld>
             // painted once into their own layer; only the scene on top
             // repaints per frame.
             if (style.biome == WorldBiome.doodle) ...[
-              const RepaintBoundary(
-                child: CustomPaint(painter: DoodleSkyPainter()),
+              _still(
+                WorldBiome.doodle,
+                const CustomPaint(painter: DoodleSkyPainter()),
               ),
               RepaintBoundary(
                 child: CustomPaint(painter: DoodleScenePainter(_time)),
               ),
             ] else ...[
-              RepaintBoundary(child: CustomPaint(painter: _SkyPainter(style))),
+              _still(style, CustomPaint(painter: _SkyPainter(style))),
               RepaintBoundary(
                 child: CustomPaint(
                   key: _sceneKey,
