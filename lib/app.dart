@@ -20,6 +20,7 @@ import 'features/maestro/presentation/maestro_providers.dart';
 import 'features/notifications/presentation/notification_actions.dart';
 import 'features/notifications/presentation/notification_center.dart';
 import 'features/store/presentation/theme_teleport.dart';
+import 'features/store/presentation/web_payment_return.dart';
 import 'features/events/presentation/event_widgets.dart';
 import 'features/events/presentation/events_controller.dart';
 import 'core/analytics/screen_views.dart';
@@ -158,6 +159,8 @@ class UtopiaApp extends ConsumerWidget {
             const Positioned.fill(child: ThemeTeleportLayer()),
             // In a browser: a newer version is out, refresh for it.
             if (kIsWeb) const Positioned.fill(child: WebUpdateBanner()),
+            // In a browser: back from paying for coins.
+            if (kIsWeb) const WebPaymentReturn(),
           ],
         );
         // In a browser, at the size chosen in Settings (phone-sized on a

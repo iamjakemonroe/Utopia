@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -128,7 +129,7 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                         ],
                       ),
                     ),
-                  if (!Env.realMoneyStore)
+                  if (kIsWeb ? !store.webPayments : !Env.realMoneyStore)
                     const _ComingSoon()
                   else ...[
                     if (isGuest)
@@ -149,7 +150,9 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                'Save your account so your coins are never lost.',
+                                kIsWeb
+                                    ? 'Save your account to buy coins.'
+                                    : 'Save your account so your coins are never lost.',
                                 style: AppTextStyles.body(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,

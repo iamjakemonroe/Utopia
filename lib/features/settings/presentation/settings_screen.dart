@@ -12,7 +12,9 @@ import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../core/audio/game_audio.dart';
 import '../../../core/settings/gameplay_settings.dart';
+import '../../../core/platform/web_install.dart';
 import '../../../core/settings/web_scale.dart';
+import '../../install/presentation/install_sheet.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
@@ -118,7 +120,20 @@ class SettingsScreen extends ConsumerWidget {
                 ],
               ),
               if (kIsWeb)
-                const _Section(title: 'Screen', children: [_ScreenSize()]),
+                _Section(
+                  title: 'Screen',
+                  children: [
+                    const _ScreenSize(),
+                    if (!WebInstall.installed)
+                      _LinkRow(
+                        icon: Icons.install_mobile_rounded,
+                        color: const Color(0xFFFFC94D),
+                        title: 'Install Utopia',
+                        subtitle: 'Play full screen from your home screen',
+                        onTap: () => showInstallSheet(context, ref),
+                      ),
+                  ],
+                ),
               _Section(
                 title: 'Play',
                 children: [

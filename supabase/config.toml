@@ -444,3 +444,7 @@ enabled = true
 # refund with the store's API instead (see the function).
 [functions.store-notifications]
 verify_jwt = false
+
+# Flutterwave's webhook: checked by its secret hash, not a player's sign-in.
+[functions.web-pay-hook]
+verify_jwt = false

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/platform/session_memory.dart';
 import '../../../../core/router/popup_tracker.dart';
 import '../../../auth/presentation/guest_transfer.dart';
+import '../../../install/presentation/install_sheet.dart';
 import '../../../coins/presentation/daily_reward_sheet.dart';
 import '../../../birthday/presentation/birthday_party.dart';
 import '../../../birthday/presentation/birthday_providers.dart';
@@ -143,7 +145,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (!asked && mounted) {
         _rewardOfferedTo = null;
         _offerRewardSoon(const Duration(seconds: 15));
+        return;
       }
+      // In a browser, then: installing Utopia (or its store app, once out).
+      if (mounted && kIsWeb) await offerWebAppIfDue(context, ref);
     });
   }
 

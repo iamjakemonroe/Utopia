@@ -96,6 +96,87 @@ class StoreRepository {
   }
 
   /// Whether this player can still buy the starter pack.
+  /// Whether coins can be bought on the web yet (Flutterwave set up).
+  Future<bool> webPaymentsOn() async {
+    try {
+      final res = await _client.functions.invoke(
+        'web-pay',
+        body: {'action': 'status'},
+      );
+      final data = res.data;
+      return data is Map && data['on'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Each coin pack's web price, in [currency] where it has one (US
+  /// dollars otherwise), ready to show ('₦7,500', '\$4.99').
+  Future<Map<String, String>> webCoinShop(String currency) async {
+    final rows = await _client.rpc(
+      'web_coin_shop',
+      params: {'p_currency': currency},
+    );
+    return {
+      for (final r in (rows as List).cast<Map>())
+        r['product_id'] as String: formatMoney(
+          (r['amount'] as num).toDouble(),
+          r['currency'] as String,
+        ),
+    };
+  }
+
+  /// Starts paying for [productId] on the web: the checkout page's link.
+  /// Throws [WebPayException] with what to tell the player.
+  Future<String> webCheckout(String productId, String currency) async {
+    try {
+      final res = await _client.functions.invoke(
+        'web-pay',
+        body: {
+          'action': 'checkout',
+          'product': productId,
+          'currency': currency,
+        },
+      );
+      final link = (res.data as Map?)?['link'];
+      if (link is String && link.startsWith('https://')) return link;
+    } on FunctionException catch (e) {
+      final why = e.details is Map ? (e.details as Map)['error'] : null;
+      throw WebPayException(switch (why) {
+        'account' => 'Save your account to buy coins.',
+        'starter' => 'You already have the starter pack.',
+        'off' => 'Coin top-ups on the web are coming soon.',
+        _ => "Couldn't start the payment. Try again.",
+      });
+    } catch (_) {}
+    throw const WebPayException("Couldn't start the payment. Try again.");
+  }
+
+  /// Back from checkout: whether payment [ref] went through ('paid',
+  /// with its coins), as the payment service has it.
+  Future<({String status, int coins})> webConfirm(
+    String ref,
+    String transactionId,
+  ) async {
+    try {
+      final res = await _client.functions.invoke(
+        'web-pay',
+        body: {
+          'action': 'confirm',
+          'ref': ref,
+          'transaction_id': transactionId,
+        },
+      );
+      final data = res.data as Map? ?? const {};
+      return (
+        status: data['status'] as String? ?? 'unknown',
+        coins: (data['coins'] as num?)?.toInt() ?? 0,
+      );
+    } catch (_) {
+      return (status: 'error', coins: 0);
+    }
+  }
+
   Future<bool> starterOffer() async {
     final offers = await _client.rpc('coin_shop_offers');
     return offers is Map && offers['starter'] == true;
@@ -161,4 +242,35 @@ class CoinPurchaseVoid extends CoinPurchaseResult {
 /// Couldn't be checked right now: keep it and try again later.
 class CoinPurchaseRetry extends CoinPurchaseResult {
   const CoinPurchaseRetry();
+}
+
+/// Why a web payment couldn't start, in the player's words.
+class WebPayException implements Exception {
+  const WebPayException(this.message);
+
+  final String message;
+}
+
+/// [amount] in [currency] the way people write it: '₦7,500', '\$4.99',
+/// 'GH₵15'.
+String formatMoney(double amount, String currency) {
+  const symbols = {
+    'USD': r'$',
+    'NGN': '₦',
+    'GBP': '£',
+    'EUR': '€',
+    'GHS': 'GH₵',
+    'KES': 'KSh ',
+    'ZAR': 'R',
+  };
+  final whole = amount == amount.roundToDouble();
+  final fixed = whole ? amount.round().toString() : amount.toStringAsFixed(2);
+  final parts = fixed.split('.');
+  final grouped = parts[0].replaceAllMapped(
+    RegExp(r'\B(?=(\d{3})+(?!\d))'),
+    (_) => ',',
+  );
+  final number = parts.length > 1 ? '$grouped.${parts[1]}' : grouped;
+  final symbol = symbols[currency];
+  return symbol == null ? '$currency $number' : '$symbol$number';
 }

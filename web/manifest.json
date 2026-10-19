@@ -1,12 +1,18 @@
 {
+    "id": "./",
     "name": "Utopia",
     "short_name": "Utopia",
-    "start_url": ".",
-    "display": "standalone",
-    "background_color": "#1A1035",
-    "theme_color": "#1A1035",
     "description": "Play chess, checkers, Ludo and Guess My Doodle with friends in Utopia.",
-    "orientation": "portrait-primary",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#120B2E",
+    "theme_color": "#120B2E",
+    "categories": [
+        "games",
+        "entertainment"
+    ],
     "prefer_related_applications": false,
     "icons": [
         {

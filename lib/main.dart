@@ -11,12 +11,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'core/config/env.dart';
 import 'core/platform/device_key.dart';
+import 'core/platform/web_page.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/theme_controller.dart';
 import 'features/auth/presentation/screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // In a browser: what the address asked for (?install=1, or a payment
+  // coming back), taken out of it so a refresh doesn't repeat it.
+  WebPage.captureQuery();
   _addFontLicenses();
 
   final configError = Env.configError;

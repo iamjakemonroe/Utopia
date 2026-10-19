@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/config/env.dart';
+import '../../../core/platform/web_page.dart';
 import '../../../core/audio/game_audio.dart';
 import '../../../core/profiles/profile_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -38,7 +40,15 @@ class StoreState {
     this.justUnlocked,
     this.unlockedFocus,
     this.coinsAdded,
+    this.webPrices = const {},
+    this.webPayments = false,
   });
+
+  /// In a browser: each coin pack's price on the web, ready to show.
+  final Map<String, String> webPrices;
+
+  /// In a browser: whether coins can be bought here yet.
+  final bool webPayments;
 
   /// Item ids this player owns (free items are owned implicitly).
   final Set<String> owned;
@@ -107,8 +117,12 @@ class StoreState {
     bool clearUnlocked = false,
     int? coinsAdded,
     bool clearCoinsAdded = false,
+    Map<String, String>? webPrices,
+    bool? webPayments,
   }) {
     return StoreState(
+      webPrices: webPrices ?? this.webPrices,
+      webPayments: webPayments ?? this.webPayments,
       owned: owned ?? this.owned,
       coinPrices: coinPrices ?? this.coinPrices,
       rentals: rentals ?? this.rentals,
@@ -176,7 +190,11 @@ class StoreController extends StateNotifier<StoreState> {
       final prices = await _repo.fetchCoinPrices();
       if (mounted) state = state.copyWith(coinPrices: prices);
     } catch (_) {}
-    if (!Env.realMoneyStore || kIsWeb) {
+    if (kIsWeb) {
+      await _refreshWeb();
+      return;
+    }
+    if (!Env.realMoneyStore) {
       if (mounted) state = state.copyWith(loaded: true);
       return;
     }
@@ -219,10 +237,10 @@ class StoreController extends StateNotifier<StoreState> {
       (kDebugMode || Env.testStore) &&
       !state.storeAvailable;
 
-  /// Store purchases go through the phone's store, so a browser points
+  /// Chip Maestro goes through the phone's store, so a browser points
   /// there (what was bought on the phone is here too, on the same account).
   static const _onPhonesOnly =
-      'Purchases are made in the Utopia app on your phone.';
+      'Chip Maestro is in the Utopia app on your phone.';
 
   /// Buys [product] with coins. [focus] is the item on screen when they
   /// tapped buy (one world of a pack), so the celebration can take them
@@ -236,25 +254,72 @@ class StoreController extends StateNotifier<StoreState> {
   /// The coin packs to show: the starter pack first while it's on.
   List<CoinPack> get packsOnSale => [
     if (state.starterOffer &&
-        (state.products.containsKey(StoreCatalog.starterPack.id) ||
-            canTestUnlock))
+        (kIsWeb
+            ? state.webPrices.containsKey(StoreCatalog.starterPack.id)
+            : state.products.containsKey(StoreCatalog.starterPack.id) ||
+                  canTestUnlock))
       StoreCatalog.starterPack,
     ...StoreCatalog.coinPacks,
   ];
 
-  String priceOfPack(CoinPack pack) =>
-      state.products[pack.id]?.price ?? pack.fallbackPrice;
+  String priceOfPack(CoinPack pack) => kIsWeb
+      ? state.webPrices[pack.id] ?? pack.fallbackPrice
+      : state.products[pack.id]?.price ?? pack.fallbackPrice;
+
+  /// A browser's shop: whether payments are on, the prices in the player's
+  /// currency, and whether the starter pack is still theirs to buy.
+  Future<void> _refreshWeb() async {
+    final on = await _repo.webPaymentsOn();
+    var prices = const <String, String>{};
+    var starter = false;
+    if (on) {
+      try {
+        prices = await _repo.webCoinShop(WebPage.currency());
+        starter = await _repo.starterOffer();
+      } catch (_) {}
+    }
+    if (!mounted) return;
+    state = state.copyWith(
+      webPayments: on && prices.isNotEmpty,
+      webPrices: prices,
+      starterOffer: starter,
+      loaded: true,
+    );
+  }
+
+  /// Buying coins in a browser: Flutterwave's checkout (cards from
+  /// anywhere, Apple Pay, Google Pay, bank transfer, USSD, mobile money),
+  /// back to the game after. Accounts only.
+  Future<void> _buyOnWeb(CoinPack pack) async {
+    if (_ref.read(isAnonymousProvider)) {
+      state = state.copyWith(message: 'Save your account to buy coins.');
+      return;
+    }
+    state = state.copyWith(busyProduct: pack.id, clearMessage: true);
+    try {
+      final link = await _repo.webCheckout(pack.id, WebPage.currency());
+      _ref.read(analyticsProvider).log('web_checkout', {'pack': pack.id});
+      // Off to the checkout page, in this tab; it comes back to the game.
+      await launchUrl(Uri.parse(link), webOnlyWindowName: '_self');
+    } on WebPayException catch (e) {
+      if (mounted) state = state.copyWith(clearBusy: true, message: e.message);
+    } catch (_) {
+      if (mounted) {
+        state = state.copyWith(
+          clearBusy: true,
+          message: "Couldn't open the payment page. Try again.",
+        );
+      }
+    }
+  }
 
   /// Buys a coin pack. The coins are added once the server has checked the
   /// payment with the store (see [_onPurchases]).
   Future<void> buyCoins(CoinPack pack) async {
     if (state.busyProduct != null) return;
+    if (kIsWeb) return _buyOnWeb(pack);
     if (!Env.realMoneyStore) {
       state = state.copyWith(message: 'Coin top-ups are coming soon.');
-      return;
-    }
-    if (kIsWeb) {
-      state = state.copyWith(message: _onPhonesOnly);
       return;
     }
     final me = _ref.read(currentUserProvider)?.id;
