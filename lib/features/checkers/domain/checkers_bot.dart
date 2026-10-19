@@ -62,7 +62,12 @@ int? checkersBotMoveIndex(String code, String level, int seed) {
 /// worth more than a man), men advancing, holding the centre, and keeping
 /// the back row guarded against kings.
 class CheckersBot {
-  CheckersBot(this.level, {int? seed}) : _rng = Random(seed);
+  CheckersBot(this.level, {int? seed, this.maxMs}) : _rng = Random(seed);
+
+  /// The most it may think, in milliseconds, whatever the level (the
+  /// house players think on a server with a tight limit). Null: the
+  /// level's own time.
+  final int? maxMs;
 
   final BotLevel level;
   final Random _rng;
@@ -84,7 +89,7 @@ class CheckersBot {
       BotLevel.normal => (4, 15, 800),
       BotLevel.hard => (10, 0, 1500),
     };
-    _budget = Duration(milliseconds: budgetMs);
+    _budget = Duration(milliseconds: min(budgetMs, maxMs ?? budgetMs));
     _clock.start();
 
     _order(moves);

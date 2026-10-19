@@ -58,6 +58,10 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
   DateTime? _queuedAt;
   StreamSubscription<List<Map<String, dynamic>>>? _matchesSub;
 
+  /// A free game nobody's taken after a while: one of Utopia's house
+  /// players instead.
+  Timer? _houseTimer;
+
   bool get _checkers => widget.game == GameKind.checkers;
   String get _name => _checkers ? 'checkers' : 'chess';
 
@@ -70,6 +74,7 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
   @override
   void dispose() {
     _matchesSub?.cancel();
+    _houseTimer?.cancel();
     if (_searching) {
       ref.read(chessRepositoryProvider).leaveMatchmakingQueue();
     }
@@ -131,6 +136,34 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
         return;
       }
     });
+    // No one for a free game in a while: a house player (a staked game
+    // always waits for a real person).
+    if (_entry == 0) _houseSoon();
+  }
+
+  void _houseSoon([Duration? after]) {
+    _houseTimer?.cancel();
+    _houseTimer = Timer(
+      after ?? Duration(seconds: 20 + math.Random().nextInt(9)),
+      () async {
+        if (!mounted || !_searching) return;
+        try {
+          final matchId = await ref
+              .read(chessRepositoryProvider)
+              .startHouseMatch(
+                game: _name,
+                minutes: _time.minutes,
+                increment: _time.increment,
+              );
+          if (!mounted || !_searching) return;
+          if (matchId != null) {
+            _goToMatch(matchId);
+            return;
+          }
+        } catch (_) {}
+        if (mounted && _searching) _houseSoon(const Duration(seconds: 10));
+      },
+    );
   }
 
   /// Nobody to play online right now: a free game against Chip on the same
@@ -177,6 +210,7 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
   }
 
   void _goToMatch(String matchId) {
+    _houseTimer?.cancel();
     _matchesSub?.cancel();
     _matchesSub = null;
     setState(() => _searching = false);
@@ -184,6 +218,7 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
   }
 
   Future<void> _cancelSearch() async {
+    _houseTimer?.cancel();
     await ref.read(chessRepositoryProvider).leaveMatchmakingQueue();
     _matchesSub?.cancel();
     _matchesSub = null;
@@ -714,7 +749,10 @@ class _SearchingViewState extends State<_SearchingView>
                 );
               },
             ),
-            QuietLobbyOffer(label: 'Play Chip', onPlay: widget.onPlayChip),
+            // A free game finds someone soon; a staked one can take a
+            // while, so Chip's on offer.
+            if (widget.entry > 0)
+              QuietLobbyOffer(label: 'Play Chip', onPlay: widget.onPlayChip),
             const SizedBox(height: AppSpacing.xl),
             TextButton.icon(
               onPressed: widget.onCancel,

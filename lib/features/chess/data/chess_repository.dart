@@ -72,6 +72,35 @@ class ChessRepository {
     return result as String?;
   }
 
+  /// Waited long enough for a free game: a real player who's just come
+  /// along, or one of Utopia's house players (null: keep waiting).
+  Future<String?> startHouseMatch({
+    required String game,
+    required int minutes,
+    required int increment,
+  }) async {
+    final id = await _client.rpc(
+      'house_match_start',
+      params: {'p_game': game, 'p_minutes': minutes, 'p_increment': increment},
+    );
+    return id as String?;
+  }
+
+  /// The house player's turn in [matchId]: wakes them (house-move). Whether
+  /// they're thinking about it.
+  Future<bool> wakeHouse(String matchId) async {
+    try {
+      final res = await _client.functions.invoke(
+        'house-move',
+        body: {'match_id': matchId},
+      );
+      final data = res.data;
+      return data is Map && data['thinking'] != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> leaveMatchmakingQueue() {
     return _client.rpc('leave_matchmaking_queue');
   }

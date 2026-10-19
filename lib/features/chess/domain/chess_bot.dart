@@ -75,7 +75,12 @@ int? chessBotMoveIndex(String fen, String level, int seed) {
 /// ones are tried first, and material plus piece-square tables to judge a
 /// position.
 class ChessBot {
-  ChessBot(this.level, {int? seed}) : _rng = Random(seed);
+  ChessBot(this.level, {int? seed, this.maxMs}) : _rng = Random(seed);
+
+  /// The most it may think, in milliseconds, whatever the level (the
+  /// house players think on a server with a tight limit). Null: the
+  /// level's own time.
+  final int? maxMs;
 
   final BotLevel level;
   final Random _rng;
@@ -99,7 +104,7 @@ class ChessBot {
       BotLevel.normal => (2, 35, 900),
       BotLevel.hard => (4, 0, 1500),
     };
-    _budget = Duration(milliseconds: budgetMs);
+    _budget = Duration(milliseconds: min(budgetMs, maxMs ?? budgetMs));
     _clock.start();
 
     _order(position, moves);

@@ -283,7 +283,7 @@ class _NamesCardState extends ConsumerState<_NamesCard> {
                 UtopiaTextField(
                   controller: _nick,
                   icon: Icons.badge_rounded,
-                  hint: 'Jake Monroe',
+                  hint: 'Nickname',
                   textCapitalization: TextCapitalization.words,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(

@@ -10,6 +10,7 @@ import '../../domain/chess_move.dart';
 import '../../domain/chess_position.dart';
 import '../../domain/chess_types.dart';
 import '../../domain/time_control.dart';
+import '../../../house/presentation/house_waker.dart';
 
 final chessRepositoryProvider = Provider<ChessRepository>((ref) {
   return ChessRepository(ref.watch(supabaseClientProvider));
@@ -313,7 +314,11 @@ class ChessMatchController extends StateNotifier<ChessMatchState> {
       const Duration(milliseconds: 300),
       (_) => _checkFlag(),
     );
-    _presence = Timer.periodic(const Duration(seconds: 8), (_) => _touch());
+    // A house player's turn: woken now and then, in case one stalled.
+    _presence = Timer.periodic(const Duration(seconds: 8), (_) {
+      _touch();
+      unawaited(_house.maybeWake(_row, again: true));
+    });
   }
 
   final ChessRepository _repository;
@@ -327,6 +332,7 @@ class ChessMatchController extends StateNotifier<ChessMatchState> {
   int _lastSeenPly = 0;
   Timer? _clock;
   Timer? _presence;
+  late final _house = HouseWaker(_repository, _matchId);
   DateTime _lastClaim = DateTime.fromMillisecondsSinceEpoch(0);
 
   Map<String, dynamic>? _row;
@@ -376,6 +382,7 @@ class ChessMatchController extends StateNotifier<ChessMatchState> {
     final firstRow = _row == null;
     _row = row;
     _sync();
+    unawaited(_house.maybeWake(row));
     if (firstRow) _touch();
   }
 
