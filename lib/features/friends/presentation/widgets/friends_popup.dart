@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/profiles/profile_providers.dart';
 import '../../../../core/profiles/profile_repository.dart';
 import '../../../../core/widgets/user_avatar.dart';
+import '../../../../core/widgets/utopia_icons.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -18,6 +19,7 @@ import '../../data/presence.dart';
 import '../providers/friends_providers.dart';
 import '../../../../core/widgets/utopia_toast.dart';
 import '../../../coins/presentation/providers/coin_balance_provider.dart';
+import '../../../coins/presentation/send_coins_sheet.dart';
 import '../../../store/presentation/coin_shop.dart';
 import 'invite_stake_sheet.dart';
 
@@ -227,6 +229,13 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
                               online: online,
                               statusOf: data.statusOf,
                               onAdd: add,
+                              onGift: (f) => showSendCoinsSheet(context, (
+                                id: f.id,
+                                name: f.name,
+                                avatarUrl: f.avatarUrl,
+                                avatarKind: f.avatarKind,
+                                avatarSeed: f.avatarSeed,
+                              )),
                               emptyLabel: searching
                                   ? 'No friends match that.'
                                   : 'No friends yet. Search for someone above.',
@@ -446,9 +455,13 @@ class _PeopleList extends StatelessWidget {
     required this.onAdd,
     required this.emptyLabel,
     this.online,
+    this.onGift,
   });
 
   final List<SocialProfile> people;
+
+  /// Send a friend coins (the Friends tab).
+  final ValueChanged<SocialProfile>? onGift;
 
   /// Friends who are around now: each row shows whether they are. Null
   /// shows nothing (only friends can see each other online).
@@ -470,6 +483,7 @@ class _PeopleList extends StatelessWidget {
           status: statusOf(person.id),
           onAdd: onAdd,
           online: online?.contains(person.id),
+          onGift: onGift == null ? null : () => onGift!(person),
         );
       },
     );
@@ -482,11 +496,16 @@ class _PersonRow extends ConsumerWidget {
     required this.status,
     required this.onAdd,
     this.online,
+    this.onGift,
   });
 
   final SocialProfile person;
   final FriendshipStatus status;
   final ValueChanged<String> onAdd;
+
+  /// Send them coins: shown in place of "Friends" (the Friends tab says
+  /// that already).
+  final VoidCallback? onGift;
 
   /// Whether they're around now, or null to not say.
   final bool? online;
@@ -533,31 +552,34 @@ class _PersonRow extends ConsumerWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            transitionBuilder: (child, a) =>
-                ScaleTransition(scale: a, child: child),
-            child: _FriendState(
-              key: ValueKey(status),
-              status: status,
-              onAdd: () => onAdd(person.id),
-              onAccept: () {
-                final me = ref.read(currentUserProvider)?.id;
-                final requestId = me == null
-                    ? null
-                    : ref
-                          .read(friendsPopupControllerProvider(me))
-                          .incomingRequestFrom(person.id);
-                if (requestId == null) return;
-                answerFriendRequest(
-                  ref,
-                  requestId: requestId,
-                  fromId: person.id,
-                  accept: true,
-                );
-              },
+          if (onGift != null && status == FriendshipStatus.friends)
+            _GiftButton(onTap: onGift!)
+          else
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, a) =>
+                  ScaleTransition(scale: a, child: child),
+              child: _FriendState(
+                key: ValueKey(status),
+                status: status,
+                onAdd: () => onAdd(person.id),
+                onAccept: () {
+                  final me = ref.read(currentUserProvider)?.id;
+                  final requestId = me == null
+                      ? null
+                      : ref
+                            .read(friendsPopupControllerProvider(me))
+                            .incomingRequestFrom(person.id);
+                  if (requestId == null) return;
+                  answerFriendRequest(
+                    ref,
+                    requestId: requestId,
+                    fromId: person.id,
+                    accept: true,
+                  );
+                },
+              ),
             ),
-          ),
           const SizedBox(width: 6),
           FilledButton.tonalIcon(
             onPressed: () => _invite(context),
@@ -613,6 +635,30 @@ class _PersonRow extends ConsumerWidget {
         );
       }
     }
+  }
+}
+
+/// Send a friend coins.
+class _GiftButton extends StatelessWidget {
+  const _GiftButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Send coins',
+      child: FilledButton.tonalIcon(
+        onPressed: onTap,
+        icon: const CoinIcon(size: 18),
+        label: const Text('Gift'),
+        style: FilledButton.styleFrom(
+          visualDensity: VisualDensity.compact,
+          backgroundColor: AppColors.coinGold.withValues(alpha: 0.18),
+          foregroundColor: AppColors.coinGoldBright,
+        ),
+      ),
+    );
   }
 }
 

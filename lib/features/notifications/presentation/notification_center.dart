@@ -68,6 +68,14 @@ class NotificationLook {
           Icons.cake_rounded,
           const Color(0xFFFF6FAE),
         );
+      case 'coin_gift':
+        final coins = (n.data['coins'] as num?)?.toInt() ?? 0;
+        return NotificationLook(
+          '$name sent you ${formatCoins(coins)} coins',
+          'A gift. They’re in your coins now.',
+          Icons.redeem_rounded,
+          AppColors.coinGold,
+        );
       case 'birthday_wish':
         return NotificationLook(
           '$name wished you a happy birthday!',
