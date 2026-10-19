@@ -122,6 +122,9 @@ void main() {
     for (var i = 0; i < 12; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
+    // Fonts the popup asked for once it was up.
+    await tester.runAsync(GoogleFonts.pendingFonts);
+    await tester.pump(const Duration(milliseconds: 100));
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/friends_online.png'),

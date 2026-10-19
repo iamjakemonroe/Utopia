@@ -61,7 +61,9 @@ class AppTheme {
         systemOverlayStyle: light
             ? SystemUiOverlayStyle.dark
             : SystemUiOverlayStyle.light,
-        titleTextStyle: TextStyle(
+        // The app's heading font (a style without one falls back to the
+        // phone's own).
+        titleTextStyle: GoogleFonts.spaceGrotesk(
           color: AppColors.textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w800,
@@ -137,12 +139,14 @@ class AppTheme {
           borderRadius: BorderRadius.circular(24),
           side: BorderSide(color: AppColors.goldBorder, width: 2),
         ),
-        titleTextStyle: TextStyle(
+        // The app's heading font (a style without one falls back to the
+        // phone's own).
+        titleTextStyle: GoogleFonts.spaceGrotesk(
           color: AppColors.textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w800,
         ),
-        contentTextStyle: TextStyle(
+        contentTextStyle: GoogleFonts.inter(
           color: AppColors.textSecondary,
           fontSize: 15,
         ),

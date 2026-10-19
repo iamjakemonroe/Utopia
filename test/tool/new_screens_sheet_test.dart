@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:utopia/core/theme/app_theme.dart';
 import 'package:utopia/core/theme/theme_controller.dart';
 import 'package:utopia/core/theme/utopia_themes.dart';
 import 'package:utopia/core/widgets/app_background.dart';
@@ -189,7 +190,11 @@ Future<void> _phone(
         ratingHistoryProvider.overrideWith((ref, game) async => _history),
         chipDoodleRepositoryProvider.overrideWithValue(_FakeChipDoodles()),
       ],
-      child: MaterialApp(debugShowCheckedModeBanner: false, home: child),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.dark,
+        home: child,
+      ),
     ),
   );
   // The app's fonts (bundled) and the icon font, so text and icons draw.
@@ -254,6 +259,8 @@ void main() {
     // The board loads after the first frame; its fonts too.
     await tester.runAsync(GoogleFonts.pendingFonts);
     await tester.pump(const Duration(milliseconds: 1600));
+    await tester.runAsync(GoogleFonts.pendingFonts);
+    await tester.pump(const Duration(milliseconds: 100));
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/new_rankings.png'),

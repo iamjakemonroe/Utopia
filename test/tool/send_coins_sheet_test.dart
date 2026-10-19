@@ -91,6 +91,9 @@ Future<void> _sheet(
   for (var i = 0; i < 10; i++) {
     await tester.pump(const Duration(milliseconds: 100));
   }
+  // The sheet's own fonts, asked for once it was up.
+  await tester.runAsync(GoogleFonts.pendingFonts);
+  await tester.pump(const Duration(milliseconds: 100));
   await expectLater(
     find.byType(MaterialApp),
     matchesGoldenFile('goldens/send_coins_$name.png'),
