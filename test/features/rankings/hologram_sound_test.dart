@@ -9,6 +9,7 @@ import 'package:utopia/features/rankings/data/rankings_repository.dart';
 import 'package:utopia/features/rankings/domain/rank_insights.dart';
 import 'package:utopia/features/rankings/presentation/hologram/hologram_painters.dart';
 import 'package:utopia/features/rankings/presentation/hologram/rank_hologram.dart';
+import 'package:utopia/features/rankings/presentation/hologram/reveal.dart';
 
 /// Hears what the hologram plays, and when (on the test's clock).
 class _Ears extends GameAudio {
@@ -181,5 +182,113 @@ void main() {
       reason: 'nothing once it has gone',
     );
     expect(ears.stopped, [Sfx.holoAmbLegend]);
+  });
+
+  testWidgets('scrolling up and down, every readout in view still comes up', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1170, 2532);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final ears = _Ears(() => tester.binding.clock.now());
+    late BuildContext host;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          gameAudioProvider.overrideWithValue(ears),
+          rankInsightsProvider.overrideWith((ref, game) async => _legend),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.dark,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) {
+                host = context;
+                return const SizedBox.expand();
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+    Future<void> frames(int millis) async {
+      for (var t = 0; t < millis; t += 16) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+    }
+
+    showRankHologram(
+      host,
+      game: 'chess',
+      rating: 1800,
+      place: 3,
+      line: [for (var i = 0; i < 20; i++) 1700 + i * 5],
+    );
+    await frames(1500);
+
+    // Up and down, again and again, quickly.
+    for (var k = 0; k < 16; k++) {
+      await tester.drag(
+        find.byType(ListView),
+        Offset(0, k.isEven ? -700 : 700),
+      );
+      await frames(64);
+    }
+    // And flung, coasting on after the finger's gone.
+    for (var k = 0; k < 6; k++) {
+      await tester.fling(
+        find.byType(ListView),
+        Offset(0, k.isEven ? -400 : 400),
+        2500,
+      );
+      await frames(k == 5 ? 0 : 120);
+    }
+    await frames(1500);
+    await tester.drag(find.byType(ListView), const Offset(0, 300));
+    await frames(500);
+
+    // Everything on screen has come up.
+    final view = tester.getRect(find.byType(ListView));
+    for (final card in tester.widgetList(find.byType(RevealOnView))) {
+      final rect = tester.getRect(find.byWidget(card));
+      final shown = rect.intersect(view);
+      if (shown.height < 60) continue;
+      final opacity = tester
+          .widget<Opacity>(
+            find
+                .descendant(
+                  of: find.byWidget(card),
+                  matching: find.byType(Opacity),
+                )
+                .first,
+          )
+          .opacity;
+      expect(
+        opacity,
+        1.0,
+        reason: 'readout ${(card as RevealOnView).index} in view is up',
+      );
+    }
+
+    // And none came up (or sounded) twice.
+    final blips = [
+      for (final (s, _) in ears.heard)
+        if (_blip(s)) s,
+    ];
+    final perCard = <Sfx, int>{};
+    for (final b in blips) {
+      perCard[b] = (perCard[b] ?? 0) + 1;
+    }
+    expect(
+      blips.length,
+      lessThanOrEqualTo(13),
+      reason: 'one blip per readout at most: ${blips.length}',
+    );
+
+    Navigator.of(host).pop();
+    await frames(300);
   });
 }

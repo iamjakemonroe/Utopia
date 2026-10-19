@@ -20,20 +20,47 @@ class ReadoutReveals extends ChangeNotifier {
 
   /// The soonest the next readout may start, in ms since the hologram
   /// opened.
-  int _next = 450;
+  int _next = _first;
+
+  /// When the first readout comes up: as the hologram is.
+  static const _first = 450;
 
   static const beat = 90;
 
-  /// When a readout that's just come into view starts, in ms from now.
+  /// When a readout that's just come into view starts, in ms from now:
+  /// its turn, but never more than a few beats off (scrolling up and down
+  /// mustn't pile turns up and keep one waiting).
   int claim() {
     final now = _ms - _opened;
-    final at = math.max(now, _next);
+    // Not before the hologram's up (450 ms), then at most eight beats on.
+    final earliest = math.max(now, _first);
+    final at = math.min(math.max(earliest, _next), earliest + beat * 8);
     _next = at + beat;
     return at - now;
   }
 
-  /// The list scrolled: readouts look whether they're in view now.
-  void look() => notifyListeners();
+  bool _looking = false;
+  bool _gone = false;
+
+  /// The list scrolled: readouts look whether they're in view, once the
+  /// frame's laid out (mid-scroll their places aren't settled yet, and a
+  /// card judged where it was could miss its turn until the next scroll).
+  void look() {
+    if (_looking || _gone) return;
+    _looking = true;
+    SchedulerBinding.instance
+      ..addPostFrameCallback((_) {
+        _looking = false;
+        if (!_gone) notifyListeners();
+      })
+      ..ensureVisualUpdate();
+  }
+
+  @override
+  void dispose() {
+    _gone = true;
+    super.dispose();
+  }
 }
 
 /// Whether the readout around it has come up yet (what [Grow] waits for).
@@ -70,7 +97,12 @@ class RevealOnView extends ConsumerStatefulWidget {
 }
 
 class _RevealOnViewState extends ConsumerState<RevealOnView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  /// Once built it stays, scrolled away or not: a readout that has come up
+  /// stays up, never coming up (or sounding) again.
+  @override
+  bool get wantKeepAlive => true;
+
   late final AnimationController _show = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 380),
@@ -95,23 +127,34 @@ class _RevealOnViewState extends ConsumerState<RevealOnView>
     super.dispose();
   }
 
-  /// In view now? Then it takes its turn.
-  void _look() {
-    if (_claimed || !mounted) return;
+  /// Whether enough of it is on screen to count as seen.
+  bool _inView() {
     final box = context.findRenderObject() as RenderBox?;
     final view =
         Scrollable.maybeOf(context)?.context.findRenderObject() as RenderBox?;
-    if (box == null || view == null || !box.attached || !box.hasSize) return;
+    if (box == null || view == null || !box.attached || !box.hasSize) {
+      return false;
+    }
     final top = box.localToGlobal(Offset.zero, ancestor: view).dy;
     final shown =
         math.min(top + box.size.height, view.size.height) - math.max(top, 0);
-    if (shown < math.min(60, box.size.height / 3)) return;
+    return shown >= math.min(60, box.size.height / 3);
+  }
+
+  /// In view now? Then it takes its turn.
+  void _look() {
+    if (_claimed || _started.value || !mounted || !_inView()) return;
     _claimed = true;
     _wait = Timer(Duration(milliseconds: widget.reveals.claim()), _start);
   }
 
   void _start() {
     if (!mounted) return;
+    // Scrolled away while it waited: it comes up when it's back.
+    if (!_inView()) {
+      _claimed = false;
+      return;
+    }
     _started.value = true;
     _show.forward();
     ref.read(gameAudioProvider).play(Sfx.holoBlip(widget.index), volume: 0.6);
@@ -119,6 +162,7 @@ class _RevealOnViewState extends ConsumerState<RevealOnView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return RevealScope(
       started: _started,
       child: AnimatedBuilder(
