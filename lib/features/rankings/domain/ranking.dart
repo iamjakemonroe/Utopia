@@ -49,6 +49,7 @@ class BoardEntry {
     required this.profile,
     required this.rating,
     required this.games,
+    this.house = false,
   });
 
   factory BoardEntry.fromJson(Map<String, dynamic> json) => BoardEntry(
@@ -57,6 +58,7 @@ class BoardEntry {
     profile: json,
     rating: (json['rating'] as num).toInt(),
     games: (json['games'] as num).toInt(),
+    house: json['house'] == true,
   );
 
   final int place;
@@ -66,6 +68,10 @@ class BoardEntry {
   final Map<String, dynamic> profile;
   final int rating;
   final int games;
+
+  /// One of Utopia's house players (they fill a board while it's new, and
+  /// never win prizes): tagged "House" wherever they're shown.
+  final bool house;
 }
 
 /// A game's board: the top players, and where this player stands.

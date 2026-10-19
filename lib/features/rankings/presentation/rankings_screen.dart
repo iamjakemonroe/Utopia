@@ -197,6 +197,20 @@ class _BoardState extends ConsumerState<_Board> {
                     ),
                 ],
               const SizedBox(height: AppSpacing.sm),
+              if (top.any((e) => e.house))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    "Players tagged House are Utopia's own: they keep the "
+                    'board busy until more players join, and never win '
+                    'prizes.',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.body(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
               Text(
                 'Ratings come from online games. Pull down to refresh.',
                 textAlign: TextAlign.center,
@@ -265,12 +279,19 @@ class _GameSwitch extends StatelessWidget {
               children: [
                 SizedBox.square(dimension: 28, child: Center(child: art)),
                 const SizedBox(width: 6),
-                Text(
-                  _gameName(id),
-                  style: AppTextStyles.body(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: on ? Colors.white : AppColors.textSecondary,
+                // "Guess My Doodle" shrinks to fit a third of a phone.
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      _gameName(id),
+                      maxLines: 1,
+                      style: AppTextStyles.body(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: on ? Colors.white : AppColors.textSecondary,
+                      ),
+                    ),
                   ),
                 ),
               ],

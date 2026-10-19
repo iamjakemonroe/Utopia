@@ -1,5 +1,6 @@
-"""Leaderboards: the top 100, and house players only while the switch is
-on (and then counted in your place too)."""
+"""Leaderboards: the top 100; house players, tagged, only while the switch
+is on and the game has fewer real ranked players than the mark (and then
+counted in your place too)."""
 import sys
 
 import harness
@@ -26,10 +27,17 @@ def run(sql, *args):
         c.execute(sql, args)
 
 
-harness.as_admin(db)
-check("house players show for now", one("select show_house_players from leaderboard_settings") is True)
+def board_as(user):
+    harness.as_user(db, user)
+    return one("select get_leaderboard('chess')")
 
-# 120 players with ratings from 1300 down; me in the middle.
+
+harness.as_admin(db)
+check("house players show for now, until 50 real players",
+      one("select show_house_players and house_until_players = 50 from leaderboard_settings"))
+house_ids = set(one("select array_agg(id::text) from house_players"))
+
+# 120 real players with ratings from 1300 down; me in the middle.
 players = [harness.new_user(db, f"p{i}@example.com") for i in range(120)]
 harness.as_admin(db)
 for i, p in enumerate(players):
@@ -37,29 +45,34 @@ for i, p in enumerate(players):
         "values (%s, 'chess', %s, 10, 5, 5, 0, %s) on conflict (user_id, game) do update set rating = excluded.rating, games = 10",
         p, 1300 - i * 5, 1300 - i * 5)
 me = players[60]
-houses = one("select count(*) from player_ratings r join house_players h on h.id = r.user_id where r.game = 'chess' and r.games >= 5")
+real_above_me = 60
 
-harness.as_user(db, me)
-board = one("select get_leaderboard('chess')")
+# With the mark above the real players, house players fill in.
+run("update leaderboard_settings set house_until_players = 200")
+board = board_as(me)
 top = board["top"]
 check("a hundred on the board", len(top) == 100, len(top))
 check("best first, places in order", [e["place"] for e in top] == sorted(e["place"] for e in top) and top[0]["place"] == 1)
-ids = {e["id"] for e in top}
+check("house players on it while it fills up", any(e["house"] for e in top))
+check("each row says whether it's a house player", all(e["house"] == (e["id"] in house_ids) for e in top))
 harness.as_admin(db)
-house_on_board = one("select count(*) from house_players where id = any(%s::uuid[])", list(ids))
-check("house players on it, with the switch on", house_on_board > 0, house_on_board)
-check("my place counts everyone shown above me", board["me"]["place"] == 1 + one(
-    "select count(*) from player_ratings where game = 'chess' and games >= 5 and rating > %s", 1300 - 60 * 5), board["me"])
+houses_above = one("select count(*) from player_ratings r join house_players h on h.id = r.user_id "
+                   "where r.game = 'chess' and r.games >= 5 and r.rating > %s", 1300 - 60 * 5)
+check("my place counts the house players shown above me",
+      board["me"]["place"] == 1 + real_above_me + houses_above, (board["me"], houses_above))
 
-harness.as_admin(db)
-run("update leaderboard_settings set show_house_players = false")
-harness.as_user(db, me)
-board = one("select get_leaderboard('chess')")
-ids = [e["id"] for e in board["top"]]
-harness.as_admin(db)
-check("switch off: no house players", one("select count(*) from house_players where id = any(%s::uuid[])", ids) == 0)
-check("…still a hundred", len(ids) == 100, len(ids))
+# Once it has enough real players (120, mark 100), they leave by themselves.
+run("update leaderboard_settings set house_until_players = 100")
+board = board_as(me)
+check("enough real players: no house players", not any(e["house"] for e in board["top"]))
+check("…still a hundred", len(board["top"]) == 100, len(board["top"]))
 check("…and my place without them", board["me"]["place"] == 61, board["me"])
+
+# The switch takes them off whatever the count.
+harness.as_admin(db)
+run("update leaderboard_settings set house_until_players = 200, show_house_players = false")
+board = board_as(me)
+check("switch off: no house players", not any(e["house"] for e in board["top"]))
 
 harness.as_user(db, me)
 try:
@@ -67,6 +80,6 @@ try:
     flipped = True
 except Exception:
     flipped = False
-check("players can't flip the switch", not flipped)
+check("players can't change the settings", not flipped)
 
 sys.exit(1 if fails else 0)

@@ -679,6 +679,11 @@ class _Step extends StatelessWidget {
               color: e == null ? AppColors.textSecondary : null,
             ),
           ),
+          if (e != null && e.house)
+            const Padding(
+              padding: EdgeInsets.only(top: 2, bottom: 2),
+              child: HouseTag(),
+            ),
           if (e != null)
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -869,11 +874,23 @@ class BoardRow extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body(fontWeight: FontWeight.w800),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.body(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        if (entry.house) ...[
+                          const SizedBox(width: 6),
+                          const HouseTag(),
+                        ],
+                      ],
                     ),
                     Row(
                       children: [
@@ -898,6 +915,46 @@ class BoardRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Marks one of Utopia's house players on a board.
+class HouseTag extends StatelessWidget {
+  const HouseTag({super.key, this.big = false});
+
+  /// "House player", for their card; otherwise just "House".
+  final bool big;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = big ? 13.0 : 10.5;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: big ? 10 : 6, vertical: 2),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withValues(alpha: 0.1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.smart_toy_rounded,
+            size: size + 2,
+            color: AppColors.textSecondary,
+          ),
+          const SizedBox(width: 3),
+          Text(
+            big ? 'House player' : 'House',
+            style: AppTextStyles.body(
+              fontSize: size,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1057,6 +1114,21 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
                   '@$username',
                   style: AppTextStyles.body(color: AppColors.textSecondary),
                 ),
+              if (e.house) ...[
+                const SizedBox(height: AppSpacing.sm),
+                const HouseTag(big: true),
+                const SizedBox(height: 6),
+                Text(
+                  "One of Utopia's house players: they play free games "
+                  "when nobody's free, and keep the board busy while it's "
+                  "new. They never win prizes.",
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.body(
+                    fontSize: 12.5,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
               const SizedBox(height: AppSpacing.md),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1082,7 +1154,8 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
               ),
               if (status != null &&
                   status != FriendshipStatus.self &&
-                  !isGuest) ...[
+                  !isGuest &&
+                  !e.house) ...[
                 const SizedBox(height: AppSpacing.lg),
                 PrimaryButton(
                   label: switch (status) {

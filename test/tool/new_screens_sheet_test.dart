@@ -143,6 +143,8 @@ final _board = Leaderboard(
         profile: {'display_name': name, 'avatar_seed': i * 7 + 3},
         rating: rating,
         games: games,
+        // A couple of house players, tagged.
+        house: i == 1 || i == 5,
       ),
   ],
   myPlace: 5,
