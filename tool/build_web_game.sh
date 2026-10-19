@@ -6,7 +6,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SITE=../utopia-landingpage
-flutter build web --release --base-href /game/ \
+# --wasm: Chrome and Edge run the faster WebAssembly build, other browsers
+# the JavaScript one (the loader picks; ?js forces JavaScript). The engine
+# files are served from our own site rather than Google's.
+flutter build web --release --wasm --no-web-resources-cdn --base-href /game/ \
   --dart-define-from-file=env/local.json
 rm -rf "$SITE/public/game"
 cp -R build/web "$SITE/public/game"

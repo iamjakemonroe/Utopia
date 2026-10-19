@@ -17,6 +17,7 @@ import '../../../../core/profiles/profile_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/bouncy_dialog.dart';
 import '../../../../core/widgets/coin_balance_pill.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/user_avatar.dart';
@@ -157,9 +158,20 @@ class _SideMenu extends ConsumerWidget {
           Icons.logout_rounded,
           'Sign out',
           AppColors.textSecondary,
-          () {
+          () async {
+            // The same question as in Settings, before signing out.
+            final ok = await confirmBouncy(
+              context: context,
+              audio: ref.read(gameAudioProvider),
+              title: 'Sign out?',
+              message: 'You can sign back in with your email any time.',
+              confirmLabel: 'Sign out',
+              cancelLabel: 'Stay',
+              hero: const CoinBuddy(mood: BuddyMood.sad, size: 72),
+            );
+            if (!ok || !context.mounted) return;
             Navigator.of(context).pop();
-            ref.read(authRepositoryProvider).signOut();
+            await ref.read(authRepositoryProvider).signOut();
           },
         ),
     ];

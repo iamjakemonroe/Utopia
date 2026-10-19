@@ -12,6 +12,7 @@ import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../core/audio/game_audio.dart';
 import '../../../core/settings/gameplay_settings.dart';
+import '../../../core/settings/web_scale.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
@@ -116,6 +117,8 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+              if (kIsWeb)
+                const _Section(title: 'Screen', children: [_ScreenSize()]),
               _Section(
                 title: 'Play',
                 children: [
@@ -694,6 +697,88 @@ class _VolumeSlider extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// How big Utopia is drawn in a browser: smaller fits more on screen,
+/// bigger is easier to read. Only on the web.
+class _ScreenSize extends ConsumerWidget {
+  const _ScreenSize();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scale = ref.watch(webScaleProvider);
+    final control = ref.read(webScaleProvider.notifier);
+    final isDefault = scale == WebScaleController.defaultScale;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.zoom_out_map_rounded,
+                color: Color(0xFF4DD0B0),
+                size: 24,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  'Screen size',
+                  style: AppTextStyles.body(fontWeight: FontWeight.w700),
+                ),
+              ),
+              Text(
+                '${(scale * 100).round()}%',
+                style: AppTextStyles.body(color: AppColors.accent),
+              ),
+              if (!isDefault)
+                TextButton(
+                  onPressed: control.reset,
+                  child: const Text('Reset'),
+                ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 38),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.text_decrease_rounded,
+                  size: 18,
+                  color: AppColors.textSecondary,
+                ),
+                Expanded(
+                  child: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: AppColors.accent,
+                      inactiveTrackColor: Colors.black.withValues(alpha: 0.3),
+                      thumbColor: AppColors.goldBorderBright,
+                      overlayColor: AppColors.accent.withValues(alpha: 0.2),
+                      trackHeight: 5,
+                    ),
+                    child: Slider(
+                      value: scale,
+                      min: WebScaleController.min,
+                      max: WebScaleController.max,
+                      divisions: 20,
+                      label: '${(scale * 100).round()}%',
+                      onChanged: control.set,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.text_increase_rounded,
+                  size: 18,
+                  color: AppColors.textSecondary,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

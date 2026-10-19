@@ -31,16 +31,45 @@
 
   <title>Utopia</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body { margin: 0; height: 100%; background: #120B2E; }
+    #loading {
+      position: fixed; inset: 0; z-index: 10;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+      background: radial-gradient(120% 80% at 50% 0%, #2a1a63 0%, #120B2E 55%, #0b0720 100%);
+      transition: opacity 0.4s ease;
+    }
+    #loading.done { opacity: 0; pointer-events: none; }
+    #loading img { border-radius: 24px; animation: bob 1.6s ease-in-out infinite; }
+    #loading .dots { display: flex; gap: 8px; }
+    #loading .dots span {
+      width: 9px; height: 9px; border-radius: 50%; background: #ffc94d;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+    #loading .dots span:nth-child(2) { animation-delay: 0.2s; }
+    #loading .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bob { 50% { transform: translateY(-8px); } }
+    @keyframes blink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      #loading img, #loading .dots span { animation: none; }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <!-- Shown while the game downloads, so the page never looks stuck; it
+       fades out on the game's first frame. -->
+  <div id="loading" aria-label="Loading Utopia">
+    <img src="icons/Icon-192.png" alt="" width="96" height="96">
+    <div class="dots"><span></span><span></span><span></span></div>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var el = document.getElementById('loading');
+      if (!el) return;
+      el.classList.add('done');
+      setTimeout(function () { el.remove(); }, 450);
+    });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

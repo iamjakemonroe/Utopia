@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/profiles/profile_freshness.dart';
 import 'core/router/app_router.dart';
+import 'core/settings/web_scale.dart';
 import 'core/audio/game_audio.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
@@ -156,9 +157,17 @@ class UtopiaApp extends ConsumerWidget {
             const Positioned.fill(child: ThemeTeleportLayer()),
           ],
         );
+        // In a browser, at the size chosen in Settings (phone-sized on a
+        // computer, at first).
+        if (!kScreenTour) {
+          if (!kIsWeb) return app;
+          return Consumer(
+            builder: (context, ref, _) =>
+                WebScale(scale: ref.watch(webScaleProvider), child: app),
+          );
+        }
         // The screen tour photographs the whole app, at the sizes it
         // pretends to be.
-        if (!kScreenTour) return app;
         return ValueListenableBuilder<Size?>(
           valueListenable: screenTourCanvas,
           builder: (context, canvas, _) {
