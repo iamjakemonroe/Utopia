@@ -10,6 +10,7 @@ import 'core/audio/game_audio.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/widgets/utopia_toast.dart';
+import 'core/widgets/web_update_banner.dart';
 import 'features/auras/presentation/dragon_set.dart';
 import 'features/auras/presentation/world_set_providers.dart';
 import 'features/auras/presentation/zombie_set.dart';
@@ -155,6 +156,8 @@ class UtopiaApp extends ConsumerWidget {
             // Friend requests and challenges pop up over any screen.
             const Positioned.fill(child: NotificationCenter()),
             const Positioned.fill(child: ThemeTeleportLayer()),
+            // In a browser: a newer version is out, refresh for it.
+            if (kIsWeb) const Positioned.fill(child: WebUpdateBanner()),
           ],
         );
         // In a browser, at the size chosen in Settings (phone-sized on a
