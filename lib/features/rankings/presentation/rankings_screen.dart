@@ -101,6 +101,7 @@ class _BoardState extends ConsumerState<_Board> {
     ref.invalidate(myRecordProvider(game));
     ref.invalidate(ratingHistoryProvider(game));
     ref.invalidate(leaderboardProvider((game, _friends)));
+    ref.invalidate(boardMoreProvider((game, _friends)));
     await ref.read(leaderboardProvider((game, _friends)).future);
   }
 
@@ -120,7 +121,9 @@ class _BoardState extends ConsumerState<_Board> {
     final me = ref.watch(currentUserProvider)?.id;
     final isGuest = ref.watch(isAnonymousProvider);
     final value = board.valueOrNull;
-    final top = value?.top ?? const <BoardEntry>[];
+    // The first page, then the ones brought in while scrolling down.
+    final more = ref.watch(boardMoreProvider(key));
+    final top = [...?value?.top, ...more.entries];
     final rating = value?.myRating ?? record?.rating ?? 1000;
     final place = value?.myPlace;
     final pinned = place != null && !top.any((e) => e.userId == me);
@@ -132,94 +135,113 @@ class _BoardState extends ConsumerState<_Board> {
       children: [
         RefreshIndicator(
           onRefresh: _refresh,
-          child: ListView(
-            padding: context.readablePadding(
-              top: AppSpacing.md,
-              bottom: pinned ? 100 : AppSpacing.xxl,
-            ),
-            children: [
-              switch (board) {
-                AsyncData(:final value) => _MyRankCard(
-                  board: value,
-                  record: record,
-                  history: history,
-                  friends: _friends,
-                ),
-                AsyncError() => _LoadError(
-                  onRetry: () => ref.invalidate(leaderboardProvider(key)),
-                ),
-                _ => const SizedBox(
-                  height: 220,
-                  child: Center(child: UtopiaLoader(size: 48)),
-                ),
-              },
-              const SizedBox(height: AppSpacing.sm),
-              TierLadder(rating: rating),
-              const SizedBox(height: AppSpacing.lg),
-              // Side by side when there's room; the switch goes under on
-              // a narrow phone.
-              Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: AppSpacing.sm,
-                runSpacing: AppSpacing.sm,
-                children: [
-                  Text(
-                    'Top players',
-                    style: AppTextStyles.display(fontSize: 20),
-                  ),
-                  if (!isGuest)
-                    _ScopeSwitch(
-                      friends: _friends,
-                      onChanged: (v) {
-                        ref.read(gameAudioProvider).play(Sfx.tap);
-                        setState(() => _friends = v);
-                      },
-                    ),
-                ],
+          // Near the end of what's shown: the next page of the board.
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (n) {
+              if (value != null && n.metrics.extentAfter < 600) {
+                ref
+                    .read(boardMoreProvider(key).notifier)
+                    .loadNext(
+                      firstPage: value.top.length,
+                      firstMore: value.hasMore,
+                    );
+              }
+              return false;
+            },
+            child: ListView(
+              padding: context.readablePadding(
+                top: AppSpacing.md,
+                bottom: pinned ? 100 : AppSpacing.xxl,
               ),
-              const SizedBox(height: AppSpacing.md),
-              if (value != null)
-                if (top.isEmpty)
-                  _NobodyYet(game: game, friends: _friends)
-                else ...[
-                  Podium(top: top.take(3).toList(), myId: me, onTap: _open),
-                  const SizedBox(height: AppSpacing.md),
-                  for (final (i, entry) in top.skip(3).indexed)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: BoardRow(
-                        entry: entry,
-                        me: entry.userId == me,
-                        index: i,
-                        onTap: () => _open(entry),
+              children: [
+                switch (board) {
+                  AsyncData(:final value) => _MyRankCard(
+                    board: value,
+                    record: record,
+                    history: history,
+                    friends: _friends,
+                  ),
+                  AsyncError() => _LoadError(
+                    onRetry: () => ref.invalidate(leaderboardProvider(key)),
+                  ),
+                  _ => const SizedBox(
+                    height: 220,
+                    child: Center(child: UtopiaLoader(size: 48)),
+                  ),
+                },
+                const SizedBox(height: AppSpacing.sm),
+                TierLadder(rating: rating),
+                const SizedBox(height: AppSpacing.lg),
+                // Side by side when there's room; the switch goes under on
+                // a narrow phone.
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    Text(
+                      'Top players',
+                      style: AppTextStyles.display(fontSize: 20),
+                    ),
+                    if (!isGuest)
+                      _ScopeSwitch(
+                        friends: _friends,
+                        onChanged: (v) {
+                          ref.read(gameAudioProvider).play(Sfx.tap);
+                          setState(() => _friends = v);
+                        },
+                      ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                if (value != null)
+                  if (top.isEmpty)
+                    _NobodyYet(game: game, friends: _friends)
+                  else ...[
+                    Podium(top: top.take(3).toList(), myId: me, onTap: _open),
+                    const SizedBox(height: AppSpacing.md),
+                    for (final (i, entry) in top.skip(3).indexed)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: BoardRow(
+                          entry: entry,
+                          me: entry.userId == me,
+                          index: i,
+                          onTap: () => _open(entry),
+                        ),
+                      ),
+                    if (more.loading)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        child: Center(child: UtopiaLoader(size: 32)),
+                      ),
+                  ],
+                const SizedBox(height: AppSpacing.sm),
+                if (top.any((e) => e.house))
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      "Players tagged House are Utopia's own: they keep the "
+                      'board busy until more players join, and never win '
+                      'prizes.',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.body(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
                       ),
                     ),
-                ],
-              const SizedBox(height: AppSpacing.sm),
-              if (top.any((e) => e.house))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(
-                    "Players tagged House are Utopia's own: they keep the "
-                    'board busy until more players join, and never win '
-                    'prizes.',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.body(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                  ),
+                Text(
+                  'Ratings come from online games. Pull down to refresh.',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.body(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
                   ),
                 ),
-              Text(
-                'Ratings come from online games. Pull down to refresh.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.body(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         if (pinned)

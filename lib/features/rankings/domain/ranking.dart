@@ -81,6 +81,7 @@ class Leaderboard {
     required this.myPlace,
     required this.myRating,
     required this.myGames,
+    this.hasMore = false,
   });
 
   factory Leaderboard.fromJson(Map<String, dynamic> json) {
@@ -93,10 +94,15 @@ class Leaderboard {
       myPlace: (me['place'] as num?)?.toInt(),
       myRating: (me['rating'] as num?)?.toInt() ?? 1000,
       myGames: (me['games'] as num?)?.toInt() ?? 0,
+      hasMore: json['more'] == true,
     );
   }
 
+  /// One page of the board (the top 100, a page at a time).
   final List<BoardEntry> top;
+
+  /// Whether there are more places after this page.
+  final bool hasMore;
 
   /// Null until they've played [kGamesToRank] rated games.
   final int? myPlace;

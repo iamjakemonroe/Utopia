@@ -27,9 +27,9 @@ def run(sql, *args):
         c.execute(sql, args)
 
 
-def board_as(user):
+def board_as(user, offset=0, limit=100):
     harness.as_user(db, user)
-    return one("select get_leaderboard('chess')")
+    return one("select get_leaderboard('chess', false, %s, %s)", offset, limit)
 
 
 harness.as_admin(db)
@@ -61,7 +61,21 @@ houses_above = one("select count(*) from player_ratings r join house_players h o
 check("my place counts the house players shown above me",
       board["me"]["place"] == 1 + real_above_me + houses_above, (board["me"], houses_above))
 
+# A page at a time: 25 first, then the next as they scroll, to 100.
+first = board_as(me, 0, 25)
+check("the board opens on its first 25", len(first["top"]) == 25 and first["more"] is True, len(first["top"]))
+pages = [first] + [board_as(me, o, 25) for o in (25, 50, 75)]
+check("…the pages join up into the same top 100",
+      [e["id"] for pg in pages for e in pg["top"]] == [e["id"] for e in top])
+check("…the last page says there's no more", pages[-1]["more"] is False)
+check("…nothing past the top 100", board_as(me, 100, 25)["top"] == [])
+harness.as_user(db, me)
+old_way = one("select get_leaderboard('chess')")
+check("called the old way, it's the first page", len(old_way["top"]) == 25)
+check("…and still says where I stand", old_way["me"]["place"] == board["me"]["place"])
+
 # Once it has enough real players (120, mark 100), they leave by themselves.
+harness.as_admin(db)
 run("update leaderboard_settings set house_until_players = 100")
 board = board_as(me)
 check("enough real players: no house players", not any(e["house"] for e in board["top"]))

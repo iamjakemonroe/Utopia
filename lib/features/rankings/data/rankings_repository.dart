@@ -11,11 +11,22 @@ class RankingsRepository {
 
   final SupabaseClient _client;
 
-  /// [game]'s board: everyone, or the player and their friends.
-  Future<Leaderboard> leaderboard(String game, {bool friends = false}) async {
+  /// A page of [game]'s board (everyone, or the player and their
+  /// friends): [limit] places from [offset], of the top 100.
+  Future<Leaderboard> leaderboard(
+    String game, {
+    bool friends = false,
+    int offset = 0,
+    int limit = kBoardPage,
+  }) async {
     final data = await _client.rpc(
       'get_leaderboard',
-      params: {'p_game': game, 'p_friends': friends},
+      params: {
+        'p_game': game,
+        'p_friends': friends,
+        'p_offset': offset,
+        'p_limit': limit,
+      },
     );
     return Leaderboard.fromJson(Map<String, dynamic>.from(data as Map));
   }
@@ -82,6 +93,77 @@ final rankingsRepositoryProvider = Provider<RankingsRepository>(
 );
 
 /// A board by (game, friends only).
+/// Places a page of the board brings.
+const kBoardPage = 25;
+
+/// The places after a board's first page, brought in as the player scrolls
+/// down to them.
+class BoardMore {
+  const BoardMore({
+    this.entries = const [],
+    this.hasMore,
+    this.loading = false,
+  });
+
+  final List<BoardEntry> entries;
+
+  /// Whether there are more after these (null until a page is in: the
+  /// first page says).
+  final bool? hasMore;
+  final bool loading;
+}
+
+class BoardMoreController extends StateNotifier<BoardMore> {
+  BoardMoreController(this._repo, this._key) : super(const BoardMore());
+
+  final RankingsRepository _repo;
+  final (String, bool) _key;
+
+  /// Brings the next page after the first one ([firstPage] places) and
+  /// any already brought in, if there's one ([firstMore] says, until a
+  /// page of its own has) and none is on its way. Counted here, not from
+  /// what's on screen, which can be a page behind.
+  Future<void> loadNext({
+    required int firstPage,
+    required bool firstMore,
+  }) async {
+    final more = state.hasMore ?? firstMore;
+    final offset = firstPage + state.entries.length;
+    if (state.loading || !more || offset >= 100) return;
+    state = BoardMore(entries: state.entries, hasMore: more, loading: true);
+    try {
+      final page = await _repo.leaderboard(
+        _key.$1,
+        friends: _key.$2,
+        offset: offset,
+      );
+      if (!mounted) return;
+      // Places already in (the board moved under them) aren't doubled.
+      final seen = {for (final e in state.entries) e.userId};
+      state = BoardMore(
+        entries: [
+          ...state.entries,
+          ...page.top.where((e) => !seen.contains(e.userId)),
+        ],
+        hasMore: page.hasMore,
+      );
+    } catch (_) {
+      // Offline: scrolling down again tries again.
+      if (mounted) {
+        state = BoardMore(entries: state.entries, hasMore: state.hasMore);
+      }
+    }
+  }
+}
+
+final boardMoreProvider = StateNotifierProvider.autoDispose
+    .family<BoardMoreController, BoardMore, (String, bool)>(
+      (ref, key) =>
+          BoardMoreController(ref.watch(rankingsRepositoryProvider), key),
+    );
+
+/// A board's first page (the rest comes as the player scrolls:
+/// [boardMoreProvider]).
 final leaderboardProvider = FutureProvider.autoDispose
     .family<Leaderboard, (String, bool)>(
       (ref, key) => ref
