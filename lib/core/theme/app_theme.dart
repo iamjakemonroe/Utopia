@@ -83,7 +83,10 @@ class AppTheme {
             borderRadius: BorderRadius.circular(24),
             side: BorderSide(color: AppColors.goldBorder, width: 1.6),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          textStyle: GoogleFonts.inter(
+            fontWeight: FontWeight.w800,
+            fontSize: 16,
+          ),
         ),
       ),
       // Secondary actions: a thin gold-outlined pill on a translucent
@@ -100,7 +103,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          textStyle: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -109,7 +115,9 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          // The app's font (a style without one falls back to the
+          // phone's own).
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700),
         ),
       ),
       // Cards default to a plain dark fill for any stray `Card` usage
