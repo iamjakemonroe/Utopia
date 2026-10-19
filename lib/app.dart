@@ -10,6 +10,7 @@ import 'core/audio/game_audio.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/widgets/utopia_toast.dart';
+import 'core/widgets/web_frame_watch.dart';
 import 'core/widgets/web_update_banner.dart';
 import 'features/auras/presentation/dragon_set.dart';
 import 'features/auras/presentation/world_set_providers.dart';
@@ -161,6 +162,8 @@ class UtopiaApp extends ConsumerWidget {
             if (kIsWeb) const Positioned.fill(child: WebUpdateBanner()),
             // In a browser: back from paying for coins.
             if (kIsWeb) const WebPaymentReturn(),
+            // In a browser: drawing less sharp on a device that lags.
+            if (kIsWeb) const WebFrameWatch(),
           ],
         );
         // In a browser, at the size chosen in Settings (phone-sized on a

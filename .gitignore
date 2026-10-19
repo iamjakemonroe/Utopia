@@ -61,3 +61,9 @@ supabase/.branches/
 
 # Art preview sheets (rendered on demand by test/tool)
 test/tool/goldens/
+
+# Screen recordings shared for testing
+*.mp4
+*.MP4
+*.mov
+*.MOV

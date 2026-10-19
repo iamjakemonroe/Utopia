@@ -72,6 +72,36 @@
     });
   </script>
   <script>
+    // How sharp the game draws. A phone's screen is 3x, and redrawing three
+    // million pixels a frame is what made the game lag in a browser: it
+    // draws at 2x at most (still sharp), and the game lowers it a step at a
+    // time on a device that still can't keep up (remembered here).
+    // ?hires draws at the screen's full sharpness.
+    window.utopiaRender = (function () {
+      var desc = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio') ||
+        Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
+      if (!desc || !desc.get || /[?&]hires/.test(location.search)) return null;
+      var cap = 2;
+      try {
+        var saved = Number(localStorage.getItem('utopia_render_cap'));
+        if (saved >= 1 && saved <= 2) cap = saved;
+      } catch (e) {}
+      var real = function () { return desc.get.call(window); };
+      Object.defineProperty(window, 'devicePixelRatio', {
+        configurable: true,
+        get: function () { return Math.min(cap, real()); },
+      });
+      return {
+        cap: function () { return cap; },
+        real: real,
+        set: function (value) {
+          cap = value;
+          try { localStorage.setItem('utopia_render_cap', String(value)); } catch (e) {}
+          window.dispatchEvent(new Event('resize'));
+        },
+      };
+    })();
+
     // The browser's offer to install Utopia (Chrome, Edge, Android), kept
     // for the game's own Install button instead of the browser's banner.
     window.utopiaInstallPrompt = null;
