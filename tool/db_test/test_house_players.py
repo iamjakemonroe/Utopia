@@ -110,10 +110,13 @@ check("both reports agree: settled", one("select status from matches where id = 
       and one("select winner_id from matches where id = %s", match) == me)
 check("…and rated like any game", one("select games from player_ratings where user_id = %s and game = 'chess'", me) == before + 1)
 
-# Leaderboards and cards.
+# Leaderboards and cards (house players can be shown for a while, by a
+# switch: off, they're never on it).
+harness.as_admin(db)
+q("update leaderboard_settings set show_house_players = false")
 harness.as_user(db, me)
 board = q("select get_leaderboard('chess')")[0][0]
-check("house players never on the leaderboard",
+check("house players never on the leaderboard (switch off)",
       all(one("select count(*) from house_players where id = %s", p["id"]) == 0 for p in board["top"]), board["top"][:2])
 stats = one("select get_player_stats(%s)", house)
 check("a house player's card reads like an established player's", stats["chess_played"] >= 30 and stats["chess_rating"] is not None)

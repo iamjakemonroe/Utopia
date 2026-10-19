@@ -4,6 +4,11 @@ import sys
 import harness
 
 db = harness.fresh()
+# The boards as they're meant to be: real players only (house players can
+# be shown for a while by a switch; see test_leaderboard_top100.py).
+harness.as_admin(db)
+with db.cursor() as _c:
+    _c.execute("update leaderboard_settings set show_house_players = false")
 fails = []
 
 
