@@ -277,7 +277,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             if (myId != null) ...[
               const _RejoinCard(),
-              for (final event in ref.watch(eventsProvider).events)
+              for (final event in ref.watch(eventsProvider).onHome)
                 Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                   child: EventTile(event: event),

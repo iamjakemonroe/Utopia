@@ -18,6 +18,13 @@ class EventsState {
   /// Rewards just earned, for the celebration (cleared once shown).
   final List<EventReward> justEarned;
 
+  /// The events with a card on home: a seasonal one goes once everything
+  /// it gives is the player's (the weekly quests stay, for next week's).
+  List<GameEvent> get onHome => [
+    for (final e in events)
+      if (e.isWeekly || !e.allEarned) e,
+  ];
+
   EventsState copyWith({
     List<GameEvent>? events,
     List<EventReward>? justEarned,

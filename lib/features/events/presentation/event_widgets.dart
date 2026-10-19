@@ -16,6 +16,7 @@ import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../../core/widgets/utopia_world.dart';
 import '../../auras/data/aura_repository.dart';
+import '../../auras/domain/aura.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../store/presentation/theme_teleport.dart';
 import '../domain/game_event.dart';
@@ -36,7 +37,7 @@ class EventCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final events = ref.watch(eventsProvider).events;
+    final events = ref.watch(eventsProvider).onHome;
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOutCubic,
@@ -462,10 +463,16 @@ class _UseButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final here = ref.watch(themeControllerProvider).id == reward.itemId;
+    final me = ref.watch(currentUserProvider)?.id;
+    // Already in that world, or already wearing that frame.
+    final here = reward.isWorld
+        ? ref.watch(themeControllerProvider).id == reward.itemId
+        : me != null &&
+              activeAura(ref.watch(profileByIdProvider(me)).valueOrNull) ==
+                  reward.itemId;
     final label = reward.isWorld
         ? (here ? "You're here" : 'Travel there')
-        : 'Wear it';
+        : (here ? 'Wearing it' : 'Wear it');
     Future<void> use() async {
       if (reward.isWorld) {
         if (here) return;
@@ -475,9 +482,9 @@ class _UseButton extends ConsumerWidget {
             .travelTo(UtopiaThemes.byId(reward.itemId));
         return;
       }
+      if (here) return;
       try {
         await ref.read(auraRepositoryProvider).equip(reward.itemId);
-        final me = ref.read(currentUserProvider)?.id;
         if (me != null) ref.invalidate(profileByIdProvider(me));
         ref.read(gameAudioProvider).play(Sfx.reaction);
         if (context.mounted) {
