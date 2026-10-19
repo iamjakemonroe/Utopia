@@ -14,6 +14,7 @@ import '../../../chess/presentation/controllers/chess_match_controller.dart';
 import '../../../notifications/presentation/answer_buttons.dart';
 import '../../../notifications/presentation/notification_actions.dart';
 import '../../data/friend_repository.dart';
+import '../../data/presence.dart';
 import '../providers/friends_providers.dart';
 import '../../../../core/widgets/utopia_toast.dart';
 import '../../../coins/presentation/providers/coin_balance_provider.dart';
@@ -67,6 +68,8 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
 
     final data = ref.watch(friendsPopupControllerProvider(myId));
     final controller = ref.read(friendsPopupControllerProvider(myId).notifier);
+    // Friends who are around now (looked up again every 30 seconds).
+    final online = ref.watch(friendsOnlineProvider).valueOrNull ?? const {};
     final query = _searchController.text.trim().toLowerCase().replaceFirst(
       RegExp(r'^@'),
       '',
@@ -212,7 +215,16 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
                               onAdd: add,
                             ),
                             _PeopleList(
-                              people: data.friends.where(matches).toList(),
+                              // Who's around first.
+                              people: [
+                                ...data.friends.where(
+                                  (f) => matches(f) && online.contains(f.id),
+                                ),
+                                ...data.friends.where(
+                                  (f) => matches(f) && !online.contains(f.id),
+                                ),
+                              ],
+                              online: online,
                               statusOf: data.statusOf,
                               onAdd: add,
                               emptyLabel: searching
@@ -433,9 +445,14 @@ class _PeopleList extends StatelessWidget {
     required this.statusOf,
     required this.onAdd,
     required this.emptyLabel,
+    this.online,
   });
 
   final List<SocialProfile> people;
+
+  /// Friends who are around now: each row shows whether they are. Null
+  /// shows nothing (only friends can see each other online).
+  final Set<String>? online;
   final FriendshipStatus Function(String) statusOf;
   final ValueChanged<String> onAdd;
   final String emptyLabel;
@@ -452,6 +469,7 @@ class _PeopleList extends StatelessWidget {
           person: person,
           status: statusOf(person.id),
           onAdd: onAdd,
+          online: online?.contains(person.id),
         );
       },
     );
@@ -463,21 +481,38 @@ class _PersonRow extends ConsumerWidget {
     required this.person,
     required this.status,
     required this.onAdd,
+    this.online,
   });
 
   final SocialProfile person;
   final FriendshipStatus status;
   final ValueChanged<String> onAdd;
 
+  /// Whether they're around now, or null to not say.
+  final bool? online;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final avatar = UserAvatar(
+      avatarUrl: person.avatarUrl,
+      avatarKind: person.avatarKind,
+      avatarSeed: person.avatarSeed,
+      fallbackInitial: person.name,
+    );
     return ListTile(
-      leading: UserAvatar(
-        avatarUrl: person.avatarUrl,
-        avatarKind: person.avatarKind,
-        avatarSeed: person.avatarSeed,
-        fallbackInitial: person.name,
-      ),
+      leading: online == null
+          ? avatar
+          : Stack(
+              clipBehavior: Clip.none,
+              children: [
+                avatar,
+                Positioned(
+                  right: -2,
+                  bottom: -2,
+                  child: OnlineDot(online: online!),
+                ),
+              ],
+            ),
       title: Text(
         person.name,
         maxLines: 1,
@@ -578,6 +613,44 @@ class _PersonRow extends ConsumerWidget {
         );
       }
     }
+  }
+}
+
+/// On a friend's picture: green while they're around, an empty ring
+/// when they're not.
+class OnlineDot extends StatelessWidget {
+  const OnlineDot({super.key, required this.online});
+
+  final bool online;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: online ? 'Online' : 'Offline',
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: 13,
+        height: 13,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: online ? AppColors.success : Colors.transparent,
+          border: Border.all(
+            color: online
+                ? AppColors.surface
+                : Colors.white.withValues(alpha: 0.55),
+            width: online ? 2.5 : 1.8,
+          ),
+          boxShadow: online
+              ? [
+                  BoxShadow(
+                    color: AppColors.success.withValues(alpha: 0.6),
+                    blurRadius: 6,
+                  ),
+                ]
+              : null,
+        ),
+      ),
+    );
   }
 }
 

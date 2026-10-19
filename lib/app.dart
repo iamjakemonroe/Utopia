@@ -27,6 +27,7 @@ import 'features/events/presentation/events_controller.dart';
 import 'core/analytics/screen_views.dart';
 import 'core/audio/world_soundscape.dart';
 import 'features/dev/screen_tour.dart';
+import 'features/friends/data/presence.dart';
 
 class UtopiaApp extends ConsumerWidget {
   const UtopiaApp({super.key});
@@ -164,6 +165,8 @@ class UtopiaApp extends ConsumerWidget {
             if (kIsWeb) const WebPaymentReturn(),
             // In a browser: how fast each screen draws, for analytics.
             if (kIsWeb) const WebFrameWatch(),
+            // Tells friends the player's around while the app is open.
+            const PresenceBeat(),
           ],
         );
         // In a browser, at the size chosen in Settings (phone-sized on a
