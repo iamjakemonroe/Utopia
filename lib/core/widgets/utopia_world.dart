@@ -17,6 +17,7 @@ import 'halloween_world.dart';
 import 'birthday_world.dart';
 import 'zombie_world.dart';
 import 'ambient_tick.dart';
+import 'soft_band.dart';
 
 /// One clock shared by every copy of the world, so screens that each paint
 /// their own background (and fade or slide between each other) always
@@ -625,16 +626,27 @@ class _ScenePainter extends CustomPainter {
       lower.add(Offset(size.width * u, y));
       upper.add(Offset(size.width * u, y - curtain));
     }
-    final band = Path()..addPolygon([...lower, ...upper.reversed], true);
-    canvas.drawPath(
-      band,
-      Paint()
-        ..shader = ui.Gradient.linear(
-          Offset(0, baseY + amp * 1.5),
-          Offset(0, baseY - amp - height),
-          [_alpha(glow, 0.28 * strength), _alpha(glow, 0)],
-        ),
-    );
+    final paint = Paint()
+      ..shader = ui.Gradient.linear(
+        Offset(0, baseY + amp * 1.5),
+        Offset(0, baseY - amp - height),
+        [_alpha(glow, 0.28 * strength), _alpha(glow, 0)],
+      );
+    final dpr = this.dpr;
+    if (dpr != null) {
+      // A browser would fill this wide, wavy band pixel by pixel each
+      // frame; as triangles it's the GPU's (see softBand).
+      canvas.drawVertices(
+        softBand(lower, upper, dpr),
+        BlendMode.modulate,
+        paint,
+      );
+    } else {
+      canvas.drawPath(
+        Path()..addPolygon([...lower, ...upper.reversed], true),
+        paint,
+      );
+    }
     canvas.drawPath(
       Path()..addPolygon(lower, false),
       Paint()
@@ -1114,26 +1126,39 @@ class _ScenePainter extends CustomPainter {
     final shift = travelled - wrapped * spacing;
     final top = baseline + math.sin(t * 0.5 + seed) * 3;
 
-    final row = Path()..addRect(Rect.fromLTRB(0, top, size.width, size.height));
+    final paint = Paint()
+      ..shader = ui.Gradient.linear(
+        Offset(0, baseline - puff),
+        Offset(0, size.height),
+        colors,
+      );
+    final body = Rect.fromLTRB(0, top, size.width, size.height);
     final count = (size.width / spacing).ceil() + 2;
+    final puffs = <Rect>[];
     for (var i = -1; i < count; i++) {
       final r = puff * (0.7 + 0.5 * _rand(i - wrapped, seed));
-      row.addOval(
+      puffs.add(
         Rect.fromCircle(
           center: Offset(i * spacing + shift, top + r * 0.35),
           radius: r,
         ),
       );
     }
-    canvas.drawPath(
-      row,
-      Paint()
-        ..shader = ui.Gradient.linear(
-          Offset(0, baseline - puff),
-          Offset(0, size.height),
-          colors,
-        ),
-    );
+    if (dpr != null) {
+      // In a browser, the row as one shape is filled pixel by pixel each
+      // frame; its rectangle and round puffs on their own are the GPU's.
+      // The colors are solid, so where they overlap looks the same.
+      canvas.drawRect(body, paint);
+      for (final p in puffs) {
+        canvas.drawOval(p, paint);
+      }
+    } else {
+      final row = Path()..addRect(body);
+      for (final p in puffs) {
+        row.addOval(p);
+      }
+      canvas.drawPath(row, paint);
+    }
   }
 
   // ── Ocean ───────────────────────────────────────────────────────────────
