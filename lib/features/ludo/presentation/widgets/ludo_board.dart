@@ -10,6 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../domain/ludo_engine.dart';
 import 'ludo_board_geometry.dart';
 import 'ludo_pieces.dart';
+import 'ludo_capture_bubble.dart';
 
 /// A capture reaction playing on one token, started at [startedAt]
 /// (seconds on the board's clock, see [LudoBoardView.clockNow]).
@@ -35,11 +36,15 @@ class LudoTokenAnchor {
     required this.color,
     required this.token,
     required this.child,
+    this.width = 200,
   });
 
   final LudoColor color;
   final int token;
   final Widget child;
+
+  /// How wide [child] is: it's kept on the board by that.
+  final double width;
 }
 
 /// The Ludo board for any table size: the painted board (classic cross or
@@ -57,6 +62,7 @@ class LudoBoardView extends ConsumerStatefulWidget {
     required this.pieceSets,
     this.reaction,
     this.anchor,
+    this.onAnchorTap,
   });
 
   final LudoState game;
@@ -70,6 +76,10 @@ class LudoBoardView extends ConsumerStatefulWidget {
   final Map<LudoColor, String> pieceSets;
   final LudoTokenReaction? reaction;
   final LudoTokenAnchor? anchor;
+
+  /// Tapping the [anchor]'s token, when it can't move (the piece that just
+  /// captured, to react).
+  final VoidCallback? onAnchorTap;
 
   /// The board's clock, for timing reactions.
   static double clockNow() => _clock.elapsedMicroseconds / 1e6;
@@ -292,6 +302,7 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
                       valueListenable: _now,
                       builder: (context, now, _) => _tokens(
                         now: now,
+                        width: size.width,
                         cellPx: cellPx,
                         toScreen: toScreen,
                         audio: audio,
@@ -307,8 +318,31 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
     );
   }
 
+  /// What's anchored over a token, kept on the board (a piece by its edge
+  /// had its card hanging off the screen), its point still on the piece.
+  Widget _anchored(Offset top, double width) {
+    final w = widget.anchor!.width;
+    final childLeft = (top.dx - w / 2)
+        .clamp(-6.0, math.max(-6.0, width - w + 6))
+        .toDouble();
+    return Positioned(
+      left: childLeft - (200 - w) / 2,
+      top: top.dy - 120,
+      width: 200,
+      height: 120,
+      child: LudoAnchorTail(
+        dx: top.dx - (childLeft + w / 2),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: widget.anchor!.child,
+        ),
+      ),
+    );
+  }
+
   Widget _tokens({
     required double now,
+    required double width,
     required double cellPx,
     required Offset Function(Offset) toScreen,
     required GameAudio audio,
@@ -425,6 +459,10 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
         }
         final w = tokenW * scale;
         final h = tokenH * scale;
+        final anchored =
+            widget.anchor?.color == color &&
+            widget.anchor?.token == i &&
+            widget.onAnchorTap != null;
         if (widget.anchor?.color == color && widget.anchor?.token == i) {
           anchorTop = ground - Offset(0, h * 0.95);
         }
@@ -465,9 +503,13 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
             height: h,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: movable ? () => widget.onTokenTap(i) : null,
+              onTap: movable
+                  ? () => widget.onTokenTap(i)
+                  : anchored
+                  ? widget.onAnchorTap
+                  : null,
               child: Semantics(
-                button: movable,
+                button: movable || anchored,
                 label: '${ludoColorName(color)} token ${i + 1}',
                 child: token,
               ),
@@ -483,16 +525,7 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
       children: [
         for (final (_, w) in items) w,
         if (widget.anchor != null && anchorTop != null)
-          Positioned(
-            left: anchorTop.dx - 100,
-            top: anchorTop.dy - 120,
-            width: 200,
-            height: 120,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: widget.anchor!.child,
-            ),
-          ),
+          _anchored(anchorTop, width),
       ],
     );
   }

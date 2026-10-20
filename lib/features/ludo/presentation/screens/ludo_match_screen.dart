@@ -65,6 +65,10 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
   bool _playedResult = false;
   bool _leaving = false;
 
+  /// The capture whose reaction card is open (its player tapped the piece
+  /// that took it).
+  int? _reactingTo;
+
   // The roller keeps the die until everyone has seen what they got.
   static const _diceHold = Duration(milliseconds: 1200);
 
@@ -332,23 +336,38 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
         ),
     };
 
+    // After a capture: a small badge on the piece that did it. Its player
+    // taps the piece (or the badge) to choose war or peace; the time runs
+    // either way, and rolling on passes.
     final pending = state.pendingReaction;
+    final choosing = state.choosingReaction;
+    final cardOpen = choosing && _reactingTo == pending!.capture.seq;
     final reactionAnchor = pending == null
         ? null
         : LudoTokenAnchor(
             color: pending.capture.by,
             token: pending.capture.token,
-            child: LudoCaptureBubble(
-              key: ValueKey(pending.capture.seq),
-              deadline: pending.deadline,
-              window: kReactionWindow,
-              onWar: state.choosingReaction
-                  ? () => controller.chooseReaction(TokenReaction.war)
-                  : null,
-              onPeace: state.choosingReaction
-                  ? () => controller.chooseReaction(TokenReaction.peace)
-                  : null,
-            ),
+            width: cardOpen
+                ? LudoReactionCard.size.width
+                : LudoCaptureBadge.size.width,
+            child: cardOpen
+                ? LudoReactionCard(
+                    key: ValueKey('card${pending.capture.seq}'),
+                    deadline: pending.deadline,
+                    window: kReactionWindow,
+                    onWar: () => controller.chooseReaction(TokenReaction.war),
+                    onPeace: () =>
+                        controller.chooseReaction(TokenReaction.peace),
+                  )
+                : LudoCaptureBadge(
+                    key: ValueKey('badge${pending.capture.seq}'),
+                    deadline: pending.deadline,
+                    window: kReactionWindow,
+                    onTap: choosing
+                        ? () =>
+                              setState(() => _reactingTo = pending.capture.seq)
+                        : null,
+                  ),
           );
 
     final holding = DateTime.now().difference(_lastRollAt) < _diceHold;
@@ -483,6 +502,13 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
                     pieceSets: pieceSets,
                     reaction: state.reaction,
                     anchor: reactionAnchor,
+                    onAnchorTap: choosing
+                        ? () => setState(
+                            () => _reactingTo = cardOpen
+                                ? null
+                                : pending!.capture.seq,
+                          )
+                        : null,
                   ),
                 ),
                 below: [
@@ -683,8 +709,8 @@ class _StatusLine extends StatelessWidget {
       text = 'You left this game.';
     } else if (state.choosingReaction) {
       text = passing
-          ? '${ludoColorName(state.pendingReaction!.capture.by)} captured! War or peace?'
-          : 'Captured! War or peace?';
+          ? '${ludoColorName(state.pendingReaction!.capture.by)} captured! Tap the piece to react, or roll on'
+          : 'Captured! Tap your piece to react, or roll on';
     } else if (state.isMyTurn && state.movableTokens.isNotEmpty) {
       text = passing
           ? '${ludoColorName(game.turn)}, tap a glowing piece'

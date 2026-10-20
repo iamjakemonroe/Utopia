@@ -211,8 +211,8 @@ class LudoMatchState {
   bool get isMyTurn =>
       playsHere(game.turn) && isActive && !game.left.contains(game.turn);
 
-  /// Someone on this phone is deciding how to react to their capture: the
-  /// die waits for that.
+  /// Someone on this phone can react to their capture (tap the piece that
+  /// took it). The die doesn't wait: rolling on passes on reacting.
   bool get choosingReaction =>
       pendingReaction != null &&
       playsHere(pendingReaction!.capture.by) &&
@@ -223,7 +223,6 @@ class LudoMatchState {
       !game.hasRolled &&
       !busy &&
       rollShowing &&
-      !choosingReaction &&
       game.winner == null;
 
   List<int> get movableTokens {
@@ -725,6 +724,8 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
 
   Future<void> rollDice() async {
     if (!state.canRoll) return;
+    // Rolling on instead of reacting to a capture.
+    if (state.choosingReaction) skipReaction();
     final before = state.game;
     final dice = _engine.rollDie();
     final outcome = _engine.registerRoll(before, dice);

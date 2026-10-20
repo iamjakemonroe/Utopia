@@ -117,6 +117,30 @@ void main() {
     },
   );
 
+  test('the one who captured can roll on, which passes on reacting', () async {
+    repo.match.add(_row(_base()));
+    await _settle();
+    final mine = _base().copyWith(
+      turn: LudoColor.red,
+      capture: const LudoCapture(
+        seq: 1,
+        by: LudoColor.red,
+        token: 0,
+        victims: [(LudoColor.yellow, 0)],
+      ),
+    );
+    repo.match.add(_row(mine, turnCount: 1));
+    await _settle();
+    expect(controller.state.choosingReaction, isTrue);
+    // The die doesn't wait for a reaction no one has asked to make.
+    expect(controller.state.canRoll, isTrue);
+
+    await controller.rollDice();
+    await _settle();
+    expect(controller.state.pendingReaction, isNull);
+    expect(repo.sent.map((s) => s.$1), contains('roll'));
+  });
+
   test('a capture from before the match was opened is not replayed', () async {
     repo.match.add(_row(_captured(_base(), 3), turnCount: 5));
     await _settle();
