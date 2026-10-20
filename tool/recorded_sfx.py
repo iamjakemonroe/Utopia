@@ -1,5 +1,7 @@
-"""Builds the Halloween sounds made from real recordings (tool/sfx_sources,
-all public domain): the witch's laugh as she crosses the moon and flies
+"""Builds the sounds made from real recordings (tool/sfx_sources, all
+public domain). `python3 tool/recorded_sfx.py coins_out` writes only
+assets/sfx/coins_out.wav: coins poured out, a gift sent. With no argument,
+the Halloween ones: the witch's laugh as she crosses the moon and flies
 away, a ghost's moan for the quiet moments, and the scream as the wraith
 rushes out.
 
@@ -143,6 +145,60 @@ def scream(x):
     return delay_reverb(out, sr=SR, taps=((0.07, 0.2), (0.13, 0.12)), feedback=0.15)
 
 
+def decode_hi(name, sr=44100):
+    """A source as mono samples at [sr]: coins ring higher than SR holds."""
+    with tempfile.TemporaryDirectory() as tmp:
+        out = os.path.join(tmp, "x.wav")
+        subprocess.run(
+            ["afconvert", "-f", "WAVE", "-d", f"LEI16@{sr}", "-c", "1",
+             os.path.join(SOURCES, name), out],
+            check=True,
+        )
+        data = open(out, "rb").read()
+    i = data.index(b"data")
+    n = struct.unpack("<I", data[i + 4:i + 8])[0]
+    pcm = array.array("h")
+    pcm.frombytes(data[i + 8:i + 8 + n])
+    return array.array("d", (v / 32768 for v in pcm))
+
+
+def coins_out():
+    """Coins leaving the wallet (a gift sent): a real handful poured out,
+    caught as it starts, ringing off as a soft whoosh carries it away.
+    Real metal, darker and quicker than the purchase sound's bright
+    synthesized cascade and bell (coins coming in)."""
+    sr = 44100
+    pour = decode_hi("coins_poured_thewoodlandnomad_363089.mp3", sr)
+    # The busiest moment of the pour, then back to the clink that starts it.
+    hop = int(0.01 * sr)
+    energy = [sum(v * v for v in pour[k:k + hop]) for k in range(0, len(pour) - hop, hop)]
+    span = int(0.45 / 0.01)
+    lo, hi = int(1.6 / 0.01), int(5.0 / 0.01)
+    best = max(range(lo, hi - span), key=lambda k: sum(energy[k:k + span]))
+    loudest = max(energy[best:best + span])
+    start = best
+    while start > best - 12 and energy[start - 1] > 0.08 * loudest:
+        start -= 1
+    a = start * hop
+    length = int(0.72 * sr)
+    seg = array.array("d", pour[a:a + length])
+    n = len(seg)
+    for i in range(n):
+        t = i / sr
+        fade = 1.0 if t < 0.32 else math.exp(-(t - 0.32) / 0.11)
+        seg[i] *= min(1.0, i / (0.004 * sr)) * fade
+    # Carpet thumps out; the metal stays.
+    seg = biquad(seg, "hp", 260, sr=sr)
+    out = buf(0.95, sr=sr)
+    add(out, seg, 0.0, 1.0, sr=sr)
+    # Away they go: air sweeping down and off.
+    from synth_audio import noise
+    whoosh = biquad(noise(0.55, 0.3, sr=sr, attack=0.07), "bp",
+                    lambda t: 2600 - 1900 * t / 0.55, 0.9, sr=sr)
+    add(out, whoosh, 0.16, 0.10, sr=sr)
+    return out, sr
+
+
 def main():
     laugh = take(decode("witch_laugh_mvvoiceacting_223851.mp3"), LAUGH_AT)
     left, right = cackle(laugh)
@@ -155,4 +211,9 @@ def main():
 
 
 if __name__ == "__main__":
+    if sys.argv[1:] == ["coins_out"]:
+        from synth_audio import normalize, fade_edges, write, OUT_SFX
+        x, sr = coins_out()
+        write(f"{OUT_SFX}/coins_out.wav", fade_edges(normalize(x, 0.8), sr=sr, fade_out=0.08), sr=sr)
+        sys.exit(0)
     main()

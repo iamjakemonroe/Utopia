@@ -275,6 +275,13 @@ content_path = "./supabase/templates/magic_link.html"
 subject = "Confirm your Utopia email"
 content_path = "./supabase/templates/email_change.html"
 
+# Utopia has no passwords: the "reset password" email is the gift PIN's.
+# "Forgot PIN?" sends it (resetPasswordForEmail), and its code proves the
+# email before a new PIN (verifyOTP, type recovery).
+[auth.email.template.recovery]
+subject = "Your Utopia gift PIN code"
+content_path = "./supabase/templates/recovery.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true

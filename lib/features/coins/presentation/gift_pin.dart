@@ -16,6 +16,10 @@ import '../../../core/widgets/utopia_toast.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../data/coin_gift_repository.dart';
 
+/// How many digits the codes Utopia emails have (supabase/config.toml,
+/// otp_length).
+const kEmailCodeLength = 8;
+
 /// What's wrong with [pin] as a gift PIN, in plain words (the server
 /// checks the same): null when it'll do.
 String? giftPinProblem(String pin) {
@@ -566,8 +570,10 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
         return GiftPinPad(
           key: const ValueKey('code'),
           title: 'Enter the code',
-          subtitle: 'The 6 digits we sent to ${maskEmail(_email ?? '')}',
-          length: 6,
+          subtitle:
+              'The $kEmailCodeLength digits in "Your Utopia gift PIN code", '
+              'sent to ${maskEmail(_email ?? '')}',
+          length: kEmailCodeLength,
           busy: _busy,
           error: _error,
           errorCount: _errors,

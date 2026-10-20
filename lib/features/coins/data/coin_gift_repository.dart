@@ -151,17 +151,19 @@ class CoinGiftRepository {
       );
 
   /// Emails a code to [email] (the account's), to prove it's theirs
-  /// before a new PIN: the same kind of code they sign in with.
+  /// before a new PIN: the "Your gift PIN code" email (Utopia has no
+  /// passwords, so the password-reset email is the PIN's;
+  /// supabase/templates/recovery.html).
   Future<void> sendPinResetCode(String email) =>
-      _client.auth.signInWithOtp(email: email, shouldCreateUser: false);
+      _client.auth.resetPasswordForEmail(email);
 
-  /// Checks the code from the email: the session's then proved by it,
+  /// Checks the code from that email: the session's then proved by it,
   /// which [resetPin] needs (within a few minutes).
   Future<void> verifyPinResetCode(String email, String code) async {
     await _client.auth.verifyOTP(
       email: email,
       token: code,
-      type: OtpType.email,
+      type: OtpType.recovery,
     );
   }
 
