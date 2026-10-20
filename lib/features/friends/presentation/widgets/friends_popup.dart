@@ -25,6 +25,7 @@ import '../../../coins/presentation/providers/coin_balance_provider.dart';
 import '../../../coins/presentation/send_coins_sheet.dart';
 import '../../../store/presentation/coin_shop.dart';
 import 'invite_stake_sheet.dart';
+import '../../../../l10n/strings.dart';
 
 /// Opens the friends popup: All / Friends / Recents, with a search that
 /// finds anyone on Utopia by username or nickname, and a "Play" challenge
@@ -100,7 +101,7 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
         if (context.mounted) {
           showUtopiaToast(
             context,
-            friendlyError(e, fallback: "Couldn't send the request. Try again."),
+            friendlyError(e, fallback: strings.friendsCouldnTSendTheRequest),
             kind: ToastKind.error,
           );
         }
@@ -140,7 +141,7 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Friends',
+                          strings.friendsFriends,
                           style: AppTextStyles.display(fontSize: 24),
                         ),
                       ),
@@ -164,7 +165,7 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
                     style: AppTextStyles.body(),
                     textInputAction: TextInputAction.search,
                     decoration: InputDecoration(
-                      hintText: 'Search by username or name',
+                      hintText: strings.friendsSearchByUsernameOrName,
                       hintStyle: AppTextStyles.body(
                         color: AppColors.textSecondary,
                       ),
@@ -201,9 +202,9 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
                   unselectedLabelColor: AppColors.textSecondary,
                   indicatorColor: AppColors.accent,
                   tabs: [
-                    Tab(text: 'All'),
-                    Tab(text: 'Friends · ${data.friends.length}'),
-                    const Tab(text: 'Recents'),
+                    Tab(text: strings.friendsAll),
+                    Tab(text: strings.friendsFriends2(data.friends.length)),
+                    Tab(text: strings.friendsRecents),
                   ],
                 ),
                 Expanded(
@@ -254,15 +255,14 @@ class _FriendsPopupState extends ConsumerState<_FriendsPopup> {
                                 avatarSeed: f.avatarSeed,
                               )),
                               emptyLabel: searching
-                                  ? 'No friends match that.'
-                                  : 'No friends yet. Search for someone above.',
+                                  ? strings.friendsNoFriendsMatchThat
+                                  : strings.friendsNoFriendsYetSearchFor,
                             ),
                             _PeopleList(
                               people: data.recents.where(matches).toList(),
                               statusOf: data.statusOf,
                               onAdd: add,
-                              emptyLabel:
-                                  "People you've played who aren't friends yet will show up here.",
+                              emptyLabel: strings.friendsPeopleYouVePlayedWho,
                             ),
                           ],
                         ),
@@ -298,9 +298,7 @@ class _AllTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!searching && people.isEmpty) {
-      return const _Empty(
-        'Play a match or search for a username to add your first friend.',
-      );
+      return _Empty(strings.friendsPlayAMatchOrSearch);
     }
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
@@ -320,7 +318,7 @@ class _AllTab extends StatelessWidget {
                 Icon(Icons.public_rounded, size: 16, color: AppColors.sky),
                 const SizedBox(width: 6),
                 Text(
-                  'On Utopia',
+                  strings.friendsOnUtopia,
                   style: AppTextStyles.body(
                     fontWeight: FontWeight.w800,
                     color: AppColors.textSecondary,
@@ -335,7 +333,7 @@ class _AllTab extends StatelessWidget {
               child: Center(child: UtopiaLoader(size: 36)),
             )
           else if (others.isEmpty && people.isEmpty)
-            const _Empty('No one by that name yet.')
+            _Empty(strings.friendsNoOneByThatName)
           else
             for (final p in others)
               _PersonRow(person: p, status: statusOf(p.id), onAdd: onAdd),
@@ -441,7 +439,7 @@ class _RequestCardState extends ConsumerState<_RequestCard> {
                   style: AppTextStyles.body(fontWeight: FontWeight.w900),
                 ),
                 Text(
-                  'wants to be friends',
+                  strings.friendsWantsToBeFriends,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.body(
@@ -635,7 +633,7 @@ class _PersonRow extends ConsumerWidget {
             FilledButton.tonalIcon(
               onPressed: () => _askCancel(context, ref, sent),
               icon: const Icon(Icons.hourglass_top_rounded, size: 18),
-              label: const Text('Sent'),
+              label: Text(strings.friendsSent),
               style: FilledButton.styleFrom(
                 visualDensity: VisualDensity.compact,
                 backgroundColor: AppColors.textSecondary.withValues(
@@ -648,7 +646,7 @@ class _PersonRow extends ConsumerWidget {
             FilledButton.tonalIcon(
               onPressed: () => _invite(context),
               icon: const Icon(Icons.sports_esports_outlined, size: 18),
-              label: const Text('Play'),
+              label: Text(strings.friendsPlay),
               style: FilledButton.styleFrom(
                 visualDensity: VisualDensity.compact,
                 backgroundColor: AppColors.accent.withValues(alpha: 0.2),
@@ -668,12 +666,12 @@ class _PersonRow extends ConsumerWidget {
     final left = challengeMinutesLeft(invite);
     final sure = await confirmBouncy(
       context: context,
-      title: 'Challenge sent',
+      title: strings.friendsChallengeSent,
       message: left == null
-          ? 'Waiting for ${person.name} to answer. Take it back?'
-          : '${person.name} has $left min left to answer. Take it back?',
-      confirmLabel: 'Cancel challenge',
-      cancelLabel: 'Keep it',
+          ? strings.friendsWaitingForToAnswerTake(person.name)
+          : strings.friendsHasMinLeftToAnswer(person.name, left),
+      confirmLabel: strings.friendsCancelChallenge,
+      cancelLabel: strings.friendsKeepIt,
       destructive: true,
     );
     if (sure && context.mounted) {
@@ -706,7 +704,7 @@ class _PersonRow extends ConsumerWidget {
       if (context.mounted) {
         showUtopiaToast(
           context,
-          'Challenge sent to ${person.name}. It lasts 10 minutes.',
+          strings.friendsChallengeSentToItLasts(person.name),
           kind: ToastKind.success,
           icon: Icons.send_rounded,
         );
@@ -715,7 +713,7 @@ class _PersonRow extends ConsumerWidget {
       if (context.mounted) {
         showUtopiaToast(
           context,
-          friendlyError(e, fallback: "Couldn't send the challenge. Try again."),
+          friendlyError(e, fallback: strings.friendsCouldnTSendTheChallenge),
           kind: ToastKind.error,
         );
       }
@@ -732,11 +730,11 @@ class _GiftButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tooltip(
-      message: 'Send coins',
+      message: strings.friendsSendCoins,
       child: FilledButton.tonalIcon(
         onPressed: onTap,
         icon: const CoinIcon(size: 18),
-        label: const Text('Gift'),
+        label: Text(strings.friendsGift),
         style: FilledButton.styleFrom(
           visualDensity: VisualDensity.compact,
           backgroundColor: AppColors.coinGold.withValues(alpha: 0.18),
@@ -790,22 +788,26 @@ class _FriendState extends StatelessWidget {
     return switch (status) {
       FriendshipStatus.friends => pill(
         Icons.check_circle_rounded,
-        'Friends',
+        strings.friendsFriends,
         AppColors.success,
       ),
       FriendshipStatus.requested => pill(
         Icons.schedule_rounded,
-        'Requested',
+        strings.friendsRequested,
         AppColors.textSecondary,
       ),
       FriendshipStatus.incoming => GestureDetector(
         onTap: onAccept,
-        child: pill(Icons.person_add_alt_1_rounded, 'Accept', AppColors.sky),
+        child: pill(
+          Icons.person_add_alt_1_rounded,
+          strings.friendsAccept,
+          AppColors.sky,
+        ),
       ),
       FriendshipStatus.self => const SizedBox.shrink(),
       FriendshipStatus.none => IconButton(
         icon: Icon(Icons.person_add_alt_1, color: AppColors.textSecondary),
-        tooltip: 'Add friend',
+        tooltip: strings.friendsAddFriend,
         onPressed: onAdd,
       ),
     };

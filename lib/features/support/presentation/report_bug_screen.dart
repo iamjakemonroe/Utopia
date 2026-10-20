@@ -19,6 +19,7 @@ import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../l10n/strings.dart';
 
 /// This build, as "1.0.0+14", so a report says exactly which one it's about.
 final _buildProvider = FutureProvider<String>((ref) async {
@@ -99,11 +100,11 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
   bool _sent = false;
   String? _error;
 
-  static const _categories = [
-    ('bug', Icons.bug_report_rounded, 'Something broke'),
-    ('gameplay', Icons.casino_rounded, 'Gameplay'),
-    ('payments', Icons.credit_card_rounded, 'Purchases'),
-    ('account', Icons.person_rounded, 'Account'),
+  static final _categories = [
+    ('bug', Icons.bug_report_rounded, strings.reportBugSomethingBroke),
+    ('gameplay', Icons.casino_rounded, strings.reportBugGameplay),
+    ('payments', Icons.credit_card_rounded, strings.reportBugPurchases),
+    ('account', Icons.person_rounded, strings.reportBugAccount),
   ];
 
   bool get _idea => widget.idea;
@@ -134,7 +135,7 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
   Future<void> _send() async {
     final text = _description.text.trim();
     if (text.length < 5) {
-      setState(() => _error = 'Tell us a little more (at least a few words).');
+      setState(() => _error = strings.reportBugTellUsALittleMore);
       return;
     }
     setState(() {
@@ -193,8 +194,8 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
         setState(() {
           _sending = false;
           _error = e.toString().contains('too many')
-              ? "You've sent a lot of reports. Try again in a little while."
-              : "Couldn't send that. Check your connection and try again.";
+              ? strings.reportBugYouVeSentALot
+              : strings.reportBugCouldnTSendThatCheck;
         });
       }
     }
@@ -203,7 +204,13 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_idea ? 'Suggest a feature' : 'Report a bug')),
+      appBar: AppBar(
+        title: Text(
+          _idea
+              ? strings.reportBugSuggestAFeature
+              : strings.reportBugReportABug,
+        ),
+      ),
       body: AppBackground(
         child: SafeArea(
           child: AnimatedSwitcher(
@@ -228,18 +235,21 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
           children: [
             const CoinBuddy(mood: BuddyMood.happy, size: 130),
             const SizedBox(height: AppSpacing.md),
-            Text('Thank you!', style: AppTextStyles.display(fontSize: 28)),
+            Text(
+              strings.reportBugThankYou,
+              style: AppTextStyles.display(fontSize: 28),
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               _idea
-                  ? 'We read every idea. Check back under Your reports to see what happens to it.'
-                  : 'We read every report. Check back under Your reports to see when it’s fixed.',
+                  ? strings.reportBugWeReadEveryIdeaCheck
+                  : strings.reportBugWeReadEveryReportCheck,
               textAlign: TextAlign.center,
               style: AppTextStyles.body(color: AppColors.textSecondary),
             ),
             const SizedBox(height: AppSpacing.lg),
             PrimaryButton(
-              label: 'Done',
+              label: strings.reportBugDone,
               onPressed: () => Navigator.of(context).maybePop(),
             ),
           ],
@@ -273,8 +283,8 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
             Expanded(
               child: Text(
                 _idea
-                    ? 'Got an idea for Utopia? Tell Chip what you’d love to see.'
-                    : 'Spotted something off? Tell Chip what happened and we’ll fix it.',
+                    ? strings.reportBugGotAnIdeaForUtopia
+                    : strings.reportBugSpottedSomethingOffTellChip,
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
             ),
@@ -288,7 +298,7 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!_idea) ...[
-                _label('What’s it about?'),
+                _label(strings.reportBugWhatSItAbout),
                 Wrap(
                   spacing: AppSpacing.sm,
                   runSpacing: AppSpacing.sm,
@@ -318,24 +328,28 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
                 ),
                 const SizedBox(height: AppSpacing.md),
               ],
-              _label(_idea ? 'Your idea' : 'What happened?'),
+              _label(
+                _idea
+                    ? strings.reportBugYourIdea
+                    : strings.reportBugWhatHappened,
+              ),
               TextField(
                 controller: _description,
                 maxLines: 6,
                 maxLength: 2000,
                 decoration: InputDecoration(
                   hintText: _idea
-                      ? 'What would make Utopia better for you?'
-                      : 'What were you doing, and what went wrong?',
+                      ? strings.reportBugWhatWouldMakeUtopiaBetter
+                      : strings.reportBugWhatWereYouDoingAnd,
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
-              _label('Screenshot (optional)'),
+              _label(strings.reportBugScreenshotOptional),
               if (shot == null)
                 OutlinedButton.icon(
                   onPressed: _sending ? null : _pickShot,
                   icon: const Icon(Icons.add_photo_alternate_rounded),
-                  label: const Text('Add a screenshot'),
+                  label: Text(strings.reportBugAddAScreenshot),
                 )
               else
                 Stack(
@@ -349,7 +363,7 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
                       top: -10,
                       right: -10,
                       child: IconButton.filled(
-                        tooltip: 'Remove',
+                        tooltip: strings.reportBugRemove,
                         onPressed: _sending
                             ? null
                             : () => setState(() => _shot = null),
@@ -359,12 +373,12 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
                   ],
                 ),
               const SizedBox(height: AppSpacing.md),
-              _label('Email (optional)'),
+              _label(strings.reportBugEmailOptional),
               TextField(
                 controller: _contact,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  hintText: 'So we can follow up',
+                decoration: InputDecoration(
+                  hintText: strings.reportBugSoWeCanFollowUp,
                 ),
               ),
               if (_error != null) ...[
@@ -379,13 +393,15 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
               ],
               const SizedBox(height: AppSpacing.lg),
               PrimaryButton(
-                label: _idea ? 'Send idea' : 'Send report',
+                label: _idea
+                    ? strings.reportBugSendIdea
+                    : strings.reportBugSendReport,
                 isLoading: _sending,
                 onPressed: _send,
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                'Sent with your username, the app version, your phone’s system and the screen you were on.',
+                strings.reportBugSentWithYourUsernameThe,
                 style: AppTextStyles.body(
                   fontSize: 12,
                   color: AppColors.textSecondary,
@@ -405,10 +421,13 @@ class _YourReports extends ConsumerWidget {
   const _YourReports();
 
   static (String, Color) _status(SentReport r) => switch (r.status) {
-    'triaged' => ('On our list', AppColors.coinGold),
-    'fixed' => (r.idea ? 'Added' : 'Fixed', AppColors.success),
-    'wontfix' => ('Not planned', AppColors.textSecondary),
-    _ => ('Sent', AppColors.sky),
+    'triaged' => (strings.reportBugOnOurList, AppColors.coinGold),
+    'fixed' => (
+      r.idea ? strings.reportBugAdded : strings.reportBugFixed,
+      AppColors.success,
+    ),
+    'wontfix' => (strings.reportBugNotPlanned, AppColors.textSecondary),
+    _ => (strings.reportBugSent, AppColors.sky),
   };
 
   @override
@@ -420,7 +439,10 @@ class _YourReports extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your reports', style: AppTextStyles.display(fontSize: 18)),
+          Text(
+            strings.reportBugYourReports,
+            style: AppTextStyles.display(fontSize: 18),
+          ),
           const SizedBox(height: AppSpacing.sm),
           for (final r in reports)
             Padding(

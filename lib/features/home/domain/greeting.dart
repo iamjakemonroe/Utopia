@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../core/widgets/coin_buddy.dart';
+import '../../../l10n/strings.dart';
 
 /// The line at the top of home: picked for the time of day (or, on the
 /// player's birthday, all about that), with a little variety so it isn't
@@ -29,80 +30,80 @@ typedef _Pool = ({
 });
 
 // {name} is replaced with the player's name, or dropped with its comma.
-const _earlyMorning = (
+final _earlyMorning = (
   titles: ['Good morning, {name}', 'Rise and shine, {name}', 'Morning, {name}'],
   lines: [
     'The islands are just waking up.',
-    'Fresh skies, fresh games.',
-    'Coffee and a quick game?',
-    'The early bird gets the first roll.',
+    strings.greetingFreshSkiesFreshGames,
+    strings.greetingCoffeeAndAQuickGame,
+    strings.greetingTheEarlyBirdGetsThe,
   ],
   mood: BuddyMood.happy,
   icon: Icons.wb_twilight_rounded,
 );
 
-const _morning = (
+final _morning = (
   titles: ['Good morning, {name}', 'Morning, {name}', 'Hey {name}'],
   lines: [
     'The world is bright and busy today.',
-    'Perfect weather for a win.',
-    'The board is set. Your move.',
+    strings.greetingPerfectWeatherForAWin,
+    strings.greetingTheBoardIsSetYour,
   ],
   mood: BuddyMood.happy,
   icon: Icons.wb_sunny_rounded,
 );
 
-const _afternoon = (
+final _afternoon = (
   titles: ['Good afternoon, {name}', 'Hey {name}', 'Welcome back, {name}'],
   lines: [
     'Take a break. The board is waiting.',
-    'The sun is high over Utopia.',
-    'Time for a quick round?',
-    'A good afternoon for a long game.',
+    strings.greetingTheSunIsHighOver,
+    strings.greetingTimeForAQuickRound,
+    strings.greetingAGoodAfternoonForA,
   ],
   mood: BuddyMood.excited,
   icon: Icons.light_mode_rounded,
 );
 
-const _evening = (
+final _evening = (
   titles: ['Good evening, {name}', 'Evening, {name}', 'Welcome back, {name}'],
   lines: [
     'Lanterns are lighting up across the islands.',
-    'Wind down with a game or two.',
-    'The sunset looks great from here.',
+    strings.greetingWindDownWithAGame,
+    strings.greetingTheSunsetLooksGreatFrom,
   ],
   mood: BuddyMood.happy,
   icon: Icons.wb_twilight_rounded,
 );
 
-const _night = (
+final _night = (
   titles: ['Hello, night owl', 'Still up, {name}?', 'Good evening, {name}'],
   lines: [
     'The stars are out over Utopia.',
-    'One more game before bed?',
-    'Quiet night. Loud dice.',
+    strings.greetingOneMoreGameBeforeBed,
+    strings.greetingQuietNightLoudDice,
   ],
   mood: BuddyMood.idle,
   icon: Icons.nightlight_round,
 );
 
-const _lateNight = (
+final _lateNight = (
   titles: [
     'Burning the midnight oil?',
     'Still awake, {name}?',
-    'Hello, night owl',
+    strings.greetingHelloNightOwl,
   ],
   lines: [
     'Utopia never sleeps. Apparently neither do you.',
-    'The moon is keeping score tonight.',
-    'Just one more game. Probably.',
+    strings.greetingTheMoonIsKeepingScore,
+    strings.greetingJustOneMoreGameProbably,
   ],
   mood: BuddyMood.thinking,
   icon: Icons.nightlight_round,
 );
 
 // All day on the player's birthday, whatever the time.
-const _birthday = (
+final _birthday = (
   titles: [
     'Happy birthday, {name}!',
     "It's your day, {name}!",
@@ -110,12 +111,12 @@ const _birthday = (
   ],
   lines: [
     'The whole sky is partying for you today.',
-    'Make a wish! Mine is that you win today.',
-    'Cake first, then games. Birthday rules.',
-    'Every firework out there is for you.',
-    'Your birthday world is open all day. Enjoy it!',
-    "Another trip around the sun. Let's celebrate!",
-    'I put my party hat on just for you.',
+    strings.greetingMakeAWishMineIs,
+    strings.greetingCakeFirstThenGamesBirthday,
+    strings.greetingEveryFireworkOutThereIs,
+    strings.greetingYourBirthdayWorldIsOpen,
+    strings.greetingAnotherTripAroundTheSun,
+    strings.greetingIPutMyPartyHat,
   ],
   mood: BuddyMood.excited,
   icon: Icons.cake_rounded,
@@ -163,7 +164,7 @@ Greeting pickGreeting(
         .replaceAll(', {name}', '')
         .replaceAll(' {name}', '')
         .replaceAll('{name}', '');
-    if (title == 'Hey') title = 'Hey there';
+    if (title == 'Hey') title = strings.greetingHeyThere;
   } else {
     title = title.replaceAll('{name}', capitalizeWords(name.trim()));
   }

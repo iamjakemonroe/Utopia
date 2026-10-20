@@ -1,3 +1,5 @@
+import '../../../l10n/strings.dart';
+
 /// A player's birthday: the day and month only. The year is never asked
 /// for, so no one's age is ever kept.
 class Birthday {
@@ -9,19 +11,19 @@ class Birthday {
   /// 1 to [daysIn] the month.
   final int day;
 
-  static const monthNames = [
+  static final monthNames = [
     'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    strings.birthdayFebruary,
+    strings.birthdayMarch,
+    strings.birthdayApril,
+    strings.birthdayMay,
+    strings.birthdayJune,
+    strings.birthdayJuly,
+    strings.birthdayAugust,
+    strings.birthdaySeptember,
+    strings.birthdayOctober,
+    strings.birthdayNovember,
+    strings.birthdayDecember,
   ];
 
   /// The most days [month] ever has (29 for February).

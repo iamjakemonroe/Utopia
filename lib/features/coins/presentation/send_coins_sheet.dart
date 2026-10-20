@@ -16,6 +16,7 @@ import '../../../core/widgets/utopia_toast.dart';
 import '../data/coin_gift_repository.dart';
 import 'gift_pin.dart';
 import '../../../core/platform/keyboard.dart';
+import '../../../l10n/strings.dart';
 
 /// Who a gift goes to.
 typedef GiftFriend = ({
@@ -116,7 +117,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
         Navigator.of(context).pop();
         showUtopiaToast(
           context,
-          'Sent ${formatCoins(coins)} coins to $_name',
+          strings.sendCoinsSentCoinsTo(formatCoins(coins), _name),
           kind: ToastKind.success,
           icon: Icons.redeem_rounded,
         );
@@ -145,7 +146,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
         _step = _Step.pin;
         _pinError = friendlyError(
           e,
-          fallback: "Couldn't send them. Try again (it won't send twice).",
+          fallback: strings.sendCoinsCouldnTSendThemTry,
         );
         _pinErrors++;
       });
@@ -154,16 +155,14 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
 
   /// Why a gift couldn't go, in plain words.
   String _why(String? why) => switch (why) {
-    'self' ||
-    'nobody' ||
-    'not_friends' => 'You can only send coins to friends.',
-    'house' => "House players can't take gifts.",
-    'amount' => 'Choose how many to send.',
-    'balance' => "You don't have that many coins.",
-    'held' => "Coins bought in the last two weeks can't be sent yet.",
-    'guest' => 'Save your account to send coins.',
-    'off' => 'Sending coins is paused right now. Try again later.',
-    _ => "Couldn't send them. Try again.",
+    'self' || 'nobody' || 'not_friends' => strings.sendCoinsYouCanOnlySendCoins,
+    'house' => strings.sendCoinsHousePlayersCanTTake,
+    'amount' => strings.sendCoinsChooseHowManyToSend,
+    'balance' => strings.sendCoinsYouDonTHaveThat,
+    'held' => strings.sendCoinsCoinsBoughtInTheLast,
+    'guest' => strings.sendCoinsSaveYourAccountToSend,
+    'off' => strings.sendCoinsSendingCoinsIsPausedRight,
+    _ => strings.sendCoinsCouldnTSendThemTry2,
   };
 
   @override
@@ -192,7 +191,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
                     children: [
                       if (_step != _Step.amount)
                         IconButton(
-                          tooltip: 'Back',
+                          tooltip: strings.sendCoinsBack,
                           onPressed: _sending
                               ? null
                               : () => setState(() => _step = _Step.amount),
@@ -222,8 +221,8 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
                           children: [
                             Text(
                               _step == _Step.amount
-                                  ? 'Send coins'
-                                  : 'Send ${formatCoins(_coins)}',
+                                  ? strings.sendCoinsSendCoins
+                                  : strings.sendCoinsSend(formatCoins(_coins)),
                               style: AppTextStyles.display(fontSize: 22),
                             ),
                             Text(
@@ -244,9 +243,9 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
                     AsyncData(:final value) =>
                       !value.ok ? _cant(value) : _stepBody(value),
                     AsyncError() => _message(
-                      "Couldn't check what you can send. Try again.",
+                      strings.sendCoinsCouldnTCheckWhatYou,
                       action: (
-                        'Try again',
+                        strings.sendCoinsTryAgain,
                         () => ref.invalidate(giftAllowanceProvider),
                       ),
                     ),
@@ -268,8 +267,8 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
     _Step.amount => _picker(allow),
     _Step.pin => GiftPinPad(
       key: const ValueKey('pin'),
-      title: 'Enter your gift PIN',
-      subtitle: '$_name gets them straight away. A gift can’t be undone.',
+      title: strings.sendCoinsEnterYourGiftPin,
+      subtitle: strings.sendCoinsGetsThemStraightAwayA(_name),
       busy: _sending,
       enabled: _lockedUntil == null || _lockedUntil!.isBefore(DateTime.now()),
       error: _pinError,
@@ -282,16 +281,14 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
                 _pinError = null;
                 _step = _Step.resetPin;
               }),
-        child: const Text('Forgot PIN?'),
+        child: Text(strings.sendCoinsForgotPin),
       ),
     ),
     _Step.choosePin => GiftPinFlow(
       key: const ValueKey('choose'),
       goal: GiftPinGoal.set,
-      firstTitle: 'Choose a gift PIN',
-      firstSubtitle:
-          "Gifts need one, so only you can send your coins: 4 digits you'll "
-          'enter each time.',
+      firstTitle: strings.sendCoinsChooseAGiftPin,
+      firstSubtitle: strings.sendCoinsGiftsNeedOneSoOnly,
       onDone: _sendWith,
     ),
     _Step.resetPin => GiftPinFlow(
@@ -306,10 +303,9 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
     switch (allow.why) {
       case 'guest':
         return _message(
-          'Save your account to send coins to friends. It keeps your '
-          'coins safe too.',
+          strings.sendCoinsSaveYourAccountToSend2,
           action: (
-            'Save my account',
+            strings.sendCoinsSaveMyAccount,
             () {
               Navigator.of(context).pop();
               context.push('/auth/link');
@@ -317,7 +313,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
           ),
         );
       default:
-        return _message('Sending coins is paused right now. Try again later.');
+        return _message(strings.sendCoinsSendingCoinsIsPausedRight);
     }
   }
 
@@ -388,7 +384,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
                 }),
               ),
             _Chip(
-              label: 'Other',
+              label: strings.sendCoinsOther,
               on: _typing,
               enabled: most >= allow.min,
               onTap: () => setState(() {
@@ -430,9 +426,11 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
         const SizedBox(height: AppSpacing.md),
         Text(
           most < allow.min
-              ? "You don't have coins you can send right now."
-              : 'You have ${formatCoins(allow.balance)} · you can send up to '
-                    '${formatCoins(most)}',
+              ? strings.sendCoinsYouDonTHaveCoins
+              : strings.sendCoinsYouHaveYouCanSend(
+                  formatCoins(allow.balance),
+                  formatCoins(most),
+                ),
           textAlign: TextAlign.center,
           style: AppTextStyles.body(
             fontSize: 13,
@@ -444,8 +442,10 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              '${formatCoins(allow.held)} bought in the last '
-              '${allow.holdDays} days can be sent after that.',
+              strings.sendCoinsBoughtInTheLastDays(
+                formatCoins(allow.held),
+                allow.holdDays,
+              ),
               textAlign: TextAlign.center,
               style: AppTextStyles.body(
                 fontSize: 12,
@@ -466,14 +466,16 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
         ],
         const SizedBox(height: AppSpacing.md),
         PrimaryButton(
-          label: valid ? 'Send ${formatCoins(_coins)} coins' : 'Send coins',
+          label: valid
+              ? strings.sendCoinsSendCoins2(formatCoins(_coins))
+              : strings.sendCoinsSendCoins,
           onPressed: valid ? () => _continue(allow) : null,
         ),
         const SizedBox(height: 6),
         Text(
           allow.pinSet
-              ? 'Friends only · your gift PIN sends it'
-              : "Friends only · you'll choose a gift PIN next",
+              ? strings.sendCoinsFriendsOnlyYourGiftPin
+              : strings.sendCoinsFriendsOnlyYouLlChoose,
           textAlign: TextAlign.center,
           style: AppTextStyles.body(
             fontSize: 11.5,

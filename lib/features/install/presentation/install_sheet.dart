@@ -14,6 +14,7 @@ import '../../../core/theme/theme_controller.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/utopia_toast.dart';
+import '../../../l10n/strings.dart';
 
 /// The store apps' links, once Utopia is in the stores (build defines);
 /// until then, empty, and nobody is pointed there.
@@ -95,13 +96,13 @@ Future<void> _offerStoreApp(
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (sheet) => _SheetFrame(
-      title: ios ? 'Utopia is on the App Store' : 'Utopia is on Google Play',
-      lead:
-          'Get the app for sound in the background, notifications and more. '
-          'Sign in with the same email and everything comes with you.',
+      title: ios
+          ? strings.installUtopiaIsOnTheApp
+          : strings.installUtopiaIsOnGooglePlay,
+      lead: strings.installGetTheAppForSound,
       children: [
         PrimaryButton(
-          label: 'Get the app',
+          label: strings.installGetTheApp,
           onPressed: () {
             launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
             Navigator.of(sheet).pop();
@@ -109,7 +110,7 @@ Future<void> _offerStoreApp(
         ),
         TextButton(
           onPressed: () => Navigator.of(sheet).pop(),
-          child: const Text('Keep playing here'),
+          child: Text(strings.installKeepPlayingHere),
         ),
       ],
     ),
@@ -145,7 +146,7 @@ class _InstallSheetState extends ConsumerState<_InstallSheet> {
       final host = Navigator.of(context);
       showUtopiaToast(
         context,
-        'Utopia is on your home screen now.',
+        strings.installUtopiaIsOnYourHome,
         icon: Icons.download_done_rounded,
         kind: ToastKind.success,
       );
@@ -161,31 +162,29 @@ class _InstallSheetState extends ConsumerState<_InstallSheet> {
     final steps = WebInstall.canPrompt
         ? null
         : ios
-        ? const [
-            (Icons.ios_share_rounded, 'Tap the Share button in Safari'),
-            (Icons.add_box_outlined, 'Choose "Add to Home Screen"'),
-            (Icons.touch_app_rounded, 'Open Utopia from your home screen'),
+        ? [
+            (Icons.ios_share_rounded, strings.installTapTheShareButtonIn),
+            (Icons.add_box_outlined, strings.installChooseAddToHomeScreen),
+            (Icons.touch_app_rounded, strings.installOpenUtopiaFromYourHome),
           ]
         : WebInstall.macSafari
-        ? const [
-            (Icons.menu_rounded, 'In the menu bar, open File'),
-            (Icons.add_to_queue_rounded, 'Choose "Add to Dock"'),
-            (Icons.touch_app_rounded, 'Open Utopia from your Dock'),
+        ? [
+            (Icons.menu_rounded, strings.installInTheMenuBarOpen),
+            (Icons.add_to_queue_rounded, strings.installChooseAddToDock),
+            (Icons.touch_app_rounded, strings.installOpenUtopiaFromYourDock),
           ]
-        : const [
-            (Icons.more_vert_rounded, "Open your browser's menu"),
-            (Icons.install_desktop_rounded, 'Choose "Install Utopia"'),
-            (Icons.touch_app_rounded, 'Open Utopia like any app'),
+        : [
+            (Icons.more_vert_rounded, strings.installOpenYourBrowserSMenu),
+            (Icons.install_desktop_rounded, strings.installChooseInstallUtopia),
+            (Icons.touch_app_rounded, strings.installOpenUtopiaLikeAnyApp),
           ];
     return _SheetFrame(
-      title: 'Install Utopia',
-      lead:
-          'Play full screen, straight from your home screen, like any app. '
-          "It's free and takes no space.",
+      title: strings.installInstallUtopia,
+      lead: strings.installPlayFullScreenStraightFrom,
       children: [
         if (steps == null)
           PrimaryButton(
-            label: 'Install',
+            label: strings.installInstall,
             isLoading: _busy,
             onPressed: _busy ? null : _install,
           )
@@ -213,7 +212,7 @@ class _InstallSheetState extends ConsumerState<_InstallSheet> {
         if (widget.offer)
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Not now'),
+            child: Text(strings.installNotNow),
           ),
       ],
     );

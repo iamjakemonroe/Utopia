@@ -170,6 +170,12 @@ def skip_reason(src, group):
         return 'braces'
     if re.fullmatch(r"[a-z0-9_.\-/:@#]+", text.strip()):
         return 'id'
+    if re.fullmatch(r"[A-Z0-9_.]+", text.strip()) or ('_' in text and ' ' not in text.strip()):
+        return 'constant name'
+    if re.fullmatch(r"\s*[a-z_]+(,\s*[a-z_]+)+,?\s*", text):
+        return 'column list'
+    if re.fullmatch(r"[A-Z][a-z]+/[A-Za-z_]+", text.strip()):
+        return 'time zone'
     if re.search(r'^(assets/|https?:|package:|/)', text) or re.search(r'\.(png|jpg|wav|m4a|json|dart|svg)$', text):
         return 'path'
     line_start = src.rfind('\n', 0, first.start) + 1
@@ -182,7 +188,7 @@ def skip_reason(src, group):
         return 'compared or indexed'
     if re.match(r'\s*:(?!:)', after) and not re.search(r'\?\s*$', before):
         return 'map key'
-    if re.search(r'\b(Key|ValueKey|debugPrint|print|log|RegExp|Uri\.parse|rpc|from|select|eq|channel|Exception|StateError|ArgumentError|UnimplementedError|assert|Semantics\.label)\s*\(\s*$', before):
+    if re.search(r'\b(Key|ValueKey|debugPrint|print|log|RegExp|Uri\.parse|rpc|from|select|eq|channel|Exception|StateError|ArgumentError|UnimplementedError|assert|contains|startsWith|endsWith|indexOf|lastIndexOf|replaceAll|replaceFirst|split|DateFormat|NumberFormat|invoke|getString|setString|getBool|setBool|getInt|setInt|remove)\s*\(\s*$', before):
         return 'not shown'
     if re.search(r'\bthrow\s+$', before):
         return 'thrown'
@@ -271,14 +277,31 @@ def extract(path, arb, originals):
     for start, end, call, original in reversed(edits):
         src = src[:start] + call + src[end:]
         originals[call] = original
-    if edits:
-        rel = os.path.relpath(STRINGS, os.path.dirname(path))
-        line = f"import '{rel}';\n"
-        if line not in src:
-            last = max(m.end() for m in re.finditer(r"^import [^\n]*\n", src, re.M))
-            src = src[:last] + line + src[last:]
     open(path, 'w').write(src)
+    if edits:
+        add_import(path)
     return len(edits)
+
+
+def add_import(path):
+    """Imports strings.dart into [path], or into its library if it's a part."""
+    src = open(path).read()
+    part_of = re.search(r"^part of '([^']+)';", src, re.M)
+    if part_of:
+        add_import(os.path.normpath(os.path.join(os.path.dirname(path), part_of.group(1))))
+        return
+    rel = os.path.relpath(STRINGS, os.path.dirname(path))
+    line = f"import '{rel}';\n"
+    if line in src:
+        return
+    imports = list(re.finditer(r"^import [^\n]*\n", src, re.M))
+    if imports:
+        at = imports[-1].end()
+    else:
+        library = re.search(r"^library[^\n]*\n", src, re.M)
+        at = library.end() if library else 0
+        line += '\n'
+    open(path, 'w').write(src[:at] + line + src[at:])
 
 
 # ── what the analyzer says ─────────────────────────────────────────────────
@@ -440,7 +463,8 @@ def dry(paths):
             if skip_reason(src, group):
                 continue
             line = src.count('\n', 0, group[0].start) + 1
-            print(f'{p}:{line}: {src[group[0].start:group[-1].end][:110]!s}'.replace('\n', ' '))
+            before = src[max(0, group[0].start - 30):group[0].start].replace('\n', ' ')
+            print(f'{p}:{line}: [{before.strip()[-24:]}] {src[group[0].start:group[-1].end][:110]!s}'.replace('\n', ' '))
 
 
 def main():
@@ -461,6 +485,12 @@ def main():
     tidy(arb)
     save_arb(arb)
     subprocess.run(['flutter', 'gen-l10n'], check=True, capture_output=True)
+    # A one-line if that now wraps wants braces; a file whose words all
+    # went back doesn't need the import.
+    for p in paths:
+        subprocess.run(['dart', 'fix', '--apply',
+                        '--code=curly_braces_in_flow_control_structures',
+                        '--code=unused_import', p], capture_output=True)
     subprocess.run(['dart', 'format', *paths], capture_output=True)
     print('moved', total, 'strings;', 'clean' if ok else 'NOT clean')
     sys.exit(0 if ok else 1)

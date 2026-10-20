@@ -8,6 +8,7 @@ import '../../../../core/widgets/entry_selector.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../chess/domain/time_control.dart';
 import '../../../chess/presentation/widgets/time_control_style.dart';
+import '../../../../l10n/strings.dart';
 
 /// What a challenge is for: the game ('chess' or 'checkers'), the clock
 /// and each player's entry.
@@ -135,11 +136,15 @@ class _ChallengeSheetState extends State<_ChallengeSheet> {
             const SizedBox(height: AppSpacing.md),
             Row(
               children: [
-                _gameChoice('chess', 'Chess', Icons.extension_rounded),
+                _gameChoice(
+                  'chess',
+                  strings.inviteStakeChess,
+                  Icons.extension_rounded,
+                ),
                 const SizedBox(width: 8),
                 _gameChoice(
                   'checkers',
-                  'Checkers',
+                  strings.inviteStakeCheckers,
                   Icons.blur_circular_rounded,
                 ),
               ],
@@ -158,7 +163,7 @@ class _ChallengeSheetState extends State<_ChallengeSheet> {
             ),
             const SizedBox(height: AppSpacing.lg),
             PrimaryButton(
-              label: 'Send challenge',
+              label: strings.inviteStakeSendChallenge,
               onPressed: () => Navigator.of(
                 context,
               ).pop((game: _game, time: _time, entry: _entry)),

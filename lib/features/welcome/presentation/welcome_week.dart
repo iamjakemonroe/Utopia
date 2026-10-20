@@ -22,6 +22,7 @@ import '../../../core/widgets/utopia_world.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../store/presentation/store_controller.dart';
 import '../data/welcome_repository.dart';
+import '../../../l10n/strings.dart';
 
 /// Once a session on home: starts a new player's welcome pass (everything
 /// in the store, free for three days) and welcomes them to it, reminds
@@ -79,7 +80,7 @@ Future<void> showWelcomeIfDue(BuildContext context, WidgetRef ref) async {
     if (!context.mounted) return;
     showUtopiaToast(
       context,
-      'Last day of your welcome pass. Keep the things you love from the store.',
+      strings.welcomeWeekLastDayOfYourWelcome,
       icon: Icons.timer_rounded,
     );
   }
@@ -93,20 +94,28 @@ SharedPreferences? _prefs(WidgetRef ref) {
   }
 }
 
-const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const _months = [
+final _weekdays = [
+  'Mon',
+  strings.welcomeWeekTue,
+  strings.welcomeWeekWed,
+  strings.welcomeWeekThu,
+  strings.welcomeWeekFri,
+  strings.welcomeWeekSat,
+  'Sun',
+];
+final _months = [
   'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  strings.welcomeWeekFeb,
+  strings.welcomeWeekMar,
+  strings.welcomeWeekApr,
+  strings.welcomeWeekMay,
+  strings.welcomeWeekJun,
+  strings.welcomeWeekJul,
+  strings.welcomeWeekAug,
+  strings.welcomeWeekSep,
+  strings.welcomeWeekOct,
+  strings.welcomeWeekNov,
+  strings.welcomeWeekDec,
 ];
 
 /// "Tue 21 Oct".
@@ -259,14 +268,13 @@ class WelcomeWeekSheet extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
-          'Everything’s yours for $days days',
+          strings.welcomeWeekEverythingSYoursForDays(days),
           textAlign: TextAlign.center,
           style: AppTextStyles.display(fontSize: 24),
         ),
         const SizedBox(height: 6),
         Text(
-          'Every world, frame, chess set and piece set in Utopia is free to '
-          'use for $days days. Try them all, then keep the ones you love.',
+          strings.welcomeWeekEveryWorldFrameChessSet(days),
           textAlign: TextAlign.center,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
@@ -299,7 +307,7 @@ class WelcomeWeekSheet extends ConsumerWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'Free until ${_day(until)}',
+                strings.welcomeWeekFreeUntil(_day(until)),
                 style: AppTextStyles.body(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
@@ -311,7 +319,7 @@ class WelcomeWeekSheet extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: 'Explore everything',
+          label: strings.welcomeWeekExploreEverything,
           onPressed: () {
             HapticFeedback.mediumImpact();
             final router = ref.read(goRouterProvider);
@@ -323,7 +331,7 @@ class WelcomeWeekSheet extends ConsumerWidget {
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            'Maybe later',
+            strings.welcomeWeekMaybeLater,
             style: AppTextStyles.body(
               fontWeight: FontWeight.w700,
               color: AppColors.textSecondary,
@@ -346,21 +354,19 @@ class WelcomeOverSheet extends ConsumerWidget {
         const CoinBuddy(mood: BuddyMood.peaceful, size: 96),
         const SizedBox(height: AppSpacing.sm),
         Text(
-          'Your welcome pass is over',
+          strings.welcomeWeekYourWelcomePassIsOver,
           textAlign: TextAlign.center,
           style: AppTextStyles.display(fontSize: 24),
         ),
         const SizedBox(height: 6),
         Text(
-          'Hope you loved it. Your coins, and everything you bought or won, '
-          'stay yours. Keep a favourite from the store any time: worlds can be '
-          'rented from 1,200 coins.',
+          strings.welcomeWeekHopeYouLovedItYour,
           textAlign: TextAlign.center,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: 'See the store',
+          label: strings.welcomeWeekSeeTheStore,
           onPressed: () {
             final router = ref.read(goRouterProvider);
             Navigator.of(context).pop();
@@ -371,7 +377,7 @@ class WelcomeOverSheet extends ConsumerWidget {
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            'Not now',
+            strings.welcomeWeekNotNow,
             style: AppTextStyles.body(
               fontWeight: FontWeight.w700,
               color: AppColors.textSecondary,

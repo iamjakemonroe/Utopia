@@ -21,6 +21,7 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../store/presentation/theme_teleport.dart';
 import '../domain/game_event.dart';
 import 'events_controller.dart';
+import '../../../l10n/strings.dart';
 
 /// Each season's color.
 Color seasonColor(String season) => switch (season) {
@@ -115,8 +116,10 @@ class _Card extends StatelessWidget {
                       Text(
                         next == null
                             ? event.isWeekly
-                                  ? 'All done this week. New quests on Monday.'
-                                  : 'You earned everything. Yours every ${event.title}.'
+                                  ? strings.eventAllDoneThisWeekNew
+                                  : strings.eventYouEarnedEverythingYoursEvery(
+                                      event.title,
+                                    )
                             : _nextLine(event, next),
                         style: AppTextStyles.body(
                           fontSize: 13,
@@ -149,8 +152,8 @@ String _nextLine(GameEvent event, EventReward next) {
   final games = (next.games - event.games).clamp(0, 999);
   final days = (next.days - event.days).clamp(0, 999);
   final parts = [
-    if (games > 0) 'play $games more game${games == 1 ? '' : 's'}',
-    if (days > 0) 'come by on $days more day${days == 1 ? '' : 's'}',
+    if (games > 0) strings.eventPlayMoreGame(games, games == 1 ? '' : 's'),
+    if (days > 0) strings.eventComeByOnMoreDay(days, days == 1 ? '' : 's'),
   ];
   final what = parts.join(' and ');
   return '${what[0].toUpperCase()}${what.substring(1)} for ${next.name}'
@@ -300,9 +303,11 @@ class _EventSheet extends ConsumerWidget {
         const SizedBox(height: 4),
         Text(
           event.isWeekly
-              ? 'Coins for playing, new every Monday. ${event.timeLeft}.'
-              : 'Earn these free by playing. They stay yours, and come back '
-                    'every ${event.title}. ${event.timeLeft}.',
+              ? strings.eventCoinsForPlayingNewEvery(event.timeLeft)
+              : strings.eventEarnTheseFreeByPlaying(
+                  event.title,
+                  event.timeLeft,
+                ),
           textAlign: TextAlign.center,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
@@ -323,8 +328,7 @@ class _EventSheet extends ConsumerWidget {
             const SizedBox(width: 6),
             Flexible(
               child: Text(
-                'Every game counts: online, with friends, or against Chip '
-                'and Robo.',
+                strings.eventEveryGameCountsOnlineWith,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.body(
                   fontSize: 12,
@@ -367,9 +371,9 @@ class _RewardRow extends ConsumerWidget {
                 Text(reward.name, style: AppTextStyles.display(fontSize: 17)),
                 Text(
                   switch (reward.kind) {
-                    RewardKind.world => 'World',
-                    RewardKind.aura => 'Frame',
-                    RewardKind.coins => 'Coins',
+                    RewardKind.world => strings.eventWorld,
+                    RewardKind.aura => strings.eventFrame,
+                    RewardKind.coins => strings.eventCoins,
                   },
                   style: AppTextStyles.body(
                     fontSize: 12,
@@ -378,13 +382,13 @@ class _RewardRow extends ConsumerWidget {
                 ),
                 const SizedBox(height: 6),
                 if (reward.earned && reward.isCoins)
-                  _Pill(text: 'Collected', color: AppColors.success)
+                  _Pill(text: strings.eventCollected, color: AppColors.success)
                 else if (reward.earned)
                   _UseButton(reward: reward)
                 else ...[
                   if (reward.games > 0)
                     _Task(
-                      label: 'Play ${reward.games} games',
+                      label: strings.eventPlayGames(reward.games),
                       done: event.games,
                       of: reward.games,
                       color: color,
@@ -392,7 +396,7 @@ class _RewardRow extends ConsumerWidget {
                   if (reward.days > 0) ...[
                     const SizedBox(height: 4),
                     _Task(
-                      label: 'Come by on ${reward.days} days',
+                      label: strings.eventComeByOnDays(reward.days),
                       done: event.days,
                       of: reward.days,
                       color: color,
@@ -474,8 +478,8 @@ class _UseButton extends ConsumerWidget {
               activeAura(ref.watch(profileByIdProvider(me)).valueOrNull) ==
                   reward.itemId;
     final label = reward.isWorld
-        ? (here ? "You're here" : 'Travel there')
-        : (here ? 'Wearing it' : 'Wear it');
+        ? (here ? strings.eventYouReHere : strings.eventTravelThere)
+        : (here ? strings.eventWearingIt : strings.eventWearIt);
     Future<void> use() async {
       if (reward.isWorld) {
         if (here) return;
@@ -493,7 +497,7 @@ class _UseButton extends ConsumerWidget {
         if (context.mounted) {
           showUtopiaToast(
             context,
-            "You're wearing ${reward.name}.",
+            strings.eventYouReWearing(reward.name),
             kind: ToastKind.success,
           );
         }
@@ -501,7 +505,7 @@ class _UseButton extends ConsumerWidget {
         if (context.mounted) {
           showUtopiaToast(
             context,
-            "Couldn't put it on. Try again?",
+            strings.eventCouldnTPutItOn,
             kind: ToastKind.error,
           );
         }
@@ -536,7 +540,9 @@ Future<void> showEarnedSheet(BuildContext context, List<EventReward> earned) {
       confetti: true,
       children: [
         Text(
-          earned.every((r) => r.isCoins) ? 'Quest complete!' : 'Unlocked!',
+          earned.every((r) => r.isCoins)
+              ? strings.eventQuestComplete
+              : strings.eventUnlocked,
           style: AppTextStyles.display(fontSize: 30),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -550,15 +556,9 @@ Future<void> showEarnedSheet(BuildContext context, List<EventReward> earned) {
           const SizedBox(height: 4),
           Text(
             switch (reward.kind) {
-              RewardKind.world =>
-                "A new world, yours for good. It's open whenever its "
-                    'season is on.',
-              RewardKind.aura =>
-                'A new frame, yours for good. You can wear it whenever '
-                    'its season is on.',
-              RewardKind.coins =>
-                "Added to your coins. Keep playing: "
-                    "there's more this week.",
+              RewardKind.world => strings.eventANewWorldYoursFor,
+              RewardKind.aura => strings.eventANewFrameYoursFor,
+              RewardKind.coins => strings.eventAddedToYourCoinsKeep,
             },
             textAlign: TextAlign.center,
             style: AppTextStyles.body(color: AppColors.textSecondary),
@@ -671,13 +671,15 @@ class EventStoreBanner extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${event.title} event · ${event.timeLeft}',
+                          strings.eventEvent(event.title, event.timeLeft),
                           style: AppTextStyles.display(fontSize: 15),
                         ),
                         Text(
                           event.allEarned
-                              ? 'You earned ${names.join(' and ')}. Enjoy!'
-                              : 'Earn ${names.join(' and ')} free, just by playing.',
+                              ? strings.eventYouEarnedEnjoy(names.join(' and '))
+                              : strings.eventEarnFreeJustByPlaying(
+                                  names.join(' and '),
+                                ),
                           style: AppTextStyles.body(
                             fontSize: 12,
                             color: AppColors.textSecondary,

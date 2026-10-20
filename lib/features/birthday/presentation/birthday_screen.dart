@@ -20,6 +20,7 @@ import '../domain/birthday.dart';
 import 'birthday_providers.dart';
 import '../../../core/analytics/analytics.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../l10n/strings.dart';
 
 /// "When's your birthday?": the day and month (never the year), so Chip
 /// can throw the player a party every year in a world that only opens on
@@ -59,7 +60,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
       setState(() => _tellFriends = !on);
       showUtopiaToast(
         context,
-        "Couldn't change that. Try again?",
+        strings.birthdayCouldnTChangeThatTry,
         kind: ToastKind.error,
       );
     }
@@ -105,8 +106,8 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
       showUtopiaToast(
         context,
         e.toString().contains('birthday locked')
-            ? "Your birthday's locked now. Report a bug if it's wrong and we'll fix it."
-            : "Couldn't save that. Try again?",
+            ? strings.birthdayYourBirthdaySLockedNow
+            : strings.birthdayCouldnTSaveThatTry,
         kind: ToastKind.error,
       );
       return;
@@ -128,7 +129,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
     } else {
       showUtopiaToast(
         context,
-        'Saved. Chip will see you on ${choice.label}.',
+        strings.birthdaySavedChipWillSeeYou(choice.label),
         kind: ToastKind.success,
         icon: Icons.cake_rounded,
       );
@@ -188,7 +189,9 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      _saved ? "It's a date!" : "When's your birthday?",
+                      _saved
+                          ? strings.birthdayItSADate
+                          : strings.birthdayWhenSYourBirthday,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.display(fontSize: 28),
                     ),
@@ -196,8 +199,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                     Text(
                       _saved
                           ? 'Chip will throw you a party on ${choice?.label}.'
-                          : 'Chip throws you a party every year, in a world '
-                                'that only opens on your birthday.',
+                          : strings.birthdayChipThrowsYouAParty,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body(
                         color: AppColors.onWorld.withValues(alpha: 0.88),
@@ -212,9 +214,9 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const _Label(
+                              _Label(
                                 icon: Icons.calendar_month_rounded,
-                                text: 'Month',
+                                text: strings.birthdayMonth,
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               _Grid(
@@ -227,9 +229,9 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                                 onTap: (i) => _pickMonth(i + 1),
                               ),
                               const SizedBox(height: AppSpacing.md),
-                              const _Label(
+                              _Label(
                                 icon: Icons.today_rounded,
-                                text: 'Day',
+                                text: strings.birthdayDay,
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               _Grid(
@@ -258,8 +260,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                     const SizedBox(height: AppSpacing.md),
                     if (locked)
                       Text(
-                        "Your birthday's locked. If it's wrong, report a bug "
-                        "and we'll fix it.",
+                        strings.birthdayYourBirthdaySLockedIf,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.body(
                           fontSize: 13,
@@ -268,7 +269,9 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                       )
                     else ...[
                       PrimaryButton(
-                        label: _saved ? 'Saved!' : 'Save my birthday',
+                        label: _saved
+                            ? strings.birthdaySaved
+                            : strings.birthdaySaveMyBirthday,
                         isLoading: _saving,
                         onPressed: choice == null || _saved ? null : _save,
                       ),
@@ -284,8 +287,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                           const SizedBox(width: 4),
                           Flexible(
                             child: Text(
-                              'Just the day and month, never the year. '
-                              'Only you can see it.',
+                              strings.birthdayJustTheDayAndMonth,
                               textAlign: TextAlign.center,
                               style: AppTextStyles.body(
                                 fontSize: 12,
@@ -299,7 +301,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                         const SizedBox(height: AppSpacing.sm),
                         TextButton(
                           onPressed: _saving ? null : _home,
-                          child: const Text('Skip for now'),
+                          child: Text(strings.birthdaySkipForNow),
                         ),
                       ],
                     ],
@@ -489,8 +491,8 @@ class _Summary extends StatelessWidget {
           Expanded(
             child: Text(
               picked == null
-                  ? 'Pick a month and a day'
-                  : 'Your party: ${picked.label}',
+                  ? strings.birthdayPickAMonthAndA
+                  : strings.birthdayYourParty(picked.label),
               style: AppTextStyles.body(
                 fontWeight: FontWeight.w800,
                 color: picked == null
@@ -531,11 +533,11 @@ class _TellFriends extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tell my friends on the day',
+                  strings.birthdayTellMyFriendsOnThe,
                   style: AppTextStyles.body(fontWeight: FontWeight.w800),
                 ),
                 Text(
-                  'They can send you a birthday wish.',
+                  strings.birthdayTheyCanSendYouA,
                   style: AppTextStyles.body(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -548,7 +550,7 @@ class _TellFriends extends StatelessWidget {
             value: value,
             onChanged: onChanged,
             onIcon: Icons.people_rounded,
-            semanticLabel: 'Tell my friends on the day',
+            semanticLabel: strings.birthdayTellMyFriendsOnThe,
           ),
         ],
       ),

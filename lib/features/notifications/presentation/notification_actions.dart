@@ -13,6 +13,7 @@ import '../../coins/presentation/providers/coin_balance_provider.dart';
 import '../../friends/presentation/providers/friends_providers.dart';
 import '../../store/presentation/coin_shop.dart';
 import '../data/notification_repository.dart';
+import '../../../l10n/strings.dart';
 
 /// A context under the app's navigator, for toasts and sheets started from
 /// places above it (the alert banner lives above the router).
@@ -32,7 +33,7 @@ void _toast(
 }
 
 String _nameOf(WidgetRef ref, String? userId) {
-  if (userId == null) return 'Someone';
+  if (userId == null) return strings.notificationActionsSomeone;
   return profileDisplayName(
     ref.read(profileByIdProvider(userId)).valueOrNull,
     userId,
@@ -56,7 +57,7 @@ Future<bool> answerFriendRequest(
     if (accept) {
       _toast(
         ref,
-        "You and ${_nameOf(ref, fromId)} are friends now",
+        strings.notificationActionsYouAndAreFriendsNow(_nameOf(ref, fromId)),
         kind: ToastKind.success,
         icon: Icons.people_rounded,
       );
@@ -65,7 +66,10 @@ Future<bool> answerFriendRequest(
   } catch (e) {
     _toast(
       ref,
-      friendlyError(e, fallback: 'That request is no longer open.'),
+      friendlyError(
+        e,
+        fallback: strings.notificationActionsThatRequestIsNoLonger,
+      ),
       kind: ToastKind.error,
     );
     ref.read(friendsPopupControllerProvider(me).notifier).refresh();
@@ -109,7 +113,10 @@ Future<bool> answerGameInvite(
   } catch (e) {
     _toast(
       ref,
-      friendlyError(e, fallback: 'That challenge is no longer open.'),
+      friendlyError(
+        e,
+        fallback: strings.notificationActionsThatChallengeIsNoLonger,
+      ),
       kind: ToastKind.error,
     );
     return false;

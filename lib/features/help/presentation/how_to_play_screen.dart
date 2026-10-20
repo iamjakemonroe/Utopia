@@ -14,6 +14,7 @@ import '../../chess/presentation/widgets/chess_piece_art.dart';
 import '../../chess/presentation/widgets/chess_piece_styles.dart';
 import '../../ludo/presentation/widgets/ludo_rules_sheet.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../l10n/strings.dart';
 
 /// How to play every game in Utopia: a tab per game, each with its own
 /// sections. New games get a tab here as they arrive.
@@ -22,10 +23,10 @@ class HowToPlayScreen extends StatelessWidget {
 
   final int initialGame;
 
-  static const _games = [
-    (GameKind.chess, 'Chess', Icons.extension_rounded),
-    (GameKind.ludo, 'Ludo', Icons.casino_rounded),
-    (GameKind.checkers, 'Checkers', Icons.blur_circular_rounded),
+  static final _games = [
+    (GameKind.chess, strings.howToPlayChess, Icons.extension_rounded),
+    (GameKind.ludo, strings.howToPlayLudo, Icons.casino_rounded),
+    (GameKind.checkers, strings.howToPlayCheckers, Icons.blur_circular_rounded),
   ];
 
   @override
@@ -37,7 +38,7 @@ class HowToPlayScreen extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             leading: const BackOrHomeButton(),
-            title: const Text('How to play'),
+            title: Text(strings.howToPlayHowToPlay),
             bottom: TabBar(
               labelColor: AppColors.textPrimary,
               unselectedLabelColor: AppColors.textSecondary,
@@ -133,32 +134,32 @@ class _Section {
 class _ChessGuide extends StatelessWidget {
   const _ChessGuide();
 
-  static const _pieces = [
+  static final _pieces = [
     (
       PieceType.king,
-      'King',
-      'One square any way. Keep it safe: if it can be taken and has no escape, the game is lost.',
+      strings.howToPlayKing,
+      strings.howToPlayOneSquareAnyWayKeep,
     ),
     (
       PieceType.queen,
-      'Queen',
-      'Any number of squares in a straight line or along a diagonal.',
+      strings.howToPlayQueen,
+      strings.howToPlayAnyNumberOfSquaresIn,
     ),
     (
       PieceType.rook,
-      'Rook',
-      'Any number of squares straight up, down or across.',
+      strings.howToPlayRook,
+      strings.howToPlayAnyNumberOfSquaresStraight,
     ),
-    (PieceType.bishop, 'Bishop', 'Any number of squares along a diagonal.'),
     (
-      PieceType.knight,
-      'Knight',
-      'Jumps in an L: two squares one way, then one to the side. It can hop over pieces.',
+      PieceType.bishop,
+      strings.howToPlayBishop,
+      strings.howToPlayAnyNumberOfSquaresAlong,
     ),
+    (PieceType.knight, strings.howToPlayKnight, strings.howToPlayJumpsInAnLTwo),
     (
       PieceType.pawn,
-      'Pawn',
-      'One square forward (two on its first move) and takes one square diagonally forward.',
+      strings.howToPlayPawn,
+      strings.howToPlayOneSquareForwardTwoOn,
     ),
   ];
 
@@ -167,32 +168,29 @@ class _ChessGuide extends StatelessWidget {
     final style = ChessPieceStyle.byId('classic');
     return _Guide(
       game: GameKind.chess,
-      intro:
-          'Two players, one board. Out-think your opponent and trap their king.',
+      intro: strings.howToPlayTwoPlayersOneBoardOut,
       sections: [
-        const _Section(
-          title: 'The goal',
+        _Section(
+          title: strings.howToPlayTheGoal,
           icon: Icons.emoji_events_rounded,
           color: Color(0xFFFFC94D),
           children: [
             RuleRow(
               icon: Icons.flag_rounded,
               color: Color(0xFFFFC94D),
-              title: 'Checkmate wins',
-              body:
-                  "Attack the other king so it can't escape. That's checkmate, and the game is yours.",
+              title: strings.howToPlayCheckmateWins,
+              body: strings.howToPlayAttackTheOtherKingSo,
             ),
             RuleRow(
               icon: Icons.warning_amber_rounded,
               color: Color(0xFFFF7A7A),
-              title: 'Check',
-              body:
-                  'When your king is attacked you must get it out of danger on your very next move.',
+              title: strings.howToPlayCheck,
+              body: strings.howToPlayWhenYourKingIsAttacked,
             ),
           ],
         ),
         _Section(
-          title: 'How the pieces move',
+          title: strings.howToPlayHowThePiecesMove,
           icon: Icons.open_with_rounded,
           color: AppColors.sky,
           children: [
@@ -243,94 +241,84 @@ class _ChessGuide extends StatelessWidget {
               ),
           ],
         ),
-        const _Section(
-          title: 'Special moves',
+        _Section(
+          title: strings.howToPlaySpecialMoves,
           icon: Icons.auto_awesome_rounded,
           color: Color(0xFFB27BFF),
           children: [
             RuleRow(
               icon: Icons.castle_rounded,
               color: Color(0xFFB27BFF),
-              title: 'Castling',
-              body:
-                  "Once a game, your king can step two squares toward a rook and the rook jumps over it, as long as neither has moved, nothing's between them and the king isn't in check.",
+              title: strings.howToPlayCastling,
+              body: strings.howToPlayOnceAGameYourKing,
             ),
             RuleRow(
               icon: Icons.upgrade_rounded,
               color: Color(0xFF3DDC97),
-              title: 'Promotion',
-              body:
-                  'A pawn that reaches the far side becomes a queen, rook, bishop or knight. You choose.',
+              title: strings.howToPlayPromotion,
+              body: strings.howToPlayAPawnThatReachesThe,
             ),
             RuleRow(
               icon: Icons.compare_arrows_rounded,
               color: Color(0xFF4DA3FF),
-              title: 'En passant',
-              body:
-                  'If a pawn rushes two squares past one of yours, you can take it as if it had moved one, on your very next move only.',
+              title: strings.howToPlayEnPassant,
+              body: strings.howToPlayIfAPawnRushesTwo,
             ),
           ],
         ),
-        const _Section(
-          title: 'Draws',
+        _Section(
+          title: strings.howToPlayDraws,
           icon: Icons.handshake_rounded,
           color: Color(0xFF4DA3FF),
           children: [
             RuleRow(
               icon: Icons.block_rounded,
               color: Color(0xFF4DA3FF),
-              title: 'Stalemate',
-              body:
-                  "If it's your move, you're not in check and you have no legal move, the game is a draw.",
+              title: strings.howToPlayStalemate,
+              body: strings.howToPlayIfItSYourMove,
             ),
             RuleRow(
               icon: Icons.balance_rounded,
               color: Color(0xFF9B7BFF),
-              title: 'Not enough to win',
-              body:
-                  "When neither side has enough pieces left to checkmate, it's a draw. Entries go back to both players.",
+              title: strings.howToPlayNotEnoughToWin,
+              body: strings.howToPlayWhenNeitherSideHasEnough,
             ),
           ],
         ),
-        const _Section(
-          title: 'Playing in Utopia',
+        _Section(
+          title: strings.howToPlayPlayingInUtopia,
           icon: Icons.public_rounded,
           color: Color(0xFF2DE0C2),
           children: [
             RuleRow(
               icon: Icons.timer_rounded,
               color: Color(0xFFFF5C9C),
-              title: 'Clocks',
-              body:
-                  "Each side has its own time. Run out and you lose. Make your first move within 30 seconds or the game is called off and entries are returned.",
+              title: strings.howToPlayClocks,
+              body: strings.howToPlayEachSideHasItsOwn,
             ),
             RuleRow(
               icon: Icons.toll_rounded,
               color: Color(0xFFFFC94D),
-              title: 'Entries and prizes',
-              body:
-                  'Pick a free game or an entry. The winner takes the prize; a draw gives everyone their entry back.',
+              title: strings.howToPlayEntriesAndPrizes,
+              body: strings.howToPlayPickAFreeGameOr,
             ),
             RuleRow(
               icon: Icons.history_rounded,
               color: Color(0xFF5AB8FF),
-              title: 'Look back',
-              body:
-                  'Use the arrows under the board to step through every move, during the game or after it. Tap a move to jump to it.',
+              title: strings.howToPlayLookBack,
+              body: strings.howToPlayUseTheArrowsUnderThe,
             ),
             RuleRow(
               icon: Icons.chat_bubble_rounded,
               color: Color(0xFFB27BFF),
-              title: 'Chat',
-              body:
-                  'Send messages, stickers and voice notes from the chat button. Games with strangers keep it friendly.',
+              title: strings.howToPlayChat,
+              body: strings.howToPlaySendMessagesStickersAndVoice,
             ),
             RuleRow(
               icon: Icons.logout_rounded,
               color: Color(0xFFFF7A7A),
-              title: 'Leaving resigns',
-              body:
-                  "Leaving a game in progress resigns it. Closed the app by accident? Open it again and you're taken straight back to your game.",
+              title: strings.howToPlayLeavingResigns,
+              body: strings.howToPlayLeavingAGameInProgress,
             ),
           ],
         ),
@@ -348,11 +336,10 @@ class _LudoGuide extends StatelessWidget {
     final more = ludoRules.skip(4).toList();
     return _Guide(
       game: GameKind.ludo,
-      intro:
-          'Two to six players race their pieces around the board and home. Roll, capture, and get all four in first.',
+      intro: strings.howToPlayTwoToSixPlayersRace,
       sections: [
         _Section(
-          title: 'The basics',
+          title: strings.howToPlayTheBasics,
           icon: Icons.casino_rounded,
           color: AppColors.mint,
           children: [
@@ -361,7 +348,7 @@ class _LudoGuide extends StatelessWidget {
           ],
         ),
         _Section(
-          title: 'Winning',
+          title: strings.howToPlayWinning,
           icon: Icons.emoji_events_rounded,
           color: const Color(0xFFFFC94D),
           children: [
@@ -369,31 +356,28 @@ class _LudoGuide extends StatelessWidget {
               RuleRow(icon: icon, color: color, title: title, body: body),
           ],
         ),
-        const _Section(
-          title: 'Playing with friends',
+        _Section(
+          title: strings.howToPlayPlayingWithFriends,
           icon: Icons.groups_rounded,
           color: Color(0xFFFF8FB8),
           children: [
             RuleRow(
               icon: Icons.vpn_key_rounded,
               color: Color(0xFFFF8FB8),
-              title: 'Rooms',
-              body:
-                  'Make a room and share its code. Friends join with the code and the host starts the game.',
+              title: strings.howToPlayRooms,
+              body: strings.howToPlayMakeARoomAndShare,
             ),
             RuleRow(
               icon: Icons.event_seat_rounded,
               color: Color(0xFF4DA3FF),
-              title: 'Pick your seat',
-              body:
-                  'In a room, tap an empty seat to sit there and play that color, or share an invite to it.',
+              title: strings.howToPlayPickYourSeat,
+              body: strings.howToPlayInARoomTapAn,
             ),
             RuleRow(
               icon: Icons.mic_rounded,
               color: Color(0xFFB27BFF),
-              title: 'Voice notes',
-              body:
-                  'Hold a conversation without typing: record up to 30 seconds and it plays for everyone at the table.',
+              title: strings.howToPlayVoiceNotes,
+              body: strings.howToPlayHoldAConversationWithoutTyping,
             ),
           ],
         ),
@@ -409,102 +393,91 @@ class _CheckersGuide extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Guide(
       game: GameKind.checkers,
-      intro:
-          'Two players, twelve pieces each, on the dark squares of an 8x8 board. Dark moves first.',
+      intro: strings.howToPlayTwoPlayersTwelvePiecesEach,
       sections: [
         _Section(
-          title: 'How pieces move',
+          title: strings.howToPlayHowPiecesMove,
           icon: Icons.open_with_rounded,
           color: AppColors.sky,
           children: [
             _DiscRule(
               king: false,
-              title: 'Men',
-              body:
-                  'Every piece starts as a man. A man moves one square diagonally forward, onto an empty dark square.',
+              title: strings.howToPlayMen,
+              body: strings.howToPlayEveryPieceStartsAsA,
             ),
             _DiscRule(
               king: true,
-              title: 'Kings',
-              body:
-                  'A man that reaches the far row is crowned king. Kings move one square diagonally forward or backward.',
+              title: strings.howToPlayKings,
+              body: strings.howToPlayAManThatReachesThe,
             ),
           ],
         ),
-        const _Section(
-          title: 'Taking pieces',
+        _Section(
+          title: strings.howToPlayTakingPieces,
           icon: Icons.bolt_rounded,
           color: Color(0xFFFF7A45),
           children: [
             RuleRow(
               icon: Icons.call_made_rounded,
               color: Color(0xFFFF7A45),
-              title: 'Jump to take',
-              body:
-                  "Jump diagonally over an opponent's piece to an empty square right behind it, and that piece is taken. Men jump forward only; kings jump either way.",
+              title: strings.howToPlayJumpToTake,
+              body: strings.howToPlayJumpDiagonallyOverAnOpponent,
             ),
             RuleRow(
               icon: Icons.priority_high_rounded,
               color: Color(0xFFFF5C6C),
-              title: 'Taking is a must',
-              body:
-                  "If you can take a piece, you have to. The pieces that can take glow orange, and you choose which jump to make if there's more than one.",
+              title: strings.howToPlayTakingIsAMust,
+              body: strings.howToPlayIfYouCanTakeA,
             ),
             RuleRow(
               icon: Icons.all_inclusive_rounded,
               color: Color(0xFFFFC94D),
-              title: 'Multi-jumps',
-              body:
-                  "After a jump, if the same piece can jump again, it keeps going in the same move. A man that's crowned mid-jump stops there.",
+              title: strings.howToPlayMultiJumps,
+              body: strings.howToPlayAfterAJumpIfThe,
             ),
           ],
         ),
-        const _Section(
-          title: 'Winning',
+        _Section(
+          title: strings.howToPlayWinning,
           icon: Icons.emoji_events_rounded,
           color: Color(0xFFFFC94D),
           children: [
             RuleRow(
               icon: Icons.flag_rounded,
               color: Color(0xFFFFC94D),
-              title: 'No moves, no game',
-              body:
-                  "Take all of your opponent's pieces, or leave them with no move to make, and you win.",
+              title: strings.howToPlayNoMovesNoGame,
+              body: strings.howToPlayTakeAllOfYourOpponent,
             ),
             RuleRow(
               icon: Icons.handshake_rounded,
               color: Color(0xFF4DA3FF),
-              title: 'Draws',
-              body:
-                  "If only kings move for forty moves each, with nothing taken, it's a draw. Entries go back to both players.",
+              title: strings.howToPlayDraws,
+              body: strings.howToPlayIfOnlyKingsMoveFor,
             ),
           ],
         ),
-        const _Section(
-          title: 'Playing in Utopia',
+        _Section(
+          title: strings.howToPlayPlayingInUtopia,
           icon: Icons.public_rounded,
           color: Color(0xFF2DE0C2),
           children: [
             RuleRow(
               icon: Icons.timer_rounded,
               color: Color(0xFFFF5C9C),
-              title: 'Clocks, entries and chat',
-              body:
-                  'The same as chess: your own clock, free games or an entry, every move to look back on, and chat with stickers and voice notes. Make your first move within 30 seconds.',
+              title: strings.howToPlayClocksEntriesAndChat,
+              body: strings.howToPlayTheSameAsChessYour,
             ),
             RuleRow(
               icon: Icons.wifi_off_rounded,
               color: Color(0xFF8FD8FF),
-              title: 'Offline',
-              body:
-                  'Play Chip or Robo at three levels, or pass one phone between two players. No internet needed.',
+              title: strings.howToPlayOffline,
+              body: strings.howToPlayPlayChipOrRoboAt,
             ),
             RuleRow(
               icon: Icons.palette_rounded,
               color: Color(0xFFB27BFF),
-              title: 'Your pieces',
-              body:
-                  'Your pieces wear your chess set. Buddies, Monsters and Robots get faces that watch the game.',
+              title: strings.howToPlayYourPieces,
+              body: strings.howToPlayYourPiecesWearYourChess,
             ),
           ],
         ),

@@ -12,6 +12,7 @@ import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import 'providers/coin_balance_provider.dart';
+import '../../../l10n/strings.dart';
 
 /// What each day of a streak pays (day seven, and every day after, pays the
 /// most). The server decides; this is only for showing the row of days.
@@ -86,7 +87,7 @@ class _DailyRewardSheetState extends ConsumerState<DailyRewardSheet>
       setState(() => _claiming = false);
       showUtopiaToast(
         context,
-        "Couldn't claim it just now. Try again.",
+        strings.dailyRewardCouldnTClaimItJust,
         kind: ToastKind.error,
       );
       return;
@@ -148,14 +149,14 @@ class _DailyRewardSheetState extends ConsumerState<DailyRewardSheet>
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Daily reward',
+                    strings.dailyRewardDailyReward,
                     style: AppTextStyles.display(fontSize: 24),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     widget.streak <= 1
-                        ? 'Come back every day: the reward grows with your streak.'
-                        : 'Day ${widget.streak} in a row. Keep it going!',
+                        ? strings.dailyRewardComeBackEveryDayThe
+                        : strings.dailyRewardDayInARowKeep(widget.streak),
                     textAlign: TextAlign.center,
                     style: AppTextStyles.body(color: AppColors.textSecondary),
                   ),
@@ -183,7 +184,9 @@ class _DailyRewardSheetState extends ConsumerState<DailyRewardSheet>
                     child: claimed == null
                         ? PrimaryButton(
                             key: const ValueKey('claim'),
-                            label: 'Claim ${formatCoins(widget.coins)} coins',
+                            label: strings.dailyRewardClaimCoins(
+                              formatCoins(widget.coins),
+                            ),
                             isLoading: _claiming,
                             onPressed: _claim,
                           )

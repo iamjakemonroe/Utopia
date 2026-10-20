@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../data/notification_repository.dart';
 import '../../../core/widgets/frame_island.dart';
+import '../../../l10n/strings.dart';
 
 /// The bell in the home app bar: opens notifications, shows how many are
 /// unread, and gives a little ring now and then while there are some.
@@ -44,7 +45,7 @@ class _NotificationBellButtonState extends ConsumerState<NotificationBellButton>
       clipBehavior: Clip.none,
       children: [
         IconButton(
-          tooltip: 'Notifications',
+          tooltip: strings.notificationBellNotifications,
           onPressed: () => context.push('/notifications'),
           icon: FrameIsland(
             size: const Size.square(24),

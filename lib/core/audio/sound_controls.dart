@@ -8,6 +8,7 @@ import '../widgets/bubble_toggle.dart';
 import '../widgets/pop_card.dart';
 import '../settings/gameplay_settings.dart';
 import 'game_audio.dart';
+import '../../l10n/strings.dart';
 
 /// Whether a game's sound buttons are open. They fold away when anything
 /// else is tapped, and the chat closes them as it opens (open, they took
@@ -47,12 +48,15 @@ class _SoundSettingsCard extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Sound', style: AppTextStyles.display(fontSize: 24)),
+          Text(
+            strings.soundControlsSound,
+            style: AppTextStyles.display(fontSize: 24),
+          ),
           const SizedBox(height: AppSpacing.md),
           _SoundRow(
             icon: Icons.music_note_rounded,
-            title: 'Music',
-            subtitle: 'Dreamy loops in menus, upbeat in games',
+            title: strings.soundControlsMusic,
+            subtitle: strings.soundControlsDreamyLoopsInMenusUpbeat,
             on: settings.musicOn,
             volume: settings.musicVolume,
             onToggle: (v) {
@@ -64,8 +68,8 @@ class _SoundSettingsCard extends ConsumerWidget {
           const SizedBox(height: AppSpacing.md),
           _SoundRow(
             icon: Icons.graphic_eq_rounded,
-            title: 'Sound effects',
-            subtitle: 'Dice, hops, captures and reactions',
+            title: strings.soundControlsSoundEffects,
+            subtitle: strings.soundControlsDiceHopsCapturesAndReactions,
             on: settings.sfxOn,
             volume: settings.sfxVolume,
             onToggle: (v) {
@@ -81,8 +85,8 @@ class _SoundSettingsCard extends ConsumerWidget {
           _SoundRow(
             icon: Icons.vibration_rounded,
             offIcon: Icons.mobile_off_rounded,
-            title: 'Vibration',
-            subtitle: 'Dice, captures, your turn',
+            title: strings.soundControlsVibration,
+            subtitle: strings.soundControlsDiceCapturesYourTurn,
             on: ref.watch(gameplaySettingsProvider).haptics,
             onToggle: (v) {
               ref.read(gameplaySettingsProvider.notifier).setHaptics(v);
@@ -255,7 +259,7 @@ class _SoundQuickToggleState extends ConsumerState<SoundQuickToggle> {
                     anyOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
                     color: Colors.white,
                     size: 20,
-                    semanticLabel: 'Sound settings',
+                    semanticLabel: strings.soundControlsSoundSettings,
                   ),
                 ),
               ),
@@ -272,7 +276,7 @@ class _SoundQuickToggleState extends ConsumerState<SoundQuickToggle> {
                             value: settings.musicOn,
                             onIcon: Icons.music_note_rounded,
                             offIcon: Icons.music_off_rounded,
-                            semanticLabel: 'Music',
+                            semanticLabel: strings.soundControlsMusic,
                             onChanged: (v) {
                               controller.setMusicOn(v);
                               audio.play(v ? Sfx.toggleOn : Sfx.toggleOff);
@@ -284,7 +288,7 @@ class _SoundQuickToggleState extends ConsumerState<SoundQuickToggle> {
                             value: settings.sfxOn,
                             onIcon: Icons.graphic_eq_rounded,
                             offIcon: Icons.volume_off_rounded,
-                            semanticLabel: 'Sound effects',
+                            semanticLabel: strings.soundControlsSoundEffects,
                             onChanged: (v) {
                               controller.setSfxOn(v);
                               if (v) audio.play(Sfx.toggleOn);
@@ -296,7 +300,7 @@ class _SoundQuickToggleState extends ConsumerState<SoundQuickToggle> {
                             value: ref.watch(gameplaySettingsProvider).haptics,
                             onIcon: Icons.vibration_rounded,
                             offIcon: Icons.mobile_off_rounded,
-                            semanticLabel: 'Vibration',
+                            semanticLabel: strings.soundControlsVibration,
                             onChanged: (v) {
                               ref
                                   .read(gameplaySettingsProvider.notifier)

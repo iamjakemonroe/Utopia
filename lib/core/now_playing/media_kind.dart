@@ -1,4 +1,5 @@
 import '../widgets/coin_buddy.dart';
+import '../../l10n/strings.dart';
 
 /// What the player has on, as best Chip can tell.
 enum MediaKind { music, video, podcast, sermon, audiobook, radio, unknown }
@@ -296,42 +297,42 @@ ChipMediaLine chipMediaLine({
         headline: pick(switch (flavor) {
           ChipFlavor.hype => [
             'This beat goes hard',
-            'Turn it up!',
-            'Okay, this one hits',
+            strings.mediaKindTurnItUp,
+            strings.mediaKindOkayThisOneHits,
           ],
           ChipFlavor.dance => [
             "I can't stop dancing",
-            'Party mode: on',
-            'My feet are moving',
+            strings.mediaKindPartyModeOn,
+            strings.mediaKindMyFeetAreMoving,
           ],
           ChipFlavor.chill => [
             'Ahh, so smooth',
-            'Perfect chill vibes',
-            'Nice and easy',
+            strings.mediaKindPerfectChillVibes,
+            strings.mediaKindNiceAndEasy,
           ],
           ChipFlavor.romantic => [
             'Aww, a love song',
-            'This one is sweet',
-            'So much heart',
+            strings.mediaKindThisOneIsSweet,
+            strings.mediaKindSoMuchHeart,
           ],
           ChipFlavor.sad => [
             'Oof, right in the feels',
-            'A sad one, huh',
-            "I'm here with you",
+            strings.mediaKindASadOneHuh,
+            strings.mediaKindIMHereWithYou,
           ],
           ChipFlavor.worship => [
             'Such a peaceful song',
-            'This lifts me up',
-            'Beautiful praise',
+            strings.mediaKindThisLiftsMeUp,
+            strings.mediaKindBeautifulPraise,
           ],
           _ => [
             'Ooh, good taste',
-            "Now that's a tune",
-            "This one's a vibe",
-            if (artist.isNotEmpty) 'Is that $artist?',
+            strings.mediaKindNowThatSATune,
+            strings.mediaKindThisOneSAVibe,
+            if (artist.isNotEmpty) strings.mediaKindIsThat(artist),
           ],
         }),
-        detail: detailOr("Something good. I'm vibing along."),
+        detail: detailOr(strings.mediaKindSomethingGoodIMVibing),
         mood: BuddyMood.vibing,
         flavor: flavor,
       );
@@ -341,32 +342,32 @@ ChipMediaLine chipMediaLine({
         headline: pick(switch (flavor) {
           ChipFlavor.study => [
             "Study time? I'm in",
-            'Ooh, learning stuff',
-            "Glasses on. Let's learn",
+            strings.mediaKindOohLearningStuff,
+            strings.mediaKindGlassesOnLetSLearn,
           ],
           ChipFlavor.funny => [
             "Haha, this one's funny",
-            "I can't stop laughing",
-            'Okay that got me',
+            strings.mediaKindICanTStopLaughing,
+            strings.mediaKindOkayThatGotMe,
           ],
           ChipFlavor.gaming => [
             'Gaming videos are my thing',
-            "Who's winning?",
-            'Ooh, nice play',
+            strings.mediaKindWhoSWinning,
+            strings.mediaKindOohNicePlay,
           ],
           ChipFlavor.sports => [
             'What a match!',
-            'Did you see that?',
-            'Go go go!',
+            strings.mediaKindDidYouSeeThat,
+            strings.mediaKindGoGoGo,
           ],
           _ => [
             'What are we watching?',
-            'Ooh, a video!',
-            'Watching something$where?',
-            'Is it a good one?',
+            strings.mediaKindOohAVideo,
+            strings.mediaKindWatchingSomething(where),
+            strings.mediaKindIsItAGoodOne,
           ],
         }),
-        detail: detailOr("Don't mind me, I'm watching too."),
+        detail: detailOr(strings.mediaKindDonTMindMeI),
         mood: BuddyMood.watching,
         flavor: flavor,
       );
@@ -374,37 +375,37 @@ ChipMediaLine chipMediaLine({
       return ChipMediaLine(
         headline: pick([
           'Learning something new?',
-          'A podcast? Smart.',
-          "Ooh, what's this one about?",
-          'A good listen, I bet',
+          strings.mediaKindAPodcastSmart,
+          strings.mediaKindOohWhatSThisOne,
+          strings.mediaKindAGoodListenIBet,
         ]),
-        detail: detailOr("I'm all ears."),
+        detail: detailOr(strings.mediaKindIMAllEars),
         mood: BuddyMood.listening,
       );
     case MediaKind.sermon:
       return ChipMediaLine(
         headline: pick([
           'A good word today',
-          'Taking in a sermon',
-          'Some peace for the soul',
+          strings.mediaKindTakingInASermon,
+          strings.mediaKindSomePeaceForTheSoul,
         ]),
-        detail: detailOr("I'm listening quietly."),
+        detail: detailOr(strings.mediaKindIMListeningQuietly),
         mood: BuddyMood.listening,
       );
     case MediaKind.audiobook:
       return ChipMediaLine(
         headline: pick([
           'Story time!',
-          'Which chapter are we on?',
-          'A good book, nice',
+          strings.mediaKindWhichChapterAreWeOn,
+          strings.mediaKindAGoodBookNice,
         ]),
-        detail: detailOr("Don't tell me how it ends."),
+        detail: detailOr(strings.mediaKindDonTTellMeHow),
         mood: BuddyMood.listening,
       );
     case MediaKind.radio:
       return ChipMediaLine(
         headline: pick(['Tuned in to the radio', 'Radio on, nice']),
-        detail: detailOr(source ?? 'Live and on air.'),
+        detail: detailOr(source ?? strings.mediaKindLiveAndOnAir),
         mood: BuddyMood.vibing,
       );
     case MediaKind.unknown:
@@ -412,10 +413,10 @@ ChipMediaLine chipMediaLine({
       return ChipMediaLine(
         headline: pick([
           'Ooh, what is this?',
-          'What are we listening to?',
-          'I hear something good',
+          strings.mediaKindWhatAreWeListeningTo,
+          strings.mediaKindIHearSomethingGood,
         ]),
-        detail: detailOr("Tap me and tell me what's on."),
+        detail: detailOr(strings.mediaKindTapMeAndTellMe),
         mood: BuddyMood.listening,
       );
   }

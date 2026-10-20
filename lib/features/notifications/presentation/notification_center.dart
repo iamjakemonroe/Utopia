@@ -21,6 +21,7 @@ import '../../friends/presentation/providers/friends_providers.dart';
 import '../data/notification_repository.dart';
 import 'answer_buttons.dart';
 import 'notification_actions.dart';
+import '../../../l10n/strings.dart';
 
 /// How a notification reads: a line about who did what, a second line,
 /// and its icon and color.
@@ -33,8 +34,8 @@ class NotificationLook {
   final Color color;
 
   /// Who news from Utopia itself (a report fixed) comes from: Chip.
-  static const utopia = <String, dynamic>{
-    'display_name': 'Utopia',
+  static final utopia = <String, dynamic>{
+    'display_name': strings.notificationCenterUtopia,
     'avatar_kind': 'chip',
   };
 
@@ -42,15 +43,15 @@ class NotificationLook {
     switch (n.kind) {
       case 'friend_request':
         return NotificationLook(
-          '$name wants to be friends',
-          'Accept and you can challenge each other any time.',
+          strings.notificationCenterWantsToBeFriends(name),
+          strings.notificationCenterAcceptAndYouCanChallenge,
           Icons.person_add_alt_1_rounded,
           AppColors.sky,
         );
       case 'friend_accepted':
         return NotificationLook(
-          '$name accepted your request',
-          "You're friends now. Send a challenge!",
+          strings.notificationCenterAcceptedYourRequest(name),
+          strings.notificationCenterYouReFriendsNowSend,
           Icons.people_rounded,
           AppColors.success,
         );
@@ -62,23 +63,23 @@ class NotificationLook {
         final stake = (n.data['stake'] as num?)?.toInt() ?? 0;
         final checkers = n.data['game'] == 'checkers';
         return NotificationLook(
-          '$name challenged you',
+          strings.notificationCenterChallengedYou(name),
           '${checkers ? 'Checkers' : 'Chess'} · ${time.label} · ${stake == 0 ? 'Free' : '${formatCoins(stake)} coin entry'}',
           checkers ? Icons.blur_circular_rounded : Icons.extension_rounded,
           AppColors.coinGold,
         );
       case 'friend_birthday':
         return NotificationLook(
-          "It's $name's birthday!",
-          'Wish them a happy birthday.',
+          strings.notificationCenterItSSBirthday(name),
+          strings.notificationCenterWishThemAHappyBirthday,
           Icons.cake_rounded,
           const Color(0xFFFF6FAE),
         );
       case 'coin_gift':
         final coins = (n.data['coins'] as num?)?.toInt() ?? 0;
         return NotificationLook(
-          '$name sent you ${formatCoins(coins)} coins',
-          'A gift. They’re in your coins now.',
+          strings.notificationCenterSentYouCoins(name, formatCoins(coins)),
+          strings.notificationCenterAGiftTheyReIn,
           Icons.redeem_rounded,
           AppColors.coinGold,
         );
@@ -88,16 +89,22 @@ class NotificationLook {
         final note = n.data['note'] as String?;
         return NotificationLook(
           fixed
-              ? (idea ? 'Your idea is in Utopia!' : 'Your report is fixed!')
-              : (idea ? 'About your idea' : 'About your report'),
-          note != null && note.isNotEmpty ? note : 'Thanks for telling us.',
+              ? (idea
+                    ? strings.notificationCenterYourIdeaIsInUtopia
+                    : strings.notificationCenterYourReportIsFixed)
+              : (idea
+                    ? strings.notificationCenterAboutYourIdea
+                    : strings.notificationCenterAboutYourReport),
+          note != null && note.isNotEmpty
+              ? note
+              : strings.notificationCenterThanksForTellingUs,
           idea ? Icons.lightbulb_rounded : Icons.build_circle_rounded,
           fixed ? AppColors.success : AppColors.sky,
         );
       case 'birthday_wish':
         return NotificationLook(
-          '$name wished you a happy birthday!',
-          'Have a wonderful day.',
+          strings.notificationCenterWishedYouAHappyBirthday(name),
+          strings.notificationCenterHaveAWonderfulDay,
           Icons.celebration_rounded,
           const Color(0xFFFFD166),
         );
@@ -224,7 +231,7 @@ class _NotificationCenterState extends ConsumerState<NotificationCenter>
 
   Future<void> _systemNotify(AppNotification n) async {
     final actor = n.actorId;
-    var name = 'Someone';
+    var name = strings.notificationCenterSomeone;
     if (actor != null) {
       try {
         final profile = await ref
@@ -384,9 +391,9 @@ class _BannerState extends ConsumerState<_Banner> {
         ? null
         : ref.watch(profileByIdProvider(actor)).valueOrNull;
     final name = fromUtopia
-        ? 'Utopia'
+        ? strings.notificationCenterUtopia
         : actor == null
-        ? 'Someone'
+        ? strings.notificationCenterSomeone
         : profileDisplayName(profile, actor);
     final look = NotificationLook.of(n, name);
     final answerable = n.kind == 'friend_request' || n.kind == 'game_invite';
@@ -501,7 +508,9 @@ class _BannerState extends ConsumerState<_Banner> {
                   const SizedBox(height: 8),
                   AnswerButtons(
                     busy: _busy,
-                    acceptLabel: n.kind == 'game_invite' ? 'Play' : 'Accept',
+                    acceptLabel: n.kind == 'game_invite'
+                        ? strings.notificationCenterPlay
+                        : strings.notificationCenterAccept,
                     onDecline: () => _answer(false),
                     onAccept: () => _answer(true),
                   ),

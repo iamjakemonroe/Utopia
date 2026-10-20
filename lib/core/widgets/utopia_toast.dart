@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../../l10n/strings.dart';
 
 enum ToastKind { info, success, warning, error }
 
@@ -63,37 +64,40 @@ String friendlyError(
   final text = error.toString().toLowerCase();
   if (text.contains('insufficient balance') ||
       text.contains('enough balance')) {
-    return "You don't have enough coins for that.";
+    return strings.utopiaToastYouDonTHaveEnough;
   }
   if (text.contains('socketexception') ||
       text.contains('failed host lookup') ||
       text.contains('network') ||
       text.contains('connection')) {
-    return "Can't reach Utopia right now. Check your connection.";
+    return strings.utopiaToastCanTReachUtopiaRight;
   }
   if (text.contains('challenge already answered')) {
-    return 'Too late: they already answered it.';
+    return strings.utopiaToastTooLateTheyAlreadyAnswered;
   }
   if (text.contains('challenge expired')) {
-    return 'That challenge ran out: they last 10 minutes. Challenge them back!';
+    return strings.utopiaToastThatChallengeRanOutThey;
   }
   if (text.contains('challenger away')) {
-    return "They've stepped away, so the game can't start yet. It waits "
-        "till they're back (or it runs out).";
+    return strings.utopiaToastTheyVeSteppedAwaySo;
   }
-  if (text.contains('room is full')) return 'That room is already full.';
+  if (text.contains('room is full')) {
+    return strings.utopiaToastThatRoomIsAlreadyFull;
+  }
   if (text.contains('room not found') || text.contains('no such room')) {
-    return "We couldn't find a room with that code.";
+    return strings.utopiaToastWeCouldnTFindA;
   }
-  if (text.contains('already started')) return 'That game has already started.';
+  if (text.contains('already started')) {
+    return strings.utopiaToastThatGameHasAlreadyStarted;
+  }
   if (text.contains('username must')) {
-    return 'Use 3 to 20 letters, numbers or underscores.';
+    return strings.utopiaToastUse3To20Letters;
   }
   if (text.contains('username') && text.contains('taken')) {
-    return 'That name is taken. Try another.';
+    return strings.utopiaToastThatNameIsTakenTry;
   }
   if (text.contains('duplicate key') && text.contains('username')) {
-    return 'That name is taken. Try another.';
+    return strings.utopiaToastThatNameIsTakenTry;
   }
   return fallback;
 }

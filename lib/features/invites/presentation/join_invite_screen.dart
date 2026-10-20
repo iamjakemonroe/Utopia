@@ -15,6 +15,7 @@ import '../../guess_doodle/presentation/guess_doodle_lobby_screen.dart';
 import '../../ludo/presentation/controllers/ludo_match_controller.dart';
 import '../../ludo/presentation/screens/ludo_lobby_screen.dart';
 import '../domain/game_invite.dart';
+import '../../../l10n/strings.dart';
 
 /// Where an invite link lands: joins the friend's room, then shows it (over
 /// home, so leaving the room goes home). A null [invite] is a broken link.
@@ -34,7 +35,7 @@ class _JoinInviteScreenState extends ConsumerState<JoinInviteScreen> {
   void initState() {
     super.initState();
     if (widget.invite == null) {
-      _error = "That invite link doesn't work. Ask your friend for the code.";
+      _error = strings.joinInviteThatInviteLinkDoesnT;
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) => _join());
     }
@@ -77,7 +78,9 @@ class _JoinInviteScreenState extends ConsumerState<JoinInviteScreen> {
               child: error == null
                   ? UtopiaLoader(
                       size: 88,
-                      label: 'Joining ${widget.invite!.game.title}',
+                      label: strings.joinInviteJoining(
+                        widget.invite!.game.title,
+                      ),
                     )
                   : Column(
                       mainAxisSize: MainAxisSize.min,
@@ -93,7 +96,7 @@ class _JoinInviteScreenState extends ConsumerState<JoinInviteScreen> {
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         PrimaryButton(
-                          label: 'Go home',
+                          label: strings.joinInviteGoHome,
                           onPressed: () => context.go('/home'),
                         ),
                       ],

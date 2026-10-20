@@ -6,6 +6,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/utopia_icons.dart';
+import '../../../l10n/strings.dart';
 
 /// Help & feedback, from the side menu: how to play, report a bug, or
 /// suggest a feature. [from] is the screen the player was on (a report
@@ -58,7 +59,7 @@ Future<void> showHelpSheet(BuildContext context, {required String from}) {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  'Help & feedback',
+                  strings.helpHelpFeedback,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.display(fontSize: 24),
                 ),
@@ -66,16 +67,16 @@ Future<void> showHelpSheet(BuildContext context, {required String from}) {
                 _Row(
                   icon: Icons.menu_book_rounded,
                   color: const Color(0xFFFF8A3D),
-                  title: 'How to play',
-                  subtitle: 'The rules of every game',
+                  title: strings.helpHowToPlay,
+                  subtitle: strings.helpTheRulesOfEveryGame,
                   onTap: () => go('/how-to-play'),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _Row(
                   icon: Icons.bug_report_rounded,
                   color: AppColors.coral,
-                  title: 'Report a bug',
-                  subtitle: "Something not working? We'll fix it",
+                  title: strings.helpReportABug,
+                  subtitle: strings.helpSomethingNotWorkingWeLl,
                   onTap: () =>
                       go('/report-bug?from=${Uri.encodeQueryComponent(from)}'),
                 ),
@@ -83,8 +84,8 @@ Future<void> showHelpSheet(BuildContext context, {required String from}) {
                 _Row(
                   icon: Icons.lightbulb_rounded,
                   color: AppColors.coinGold,
-                  title: 'Suggest a feature',
-                  subtitle: 'Ideas for games, worlds, anything',
+                  title: strings.helpSuggestAFeature,
+                  subtitle: strings.helpIdeasForGamesWorldsAnything,
                   onTap: () => go(
                     '/report-bug?kind=idea&from=${Uri.encodeQueryComponent(from)}',
                   ),

@@ -18,6 +18,7 @@ import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
 import '../widgets/game_fan.dart';
 import '../../../../core/layout/responsive.dart';
+import '../../../../l10n/strings.dart';
 
 const _privacyUrl = 'https://utopia.kaivon.app/privacy';
 
@@ -65,7 +66,7 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
       SignInTrip.holding = false;
       debugPrint('signInAnonymously failed: $e');
       if (mounted) {
-        setState(() => _error = "Couldn't start a guest game. Try again.");
+        setState(() => _error = strings.authChoiceCouldnTStartAGuest);
       }
     } finally {
       if (mounted) setState(() => _isSigningInAsGuest = false);
@@ -147,14 +148,17 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
         RiseIn(
           delay: 0.12,
           child: Center(
-            child: OutlinedHeading('Utopia', fontSize: compact ? 50 : 60),
+            child: OutlinedHeading(
+              strings.authChoiceUtopia,
+              fontSize: compact ? 50 : 60,
+            ),
           ),
         ),
         const SizedBox(height: 2),
         RiseIn(
           delay: 0.2,
           child: Text(
-            'Games with friends,\nin a world that feels alive.',
+            strings.authChoiceGamesWithFriendsInA,
             textAlign: TextAlign.center,
             style:
                 AppTextStyles.body(
@@ -187,14 +191,14 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 PrimaryButton(
-                  label: 'Play now',
+                  label: strings.authChoicePlayNow,
                   isLoading: _isSigningInAsGuest,
                   onPressed: _playAsGuest,
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _GlassButton(
                   icon: Icons.mail_rounded,
-                  label: 'Log in or sign up',
+                  label: strings.authChoiceLogInOrSignUp,
                   onTap: () => context.push('/auth/link'),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -209,7 +213,7 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
-                        'No account needed. Save it any time.',
+                        strings.authChoiceNoAccountNeededSaveIt,
                         style: AppTextStyles.body(
                           fontSize: 12.5,
                           color: AppColors.textSecondary,
@@ -246,7 +250,7 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              child: const Text('Privacy Policy'),
+              child: Text(strings.authChoicePrivacyPolicy),
             ),
           ),
         ),

@@ -20,6 +20,7 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../store/presentation/store_controller.dart';
 import '../data/maestro_repository.dart';
 import 'maestro_providers.dart';
+import '../../../l10n/strings.dart';
 
 /// Where the plan's small print points.
 const _termsUrl =
@@ -130,39 +131,39 @@ class _MaestroSheet extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  'Chip Maestro',
+                  strings.maestroChipMaestro,
                   style: AppTextStyles.display(fontSize: 28),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   member
-                      ? "You're a Chip Maestro. Chip is your artist."
-                      : 'Chip becomes your own artist.',
+                      ? strings.maestroYouReAChipMaestro
+                      : strings.maestroChipBecomesYourOwnArtist,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const _Perk(
+                _Perk(
                   icon: Icons.auto_awesome_rounded,
                   color: Color(0xFFFF5C9C),
-                  text:
-                      '$kMaestroPortraitsPerMonth real portraits a month: anyone, from a photo or a famous name, looking just like them',
+                  text: strings.maestroRealPortraitsAMonthAnyone(
+                    kMaestroPortraitsPerMonth,
+                  ),
                 ),
-                const _Perk(
+                _Perk(
                   icon: Icons.palette_rounded,
                   color: Color(0xFF4DA3FF),
-                  text: 'Color with Chip all day long',
+                  text: strings.maestroColorWithChipAllDay,
                 ),
-                const _Perk(
+                _Perk(
                   icon: Icons.brush_rounded,
                   color: Color(0xFF3DDC97),
-                  text: "10 of Chip's own drawings a day instead of 4",
+                  text: strings.maestro10OfChipSOwn,
                 ),
-                const _Perk(
+                _Perk(
                   icon: Icons.face_retouching_natural_rounded,
                   color: Color(0xFFFFB020),
-                  text:
-                      "Chip's artist look, and the Maestro frame for your picture",
+                  text: strings.maestroChipSArtistLookAnd,
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 if (member && status != null)
@@ -170,10 +171,10 @@ class _MaestroSheet extends ConsumerWidget {
                 else ...[
                   PrimaryButton(
                     label: !Env.realMoneyStore
-                        ? 'Coming soon'
+                        ? strings.maestroComingSoon
                         : price == null
-                        ? 'Join Chip Maestro'
-                        : 'Join for $price a month',
+                        ? strings.maestroJoinChipMaestro
+                        : strings.maestroJoinForAMonth(price),
                     isLoading: busy,
                     onPressed: !Env.realMoneyStore || busy
                         ? null
@@ -185,7 +186,7 @@ class _MaestroSheet extends ConsumerWidget {
                   if (status?.freePortrait ?? false) ...[
                     const SizedBox(height: 8),
                     Text(
-                      'Not sure yet? Your first real portrait is free.',
+                      strings.maestroNotSureYetYourFirst,
                       style: AppTextStyles.body(
                         fontSize: 13,
                         color: AppColors.textSecondary,
@@ -196,7 +197,7 @@ class _MaestroSheet extends ConsumerWidget {
                     TextButton(
                       onPressed: controller.restore,
                       child: Text(
-                        'Restore purchases',
+                        strings.maestroRestorePurchases,
                         style: AppTextStyles.body(
                           fontWeight: FontWeight.w700,
                           color: AppColors.textSecondary,
@@ -206,9 +207,9 @@ class _MaestroSheet extends ConsumerWidget {
                 ],
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Renews every month until you cancel. Cancel any time in your '
-                  '${!kIsWeb && Platform.isIOS ? 'App Store' : 'Google Play'} settings, at '
-                  'least a day before it renews.',
+                  strings.maestroRenewsEveryMonthUntilYou(
+                    !kIsWeb && Platform.isIOS ? 'App Store' : 'Google Play',
+                  ),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(
                     fontSize: 12,
@@ -221,7 +222,7 @@ class _MaestroSheet extends ConsumerWidget {
                     TextButton(
                       onPressed: () => _open(_termsUrl),
                       child: Text(
-                        'Terms of Use',
+                        strings.maestroTermsOfUse,
                         style: AppTextStyles.body(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -231,7 +232,7 @@ class _MaestroSheet extends ConsumerWidget {
                     TextButton(
                       onPressed: () => _open(_privacyUrl),
                       child: Text(
-                        'Privacy Policy',
+                        strings.maestroPrivacyPolicy,
                         style: AppTextStyles.body(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -298,19 +299,19 @@ class _MemberCard extends StatelessWidget {
   final MaestroStatus status;
   final VoidCallback onManage;
 
-  static const _months = [
+  static final _months = [
     'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    strings.maestroFeb,
+    strings.maestroMar,
+    strings.maestroApr,
+    strings.maestroMay,
+    strings.maestroJun,
+    strings.maestroJul,
+    strings.maestroAug,
+    strings.maestroSep,
+    strings.maestroOct,
+    strings.maestroNov,
+    strings.maestroDec,
   ];
 
   @override
@@ -332,19 +333,21 @@ class _MemberCard extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            '${status.left} real portraits left this month',
+            strings.maestroRealPortraitsLeftThisMonth(status.left),
             style: AppTextStyles.display(fontSize: 18),
           ),
           const SizedBox(height: 4),
           Text(
-            status.autoRenew ? 'Renews on $when' : 'Ends on $when',
+            status.autoRenew
+                ? strings.maestroRenewsOn(when)
+                : strings.maestroEndsOn(when),
             style: AppTextStyles.body(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 6),
           TextButton(
             onPressed: onManage,
             child: Text(
-              'Manage your plan',
+              strings.maestroManageYourPlan,
               style: AppTextStyles.body(fontWeight: FontWeight.w800),
             ),
           ),

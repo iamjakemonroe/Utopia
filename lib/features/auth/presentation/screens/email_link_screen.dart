@@ -23,6 +23,7 @@ import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
 import '../../../../core/analytics/analytics.dart';
 import '../../../../core/layout/responsive.dart';
+import '../../../../l10n/strings.dart';
 
 class EmailLinkScreen extends ConsumerStatefulWidget {
   const EmailLinkScreen({super.key});
@@ -58,7 +59,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
   Future<void> _sendCode() async {
     final email = _emailController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
-      setState(() => _error = 'Enter a valid email address.');
+      setState(() => _error = strings.emailLinkEnterAValidEmailAddress);
       return;
     }
 
@@ -112,13 +113,13 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
   String _messageFor(Object e) {
     if (e is AuthException) {
       if (e.code == 'over_email_send_rate_limit') {
-        return 'Too many code requests. Wait a few minutes and try again.';
+        return strings.emailLinkTooManyCodeRequestsWait;
       }
       if (e.statusCode == '500') {
-        return 'We couldn\'t send that email right now. Try again shortly.';
+        return strings.emailLinkWeCouldnTSendThat;
       }
     }
-    return "Couldn't send a code. Check the address and try again.";
+    return strings.emailLinkCouldnTSendACode;
   }
 
   Future<void> _verifyCode() async {
@@ -127,7 +128,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
     if (_isLoading || _step == _Step.done) return;
     final code = _codeController.text.trim();
     if (code.isEmpty) {
-      setState(() => _error = 'Enter the code from your email.');
+      setState(() => _error = strings.emailLinkEnterTheCodeFromYour);
       return;
     }
 
@@ -180,7 +181,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       SignInTrip.holding = false;
       if (mounted) {
         setState(() {
-          _error = 'That code didn\'t work. Try again.';
+          _error = strings.emailLinkThatCodeDidnTWork;
           _isLoading = false;
         });
       }
@@ -237,13 +238,13 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
                   child: Text(
                     done
                         ? (_isLinking || _broughtGuest
-                              ? 'Account saved!'
-                              : "You're in!")
+                              ? strings.emailLinkAccountSaved
+                              : strings.emailLinkYouReIn)
                         : codeStep
-                        ? 'Check your email'
+                        ? strings.emailLinkCheckYourEmail
                         : (ref.watch(isAnonymousProvider)
-                              ? 'Save your account'
-                              : 'Welcome to Utopia'),
+                              ? strings.emailLinkSaveYourAccount
+                              : strings.emailLinkWelcomeToUtopia),
                     key: ValueKey(_step),
                     textAlign: TextAlign.center,
                     style: AppTextStyles.display(fontSize: 28),
@@ -253,11 +254,15 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
                 Text(
                   done
                       ? (_isLinking || _broughtGuest
-                            ? 'Your coins and worlds are safe on any phone now.'
-                            : 'Signed in as ${_emailController.text.trim()}')
+                            ? strings.emailLinkYourCoinsAndWorldsAre
+                            : strings.emailLinkSignedInAs(
+                                _emailController.text.trim(),
+                              ))
                       : codeStep
-                      ? 'We sent a code to ${_emailController.text.trim()}'
-                      : "Enter your email and we'll send you a code.",
+                      ? strings.emailLinkWeSentACodeTo(
+                          _emailController.text.trim(),
+                        )
+                      : strings.emailLinkEnterYourEmailAndWe,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(
                     color: AppColors.onWorld.withValues(alpha: 0.85),
@@ -325,7 +330,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       ),
       const SizedBox(height: AppSpacing.lg),
       PrimaryButton(
-        label: 'Send code',
+        label: strings.emailLinkSendCode,
         isLoading: _isLoading,
         onPressed: () async {
           await _sendCode();
@@ -344,7 +349,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
       ),
       const SizedBox(height: AppSpacing.lg),
       PrimaryButton(
-        label: 'Verify',
+        label: strings.emailLinkVerify,
         isLoading: _isLoading,
         onPressed: _isLoading ? null : _verifyCode,
       ),
@@ -364,7 +369,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
                         _step = _Step.enterEmail;
                       }),
                 icon: const Icon(Icons.edit_rounded, size: 16),
-                label: const Text('Change email'),
+                label: Text(strings.emailLinkChangeEmail),
               ),
             ),
           ),
@@ -380,7 +385,9 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
                       },
                 icon: const Icon(Icons.refresh_rounded, size: 16),
                 label: Text(
-                  _resendIn > 0 ? 'Resend in ${_resendIn}s' : 'Resend',
+                  _resendIn > 0
+                      ? strings.emailLinkResendInS(_resendIn)
+                      : strings.emailLinkResend,
                 ),
               ),
             ),
@@ -388,7 +395,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
         ],
       ),
       Text(
-        "Not there? It can take a minute, or land in spam.",
+        strings.emailLinkNotThereItCanTake,
         textAlign: TextAlign.center,
         style: AppTextStyles.body(
           fontSize: 12.5,
@@ -409,17 +416,17 @@ class _WhyPerks extends StatelessWidget {
       (
         Icons.savings_rounded,
         AppColors.coinGold,
-        'Keep your coins, worlds and friends',
+        strings.emailLinkKeepYourCoinsWorldsAnd,
       ),
       (
         Icons.devices_rounded,
         AppColors.mint,
-        'Play on any phone, or in your browser',
+        strings.emailLinkPlayOnAnyPhoneOr,
       ),
       (
         Icons.key_rounded,
         AppColors.accent,
-        'No password. We email you a code.',
+        strings.emailLinkNoPasswordWeEmailYou,
       ),
     ];
     return Column(
@@ -529,7 +536,7 @@ class _Verified extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Opening the portal',
+                    strings.emailLinkOpeningThePortal,
                     style: AppTextStyles.body(
                       fontWeight: FontWeight.w800,
                       color: Colors.white.withValues(alpha: 0.9),

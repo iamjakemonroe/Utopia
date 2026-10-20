@@ -68,7 +68,7 @@ class UtopiaApp extends ConsumerWidget {
       if (ctx == null || !ctx.mounted) return;
       showUtopiaToast(
         ctx,
-        'Dragon set complete. The dragon flies free.',
+        strings.appDragonSetCompleteTheDragon,
         kind: ToastKind.success,
         icon: Icons.local_fire_department_rounded,
       );
@@ -81,7 +81,7 @@ class UtopiaApp extends ConsumerWidget {
       if (ctx == null || !ctx.mounted) return;
       showUtopiaToast(
         ctx,
-        'Heaven set complete. The gates are open.',
+        strings.appHeavenSetCompleteTheGates,
         kind: ToastKind.success,
         icon: Icons.auto_awesome_rounded,
       );
@@ -93,7 +93,7 @@ class UtopiaApp extends ConsumerWidget {
       if (ctx == null || !ctx.mounted) return;
       showUtopiaToast(
         ctx,
-        'Hell set complete. Chip grew horns.',
+        strings.appHellSetCompleteChipGrew,
         kind: ToastKind.success,
         icon: Icons.local_fire_department_rounded,
       );
@@ -108,7 +108,7 @@ class UtopiaApp extends ConsumerWidget {
       if (ctx == null || !ctx.mounted) return;
       showUtopiaToast(
         ctx,
-        'Music set complete. Chip is on the decks.',
+        strings.appMusicSetCompleteChipIs,
         kind: ToastKind.success,
         icon: Icons.headphones_rounded,
       );
@@ -121,7 +121,7 @@ class UtopiaApp extends ConsumerWidget {
       if (ctx == null || !ctx.mounted) return;
       showUtopiaToast(
         ctx,
-        'Halloween set complete. Chip got carved.',
+        strings.appHalloweenSetCompleteChipGot,
         kind: ToastKind.success,
         icon: Icons.nightlight_round,
       );
@@ -134,7 +134,7 @@ class UtopiaApp extends ConsumerWidget {
       if (ctx == null || !ctx.mounted) return;
       showUtopiaToast(
         ctx,
-        'Winter set complete. Chip wrapped up warm.',
+        strings.appWinterSetCompleteChipWrapped,
         kind: ToastKind.success,
         icon: Icons.ac_unit_rounded,
       );
@@ -147,7 +147,7 @@ class UtopiaApp extends ConsumerWidget {
       if (ctx == null || !ctx.mounted) return;
       showUtopiaToast(
         ctx,
-        'Zombie set complete. Chip got bitten.',
+        strings.appZombieSetCompleteChipGot,
         kind: ToastKind.success,
         icon: Icons.pan_tool_rounded,
       );

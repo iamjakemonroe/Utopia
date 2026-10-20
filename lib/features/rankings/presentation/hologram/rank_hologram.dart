@@ -16,6 +16,7 @@ import '../../domain/ranking.dart';
 import '../rankings_widgets.dart';
 import 'hologram_painters.dart';
 import 'reveal.dart';
+import '../../../../l10n/strings.dart';
 
 /// The player's stats as a hologram: projected up from a glowing disc,
 /// alive with their tier's aura (bronze dust, liquid silver, golden fire,
@@ -39,7 +40,7 @@ Future<void> showRankHologram(
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Close',
+    barrierLabel: strings.rankHologramClose,
     barrierColor: const Color(0xD8050310),
     transitionDuration: const Duration(milliseconds: 250),
     pageBuilder: (context, _, _) => _RankHologram(
@@ -257,7 +258,7 @@ class _RankHologramState extends ConsumerState<_RankHologram>
               left: panel.right - 50,
               top: panel.top + 6,
               child: IconButton(
-                tooltip: 'Close',
+                tooltip: strings.rankHologramClose,
                 icon: Icon(Icons.close_rounded, color: _hi(tier)),
                 onPressed: () => Navigator.of(context).pop(),
               ),
@@ -318,31 +319,38 @@ class _ReadoutState extends State<_Readout> {
     final whose = mine ? 'YOUR' : "${name.toUpperCase()}'S";
     final first = mine ? 'you' : name.split(' ').first;
     final sections = <Widget>[
-      if (!mine) _Note(tier: tier, text: "${name.toUpperCase()}'S HOLOGRAM"),
+      if (!mine)
+        _Note(
+          tier: tier,
+          text: strings.rankHologramSHologram(name.toUpperCase()),
+        ),
       _Header(tier: tier, game: game, rating: rating, place: place, i: i),
       _NextTier(tier: tier, rating: rating),
       if (i == null)
         insights.hasError
             ? _Note(
                 tier: tier,
-                text: "COULDN'T REACH $whose STATS. CLOSE AND TRY AGAIN.",
+                text: strings.rankHologramCouldnTReachStatsClose(whose),
               )
-            : _Note(tier: tier, text: 'SCANNING $whose GAMES…')
+            : _Note(tier: tier, text: strings.rankHologramScanningGames(whose))
       else if (i.hidden)
         _Note(
           tier: tier,
-          text:
-              '${name?.toUpperCase() ?? 'THEY'} KEEPS THEIR STATS TO '
-              'THEMSELVES.',
+          text: strings.rankHologramKeepsTheirStatsToThemselves(
+            name?.toUpperCase() ?? 'THEY',
+          ),
         )
       else if (i.games == 0)
         _Note(
           tier: tier,
           text: mine
-              ? 'YOUR HOLOGRAM FILLS IN AS YOU PLAY RATED '
-                    '${rankedGameName(game).toUpperCase()} GAMES.'
-              : "${name.toUpperCase()} HASN'T PLAYED RATED "
-                    '${rankedGameName(game).toUpperCase()} GAMES YET.',
+              ? strings.rankHologramYourHologramFillsInAs(
+                  rankedGameName(game).toUpperCase(),
+                )
+              : strings.rankHologramHasnTPlayedRatedGames(
+                  name.toUpperCase(),
+                  rankedGameName(game).toUpperCase(),
+                ),
         )
       else ...[
         if (line.length >= 2) _Trend(tier: tier, line: line, i: i),
@@ -352,42 +360,56 @@ class _ReadoutState extends State<_Readout> {
         if (i.boardGame && i.winsBy.isNotEmpty)
           _Breakdown(
             tier: tier,
-            title: mine ? 'HOW YOU WIN' : 'HOW THEY WIN',
+            title: mine
+                ? strings.rankHologramHowYouWin
+                : strings.rankHologramHowTheyWin,
             counts: i.winsBy,
           ),
         if (i.boardGame && i.lossesBy.isNotEmpty)
           _Breakdown(
             tier: tier,
-            title: mine ? 'HOW YOU LOSE' : 'HOW THEY LOSE',
+            title: mine
+                ? strings.rankHologramHowYouLose
+                : strings.rankHologramHowTheyLose,
             counts: i.lossesBy,
           ),
         if (i.bestWin case final p?)
           _Person(
             tier: tier,
-            title: 'BEST WIN',
+            title: strings.rankHologramBestWin,
             person: p,
-            detail: 'Rated ${p.rating} when $first beat them',
+            detail: strings.rankHologramRatedWhenBeatThem(p.rating, first),
           ),
         if (i.rival case final p?)
           _Person(
             tier: tier,
-            title: mine ? 'YOUR RIVAL' : 'THEIR RIVAL',
+            title: mine
+                ? strings.rankHologramYourRival
+                : strings.rankHologramTheirRival,
             person: p,
-            detail: '${p.games} games · $first won ${p.wins}, lost ${p.losses}',
+            detail: strings.rankHologramGamesWonLost(
+              p.games,
+              first,
+              p.wins,
+              p.losses,
+            ),
           ),
         if (i.nemesis case final p?)
           _Person(
             tier: tier,
-            title: mine ? 'YOUR NEMESIS' : 'THEIR NEMESIS',
+            title: mine
+                ? strings.rankHologramYourNemesis
+                : strings.rankHologramTheirNemesis,
             person: p,
-            detail: 'Beat $first ${p.losses} times',
+            detail: strings.rankHologramBeatTimes(first, p.losses),
           ),
         if (i.since case final since?)
           _Note(
             tier: tier,
-            text:
-                'RATED ${rankedGameName(game).toUpperCase()} SINCE '
-                '${_date(since).toUpperCase()}',
+            text: strings.rankHologramRatedSince(
+              rankedGameName(game).toUpperCase(),
+              _date(since).toUpperCase(),
+            ),
             small: true,
           ),
       ],
@@ -445,19 +467,19 @@ TextStyle _small(RankTier tier) => AppTextStyles.body(
   color: Colors.white.withValues(alpha: 0.72),
 );
 
-const _months = [
+final _months = [
   'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  strings.rankHologramFeb,
+  strings.rankHologramMar,
+  strings.rankHologramApr,
+  strings.rankHologramMay,
+  strings.rankHologramJun,
+  strings.rankHologramJul,
+  strings.rankHologramAug,
+  strings.rankHologramSep,
+  strings.rankHologramOct,
+  strings.rankHologramNov,
+  strings.rankHologramDec,
 ];
 
 String _date(DateTime d) => '${d.day} ${_months[d.month - 1]}';
@@ -506,7 +528,10 @@ class _Header extends StatelessWidget {
         'Top $top% of ${i!.ranked} ranked players',
       if (place != null) '#$place on the board',
       if (i != null && games < kGamesToRank)
-        '${kGamesToRank - games} more rated game${kGamesToRank - games == 1 ? '' : 's'} to be ranked',
+        strings.rankHologramMoreRatedGameToBe(
+          kGamesToRank - games,
+          kGamesToRank - games == 1 ? '' : 's',
+        ),
     ];
     return Row(
       children: [
@@ -558,7 +583,7 @@ class _NextTier extends StatelessWidget {
             Expanded(
               child: Text(
                 next == null
-                    ? 'THE TOP TIER'
+                    ? strings.rankHologramTheTopTier
                     : '${next.from - rating} TO ${next.label.toUpperCase()}',
                 style: _label(tier),
               ),
@@ -679,7 +704,10 @@ class _Trend extends StatelessWidget {
           Wrap(
             spacing: 18,
             runSpacing: 4,
-            children: [move(i.week, 'THIS WEEK'), move(i.month, 'THIS MONTH')],
+            children: [
+              move(i.week, strings.rankHologramThisWeek),
+              move(i.month, strings.rankHologramThisMonth),
+            ],
           ),
         ],
       ),
@@ -857,20 +885,35 @@ class _Tiles extends StatelessWidget {
     final tiles = <(String, String, String?)>[
       ('PEAK', '${i.best}', i.peakAt == null ? null : 'on ${_date(i.peakAt!)}'),
       (
-        'STREAK NOW',
+        strings.rankHologramStreakNow,
         i.streak == 0 ? '—' : '${i.streak} $kind',
-        'Best: ${i.bestStreak} ${i.boardGame ? 'wins' : 'firsts'} in a row',
+        strings.rankHologramBestInARow(
+          i.bestStreak,
+          i.boardGame ? 'wins' : 'firsts',
+        ),
       ),
-      ('BIGGEST CLIMB', _signed(i.biggestGain), 'in one game'),
-      ('THIS WEEK', '${i.gamesThisWeek}', 'rated games'),
+      (
+        strings.rankHologramBiggestClimb,
+        _signed(i.biggestGain),
+        strings.rankHologramInOneGame,
+      ),
+      (
+        strings.rankHologramThisWeek,
+        '${i.gamesThisWeek}',
+        strings.rankHologramRatedGames,
+      ),
       if (i.boardGame && i.averageOpponent != null)
-        ('AVERAGE OPPONENT', '${i.averageOpponent}', 'rating'),
+        (strings.rankHologramAverageOpponent, '${i.averageOpponent}', 'rating'),
       if (i.boardGame && i.clock != null)
-        ('USUAL CLOCK', i.clock!, 'minutes + seconds a move'),
+        (
+          strings.rankHologramUsualClock,
+          i.clock!,
+          strings.rankHologramMinutesSecondsAMove,
+        ),
       if (i.boardGame && i.fastestWin != null)
-        ('FASTEST WIN', '${i.fastestWin}', 'moves'),
+        (strings.rankHologramFastestWin, '${i.fastestWin}', 'moves'),
       if (i.boardGame && i.averageMoves != null)
-        ('AVERAGE GAME', '${i.averageMoves}', 'moves'),
+        (strings.rankHologramAverageGame, '${i.averageMoves}', 'moves'),
     ];
     return LayoutBuilder(
       builder: (context, c) {
@@ -944,8 +987,12 @@ class _Sides extends StatelessWidget {
                 const Spacer(),
                 Text(
                   s.games == 0
-                      ? 'no games yet'
-                      : '${s.wins} of ${s.games} won · ${(rate * 100).round()}%',
+                      ? strings.rankHologramNoGamesYet
+                      : strings.rankHologramOfWon(
+                          s.wins,
+                          s.games,
+                          (rate * 100).round(),
+                        ),
                   style: _small(tier),
                 ),
               ],
@@ -962,15 +1009,20 @@ class _Sides extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(chess ? 'WHITE OR BLACK' : 'DARK OR LIGHT', style: _label(tier)),
+          Text(
+            chess
+                ? strings.rankHologramWhiteOrBlack
+                : strings.rankHologramDarkOrLight,
+            style: _label(tier),
+          ),
           // In checkers, dark (player_white) moves first.
           side(
-            chess ? 'AS WHITE' : 'AS DARK',
+            chess ? strings.rankHologramAsWhite : strings.rankHologramAsDark,
             i.asWhite,
             chess ? Colors.white : const Color(0xFF2A2440),
           ),
           side(
-            chess ? 'AS BLACK' : 'AS LIGHT',
+            chess ? strings.rankHologramAsBlack : strings.rankHologramAsLight,
             i.asBlack,
             chess ? const Color(0xFF15102A) : const Color(0xFFF4E9D8),
           ),
@@ -991,13 +1043,13 @@ class _Breakdown extends StatelessWidget {
   final String title;
   final Map<String, int> counts;
 
-  static const _names = {
-    'checkmate': 'Checkmate',
-    'resignation': 'Resigned',
-    'timeout': 'On time',
-    'win': 'Out of moves',
-    'stalemate': 'Stalemate',
-    'draw': 'Draw',
+  static final _names = {
+    'checkmate': strings.rankHologramCheckmate,
+    'resignation': strings.rankHologramResigned,
+    'timeout': strings.rankHologramOnTime,
+    'win': strings.rankHologramOutOfMoves,
+    'stalemate': strings.rankHologramStalemate,
+    'draw': strings.rankHologramDraw,
   };
 
   @override

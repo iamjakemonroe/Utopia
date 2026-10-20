@@ -43,6 +43,7 @@ import '../../../store/presentation/coin_shop.dart';
 import '../username_dialog.dart';
 import '../../../../core/widgets/ambient_tick.dart';
 import '../../../../core/layout/responsive.dart';
+import '../../../../l10n/strings.dart';
 
 final _myStatsProvider = FutureProvider.autoDispose
     .family<Map<String, dynamic>, String>(
@@ -223,7 +224,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (mounted) {
         showUtopiaToast(
           context,
-          friendlyError(e, fallback: "Couldn't change your avatar. Try again."),
+          friendlyError(e, fallback: strings.profileCouldnTChangeYourAvatar),
           kind: ToastKind.error,
         );
       }
@@ -238,7 +239,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final profile = myId == null
         ? null
         : ref.watch(profileByIdProvider(myId)).valueOrNull;
-    final name = myId == null ? 'You' : profileDisplayName(profile, myId);
+    final name = myId == null
+        ? strings.profileYou
+        : profileDisplayName(profile, myId);
     final username = profile?['username'] as String?;
     final isGuest = ref.watch(isAnonymousProvider);
     final stats = myId == null
@@ -252,7 +255,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            tooltip: 'Settings',
+            tooltip: strings.profileSettings,
             icon: const Icon(Icons.settings_rounded),
             onPressed: () => context.push('/settings'),
           ),
@@ -331,7 +334,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     if (isGuest) ...[
                       const SizedBox(height: AppSpacing.md),
                       PrimaryButton(
-                        label: 'Save your account',
+                        label: strings.profileSaveYourAccount,
                         color: AppColors.success,
                         onPressed: () => context.push('/auth/link'),
                       ),
@@ -341,16 +344,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: AppSpacing.lg),
                     _StatsRow(stats: stats),
                     const SizedBox(height: AppSpacing.lg),
-                    const _SectionTitle(
+                    _SectionTitle(
                       icon: Icons.auto_awesome_rounded,
-                      text: 'Collection',
+                      text: strings.profileCollection,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     _Collection(profile: profile),
                     const SizedBox(height: AppSpacing.lg),
-                    const _SectionTitle(
+                    _SectionTitle(
                       icon: Icons.history_rounded,
-                      text: 'Recent games',
+                      text: strings.profileRecentGames,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     _RecentGames(games: recent),
@@ -528,7 +531,7 @@ class _UsernameChip extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                !has ? 'Pick a username' : '@$username',
+                !has ? strings.profilePickAUsername : '@$username',
                 style: AppTextStyles.body(
                   fontWeight: FontWeight.w700,
                   color: has
@@ -558,19 +561,19 @@ class _StatusBadge extends StatelessWidget {
   final bool isGuest;
   final DateTime? since;
 
-  static const _months = [
+  static final _months = [
     'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    strings.profileFeb,
+    strings.profileMar,
+    strings.profileApr,
+    strings.profileMay,
+    strings.profileJun,
+    strings.profileJul,
+    strings.profileAug,
+    strings.profileSep,
+    strings.profileOct,
+    strings.profileNov,
+    strings.profileDec,
   ];
 
   @override
@@ -578,10 +581,10 @@ class _StatusBadge extends StatelessWidget {
     final color = isGuest ? const Color(0xFFFFB020) : AppColors.mint;
     final ink = AppColors.readable(color);
     final text = isGuest
-        ? 'Guest'
+        ? strings.profileGuest
         : since == null
-        ? 'Member'
-        : 'Member since ${_months[since!.month - 1]} ${since!.year}';
+        ? strings.profileMember
+        : strings.profileMemberSince(_months[since!.month - 1], since!.year);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -657,7 +660,7 @@ class _CoinsCard extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  'Coins',
+                  strings.profileCoins,
                   style: AppTextStyles.body(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -669,7 +672,7 @@ class _CoinsCard extends ConsumerWidget {
           SizedBox(
             width: 128,
             child: PrimaryButton(
-              label: 'Get coins',
+              label: strings.profileGetCoins,
               color: AppColors.success,
               onPressed: () => showCoinShop(context),
             ),
@@ -701,21 +704,21 @@ class _StatsRow extends StatelessWidget {
               icon: Icons.sports_esports_rounded,
               color: AppColors.sky,
               value: '$played',
-              label: 'Played',
+              label: strings.profilePlayed,
             ),
             const SizedBox(width: AppSpacing.sm),
             _StatTile(
               icon: Icons.emoji_events_rounded,
               color: AppColors.coinGold,
               value: '$won',
-              label: 'Won',
+              label: strings.profileWon,
             ),
             const SizedBox(width: AppSpacing.sm),
             _StatTile(
               icon: Icons.trending_up_rounded,
               color: AppColors.mint,
               value: '$rate%',
-              label: 'Win rate',
+              label: strings.profileWinRate,
             ),
           ],
         ),
@@ -729,7 +732,10 @@ class _StatsRow extends StatelessWidget {
           checkersWon: _n('checkers_won'),
         ),
         const SizedBox(height: AppSpacing.lg),
-        const _SectionTitle(icon: Icons.leaderboard_rounded, text: 'Ranks'),
+        _SectionTitle(
+          icon: Icons.leaderboard_rounded,
+          text: strings.profileRanks,
+        ),
         const SizedBox(height: AppSpacing.sm),
         IntrinsicHeight(
           child: Row(
@@ -954,11 +960,11 @@ class _RatingTile extends StatelessWidget {
                 ),
               ),
               Text(
-                r == null ? 'Unrated' : '$r',
+                r == null ? strings.profileUnrated : '$r',
                 style: AppTextStyles.display(fontSize: r == null ? 15 : 20),
               ),
               Text(
-                r == null ? 'Play online' : tier.label,
+                r == null ? strings.profilePlayOnline : tier.label,
                 style: AppTextStyles.body(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
@@ -1035,7 +1041,8 @@ class _Collection extends ConsumerWidget {
     final ludoId = pieceSetFor(profile);
     final chessId = profile?['equipped_chess_pieces'] as String? ?? 'classic';
     String nameOf(List<StoreItem> items, String id) =>
-        items.where((i) => i.id == id).firstOrNull?.name ?? 'Classic';
+        items.where((i) => i.id == id).firstOrNull?.name ??
+        strings.profileClassic;
 
     final aura = Aura.byId(activeAura(profile));
     final worldTile = _CollectionTile(
@@ -1059,7 +1066,7 @@ class _Collection extends ConsumerWidget {
       ),
     );
     final auraTile = _CollectionTile(
-      label: aura?.name ?? 'No aura',
+      label: aura?.name ?? strings.profileNoAura,
       onTap: () => context.push('/store?tab=auras'),
       art: aura == null
           ? Icon(
@@ -1233,7 +1240,7 @@ class _RecentGames extends ConsumerWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'No games yet. Your first win will show up here.',
+                strings.profileNoGamesYetYourFirst,
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
             ),
@@ -1289,10 +1296,10 @@ class _RecentRow extends ConsumerWidget {
         ? '${game.players} players'
         : 'vs ${profileDisplayName(profile, opponent)}';
     final (label, color) = game.draw
-        ? ('Draw', AppColors.textSecondary)
+        ? (strings.profileDraw, AppColors.textSecondary)
         : game.won
-        ? ('Won', AppColors.success)
-        : ('Lost', AppColors.error);
+        ? (strings.profileWon, AppColors.success)
+        : (strings.profileLost, AppColors.error);
     // There's no house cut: the winner takes the whole pot.
     final prize = game.players * game.stake;
     final delta = game.ratingDelta;
@@ -1420,10 +1427,13 @@ class _CompanionCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Chip', style: AppTextStyles.display(fontSize: 20)),
+                Text(
+                  strings.profileChip,
+                  style: AppTextStyles.display(fontSize: 20),
+                ),
                 const SizedBox(height: 2),
                 Text(
-                  'Your companion in every world. Drag Chip to give it a spin.',
+                  strings.profileYourCompanionInEveryWorld,
                   style: AppTextStyles.body(color: AppColors.textSecondary),
                 ),
               ],

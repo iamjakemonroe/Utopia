@@ -26,6 +26,7 @@ import '../../../friends/presentation/widgets/friends_popup.dart';
 import '../../../help/presentation/help_sheet.dart';
 import '../../../notifications/data/notification_repository.dart';
 import '../../../../core/widgets/frosted.dart';
+import '../../../../l10n/strings.dart';
 
 /// Slides the side menu in from the left with a springy overshoot, items
 /// popping in one after another, over a blurred backdrop.
@@ -34,7 +35,7 @@ Future<void> showSideMenu(BuildContext context, WidgetRef ref) {
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Close menu',
+    barrierLabel: strings.sideMenuCloseMenu,
     barrierColor: Colors.black.withValues(alpha: 0.35),
     transitionDuration: const Duration(milliseconds: 620),
     pageBuilder: (context, animation, _) => _SideMenu(animation: animation),
@@ -65,7 +66,9 @@ class _SideMenu extends ConsumerWidget {
     final profile = user == null
         ? null
         : ref.watch(profileByIdProvider(user.id)).valueOrNull;
-    final name = user == null ? 'Player' : profileDisplayName(profile, user.id);
+    final name = user == null
+        ? strings.sideMenuPlayer
+        : profileDisplayName(profile, user.id);
     final username = profile?['username'] as String?;
     // Most of a phone's width; on a tablet, still about a phone's.
     final width = math.min(MediaQuery.sizeOf(context).width * 0.84, 380.0);
@@ -86,56 +89,61 @@ class _SideMenu extends ConsumerWidget {
     final items = <_MenuItem>[
       _MenuItem(
         Icons.person_rounded,
-        'Profile',
+        strings.sideMenuProfile,
         AppColors.sky,
         () => go('/profile'),
       ),
       if (doodle)
         _MenuItem(
           Icons.draw_rounded,
-          'Sketchbook',
+          strings.sideMenuSketchbook,
           AppColors.accent,
           () => go('/sketchbook'),
         ),
       _MenuItem(
         Icons.storefront_rounded,
-        'Store',
+        strings.sideMenuStore,
         AppColors.coinGold,
         () => go('/store'),
       ),
       _MenuItem(
         Icons.collections_bookmark_rounded,
-        'Collection',
+        strings.sideMenuCollection,
         AppColors.mint,
         () => go('/collection'),
       ),
       _MenuItem(
         Icons.leaderboard_rounded,
-        'Rankings',
+        strings.sideMenuRankings,
         AppColors.coral,
         () => go('/rankings'),
       ),
       _MenuItem(
         Icons.notifications_rounded,
-        'Notifications',
+        strings.sideMenuNotifications,
         AppColors.sky,
         () => go('/notifications'),
         badge: unread > 0 ? '$unread' : null,
       ),
       if (!isGuest)
-        _MenuItem(Icons.people_rounded, 'Friends', const Color(0xFFFF8FB8), () {
-          Navigator.of(context).pop();
-          showFriendsPopup(context);
-        }),
+        _MenuItem(
+          Icons.people_rounded,
+          strings.sideMenuFriends,
+          const Color(0xFFFF8FB8),
+          () {
+            Navigator.of(context).pop();
+            showFriendsPopup(context);
+          },
+        ),
       _MenuItem(
         Icons.settings_rounded,
-        'Settings',
+        strings.sideMenuSettings,
         const Color(0xFFB27BFF),
         () => go('/settings'),
       ),
       _MenuItem(
         Icons.support_rounded,
-        'Help & feedback',
+        strings.sideMenuHelpFeedback,
         const Color(0xFFFF8A3D),
         () {
           Navigator.of(context).pop();
@@ -145,24 +153,24 @@ class _SideMenu extends ConsumerWidget {
       if (isGuest)
         _MenuItem(
           Icons.shield_rounded,
-          'Save your account',
+          strings.sideMenuSaveYourAccount,
           AppColors.success,
           () => go('/auth/link'),
         )
       else
         _MenuItem(
           Icons.logout_rounded,
-          'Sign out',
+          strings.sideMenuSignOut,
           AppColors.textSecondary,
           () async {
             // The same question as in Settings, before signing out.
             final ok = await confirmBouncy(
               context: context,
               audio: ref.read(gameAudioProvider),
-              title: 'Sign out?',
-              message: 'You can sign back in with your email any time.',
-              confirmLabel: 'Sign out',
-              cancelLabel: 'Stay',
+              title: strings.sideMenuSignOut2,
+              message: strings.sideMenuYouCanSignBackIn,
+              confirmLabel: strings.sideMenuSignOut,
+              cancelLabel: strings.sideMenuStay,
               hero: const CoinBuddy(mood: BuddyMood.sad, size: 72),
             );
             if (!ok || !context.mounted) return;
@@ -273,9 +281,9 @@ class _SideMenu extends ConsumerWidget {
                                   ),
                                   Text(
                                     isGuest
-                                        ? 'Guest'
+                                        ? strings.sideMenuGuest
                                         : (username == null
-                                              ? 'No username yet'
+                                              ? strings.sideMenuNoUsernameYet
                                               : '@$username'),
                                     style: AppTextStyles.body(
                                       fontSize: 13,
@@ -310,7 +318,7 @@ class _SideMenu extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Text(
-                    'Utopia 1.0',
+                    strings.sideMenuUtopia10,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.body(
                       fontSize: 12,

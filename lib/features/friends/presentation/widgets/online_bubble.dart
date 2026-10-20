@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/strings.dart';
 
 /// On a friend's picture: a glassy bubble. While they're around, a green
 /// glow fills it and it breathes, the light sliding gently over its skin;
@@ -67,7 +68,9 @@ class _OnlineBubbleState extends State<OnlineBubble>
   Widget build(BuildContext context) {
     final size = widget.size;
     return Semantics(
-      label: widget.online ? 'Online' : 'Offline',
+      label: widget.online
+          ? strings.onlineBubbleOnline
+          : strings.onlineBubbleOffline,
       child: RepaintBoundary(
         child: SizedBox.square(
           // Room for the glow and the breath.

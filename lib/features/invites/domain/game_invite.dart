@@ -1,3 +1,4 @@
+
 /// Where game invite links live: the Utopia site, which opens the app when
 /// it's installed (see utopia-landingpage/public/.well-known) and shows the
 /// code and how to get Utopia when it isn't (public/join.html).

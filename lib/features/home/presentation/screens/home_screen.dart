@@ -66,6 +66,7 @@ import '../../../../core/layout/responsive.dart';
 import '../../../../core/layout/tile_grid.dart';
 import '../../../../core/widgets/frosted.dart';
 import '../../../../core/widgets/frame_island.dart';
+import '../../../../l10n/strings.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -292,8 +293,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             showUtopiaToast(
               context,
               status == 'declined'
-                  ? '$name said not now.'
-                  : 'Your challenge to $name ran out.',
+                  ? strings.homeSaidNotNow(name)
+                  : strings.homeYourChallengeToRanOut(name),
               icon: status == 'declined'
                   ? Icons.do_not_disturb_on_outlined
                   : Icons.hourglass_disabled_rounded,
@@ -641,7 +642,7 @@ void _showGreeting(BuildContext context, WidgetRef ref, Greeting greeting) {
   showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Close',
+    barrierLabel: strings.homeClose,
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 650),
     pageBuilder: (context, animation, _) =>
@@ -738,7 +739,7 @@ class _GreetingPopupState extends State<_GreetingPopup>
                       Opacity(
                         opacity: (fade * 0.7).clamp(0.0, 1.0),
                         child: Text(
-                          'Tap anywhere to close',
+                          strings.homeTapAnywhereToClose,
                           style: AppTextStyles.body(
                             fontSize: 12,
                             color: AppColors.textPrimary.withValues(alpha: 0.7),
@@ -1170,7 +1171,7 @@ class _SaveAccountBanner extends StatelessWidget {
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
-                    'Save your account to keep your coins and worlds on any phone.',
+                    strings.homeSaveYourAccountToKeep,
                     style: AppTextStyles.body(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -1218,7 +1219,7 @@ class _UsernameBanner extends ConsumerWidget {
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
-                      'Pick a username so friends can find you.',
+                      strings.homePickAUsernameSoFriends,
                       style: AppTextStyles.body(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -1326,7 +1327,7 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
       if (mounted) {
         showUtopiaToast(
           context,
-          friendlyError(e, fallback: 'That challenge is no longer open.'),
+          friendlyError(e, fallback: strings.homeThatChallengeIsNoLonger),
           kind: ToastKind.error,
         );
       }
@@ -1426,7 +1427,7 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '$name challenged you',
+                        strings.homeChallengedYou(name),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.body(
@@ -1443,7 +1444,9 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
                             icon: checkers
                                 ? Icons.blur_circular_rounded
                                 : Icons.extension_rounded,
-                            label: checkers ? 'Checkers' : 'Chess',
+                            label: checkers
+                                ? strings.homeCheckers
+                                : strings.homeChess,
                           ),
                           _InviteTag(
                             icon: speedIcon(time.speed),
@@ -1454,7 +1457,7 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
                             _InviteTag(
                               icon: Icons.favorite_rounded,
                               iconColor: AppColors.coral,
-                              label: 'Free',
+                              label: strings.homeFree,
                             )
                           else
                             _InviteTag(
@@ -1467,7 +1470,7 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
                           if (minutesLeft != null)
                             _InviteTag(
                               icon: Icons.hourglass_bottom_rounded,
-                              label: '$minutesLeft min left',
+                              label: strings.homeMinLeft(minutesLeft),
                             ),
                         ],
                       ),
@@ -1488,7 +1491,7 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                '$name stepped away. Play waits for them.',
+                                strings.homeSteppedAwayPlayWaitsFor(name),
                                 style: AppTextStyles.body(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w700,
@@ -1506,7 +1509,7 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
             ),
             const SizedBox(height: 12),
             AnswerButtons(
-              acceptLabel: 'Play',
+              acceptLabel: strings.homePlay,
               busy: _declining,
               onDecline: _decline,
               onAccept: away ? null : _accept,
@@ -1646,7 +1649,7 @@ class _SentChallengeCardState extends ConsumerState<SentChallengeCard> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Waiting for $name',
+                    strings.homeWaitingFor(name),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.body(
@@ -1678,7 +1681,7 @@ class _SentChallengeCardState extends ConsumerState<SentChallengeCard> {
                               color: AppColors.textSecondary,
                             ),
                           )
-                        : const Text('Cancel'),
+                        : Text(strings.homeCancel),
                   ),
                 ),
               ],
@@ -1694,7 +1697,7 @@ class _SentChallengeCardState extends ConsumerState<SentChallengeCard> {
                     icon: checkers
                         ? Icons.blur_circular_rounded
                         : Icons.extension_rounded,
-                    label: checkers ? 'Checkers' : 'Chess',
+                    label: checkers ? strings.homeCheckers : strings.homeChess,
                   ),
                   _InviteTag(
                     icon: speedIcon(time.speed),
@@ -1705,7 +1708,7 @@ class _SentChallengeCardState extends ConsumerState<SentChallengeCard> {
                     _InviteTag(
                       icon: Icons.favorite_rounded,
                       iconColor: AppColors.coral,
-                      label: 'Free',
+                      label: strings.homeFree,
                     )
                   else
                     _InviteTag(
@@ -1718,7 +1721,7 @@ class _SentChallengeCardState extends ConsumerState<SentChallengeCard> {
                   if (minutesLeft != null)
                     _InviteTag(
                       icon: Icons.hourglass_bottom_rounded,
-                      label: '$minutesLeft min left',
+                      label: strings.homeMinLeft(minutesLeft),
                     ),
                 ],
               ),
@@ -1800,7 +1803,10 @@ class _GamesGrid extends StatelessWidget {
                 color: AppColors.coinGold,
               ),
               const SizedBox(width: 8),
-              Text('Games', style: AppTextStyles.display(fontSize: 20)),
+              Text(
+                strings.homeGames,
+                style: AppTextStyles.display(fontSize: 20),
+              ),
             ],
           ),
         ),
@@ -1815,41 +1821,41 @@ class _GamesGrid extends StatelessWidget {
           children: [
             _GameTile(
               game: GameKind.chess,
-              title: 'Chess',
+              title: strings.homeChess,
               color: AppColors.accent,
-              facts: const [
-                (Icons.timer_rounded, '1 to 30 min'),
-                (Icons.public_rounded, 'Online & friends'),
+              facts: [
+                (Icons.timer_rounded, strings.home1To30Min),
+                (Icons.public_rounded, strings.homeOnlineFriends),
               ],
               onTap: () => context.push('/chess'),
             ),
             _GameTile(
               game: GameKind.ludo,
-              title: 'Ludo',
+              title: strings.homeLudo,
               color: AppColors.mint,
-              facts: const [
-                (Icons.groups_rounded, '2 to 6 players'),
-                (Icons.vpn_key_rounded, 'Room codes'),
+              facts: [
+                (Icons.groups_rounded, strings.home2To6Players),
+                (Icons.vpn_key_rounded, strings.homeRoomCodes),
               ],
               onTap: () => context.push('/ludo'),
             ),
             _GameTile(
               game: GameKind.checkers,
-              title: 'Checkers',
+              title: strings.homeCheckers,
               color: AppColors.coral,
-              facts: const [
-                (Icons.bolt_rounded, 'Multi-jumps'),
-                (Icons.wifi_off_rounded, 'Play offline'),
+              facts: [
+                (Icons.bolt_rounded, strings.homeMultiJumps),
+                (Icons.wifi_off_rounded, strings.homePlayOffline),
               ],
               onTap: () => context.push('/checkers'),
             ),
             _GameTile(
               game: GameKind.doodle,
-              title: 'Guess My Doodle',
+              title: strings.homeGuessMyDoodle,
               color: const Color(0xFFFF5C9C),
-              facts: const [
-                (Icons.brush_rounded, 'Draw & guess'),
-                (Icons.groups_rounded, '2 to 20 players'),
+              facts: [
+                (Icons.brush_rounded, strings.homeDrawGuess),
+                (Icons.groups_rounded, strings.home2To20Players),
               ],
               onTap: () => context.push('/guess-my-doodle'),
             ),
@@ -2065,7 +2071,7 @@ class _RejoinCardState extends ConsumerState<_RejoinCard>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Your game is still on',
+                                      strings.homeYourGameIsStillOn,
                                       style: AppTextStyles.display(
                                         fontSize: 17,
                                       ),
@@ -2093,7 +2099,7 @@ class _RejoinCardState extends ConsumerState<_RejoinCard>
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      'Rejoin',
+                                      strings.homeRejoin,
                                       style: AppTextStyles.body(
                                         fontWeight: FontWeight.w900,
                                         color: Colors.white,
@@ -2201,10 +2207,10 @@ class _MenuAvatar extends ConsumerWidget {
     final profile = id == null
         ? null
         : ref.watch(profileByIdProvider(id)).valueOrNull;
-    final name = id == null ? 'You' : profileDisplayName(profile, id);
+    final name = id == null ? strings.homeYou : profileDisplayName(profile, id);
     return Semantics(
       button: true,
-      label: 'Open menu',
+      label: strings.homeOpenMenu,
       child: GestureDetector(
         onTap: () => showSideMenu(context, ref),
         child: Container(
@@ -2302,12 +2308,12 @@ class _SketchbookCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Sketchbook',
+                          strings.homeSketchbook,
                           style: AppTextStyles.display(fontSize: 18),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Draw anything or color a picture, with real art tools.',
+                          strings.homeDrawAnythingOrColorA,
                           style: AppTextStyles.body(
                             fontSize: 13,
                             color: AppColors.textSecondary,
@@ -2356,12 +2362,15 @@ class _StoreCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Worlds & pieces',
+                        strings.homeWorldsPieces,
                         style: AppTextStyles.display(fontSize: 18),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${UtopiaThemes.utopia.length} worlds and ${UtopiaThemes.colors.length} color themes, and pieces made of crystal, candy and starlight.',
+                        strings.homeWorldsAndColorThemesAnd(
+                          UtopiaThemes.utopia.length,
+                          UtopiaThemes.colors.length,
+                        ),
                         style: AppTextStyles.body(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -2386,22 +2395,22 @@ class _StoreCard extends StatelessWidget {
 /// What the "your game is still on" card says about the game.
 String _resumeLine(ActiveGame game) {
   final name = switch (game.kind) {
-    GameKind.chess => 'Chess',
-    GameKind.checkers => 'Checkers',
-    GameKind.ludo => 'Ludo',
-    GameKind.doodle => 'Guess My Doodle',
+    GameKind.chess => strings.homeChess,
+    GameKind.checkers => strings.homeCheckers,
+    GameKind.ludo => strings.homeLudo,
+    GameKind.doodle => strings.homeGuessMyDoodle,
   };
   final offline = game.offline;
   if (offline != null) {
     final against = offline.opponent;
     if (against == null || against == 'bots' || against == 'friends') {
-      return '$name with ${against ?? 'bots'} · pick up where you left off';
+      return strings.homeWithPickUpWhereYou(name, against ?? 'bots');
     }
-    return '$name vs $against · pick up where you left off';
+    return strings.homeVsPickUpWhereYou(name, against);
   }
   return switch (game.kind) {
-    GameKind.ludo => 'Ludo · the table is waiting',
-    GameKind.doodle => '$name · the game goes on without you',
-    _ => '$name · your clock may be running',
+    GameKind.ludo => strings.homeLudoTheTableIsWaiting,
+    GameKind.doodle => strings.homeTheGameGoesOnWithout(name),
+    _ => strings.homeYourClockMayBeRunning(name),
   };
 }

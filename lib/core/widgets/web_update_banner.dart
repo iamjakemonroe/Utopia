@@ -11,6 +11,7 @@ import '../platform/web_update.dart';
 import '../router/app_router.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../../l10n/strings.dart';
 
 /// In a browser: a game left open keeps the version it loaded, so it checks
 /// for a newer one every few minutes and whenever the page comes back into
@@ -133,7 +134,7 @@ class _WebUpdateBannerState extends ConsumerState<WebUpdateBanner> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'A new version of Utopia is ready.',
+                          strings.webUpdateBannerANewVersionOfUtopia,
                           style: AppTextStyles.body(
                             fontWeight: FontWeight.w700,
                           ),
@@ -141,10 +142,10 @@ class _WebUpdateBannerState extends ConsumerState<WebUpdateBanner> {
                       ),
                       TextButton(
                         onPressed: reloadPage,
-                        child: const Text('Refresh'),
+                        child: Text(strings.webUpdateBannerRefresh),
                       ),
                       IconButton(
-                        tooltip: 'Later',
+                        tooltip: strings.webUpdateBannerLater,
                         icon: const Icon(Icons.close_rounded, size: 20),
                         color: AppColors.textSecondary,
                         onPressed: () => setState(() => _dismissed = true),

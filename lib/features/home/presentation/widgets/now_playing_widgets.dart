@@ -14,6 +14,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../chip/presentation/chip_chat_sheet.dart';
 import '../../../../core/widgets/frosted.dart';
+import '../../../../l10n/strings.dart';
 
 /// Little bars bouncing to the music.
 class EqualizerBars extends StatefulWidget {
@@ -165,7 +166,7 @@ void showNowPlaying(BuildContext context, WidgetRef ref) {
   showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Close',
+    barrierLabel: strings.nowPlayingClose,
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 650),
     pageBuilder: (context, animation, _) =>
@@ -288,7 +289,7 @@ class _NowPlayingPopupState extends ConsumerState<_NowPlayingPopup>
                                     children: [
                                       CloudButton(
                                         icon: Icons.skip_previous_rounded,
-                                        label: 'Previous',
+                                        label: strings.nowPlayingPrevious,
                                         phase: 0,
                                         onTap: controller.previous,
                                       ),
@@ -297,7 +298,9 @@ class _NowPlayingPopupState extends ConsumerState<_NowPlayingPopup>
                                         icon: playing
                                             ? Icons.pause_rounded
                                             : Icons.play_arrow_rounded,
-                                        label: playing ? 'Pause' : 'Play',
+                                        label: playing
+                                            ? strings.nowPlayingPause
+                                            : strings.nowPlayingPlay,
                                         big: true,
                                         phase: 1.4,
                                         onTap: controller.playPause,
@@ -305,7 +308,7 @@ class _NowPlayingPopupState extends ConsumerState<_NowPlayingPopup>
                                       const SizedBox(width: AppSpacing.md),
                                       CloudButton(
                                         icon: Icons.skip_next_rounded,
-                                        label: 'Next',
+                                        label: strings.nowPlayingNext,
                                         phase: 2.8,
                                         onTap: controller.next,
                                       ),
@@ -319,7 +322,7 @@ class _NowPlayingPopupState extends ConsumerState<_NowPlayingPopup>
                                 ),
                               const SizedBox(height: AppSpacing.md),
                               Text(
-                                'Tap anywhere to close',
+                                strings.nowPlayingTapAnywhereToClose,
                                 style: AppTextStyles.body(
                                   fontSize: 12,
                                   color: AppColors.textPrimary.withValues(
@@ -676,9 +679,9 @@ class _AccessHint extends ConsumerWidget {
     final ios = !kIsWeb && Platform.isIOS;
     final text = ios
         ? (music.access == MusicAccess.granted
-              ? "Ooh, what's playing? I can hear it, but iPhone only shows me songs from Apple Music. Tell me what it is!"
-              : "Ooh, what's playing? Let me see your Apple Music and I'll show the song and the buttons here. Or just tell me what it is!")
-        : "Ooh, what's playing? Let me see it and I'll show the song, the cover and the buttons here. Or just tell me what it is!";
+              ? strings.nowPlayingOohWhatSPlayingI
+              : strings.nowPlayingOohWhatSPlayingLet)
+        : strings.nowPlayingOohWhatSPlayingLet2;
     final canAsk = !ios || music.access == MusicAccess.unknown;
     return Container(
       constraints: const BoxConstraints(maxWidth: 340),
@@ -704,14 +707,16 @@ class _AccessHint extends ConsumerWidget {
               if (canAsk)
                 CloudButton(
                   icon: Icons.music_note_rounded,
-                  label: ios ? 'Show my Apple Music' : 'Allow',
+                  label: ios
+                      ? strings.nowPlayingShowMyAppleMusic
+                      : strings.nowPlayingAllow,
                   big: true,
                   onTap: () =>
                       ref.read(nowPlayingProvider.notifier).requestAccess(),
                 ),
               CloudButton(
                 icon: Icons.chat_bubble_rounded,
-                label: 'Tell Chip',
+                label: strings.nowPlayingTellChip,
                 big: !canAsk,
                 phase: 1.4,
                 onTap: () {

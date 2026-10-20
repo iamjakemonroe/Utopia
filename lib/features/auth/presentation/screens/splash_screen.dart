@@ -25,6 +25,7 @@ import '../../../ludo/presentation/widgets/ludo_setup_widgets.dart';
 import '../../../friends/presentation/widgets/friends_popup.dart';
 import '../../../store/presentation/coin_shop.dart';
 import '../providers/auth_providers.dart';
+import '../../../../l10n/strings.dart';
 
 /// Shared with main.dart, which decodes this image while Supabase
 /// initializes so the splash's first frame already has it — otherwise the
@@ -225,7 +226,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         offset: Offset(0, 16 * (1 - title)),
                         child: Column(
                           children: [
-                            const OutlinedHeading('Utopia', fontSize: 36),
+                            OutlinedHeading(strings.splashUtopia, fontSize: 36),
                             const SizedBox(height: AppSpacing.md),
                             _LoadingDots(phase: seconds / 0.9),
                           ],

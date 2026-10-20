@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import 'pop_card.dart';
 import 'primary_button.dart';
 import 'frosted.dart';
+import '../../l10n/strings.dart';
 
 /// Shows [builder]'s content in a dialog that springs in like a bubble
 /// (and shrinks away), over a softly blurred backdrop.
@@ -20,7 +21,7 @@ Future<T?> showBouncyDialog<T>({
   return showGeneralDialog<T>(
     context: context,
     barrierDismissible: dismissible,
-    barrierLabel: 'Close',
+    barrierLabel: strings.bouncyClose,
     barrierColor: Colors.black.withValues(alpha: 0.35),
     transitionDuration: const Duration(milliseconds: 520),
     pageBuilder: (context, _, _) =>

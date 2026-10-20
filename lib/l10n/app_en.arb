@@ -293,5 +293,4123 @@
   "settingsReset": "Reset",
   "@settingsReset": {
     "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "howToPlayChess": "Chess",
+  "@howToPlayChess": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayLudo": "Ludo",
+  "@howToPlayLudo": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayCheckers": "Checkers",
+  "@howToPlayCheckers": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayHowToPlay": "How to play",
+  "@howToPlayHowToPlay": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayKing": "King",
+  "@howToPlayKing": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayOneSquareAnyWayKeep": "One square any way. Keep it safe: if it can be taken and has no escape, the game is lost.",
+  "@howToPlayOneSquareAnyWayKeep": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayQueen": "Queen",
+  "@howToPlayQueen": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayAnyNumberOfSquaresIn": "Any number of squares in a straight line or along a diagonal.",
+  "@howToPlayAnyNumberOfSquaresIn": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayRook": "Rook",
+  "@howToPlayRook": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayAnyNumberOfSquaresStraight": "Any number of squares straight up, down or across.",
+  "@howToPlayAnyNumberOfSquaresStraight": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayBishop": "Bishop",
+  "@howToPlayBishop": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayAnyNumberOfSquaresAlong": "Any number of squares along a diagonal.",
+  "@howToPlayAnyNumberOfSquaresAlong": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayKnight": "Knight",
+  "@howToPlayKnight": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayJumpsInAnLTwo": "Jumps in an L: two squares one way, then one to the side. It can hop over pieces.",
+  "@howToPlayJumpsInAnLTwo": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayPawn": "Pawn",
+  "@howToPlayPawn": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayOneSquareForwardTwoOn": "One square forward (two on its first move) and takes one square diagonally forward.",
+  "@howToPlayOneSquareForwardTwoOn": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTwoPlayersOneBoardOut": "Two players, one board. Out-think your opponent and trap their king.",
+  "@howToPlayTwoPlayersOneBoardOut": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTheGoal": "The goal",
+  "@howToPlayTheGoal": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayCheckmateWins": "Checkmate wins",
+  "@howToPlayCheckmateWins": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayAttackTheOtherKingSo": "Attack the other king so it can't escape. That's checkmate, and the game is yours.",
+  "@howToPlayAttackTheOtherKingSo": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayCheck": "Check",
+  "@howToPlayCheck": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayWhenYourKingIsAttacked": "When your king is attacked you must get it out of danger on your very next move.",
+  "@howToPlayWhenYourKingIsAttacked": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayHowThePiecesMove": "How the pieces move",
+  "@howToPlayHowThePiecesMove": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlaySpecialMoves": "Special moves",
+  "@howToPlaySpecialMoves": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayCastling": "Castling",
+  "@howToPlayCastling": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayOnceAGameYourKing": "Once a game, your king can step two squares toward a rook and the rook jumps over it, as long as neither has moved, nothing's between them and the king isn't in check.",
+  "@howToPlayOnceAGameYourKing": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayPromotion": "Promotion",
+  "@howToPlayPromotion": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayAPawnThatReachesThe": "A pawn that reaches the far side becomes a queen, rook, bishop or knight. You choose.",
+  "@howToPlayAPawnThatReachesThe": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayEnPassant": "En passant",
+  "@howToPlayEnPassant": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayIfAPawnRushesTwo": "If a pawn rushes two squares past one of yours, you can take it as if it had moved one, on your very next move only.",
+  "@howToPlayIfAPawnRushesTwo": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayDraws": "Draws",
+  "@howToPlayDraws": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayStalemate": "Stalemate",
+  "@howToPlayStalemate": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayIfItSYourMove": "If it's your move, you're not in check and you have no legal move, the game is a draw.",
+  "@howToPlayIfItSYourMove": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayNotEnoughToWin": "Not enough to win",
+  "@howToPlayNotEnoughToWin": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayWhenNeitherSideHasEnough": "When neither side has enough pieces left to checkmate, it's a draw. Entries go back to both players.",
+  "@howToPlayWhenNeitherSideHasEnough": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayPlayingInUtopia": "Playing in Utopia",
+  "@howToPlayPlayingInUtopia": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayClocks": "Clocks",
+  "@howToPlayClocks": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayEachSideHasItsOwn": "Each side has its own time. Run out and you lose. Make your first move within 30 seconds or the game is called off and entries are returned.",
+  "@howToPlayEachSideHasItsOwn": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayEntriesAndPrizes": "Entries and prizes",
+  "@howToPlayEntriesAndPrizes": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayPickAFreeGameOr": "Pick a free game or an entry. The winner takes the prize; a draw gives everyone their entry back.",
+  "@howToPlayPickAFreeGameOr": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayLookBack": "Look back",
+  "@howToPlayLookBack": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayUseTheArrowsUnderThe": "Use the arrows under the board to step through every move, during the game or after it. Tap a move to jump to it.",
+  "@howToPlayUseTheArrowsUnderThe": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayChat": "Chat",
+  "@howToPlayChat": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlaySendMessagesStickersAndVoice": "Send messages, stickers and voice notes from the chat button. Games with strangers keep it friendly.",
+  "@howToPlaySendMessagesStickersAndVoice": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayLeavingResigns": "Leaving resigns",
+  "@howToPlayLeavingResigns": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayLeavingAGameInProgress": "Leaving a game in progress resigns it. Closed the app by accident? Open it again and you're taken straight back to your game.",
+  "@howToPlayLeavingAGameInProgress": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTwoToSixPlayersRace": "Two to six players race their pieces around the board and home. Roll, capture, and get all four in first.",
+  "@howToPlayTwoToSixPlayersRace": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTheBasics": "The basics",
+  "@howToPlayTheBasics": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayWinning": "Winning",
+  "@howToPlayWinning": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayPlayingWithFriends": "Playing with friends",
+  "@howToPlayPlayingWithFriends": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayRooms": "Rooms",
+  "@howToPlayRooms": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayMakeARoomAndShare": "Make a room and share its code. Friends join with the code and the host starts the game.",
+  "@howToPlayMakeARoomAndShare": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayPickYourSeat": "Pick your seat",
+  "@howToPlayPickYourSeat": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayInARoomTapAn": "In a room, tap an empty seat to sit there and play that color, or share an invite to it.",
+  "@howToPlayInARoomTapAn": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayVoiceNotes": "Voice notes",
+  "@howToPlayVoiceNotes": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayHoldAConversationWithoutTyping": "Hold a conversation without typing: record up to 30 seconds and it plays for everyone at the table.",
+  "@howToPlayHoldAConversationWithoutTyping": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTwoPlayersTwelvePiecesEach": "Two players, twelve pieces each, on the dark squares of an 8x8 board. Dark moves first.",
+  "@howToPlayTwoPlayersTwelvePiecesEach": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayHowPiecesMove": "How pieces move",
+  "@howToPlayHowPiecesMove": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayMen": "Men",
+  "@howToPlayMen": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayEveryPieceStartsAsA": "Every piece starts as a man. A man moves one square diagonally forward, onto an empty dark square.",
+  "@howToPlayEveryPieceStartsAsA": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayKings": "Kings",
+  "@howToPlayKings": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayAManThatReachesThe": "A man that reaches the far row is crowned king. Kings move one square diagonally forward or backward.",
+  "@howToPlayAManThatReachesThe": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTakingPieces": "Taking pieces",
+  "@howToPlayTakingPieces": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayJumpToTake": "Jump to take",
+  "@howToPlayJumpToTake": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayJumpDiagonallyOverAnOpponent": "Jump diagonally over an opponent's piece to an empty square right behind it, and that piece is taken. Men jump forward only; kings jump either way.",
+  "@howToPlayJumpDiagonallyOverAnOpponent": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTakingIsAMust": "Taking is a must",
+  "@howToPlayTakingIsAMust": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayIfYouCanTakeA": "If you can take a piece, you have to. The pieces that can take glow orange, and you choose which jump to make if there's more than one.",
+  "@howToPlayIfYouCanTakeA": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayMultiJumps": "Multi-jumps",
+  "@howToPlayMultiJumps": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayAfterAJumpIfThe": "After a jump, if the same piece can jump again, it keeps going in the same move. A man that's crowned mid-jump stops there.",
+  "@howToPlayAfterAJumpIfThe": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayNoMovesNoGame": "No moves, no game",
+  "@howToPlayNoMovesNoGame": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTakeAllOfYourOpponent": "Take all of your opponent's pieces, or leave them with no move to make, and you win.",
+  "@howToPlayTakeAllOfYourOpponent": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayIfOnlyKingsMoveFor": "If only kings move for forty moves each, with nothing taken, it's a draw. Entries go back to both players.",
+  "@howToPlayIfOnlyKingsMoveFor": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayClocksEntriesAndChat": "Clocks, entries and chat",
+  "@howToPlayClocksEntriesAndChat": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayTheSameAsChessYour": "The same as chess: your own clock, free games or an entry, every move to look back on, and chat with stickers and voice notes. Make your first move within 30 seconds.",
+  "@howToPlayTheSameAsChessYour": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayOffline": "Offline",
+  "@howToPlayOffline": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayPlayChipOrRoboAt": "Play Chip or Robo at three levels, or pass one phone between two players. No internet needed.",
+  "@howToPlayPlayChipOrRoboAt": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayYourPieces": "Your pieces",
+  "@howToPlayYourPieces": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "howToPlayYourPiecesWearYourChess": "Your pieces wear your chess set. Buddies, Monsters and Robots get faces that watch the game.",
+  "@howToPlayYourPiecesWearYourChess": {
+    "description": "features/help/presentation/how_to_play_screen.dart"
+  },
+  "rankHologramClose": "Close",
+  "@rankHologramClose": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramSHologram": "{toUpperCase}'S HOLOGRAM",
+  "@rankHologramSHologram": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "toUpperCase": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramCouldnTReachStatsClose": "COULDN'T REACH {whose} STATS. CLOSE AND TRY AGAIN.",
+  "@rankHologramCouldnTReachStatsClose": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "whose": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramScanningGames": "SCANNING {whose} GAMES…",
+  "@rankHologramScanningGames": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "whose": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramKeepsTheirStatsToThemselves": "{value} KEEPS THEIR STATS TO THEMSELVES.",
+  "@rankHologramKeepsTheirStatsToThemselves": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramYourHologramFillsInAs": "YOUR HOLOGRAM FILLS IN AS YOU PLAY RATED {value} GAMES.",
+  "@rankHologramYourHologramFillsInAs": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramHasnTPlayedRatedGames": "{toUpperCase} HASN'T PLAYED RATED {value} GAMES YET.",
+  "@rankHologramHasnTPlayedRatedGames": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "toUpperCase": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramHowYouWin": "HOW YOU WIN",
+  "@rankHologramHowYouWin": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramHowTheyWin": "HOW THEY WIN",
+  "@rankHologramHowTheyWin": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramHowYouLose": "HOW YOU LOSE",
+  "@rankHologramHowYouLose": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramHowTheyLose": "HOW THEY LOSE",
+  "@rankHologramHowTheyLose": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramBestWin": "BEST WIN",
+  "@rankHologramBestWin": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramRatedWhenBeatThem": "Rated {rating} when {first} beat them",
+  "@rankHologramRatedWhenBeatThem": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "rating": {
+        "type": "Object"
+      },
+      "first": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramYourRival": "YOUR RIVAL",
+  "@rankHologramYourRival": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramTheirRival": "THEIR RIVAL",
+  "@rankHologramTheirRival": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramGamesWonLost": "{games} games · {first} won {wins}, lost {losses}",
+  "@rankHologramGamesWonLost": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "games": {
+        "type": "Object"
+      },
+      "first": {
+        "type": "Object"
+      },
+      "wins": {
+        "type": "Object"
+      },
+      "losses": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramYourNemesis": "YOUR NEMESIS",
+  "@rankHologramYourNemesis": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramTheirNemesis": "THEIR NEMESIS",
+  "@rankHologramTheirNemesis": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramBeatTimes": "Beat {first} {losses} times",
+  "@rankHologramBeatTimes": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "first": {
+        "type": "Object"
+      },
+      "losses": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramRatedSince": "RATED {value} SINCE {value2}",
+  "@rankHologramRatedSince": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramFeb": "Feb",
+  "@rankHologramFeb": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramMar": "Mar",
+  "@rankHologramMar": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramApr": "Apr",
+  "@rankHologramApr": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramMay": "May",
+  "@rankHologramMay": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramJun": "Jun",
+  "@rankHologramJun": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramJul": "Jul",
+  "@rankHologramJul": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramAug": "Aug",
+  "@rankHologramAug": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramSep": "Sep",
+  "@rankHologramSep": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramOct": "Oct",
+  "@rankHologramOct": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramNov": "Nov",
+  "@rankHologramNov": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramDec": "Dec",
+  "@rankHologramDec": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramMoreRatedGameToBe": "{value} more rated game{value2} to be ranked",
+  "@rankHologramMoreRatedGameToBe": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramTheTopTier": "THE TOP TIER",
+  "@rankHologramTheTopTier": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramThisWeek": "THIS WEEK",
+  "@rankHologramThisWeek": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramThisMonth": "THIS MONTH",
+  "@rankHologramThisMonth": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramStreakNow": "STREAK NOW",
+  "@rankHologramStreakNow": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramBestInARow": "Best: {bestStreak} {value} in a row",
+  "@rankHologramBestInARow": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "bestStreak": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramBiggestClimb": "BIGGEST CLIMB",
+  "@rankHologramBiggestClimb": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramInOneGame": "in one game",
+  "@rankHologramInOneGame": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramRatedGames": "rated games",
+  "@rankHologramRatedGames": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramAverageOpponent": "AVERAGE OPPONENT",
+  "@rankHologramAverageOpponent": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramUsualClock": "USUAL CLOCK",
+  "@rankHologramUsualClock": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramMinutesSecondsAMove": "minutes + seconds a move",
+  "@rankHologramMinutesSecondsAMove": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramFastestWin": "FASTEST WIN",
+  "@rankHologramFastestWin": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramAverageGame": "AVERAGE GAME",
+  "@rankHologramAverageGame": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramNoGamesYet": "no games yet",
+  "@rankHologramNoGamesYet": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramOfWon": "{wins} of {games} won · {value}%",
+  "@rankHologramOfWon": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "wins": {
+        "type": "Object"
+      },
+      "games": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramWhiteOrBlack": "WHITE OR BLACK",
+  "@rankHologramWhiteOrBlack": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramDarkOrLight": "DARK OR LIGHT",
+  "@rankHologramDarkOrLight": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramAsWhite": "AS WHITE",
+  "@rankHologramAsWhite": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramAsDark": "AS DARK",
+  "@rankHologramAsDark": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramAsBlack": "AS BLACK",
+  "@rankHologramAsBlack": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramAsLight": "AS LIGHT",
+  "@rankHologramAsLight": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramCheckmate": "Checkmate",
+  "@rankHologramCheckmate": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramResigned": "Resigned",
+  "@rankHologramResigned": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramOnTime": "On time",
+  "@rankHologramOnTime": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramOutOfMoves": "Out of moves",
+  "@rankHologramOutOfMoves": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramStalemate": "Stalemate",
+  "@rankHologramStalemate": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "rankHologramDraw": "Draw",
+  "@rankHologramDraw": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart"
+  },
+  "homeSaidNotNow": "{name} said not now.",
+  "@homeSaidNotNow": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeYourChallengeToRanOut": "Your challenge to {name} ran out.",
+  "@homeYourChallengeToRanOut": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeClose": "Close",
+  "@homeClose": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeTapAnywhereToClose": "Tap anywhere to close",
+  "@homeTapAnywhereToClose": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeSaveYourAccountToKeep": "Save your account to keep your coins and worlds on any phone.",
+  "@homeSaveYourAccountToKeep": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homePickAUsernameSoFriends": "Pick a username so friends can find you.",
+  "@homePickAUsernameSoFriends": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeThatChallengeIsNoLonger": "That challenge is no longer open.",
+  "@homeThatChallengeIsNoLonger": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeChallengedYou": "{name} challenged you",
+  "@homeChallengedYou": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeCheckers": "Checkers",
+  "@homeCheckers": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeChess": "Chess",
+  "@homeChess": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeFree": "Free",
+  "@homeFree": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeMinLeft": "{minutesLeft} min left",
+  "@homeMinLeft": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "minutesLeft": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeSteppedAwayPlayWaitsFor": "{name} stepped away. Play waits for them.",
+  "@homeSteppedAwayPlayWaitsFor": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "homePlay": "Play",
+  "@homePlay": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeWaitingFor": "Waiting for {name}",
+  "@homeWaitingFor": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeCancel": "Cancel",
+  "@homeCancel": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeGames": "Games",
+  "@homeGames": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "home1To30Min": "1 to 30 min",
+  "@home1To30Min": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeOnlineFriends": "Online & friends",
+  "@homeOnlineFriends": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeLudo": "Ludo",
+  "@homeLudo": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "home2To6Players": "2 to 6 players",
+  "@home2To6Players": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeRoomCodes": "Room codes",
+  "@homeRoomCodes": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeMultiJumps": "Multi-jumps",
+  "@homeMultiJumps": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homePlayOffline": "Play offline",
+  "@homePlayOffline": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeGuessMyDoodle": "Guess My Doodle",
+  "@homeGuessMyDoodle": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeDrawGuess": "Draw & guess",
+  "@homeDrawGuess": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "home2To20Players": "2 to 20 players",
+  "@home2To20Players": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeYourGameIsStillOn": "Your game is still on",
+  "@homeYourGameIsStillOn": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeRejoin": "Rejoin",
+  "@homeRejoin": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeYou": "You",
+  "@homeYou": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeOpenMenu": "Open menu",
+  "@homeOpenMenu": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeSketchbook": "Sketchbook",
+  "@homeSketchbook": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeDrawAnythingOrColorA": "Draw anything or color a picture, with real art tools.",
+  "@homeDrawAnythingOrColorA": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeWorldsPieces": "Worlds & pieces",
+  "@homeWorldsPieces": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeWorldsAndColorThemesAnd": "{length} worlds and {length2} color themes, and pieces made of crystal, candy and starlight.",
+  "@homeWorldsAndColorThemesAnd": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "length": {
+        "type": "Object"
+      },
+      "length2": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeWithPickUpWhereYou": "{name} with {value} · pick up where you left off",
+  "@homeWithPickUpWhereYou": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeVsPickUpWhereYou": "{name} vs {against} · pick up where you left off",
+  "@homeVsPickUpWhereYou": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "against": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeLudoTheTableIsWaiting": "Ludo · the table is waiting",
+  "@homeLudoTheTableIsWaiting": {
+    "description": "features/home/presentation/screens/home_screen.dart"
+  },
+  "homeTheGameGoesOnWithout": "{name} · the game goes on without you",
+  "@homeTheGameGoesOnWithout": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "homeYourClockMayBeRunning": "{name} · your clock may be running",
+  "@homeYourClockMayBeRunning": {
+    "description": "features/home/presentation/screens/home_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftPinFourDigitsPlease": "Four digits, please.",
+  "@giftPinFourDigitsPlease": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinThatOneSTooEasy": "That one's too easy to guess. Try another.",
+  "@giftPinThatOneSTooEasy": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinInAMinute": "in a minute",
+  "@giftPinInAMinute": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinInMinutes": "in {ceil} minutes",
+  "@giftPinInMinutes": {
+    "description": "features/coins/presentation/gift_pin.dart",
+    "placeholders": {
+      "ceil": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftPinWrongPinOneMoreTry": "Wrong PIN. One more try before gifts lock for a while.",
+  "@giftPinWrongPinOneMoreTry": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinWrongPinTriesLeft": "Wrong PIN. {n} tries left.",
+  "@giftPinWrongPinTriesLeft": {
+    "description": "features/coins/presentation/gift_pin.dart",
+    "placeholders": {
+      "n": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftPinWrongPin": "Wrong PIN.",
+  "@giftPinWrongPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinTooManyWrongTriesTry": "Too many wrong tries. Try again {value}, or reset your PIN.",
+  "@giftPinTooManyWrongTriesTry": {
+    "description": "features/coins/presentation/gift_pin.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftPinSaveYourAccountFirstGifts": "Save your account first: gifts are for accounts.",
+  "@giftPinSaveYourAccountFirstGifts": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinThatTookAWhileSend": "That took a while. Send yourself a new code.",
+  "@giftPinThatTookAWhileSend": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinChooseAGiftPinFirst": "Choose a gift PIN first.",
+  "@giftPinChooseAGiftPinFirst": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinCouldnTDoThatTry": "Couldn't do that. Try again.",
+  "@giftPinCouldnTDoThatTry": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinDelete": "Delete",
+  "@giftPinDelete": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinCouldnTSendTheCode": "Couldn't send the code. Try again in a minute.",
+  "@giftPinCouldnTSendTheCode": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinThatCodeDidnTWork": "That code didn't work. Check it, or send a new one.",
+  "@giftPinThatCodeDidnTWork": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinThoseDidnTMatchChoose": "Those didn't match. Choose one again.",
+  "@giftPinThoseDidnTMatchChoose": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinCouldnTSaveItTry": "Couldn't save it. Try again.",
+  "@giftPinCouldnTSaveItTry": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinForgotYourPin": "Forgot your PIN?",
+  "@giftPinForgotYourPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinYourAccountHasNoEmail": "Your account has no email for a code. Ask us through Report a bug and we'll help.",
+  "@giftPinYourAccountHasNoEmail": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinWeLlEmailACode": "We'll email a code to {value} to check it's you. Then choose a new PIN.",
+  "@giftPinWeLlEmailACode": {
+    "description": "features/coins/presentation/gift_pin.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftPinEmailMeACode": "Email me a code",
+  "@giftPinEmailMeACode": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinEnterTheCode": "Enter the code",
+  "@giftPinEnterTheCode": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinTheDigitsInYourUtopia": "The {kEmailCodeLength} digits in \"Your Utopia gift PIN code\", sent to {value}",
+  "@giftPinTheDigitsInYourUtopia": {
+    "description": "features/coins/presentation/gift_pin.dart",
+    "placeholders": {
+      "kEmailCodeLength": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftPinSendANewCodeIn": "Send a new code in {wait}s",
+  "@giftPinSendANewCodeIn": {
+    "description": "features/coins/presentation/gift_pin.dart",
+    "placeholders": {
+      "wait": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftPinSendANewCode": "Send a new code",
+  "@giftPinSendANewCode": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinYourCurrentPin": "Your current PIN",
+  "@giftPinYourCurrentPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinThenChooseANewOne": "Then choose a new one",
+  "@giftPinThenChooseANewOne": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinChooseAGiftPin": "Choose a gift PIN",
+  "@giftPinChooseAGiftPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinChooseANewPin": "Choose a new PIN",
+  "@giftPinChooseANewPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPin4DigitsYouLlEnter": "4 digits you'll enter for every gift. Keep it to yourself.",
+  "@giftPin4DigitsYouLlEnter": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinEnterItAgain": "Enter it again",
+  "@giftPinEnterItAgain": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinJustToBeSure": "Just to be sure",
+  "@giftPinJustToBeSure": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinNewGiftPinSaved": "New gift PIN saved",
+  "@giftPinNewGiftPinSaved": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinGiftPinSet": "Gift PIN set",
+  "@giftPinGiftPinSet": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinSaveYourAccountToSend": "Save your account to send coins to friends, and give your gifts a PIN.",
+  "@giftPinSaveYourAccountToSend": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinCouldnTCheckYourPin": "Couldn't check your PIN. Try again.",
+  "@giftPinCouldnTCheckYourPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinGiftPin": "Gift PIN",
+  "@giftPinGiftPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinEveryCoinGiftAsksFor": "Every coin gift asks for it, so only you can send your coins.",
+  "@giftPinEveryCoinGiftAsksFor": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinYouDonTHaveOne": "You don't have one yet. You'll choose one before your first gift, or choose it now.",
+  "@giftPinYouDonTHaveOne": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinLockedAfterTooManyWrong": "Locked after too many wrong tries: open again {value}, or reset it.",
+  "@giftPinLockedAfterTooManyWrong": {
+    "description": "features/coins/presentation/gift_pin.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftPinChooseAPin": "Choose a PIN",
+  "@giftPinChooseAPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinChangePin": "Change PIN",
+  "@giftPinChangePin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "giftPinForgotPin": "Forgot PIN?",
+  "@giftPinForgotPin": {
+    "description": "features/coins/presentation/gift_pin.dart"
+  },
+  "mediaKindTurnItUp": "Turn it up!",
+  "@mediaKindTurnItUp": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindOkayThisOneHits": "Okay, this one hits",
+  "@mediaKindOkayThisOneHits": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindPartyModeOn": "Party mode: on",
+  "@mediaKindPartyModeOn": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindMyFeetAreMoving": "My feet are moving",
+  "@mediaKindMyFeetAreMoving": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindPerfectChillVibes": "Perfect chill vibes",
+  "@mediaKindPerfectChillVibes": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindNiceAndEasy": "Nice and easy",
+  "@mediaKindNiceAndEasy": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindThisOneIsSweet": "This one is sweet",
+  "@mediaKindThisOneIsSweet": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindSoMuchHeart": "So much heart",
+  "@mediaKindSoMuchHeart": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindASadOneHuh": "A sad one, huh",
+  "@mediaKindASadOneHuh": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindIMHereWithYou": "I'm here with you",
+  "@mediaKindIMHereWithYou": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindThisLiftsMeUp": "This lifts me up",
+  "@mediaKindThisLiftsMeUp": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindBeautifulPraise": "Beautiful praise",
+  "@mediaKindBeautifulPraise": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindNowThatSATune": "Now that's a tune",
+  "@mediaKindNowThatSATune": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindThisOneSAVibe": "This one's a vibe",
+  "@mediaKindThisOneSAVibe": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindIsThat": "Is that {artist}?",
+  "@mediaKindIsThat": {
+    "description": "core/now_playing/media_kind.dart",
+    "placeholders": {
+      "artist": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaKindSomethingGoodIMVibing": "Something good. I'm vibing along.",
+  "@mediaKindSomethingGoodIMVibing": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindOohLearningStuff": "Ooh, learning stuff",
+  "@mediaKindOohLearningStuff": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindGlassesOnLetSLearn": "Glasses on. Let's learn",
+  "@mediaKindGlassesOnLetSLearn": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindICanTStopLaughing": "I can't stop laughing",
+  "@mediaKindICanTStopLaughing": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindOkayThatGotMe": "Okay that got me",
+  "@mediaKindOkayThatGotMe": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindWhoSWinning": "Who's winning?",
+  "@mediaKindWhoSWinning": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindOohNicePlay": "Ooh, nice play",
+  "@mediaKindOohNicePlay": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindDidYouSeeThat": "Did you see that?",
+  "@mediaKindDidYouSeeThat": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindGoGoGo": "Go go go!",
+  "@mediaKindGoGoGo": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindOohAVideo": "Ooh, a video!",
+  "@mediaKindOohAVideo": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindWatchingSomething": "Watching something{where}?",
+  "@mediaKindWatchingSomething": {
+    "description": "core/now_playing/media_kind.dart",
+    "placeholders": {
+      "where": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaKindIsItAGoodOne": "Is it a good one?",
+  "@mediaKindIsItAGoodOne": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindDonTMindMeI": "Don't mind me, I'm watching too.",
+  "@mediaKindDonTMindMeI": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindAPodcastSmart": "A podcast? Smart.",
+  "@mediaKindAPodcastSmart": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindOohWhatSThisOne": "Ooh, what's this one about?",
+  "@mediaKindOohWhatSThisOne": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindAGoodListenIBet": "A good listen, I bet",
+  "@mediaKindAGoodListenIBet": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindIMAllEars": "I'm all ears.",
+  "@mediaKindIMAllEars": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindTakingInASermon": "Taking in a sermon",
+  "@mediaKindTakingInASermon": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindSomePeaceForTheSoul": "Some peace for the soul",
+  "@mediaKindSomePeaceForTheSoul": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindIMListeningQuietly": "I'm listening quietly.",
+  "@mediaKindIMListeningQuietly": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindWhichChapterAreWeOn": "Which chapter are we on?",
+  "@mediaKindWhichChapterAreWeOn": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindAGoodBookNice": "A good book, nice",
+  "@mediaKindAGoodBookNice": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindDonTTellMeHow": "Don't tell me how it ends.",
+  "@mediaKindDonTTellMeHow": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindLiveAndOnAir": "Live and on air.",
+  "@mediaKindLiveAndOnAir": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindWhatAreWeListeningTo": "What are we listening to?",
+  "@mediaKindWhatAreWeListeningTo": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindIHearSomethingGood": "I hear something good",
+  "@mediaKindIHearSomethingGood": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "mediaKindTapMeAndTellMe": "Tap me and tell me what's on.",
+  "@mediaKindTapMeAndTellMe": {
+    "description": "core/now_playing/media_kind.dart"
+  },
+  "profileCouldnTChangeYourAvatar": "Couldn't change your avatar. Try again.",
+  "@profileCouldnTChangeYourAvatar": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileYou": "You",
+  "@profileYou": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileSettings": "Settings",
+  "@profileSettings": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileSaveYourAccount": "Save your account",
+  "@profileSaveYourAccount": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileCollection": "Collection",
+  "@profileCollection": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileRecentGames": "Recent games",
+  "@profileRecentGames": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profilePickAUsername": "Pick a username",
+  "@profilePickAUsername": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileFeb": "Feb",
+  "@profileFeb": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileMar": "Mar",
+  "@profileMar": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileApr": "Apr",
+  "@profileApr": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileMay": "May",
+  "@profileMay": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileJun": "Jun",
+  "@profileJun": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileJul": "Jul",
+  "@profileJul": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileAug": "Aug",
+  "@profileAug": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileSep": "Sep",
+  "@profileSep": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileOct": "Oct",
+  "@profileOct": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileNov": "Nov",
+  "@profileNov": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileDec": "Dec",
+  "@profileDec": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileGuest": "Guest",
+  "@profileGuest": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileMember": "Member",
+  "@profileMember": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileMemberSince": "Member since {value} {value2}",
+  "@profileMemberSince": {
+    "description": "features/profile/presentation/screens/profile_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileCoins": "Coins",
+  "@profileCoins": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileGetCoins": "Get coins",
+  "@profileGetCoins": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profilePlayed": "Played",
+  "@profilePlayed": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileWon": "Won",
+  "@profileWon": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileWinRate": "Win rate",
+  "@profileWinRate": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileRanks": "Ranks",
+  "@profileRanks": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileUnrated": "Unrated",
+  "@profileUnrated": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profilePlayOnline": "Play online",
+  "@profilePlayOnline": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileClassic": "Classic",
+  "@profileClassic": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileNoAura": "No aura",
+  "@profileNoAura": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileNoGamesYetYourFirst": "No games yet. Your first win will show up here.",
+  "@profileNoGamesYetYourFirst": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileDraw": "Draw",
+  "@profileDraw": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileLost": "Lost",
+  "@profileLost": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileChip": "Chip",
+  "@profileChip": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "profileYourCompanionInEveryWorld": "Your companion in every world. Drag Chip to give it a spin.",
+  "@profileYourCompanionInEveryWorld": {
+    "description": "features/profile/presentation/screens/profile_screen.dart"
+  },
+  "reportBugSomethingBroke": "Something broke",
+  "@reportBugSomethingBroke": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugGameplay": "Gameplay",
+  "@reportBugGameplay": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugPurchases": "Purchases",
+  "@reportBugPurchases": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugAccount": "Account",
+  "@reportBugAccount": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugTellUsALittleMore": "Tell us a little more (at least a few words).",
+  "@reportBugTellUsALittleMore": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugYouVeSentALot": "You've sent a lot of reports. Try again in a little while.",
+  "@reportBugYouVeSentALot": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugCouldnTSendThatCheck": "Couldn't send that. Check your connection and try again.",
+  "@reportBugCouldnTSendThatCheck": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugSuggestAFeature": "Suggest a feature",
+  "@reportBugSuggestAFeature": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugReportABug": "Report a bug",
+  "@reportBugReportABug": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugThankYou": "Thank you!",
+  "@reportBugThankYou": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugWeReadEveryIdeaCheck": "We read every idea. Check back under Your reports to see what happens to it.",
+  "@reportBugWeReadEveryIdeaCheck": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugWeReadEveryReportCheck": "We read every report. Check back under Your reports to see when it’s fixed.",
+  "@reportBugWeReadEveryReportCheck": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugDone": "Done",
+  "@reportBugDone": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugGotAnIdeaForUtopia": "Got an idea for Utopia? Tell Chip what you’d love to see.",
+  "@reportBugGotAnIdeaForUtopia": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugSpottedSomethingOffTellChip": "Spotted something off? Tell Chip what happened and we’ll fix it.",
+  "@reportBugSpottedSomethingOffTellChip": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugWhatSItAbout": "What’s it about?",
+  "@reportBugWhatSItAbout": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugYourIdea": "Your idea",
+  "@reportBugYourIdea": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugWhatHappened": "What happened?",
+  "@reportBugWhatHappened": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugWhatWouldMakeUtopiaBetter": "What would make Utopia better for you?",
+  "@reportBugWhatWouldMakeUtopiaBetter": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugWhatWereYouDoingAnd": "What were you doing, and what went wrong?",
+  "@reportBugWhatWereYouDoingAnd": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugScreenshotOptional": "Screenshot (optional)",
+  "@reportBugScreenshotOptional": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugAddAScreenshot": "Add a screenshot",
+  "@reportBugAddAScreenshot": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugRemove": "Remove",
+  "@reportBugRemove": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugEmailOptional": "Email (optional)",
+  "@reportBugEmailOptional": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugSoWeCanFollowUp": "So we can follow up",
+  "@reportBugSoWeCanFollowUp": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugSendIdea": "Send idea",
+  "@reportBugSendIdea": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugSendReport": "Send report",
+  "@reportBugSendReport": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugSentWithYourUsernameThe": "Sent with your username, the app version, your phone’s system and the screen you were on.",
+  "@reportBugSentWithYourUsernameThe": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugOnOurList": "On our list",
+  "@reportBugOnOurList": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugAdded": "Added",
+  "@reportBugAdded": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugFixed": "Fixed",
+  "@reportBugFixed": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugNotPlanned": "Not planned",
+  "@reportBugNotPlanned": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugSent": "Sent",
+  "@reportBugSent": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "reportBugYourReports": "Your reports",
+  "@reportBugYourReports": {
+    "description": "features/support/presentation/report_bug_screen.dart"
+  },
+  "collectionCollection": "Collection",
+  "@collectionCollection": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionWorlds": "Worlds",
+  "@collectionWorlds": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionFrames": "Frames",
+  "@collectionFrames": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionLudo": "Ludo",
+  "@collectionLudo": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionChess": "Chess",
+  "@collectionChess": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionYourWorlds": "Your worlds",
+  "@collectionYourWorlds": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionTapOneToTravelThere": "Tap one to travel there. Chip takes you through a portal!",
+  "@collectionTapOneToTravelThere": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionYourColors": "Your colors",
+  "@collectionYourColors": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionUtopiaRecoloredAtDawnDusk": "Utopia recolored, at dawn, dusk or midnight.",
+  "@collectionUtopiaRecoloredAtDawnDusk": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionBackNextSeason": "Back next season",
+  "@collectionBackNextSeason": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionYoursForGoodTheyOpen": "Yours for good. They open again when their event's on.",
+  "@collectionYoursForGoodTheyOpen": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionFindMoreWorldsInThe": "Find more worlds in the store",
+  "@collectionFindMoreWorldsInThe": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionYouReHere": "You're here",
+  "@collectionYouReHere": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionBirthdayToday": "Birthday · today",
+  "@collectionBirthdayToday": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionOwned": "Owned",
+  "@collectionOwned": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionRented": "Rented · {value}",
+  "@collectionRented": {
+    "description": "features/collection/presentation/collection_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "collectionFree": "Free",
+  "@collectionFree": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionBackNext": "Back next {value}",
+  "@collectionBackNext": {
+    "description": "features/collection/presentation/collection_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "collectionOpensAgainNext": "{name} opens again next {value}.",
+  "@collectionOpensAgainNext": {
+    "description": "features/collection/presentation/collection_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "collectionYourFrames": "Your frames",
+  "@collectionYourFrames": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionYouDonTHaveA": "You don't have a frame right now.",
+  "@collectionYouDonTHaveA": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionWearOneAroundYourPicture": "Wear one around your picture, for everyone to see.",
+  "@collectionWearOneAroundYourPicture": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionYoursForGoodWearThem": "Yours for good. Wear them again when their event's on.",
+  "@collectionYoursForGoodWearThem": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionFindMoreFramesInThe": "Find more frames in the store",
+  "@collectionFindMoreFramesInThe": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionYouCanWearAgainNext": "You can wear {name} again next {value}.",
+  "@collectionYouCanWearAgainNext": {
+    "description": "features/collection/presentation/collection_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "collectionCouldnTChangeYourFrame": "Couldn't change your frame. Try again?",
+  "@collectionCouldnTChangeYourFrame": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionOutOfSeason": "Out of season",
+  "@collectionOutOfSeason": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionTakeOff": "Take off",
+  "@collectionTakeOff": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "collectionWear": "Wear",
+  "@collectionWear": {
+    "description": "features/collection/presentation/collection_screen.dart"
+  },
+  "privacyOctober202026": "October 20, 2026",
+  "@privacyOctober202026": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyWhatWeCollect": "What we collect",
+  "@privacyWhatWeCollect": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyYourProfileTheNameUsername": "Your profile. The name, username and picture you choose (a picture you upload is stored so other players can see it), the world, piece sets and aura you wear, and your coin balance.",
+  "@privacyYourProfileTheNameUsername": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyGamesTheGamesYouPlay": "Games. The games you play and their moves and results, your coin history (coins are virtual, have no cash value and can't be cashed out), and the items you own or rent. In Guess My Doodle, what you draw is shown live to the players in that game and kept only until the turn is over; a game's chat and guesses are deleted a day after it ends.",
+  "@privacyGamesTheGamesYouPlay": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyPurchasesIfYouBuyCoins": "Purchases. If you buy coins, Apple or Google take the payment, and we never see your card or bank details. We get the purchase's ID, the pack, when it was bought and whether it was refunded, so we can add your coins once and take them back if the payment is refunded. If you join Chip Maestro, Apple or Google handle the subscription; we keep its ID, plan and renewal dates so we know you're a member.",
+  "@privacyPurchasesIfYouBuyCoins": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyMessagesChatMessagesAndVoice": "Messages. Chat messages and voice notes you send in games and to friends. Voice notes are only available to the players in that game.",
+  "@privacyMessagesChatMessagesAndVoice": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyFriendsFriendRequestsAndYour": "Friends. Friend requests and your friends list.",
+  "@privacyFriendsFriendRequestsAndYour": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyReportsWhenYouReportA": "Reports. When you report a bug or suggest a feature: what you write, an optional screenshot, an optional email for follow-up, and the app version, phone system, screen and world you were in.",
+  "@privacyReportsWhenYouReportA": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyCrashReportsIfTheApp": "Crash reports. If the app crashes, a report of what went wrong (the error, your phone's model and system version, and the app version) goes to Sentry, which helps us fix it. It doesn't include your name, messages or anything you've made.",
+  "@privacyCrashReportsIfTheApp": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyHowYouUseUtopiaWhen": "How you use Utopia. When the app opens, the screens you go to, and when you finish a game, buy something, earn a reward, share an invite or chat with Chip (not what you say), so we can see what works and fix what doesn't. It stays in our own database: it's never sold or given to advertisers, and it's deleted with your account.",
+  "@privacyHowYouUseUtopiaWhen": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyChipWhenYouChatWith": "Chip. When you chat with Chip, your messages and some context from the app (your first name, the time, the screen and world you're on, and your coins, worlds and aura) are used to write his replies. Your conversation is kept on your phone until you start a new chat. Chip can also keep a few short notes about things you tell him, like a plan or a favourite world, so he can follow up next time; ask him to forget and he deletes them. If you send Chip a photo, it's used to draw your picture and isn't kept on our servers; it stays on your phone until you start a new chat, and a picture drawn from it is visible only to you. When Chip colors a picture for you, the picture is sent to him to choose the colors. A real portrait is drawn from your photo or the name you give. One from your photo is kept privately for you; one of a famous person is shared with other Chip Maestro members who ask for them. If you let Chip see what you're playing in other apps, the title and artist of the song, video or podcast are used for his reaction to it.",
+  "@privacyChipWhenYouChatWith": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyYourSketchbookDrawingsAreKept": "Your Sketchbook drawings are kept only on your phone, unless you choose to save one to your photos.",
+  "@privacyYourSketchbookDrawingsAreKept": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyPermissionsOnYourPhone": "Permissions on your phone",
+  "@privacyPermissionsOnYourPhone": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyPhotosToPickAProfile": "Photos: to pick a profile picture or a screenshot for a report, and to save your drawings to your photos when you ask.",
+  "@privacyPhotosToPickAProfile": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyNotificationsGameRemindersAndAlerts": "Notifications: game reminders and alerts, which you can turn off in Settings.",
+  "@privacyNotificationsGameRemindersAndAlerts": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyNotificationAccessAndroidOrApple": "Notification access (Android) or Apple Music (iPhone): optional, so Chip can see what's playing. You can turn it off any time in your phone's settings.",
+  "@privacyNotificationAccessAndroidOrApple": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyHowWeUseIt": "How we use it",
+  "@privacyHowWeUseIt": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyWhoWeShareItWith": "Who we share it with",
+  "@privacyWhoWeShareItWith": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacySupabaseHostsUtopiaSServers": "Supabase hosts Utopia's servers and stores the information above (in the European Union, Ireland).",
+  "@privacySupabaseHostsUtopiaSServers": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyResendDeliversTheSignIn": "Resend delivers the sign-in codes we email you.",
+  "@privacyResendDeliversTheSignIn": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacySentryReceivesCrashReportsTo": "Sentry receives crash reports, to help us fix what went wrong.",
+  "@privacySentryReceivesCrashReportsTo": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyAnthropicProcessesChipSChats": "Anthropic processes Chip's chats, the photos you send him and what's-playing details to write his replies and draw and color your pictures. It doesn't use them to train its models.",
+  "@privacyAnthropicProcessesChipSChats": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyGoogleDrawsRealPortraitsIt": "Google draws real portraits: it gets the photo or name for that portrait, under its paid API terms.",
+  "@privacyGoogleDrawsRealPortraitsIt": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyAppleAndGoogleRunThe": "Apple and Google run the app stores Utopia comes from, and take the payment when you buy coins.",
+  "@privacyAppleAndGoogleRunThe": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyWeMayAlsoShareInformation": "We may also share information if the law requires it, or to protect players and Utopia.",
+  "@privacyWeMayAlsoShareInformation": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyKeepingAndDeletingIt": "Keeping and deleting it",
+  "@privacyKeepingAndDeletingIt": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyChildren": "Children",
+  "@privacyChildren": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyChangesAndContact": "Changes and contact",
+  "@privacyChangesAndContact": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyPrivacyPolicy": "Privacy policy",
+  "@privacyPrivacyPolicy": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "privacyLastUpdated": "Last updated {updated}",
+  "@privacyLastUpdated": {
+    "description": "features/support/presentation/privacy_screen.dart",
+    "placeholders": {
+      "updated": {
+        "type": "Object"
+      }
+    }
+  },
+  "privacyUtopiaIsAGameApp": "Utopia is a game app for chess, checkers, Ludo and Guess My Doodle, with animated worlds and a mascot called Chip. This policy explains what information Utopia collects, why, who it's shared with, and the choices you have.",
+  "@privacyUtopiaIsAGameApp": {
+    "description": "features/support/presentation/privacy_screen.dart"
+  },
+  "maestroChipMaestro": "Chip Maestro",
+  "@maestroChipMaestro": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroYouReAChipMaestro": "You're a Chip Maestro. Chip is your artist.",
+  "@maestroYouReAChipMaestro": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroChipBecomesYourOwnArtist": "Chip becomes your own artist.",
+  "@maestroChipBecomesYourOwnArtist": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroRealPortraitsAMonthAnyone": "{kMaestroPortraitsPerMonth} real portraits a month: anyone, from a photo or a famous name, looking just like them",
+  "@maestroRealPortraitsAMonthAnyone": {
+    "description": "features/maestro/presentation/maestro_sheet.dart",
+    "placeholders": {
+      "kMaestroPortraitsPerMonth": {
+        "type": "Object"
+      }
+    }
+  },
+  "maestroColorWithChipAllDay": "Color with Chip all day long",
+  "@maestroColorWithChipAllDay": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestro10OfChipSOwn": "10 of Chip's own drawings a day instead of 4",
+  "@maestro10OfChipSOwn": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroChipSArtistLookAnd": "Chip's artist look, and the Maestro frame for your picture",
+  "@maestroChipSArtistLookAnd": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroComingSoon": "Coming soon",
+  "@maestroComingSoon": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroJoinChipMaestro": "Join Chip Maestro",
+  "@maestroJoinChipMaestro": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroJoinForAMonth": "Join for {price} a month",
+  "@maestroJoinForAMonth": {
+    "description": "features/maestro/presentation/maestro_sheet.dart",
+    "placeholders": {
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "maestroNotSureYetYourFirst": "Not sure yet? Your first real portrait is free.",
+  "@maestroNotSureYetYourFirst": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroRestorePurchases": "Restore purchases",
+  "@maestroRestorePurchases": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroRenewsEveryMonthUntilYou": "Renews every month until you cancel. Cancel any time in your {value} settings, at least a day before it renews.",
+  "@maestroRenewsEveryMonthUntilYou": {
+    "description": "features/maestro/presentation/maestro_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "maestroTermsOfUse": "Terms of Use",
+  "@maestroTermsOfUse": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroPrivacyPolicy": "Privacy Policy",
+  "@maestroPrivacyPolicy": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroFeb": "Feb",
+  "@maestroFeb": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroMar": "Mar",
+  "@maestroMar": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroApr": "Apr",
+  "@maestroApr": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroMay": "May",
+  "@maestroMay": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroJun": "Jun",
+  "@maestroJun": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroJul": "Jul",
+  "@maestroJul": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroAug": "Aug",
+  "@maestroAug": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroSep": "Sep",
+  "@maestroSep": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroOct": "Oct",
+  "@maestroOct": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroNov": "Nov",
+  "@maestroNov": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroDec": "Dec",
+  "@maestroDec": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroRealPortraitsLeftThisMonth": "{left} real portraits left this month",
+  "@maestroRealPortraitsLeftThisMonth": {
+    "description": "features/maestro/presentation/maestro_sheet.dart",
+    "placeholders": {
+      "left": {
+        "type": "Object"
+      }
+    }
+  },
+  "maestroRenewsOn": "Renews on {whenValue}",
+  "@maestroRenewsOn": {
+    "description": "features/maestro/presentation/maestro_sheet.dart",
+    "placeholders": {
+      "whenValue": {
+        "type": "Object"
+      }
+    }
+  },
+  "maestroEndsOn": "Ends on {whenValue}",
+  "@maestroEndsOn": {
+    "description": "features/maestro/presentation/maestro_sheet.dart",
+    "placeholders": {
+      "whenValue": {
+        "type": "Object"
+      }
+    }
+  },
+  "maestroManageYourPlan": "Manage your plan",
+  "@maestroManageYourPlan": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "sendCoinsSentCoinsTo": "Sent {value} coins to {name}",
+  "@sendCoinsSentCoinsTo": {
+    "description": "features/coins/presentation/send_coins_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendCoinsCouldnTSendThemTry": "Couldn't send them. Try again (it won't send twice).",
+  "@sendCoinsCouldnTSendThemTry": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsYouCanOnlySendCoins": "You can only send coins to friends.",
+  "@sendCoinsYouCanOnlySendCoins": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsHousePlayersCanTTake": "House players can't take gifts.",
+  "@sendCoinsHousePlayersCanTTake": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsChooseHowManyToSend": "Choose how many to send.",
+  "@sendCoinsChooseHowManyToSend": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsYouDonTHaveThat": "You don't have that many coins.",
+  "@sendCoinsYouDonTHaveThat": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsCoinsBoughtInTheLast": "Coins bought in the last two weeks can't be sent yet.",
+  "@sendCoinsCoinsBoughtInTheLast": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsSaveYourAccountToSend": "Save your account to send coins.",
+  "@sendCoinsSaveYourAccountToSend": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsSendingCoinsIsPausedRight": "Sending coins is paused right now. Try again later.",
+  "@sendCoinsSendingCoinsIsPausedRight": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsCouldnTSendThemTry2": "Couldn't send them. Try again.",
+  "@sendCoinsCouldnTSendThemTry2": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsBack": "Back",
+  "@sendCoinsBack": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsSendCoins": "Send coins",
+  "@sendCoinsSendCoins": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsSend": "Send {value}",
+  "@sendCoinsSend": {
+    "description": "features/coins/presentation/send_coins_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendCoinsCouldnTCheckWhatYou": "Couldn't check what you can send. Try again.",
+  "@sendCoinsCouldnTCheckWhatYou": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsTryAgain": "Try again",
+  "@sendCoinsTryAgain": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsEnterYourGiftPin": "Enter your gift PIN",
+  "@sendCoinsEnterYourGiftPin": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsGetsThemStraightAwayA": "{name} gets them straight away. A gift can’t be undone.",
+  "@sendCoinsGetsThemStraightAwayA": {
+    "description": "features/coins/presentation/send_coins_sheet.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendCoinsForgotPin": "Forgot PIN?",
+  "@sendCoinsForgotPin": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsChooseAGiftPin": "Choose a gift PIN",
+  "@sendCoinsChooseAGiftPin": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsGiftsNeedOneSoOnly": "Gifts need one, so only you can send your coins: 4 digits you'll enter each time.",
+  "@sendCoinsGiftsNeedOneSoOnly": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsSaveYourAccountToSend2": "Save your account to send coins to friends. It keeps your coins safe too.",
+  "@sendCoinsSaveYourAccountToSend2": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsSaveMyAccount": "Save my account",
+  "@sendCoinsSaveMyAccount": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsOther": "Other",
+  "@sendCoinsOther": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsYouDonTHaveCoins": "You don't have coins you can send right now.",
+  "@sendCoinsYouDonTHaveCoins": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsYouHaveYouCanSend": "You have {value} · you can send up to {value2}",
+  "@sendCoinsYouHaveYouCanSend": {
+    "description": "features/coins/presentation/send_coins_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendCoinsBoughtInTheLastDays": "{value} bought in the last {holdDays} days can be sent after that.",
+  "@sendCoinsBoughtInTheLastDays": {
+    "description": "features/coins/presentation/send_coins_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "holdDays": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendCoinsSendCoins2": "Send {value} coins",
+  "@sendCoinsSendCoins2": {
+    "description": "features/coins/presentation/send_coins_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendCoinsFriendsOnlyYourGiftPin": "Friends only · your gift PIN sends it",
+  "@sendCoinsFriendsOnlyYourGiftPin": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsFriendsOnlyYouLlChoose": "Friends only · you'll choose a gift PIN next",
+  "@sendCoinsFriendsOnlyYouLlChoose": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "welcomeWeekLastDayOfYourWelcome": "Last day of your welcome pass. Keep the things you love from the store.",
+  "@welcomeWeekLastDayOfYourWelcome": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekTue": "Tue",
+  "@welcomeWeekTue": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekWed": "Wed",
+  "@welcomeWeekWed": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekThu": "Thu",
+  "@welcomeWeekThu": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekFri": "Fri",
+  "@welcomeWeekFri": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekSat": "Sat",
+  "@welcomeWeekSat": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekFeb": "Feb",
+  "@welcomeWeekFeb": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekMar": "Mar",
+  "@welcomeWeekMar": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekApr": "Apr",
+  "@welcomeWeekApr": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekMay": "May",
+  "@welcomeWeekMay": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekJun": "Jun",
+  "@welcomeWeekJun": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekJul": "Jul",
+  "@welcomeWeekJul": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekAug": "Aug",
+  "@welcomeWeekAug": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekSep": "Sep",
+  "@welcomeWeekSep": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekOct": "Oct",
+  "@welcomeWeekOct": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekNov": "Nov",
+  "@welcomeWeekNov": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekDec": "Dec",
+  "@welcomeWeekDec": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekEverythingSYoursForDays": "Everything’s yours for {days} days",
+  "@welcomeWeekEverythingSYoursForDays": {
+    "description": "features/welcome/presentation/welcome_week.dart",
+    "placeholders": {
+      "days": {
+        "type": "Object"
+      }
+    }
+  },
+  "welcomeWeekEveryWorldFrameChessSet": "Every world, frame, chess set and piece set in Utopia is free to use for {days} days. Try them all, then keep the ones you love.",
+  "@welcomeWeekEveryWorldFrameChessSet": {
+    "description": "features/welcome/presentation/welcome_week.dart",
+    "placeholders": {
+      "days": {
+        "type": "Object"
+      }
+    }
+  },
+  "welcomeWeekFreeUntil": "Free until {value}",
+  "@welcomeWeekFreeUntil": {
+    "description": "features/welcome/presentation/welcome_week.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "welcomeWeekExploreEverything": "Explore everything",
+  "@welcomeWeekExploreEverything": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekMaybeLater": "Maybe later",
+  "@welcomeWeekMaybeLater": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekYourWelcomePassIsOver": "Your welcome pass is over",
+  "@welcomeWeekYourWelcomePassIsOver": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekHopeYouLovedItYour": "Hope you loved it. Your coins, and everything you bought or won, stay yours. Keep a favourite from the store any time: worlds can be rented from 1,200 coins.",
+  "@welcomeWeekHopeYouLovedItYour": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekSeeTheStore": "See the store",
+  "@welcomeWeekSeeTheStore": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "welcomeWeekNotNow": "Not now",
+  "@welcomeWeekNotNow": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "rankingsRankings": "Rankings",
+  "@rankingsRankings": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsHowRankingsWork": "How rankings work",
+  "@rankingsHowRankingsWork": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsTopPlayers": "Top players",
+  "@rankingsTopPlayers": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsPlayersTaggedHouseAreUtopia": "Players tagged House are Utopia's own: they keep the board busy until more players join, and never win prizes.",
+  "@rankingsPlayersTaggedHouseAreUtopia": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsRatingsComeFromOnlineGames": "Ratings come from online games. Pull down to refresh.",
+  "@rankingsRatingsComeFromOnlineGames": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsYourRating": "YOUR RATING",
+  "@rankingsYourRating": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsLastGames": "Last {length} games",
+  "@rankingsLastGames": {
+    "description": "features/rankings/presentation/rankings_screen.dart",
+    "placeholders": {
+      "length": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsWins": "Wins",
+  "@rankingsWins": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsLosses": "Losses",
+  "@rankingsLosses": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsDraws": "Draws",
+  "@rankingsDraws": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsBest": "Best",
+  "@rankingsBest": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsInsights": "Insights",
+  "@rankingsInsights": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsNotRankedYet": "Not ranked yet",
+  "@rankingsNotRankedYet": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsGettingPlaced": "Getting placed",
+  "@rankingsGettingPlaced": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsAmongFriends": "#{place} among friends",
+  "@rankingsAmongFriends": {
+    "description": "features/rankings/presentation/rankings_screen.dart",
+    "placeholders": {
+      "place": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsInUtopia": "#{place} in Utopia",
+  "@rankingsInUtopia": {
+    "description": "features/rankings/presentation/rankings_screen.dart",
+    "placeholders": {
+      "place": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsPlayOnlineGamesToGet": "Play {kGamesToRank} online games to get your place",
+  "@rankingsPlayOnlineGamesToGet": {
+    "description": "features/rankings/presentation/rankings_screen.dart",
+    "placeholders": {
+      "kGamesToRank": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsMoreToGetYourPlace": "{left} more {value} to get your place",
+  "@rankingsMoreToGetYourPlace": {
+    "description": "features/rankings/presentation/rankings_screen.dart",
+    "placeholders": {
+      "left": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsEveryone": "Everyone",
+  "@rankingsEveryone": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsFriends": "Friends",
+  "@rankingsFriends": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsNoneOfYourFriendsAre": "None of your friends are ranked yet",
+  "@rankingsNoneOfYourFriendsAre": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsThePodiumIsEmpty": "The podium is empty",
+  "@rankingsThePodiumIsEmpty": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsPlayPublicGamesToThe": "Play {kGamesToRank} public games to the end to get on the board. The top spot is waiting!",
+  "@rankingsPlayPublicGamesToThe": {
+    "description": "features/rankings/presentation/rankings_screen.dart",
+    "placeholders": {
+      "kGamesToRank": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsPlayOnlineGamesToGet2": "Play {kGamesToRank} online games to get on the board. The top spot is waiting!",
+  "@rankingsPlayOnlineGamesToGet2": {
+    "description": "features/rankings/presentation/rankings_screen.dart",
+    "placeholders": {
+      "kGamesToRank": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsPlayGuessMyDoodle": "Play Guess My Doodle",
+  "@rankingsPlayGuessMyDoodle": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsPlayOnline": "Play {value} online",
+  "@rankingsPlayOnline": {
+    "description": "features/rankings/presentation/rankings_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsCouldnTLoadTheRankings": "Couldn't load the rankings.",
+  "@rankingsCouldnTLoadTheRankings": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "rankingsTryAgain": "Try again",
+  "@rankingsTryAgain": {
+    "description": "features/rankings/presentation/rankings_screen.dart"
+  },
+  "friendsCouldnTSendTheRequest": "Couldn't send the request. Try again.",
+  "@friendsCouldnTSendTheRequest": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsFriends": "Friends",
+  "@friendsFriends": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsSearchByUsernameOrName": "Search by username or name",
+  "@friendsSearchByUsernameOrName": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsAll": "All",
+  "@friendsAll": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsFriends2": "Friends · {length}",
+  "@friendsFriends2": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart",
+    "placeholders": {
+      "length": {
+        "type": "Object"
+      }
+    }
+  },
+  "friendsRecents": "Recents",
+  "@friendsRecents": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsNoFriendsMatchThat": "No friends match that.",
+  "@friendsNoFriendsMatchThat": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsNoFriendsYetSearchFor": "No friends yet. Search for someone above.",
+  "@friendsNoFriendsYetSearchFor": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsPeopleYouVePlayedWho": "People you've played who aren't friends yet will show up here.",
+  "@friendsPeopleYouVePlayedWho": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsPlayAMatchOrSearch": "Play a match or search for a username to add your first friend.",
+  "@friendsPlayAMatchOrSearch": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsOnUtopia": "On Utopia",
+  "@friendsOnUtopia": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsNoOneByThatName": "No one by that name yet.",
+  "@friendsNoOneByThatName": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsWantsToBeFriends": "wants to be friends",
+  "@friendsWantsToBeFriends": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsSent": "Sent",
+  "@friendsSent": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsPlay": "Play",
+  "@friendsPlay": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsChallengeSent": "Challenge sent",
+  "@friendsChallengeSent": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsWaitingForToAnswerTake": "Waiting for {name} to answer. Take it back?",
+  "@friendsWaitingForToAnswerTake": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "friendsHasMinLeftToAnswer": "{name} has {left} min left to answer. Take it back?",
+  "@friendsHasMinLeftToAnswer": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "left": {
+        "type": "Object"
+      }
+    }
+  },
+  "friendsCancelChallenge": "Cancel challenge",
+  "@friendsCancelChallenge": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsKeepIt": "Keep it",
+  "@friendsKeepIt": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsChallengeSentToItLasts": "Challenge sent to {name}. It lasts 10 minutes.",
+  "@friendsChallengeSentToItLasts": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "friendsCouldnTSendTheChallenge": "Couldn't send the challenge. Try again.",
+  "@friendsCouldnTSendTheChallenge": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsSendCoins": "Send coins",
+  "@friendsSendCoins": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsGift": "Gift",
+  "@friendsGift": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsRequested": "Requested",
+  "@friendsRequested": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsAccept": "Accept",
+  "@friendsAccept": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "friendsAddFriend": "Add friend",
+  "@friendsAddFriend": {
+    "description": "features/friends/presentation/widgets/friends_popup.dart"
+  },
+  "rankingsThisWeek": "{value}{delta} this week",
+  "@rankingsThisWeek": {
+    "description": "features/rankings/presentation/rankings_widgets.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "delta": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsStart": "Start",
+  "@rankingsStart": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsYouReALegendThe": "You're a Legend. The very top!",
+  "@rankingsYouReALegendThe": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsMoreRatingToReach": "{value} more rating to reach {label}",
+  "@rankingsMoreRatingToReach": {
+    "description": "features/rankings/presentation/rankings_widgets.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "label": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsOpenSpot": "Open spot",
+  "@rankingsOpenSpot": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsYou": "You",
+  "@rankingsYou": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsGames": "{label} · {games} games",
+  "@rankingsGames": {
+    "description": "features/rankings/presentation/rankings_widgets.dart",
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      },
+      "games": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsHousePlayer": "House player",
+  "@rankingsHousePlayer": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsHouse": "House",
+  "@rankingsHouse": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsCouldnTSendTheRequest": "Couldn't send the request. Try again.",
+  "@rankingsCouldnTSendTheRequest": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsOneOfUtopiaSHouse": "One of Utopia's house players: they play free games when nobody's free, and keep the board busy while it's new. They never win prizes.",
+  "@rankingsOneOfUtopiaSHouse": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsRating": "Rating",
+  "@rankingsRating": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsPlace": "Place",
+  "@rankingsPlace": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsRatedGames": "Rated games",
+  "@rankingsRatedGames": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsRequestSent": "Request sent",
+  "@rankingsRequestSent": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsAcceptFriendRequest": "Accept friend request",
+  "@rankingsAcceptFriendRequest": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsAddFriend": "Add friend",
+  "@rankingsAddFriend": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsSeeMyStats": "See my stats",
+  "@rankingsSeeMyStats": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsSeeTheirStats": "See their stats",
+  "@rankingsSeeTheirStats": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "rankingsEveryoneStartsAt1000In": "Everyone starts at 1000 in chess, checkers and Guess My Doodle. Win an online game and your rating goes up; lose and it goes down. Beating someone rated higher earns more. After {kGamesToRank} games you get a place on the board.\n\nGuess My Doodle counts public games played to the end, ranking everyone by their final score.",
+  "@rankingsEveryoneStartsAt1000In": {
+    "description": "features/rankings/presentation/rankings_widgets.dart",
+    "placeholders": {
+      "kGamesToRank": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsAndUp": "{from} and up",
+  "@rankingsAndUp": {
+    "description": "features/rankings/presentation/rankings_widgets.dart",
+    "placeholders": {
+      "from": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankingsTheSameTwoPlayersCount": "The same two players count 3 games a day against each other.",
+  "@rankingsTheSameTwoPlayersCount": {
+    "description": "features/rankings/presentation/rankings_widgets.dart"
+  },
+  "eventAllDoneThisWeekNew": "All done this week. New quests on Monday.",
+  "@eventAllDoneThisWeekNew": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventYouEarnedEverythingYoursEvery": "You earned everything. Yours every {title}.",
+  "@eventYouEarnedEverythingYoursEvery": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "title": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventPlayMoreGame": "play {games} more game{value}",
+  "@eventPlayMoreGame": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "games": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventComeByOnMoreDay": "come by on {days} more day{value}",
+  "@eventComeByOnMoreDay": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "days": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventCoinsForPlayingNewEvery": "Coins for playing, new every Monday. {timeLeft}.",
+  "@eventCoinsForPlayingNewEvery": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "timeLeft": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventEarnTheseFreeByPlaying": "Earn these free by playing. They stay yours, and come back every {title}. {timeLeft}.",
+  "@eventEarnTheseFreeByPlaying": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "title": {
+        "type": "Object"
+      },
+      "timeLeft": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventEveryGameCountsOnlineWith": "Every game counts: online, with friends, or against Chip and Robo.",
+  "@eventEveryGameCountsOnlineWith": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventWorld": "World",
+  "@eventWorld": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventFrame": "Frame",
+  "@eventFrame": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventCoins": "Coins",
+  "@eventCoins": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventCollected": "Collected",
+  "@eventCollected": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventPlayGames": "Play {games} games",
+  "@eventPlayGames": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "games": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventComeByOnDays": "Come by on {days} days",
+  "@eventComeByOnDays": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "days": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventYouReHere": "You're here",
+  "@eventYouReHere": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventTravelThere": "Travel there",
+  "@eventTravelThere": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventWearingIt": "Wearing it",
+  "@eventWearingIt": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventWearIt": "Wear it",
+  "@eventWearIt": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventYouReWearing": "You're wearing {name}.",
+  "@eventYouReWearing": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventCouldnTPutItOn": "Couldn't put it on. Try again?",
+  "@eventCouldnTPutItOn": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventQuestComplete": "Quest complete!",
+  "@eventQuestComplete": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventUnlocked": "Unlocked!",
+  "@eventUnlocked": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventANewWorldYoursFor": "A new world, yours for good. It's open whenever its season is on.",
+  "@eventANewWorldYoursFor": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventANewFrameYoursFor": "A new frame, yours for good. You can wear it whenever its season is on.",
+  "@eventANewFrameYoursFor": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventAddedToYourCoinsKeep": "Added to your coins. Keep playing: there's more this week.",
+  "@eventAddedToYourCoinsKeep": {
+    "description": "features/events/presentation/event_widgets.dart"
+  },
+  "eventEvent": "{title} event · {timeLeft}",
+  "@eventEvent": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "title": {
+        "type": "Object"
+      },
+      "timeLeft": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventYouEarnedEnjoy": "You earned {value}. Enjoy!",
+  "@eventYouEarnedEnjoy": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "eventEarnFreeJustByPlaying": "Earn {value} free, just by playing.",
+  "@eventEarnFreeJustByPlaying": {
+    "description": "features/events/presentation/event_widgets.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "emailLinkEnterAValidEmailAddress": "Enter a valid email address.",
+  "@emailLinkEnterAValidEmailAddress": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkTooManyCodeRequestsWait": "Too many code requests. Wait a few minutes and try again.",
+  "@emailLinkTooManyCodeRequestsWait": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkWeCouldnTSendThat": "We couldn't send that email right now. Try again shortly.",
+  "@emailLinkWeCouldnTSendThat": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkCouldnTSendACode": "Couldn't send a code. Check the address and try again.",
+  "@emailLinkCouldnTSendACode": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkEnterTheCodeFromYour": "Enter the code from your email.",
+  "@emailLinkEnterTheCodeFromYour": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkThatCodeDidnTWork": "That code didn't work. Try again.",
+  "@emailLinkThatCodeDidnTWork": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkAccountSaved": "Account saved!",
+  "@emailLinkAccountSaved": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkYouReIn": "You're in!",
+  "@emailLinkYouReIn": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkCheckYourEmail": "Check your email",
+  "@emailLinkCheckYourEmail": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkSaveYourAccount": "Save your account",
+  "@emailLinkSaveYourAccount": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkWelcomeToUtopia": "Welcome to Utopia",
+  "@emailLinkWelcomeToUtopia": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkYourCoinsAndWorldsAre": "Your coins and worlds are safe on any phone now.",
+  "@emailLinkYourCoinsAndWorldsAre": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkSignedInAs": "Signed in as {trim}",
+  "@emailLinkSignedInAs": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart",
+    "placeholders": {
+      "trim": {
+        "type": "Object"
+      }
+    }
+  },
+  "emailLinkWeSentACodeTo": "We sent a code to {trim}",
+  "@emailLinkWeSentACodeTo": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart",
+    "placeholders": {
+      "trim": {
+        "type": "Object"
+      }
+    }
+  },
+  "emailLinkEnterYourEmailAndWe": "Enter your email and we'll send you a code.",
+  "@emailLinkEnterYourEmailAndWe": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkSendCode": "Send code",
+  "@emailLinkSendCode": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkVerify": "Verify",
+  "@emailLinkVerify": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkChangeEmail": "Change email",
+  "@emailLinkChangeEmail": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkResendInS": "Resend in {resendIn}s",
+  "@emailLinkResendInS": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart",
+    "placeholders": {
+      "resendIn": {
+        "type": "Object"
+      }
+    }
+  },
+  "emailLinkResend": "Resend",
+  "@emailLinkResend": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkNotThereItCanTake": "Not there? It can take a minute, or land in spam.",
+  "@emailLinkNotThereItCanTake": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkKeepYourCoinsWorldsAnd": "Keep your coins, worlds and friends",
+  "@emailLinkKeepYourCoinsWorldsAnd": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkPlayOnAnyPhoneOr": "Play on any phone, or in your browser",
+  "@emailLinkPlayOnAnyPhoneOr": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkNoPasswordWeEmailYou": "No password. We email you a code.",
+  "@emailLinkNoPasswordWeEmailYou": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "emailLinkOpeningThePortal": "Opening the portal",
+  "@emailLinkOpeningThePortal": {
+    "description": "features/auth/presentation/screens/email_link_screen.dart"
+  },
+  "utopiaToastYouDonTHaveEnough": "You don't have enough coins for that.",
+  "@utopiaToastYouDonTHaveEnough": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastCanTReachUtopiaRight": "Can't reach Utopia right now. Check your connection.",
+  "@utopiaToastCanTReachUtopiaRight": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastTooLateTheyAlreadyAnswered": "Too late: they already answered it.",
+  "@utopiaToastTooLateTheyAlreadyAnswered": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastThatChallengeRanOutThey": "That challenge ran out: they last 10 minutes. Challenge them back!",
+  "@utopiaToastThatChallengeRanOutThey": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastTheyVeSteppedAwaySo": "They've stepped away, so the game can't start yet. It waits till they're back (or it runs out).",
+  "@utopiaToastTheyVeSteppedAwaySo": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastThatRoomIsAlreadyFull": "That room is already full.",
+  "@utopiaToastThatRoomIsAlreadyFull": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastWeCouldnTFindA": "We couldn't find a room with that code.",
+  "@utopiaToastWeCouldnTFindA": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastThatGameHasAlreadyStarted": "That game has already started.",
+  "@utopiaToastThatGameHasAlreadyStarted": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastUse3To20Letters": "Use 3 to 20 letters, numbers or underscores.",
+  "@utopiaToastUse3To20Letters": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "utopiaToastThatNameIsTakenTry": "That name is taken. Try another.",
+  "@utopiaToastThatNameIsTakenTry": {
+    "description": "core/widgets/utopia_toast.dart"
+  },
+  "notificationCenterUtopia": "Utopia",
+  "@notificationCenterUtopia": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterWantsToBeFriends": "{name} wants to be friends",
+  "@notificationCenterWantsToBeFriends": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterAcceptAndYouCanChallenge": "Accept and you can challenge each other any time.",
+  "@notificationCenterAcceptAndYouCanChallenge": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterAcceptedYourRequest": "{name} accepted your request",
+  "@notificationCenterAcceptedYourRequest": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterYouReFriendsNowSend": "You're friends now. Send a challenge!",
+  "@notificationCenterYouReFriendsNowSend": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterChallengedYou": "{name} challenged you",
+  "@notificationCenterChallengedYou": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterItSSBirthday": "It's {name}'s birthday!",
+  "@notificationCenterItSSBirthday": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterWishThemAHappyBirthday": "Wish them a happy birthday.",
+  "@notificationCenterWishThemAHappyBirthday": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterSentYouCoins": "{name} sent you {value} coins",
+  "@notificationCenterSentYouCoins": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterAGiftTheyReIn": "A gift. They’re in your coins now.",
+  "@notificationCenterAGiftTheyReIn": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterYourIdeaIsInUtopia": "Your idea is in Utopia!",
+  "@notificationCenterYourIdeaIsInUtopia": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterYourReportIsFixed": "Your report is fixed!",
+  "@notificationCenterYourReportIsFixed": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterAboutYourIdea": "About your idea",
+  "@notificationCenterAboutYourIdea": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterAboutYourReport": "About your report",
+  "@notificationCenterAboutYourReport": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterThanksForTellingUs": "Thanks for telling us.",
+  "@notificationCenterThanksForTellingUs": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterWishedYouAHappyBirthday": "{name} wished you a happy birthday!",
+  "@notificationCenterWishedYouAHappyBirthday": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterHaveAWonderfulDay": "Have a wonderful day.",
+  "@notificationCenterHaveAWonderfulDay": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterSomeone": "Someone",
+  "@notificationCenterSomeone": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterPlay": "Play",
+  "@notificationCenterPlay": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterAccept": "Accept",
+  "@notificationCenterAccept": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "greetingFreshSkiesFreshGames": "Fresh skies, fresh games.",
+  "@greetingFreshSkiesFreshGames": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingCoffeeAndAQuickGame": "Coffee and a quick game?",
+  "@greetingCoffeeAndAQuickGame": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingTheEarlyBirdGetsThe": "The early bird gets the first roll.",
+  "@greetingTheEarlyBirdGetsThe": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingPerfectWeatherForAWin": "Perfect weather for a win.",
+  "@greetingPerfectWeatherForAWin": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingTheBoardIsSetYour": "The board is set. Your move.",
+  "@greetingTheBoardIsSetYour": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingTheSunIsHighOver": "The sun is high over Utopia.",
+  "@greetingTheSunIsHighOver": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingTimeForAQuickRound": "Time for a quick round?",
+  "@greetingTimeForAQuickRound": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingAGoodAfternoonForA": "A good afternoon for a long game.",
+  "@greetingAGoodAfternoonForA": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingWindDownWithAGame": "Wind down with a game or two.",
+  "@greetingWindDownWithAGame": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingTheSunsetLooksGreatFrom": "The sunset looks great from here.",
+  "@greetingTheSunsetLooksGreatFrom": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingOneMoreGameBeforeBed": "One more game before bed?",
+  "@greetingOneMoreGameBeforeBed": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingQuietNightLoudDice": "Quiet night. Loud dice.",
+  "@greetingQuietNightLoudDice": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingHelloNightOwl": "Hello, night owl",
+  "@greetingHelloNightOwl": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingTheMoonIsKeepingScore": "The moon is keeping score tonight.",
+  "@greetingTheMoonIsKeepingScore": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingJustOneMoreGameProbably": "Just one more game. Probably.",
+  "@greetingJustOneMoreGameProbably": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingMakeAWishMineIs": "Make a wish! Mine is that you win today.",
+  "@greetingMakeAWishMineIs": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingCakeFirstThenGamesBirthday": "Cake first, then games. Birthday rules.",
+  "@greetingCakeFirstThenGamesBirthday": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingEveryFireworkOutThereIs": "Every firework out there is for you.",
+  "@greetingEveryFireworkOutThereIs": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingYourBirthdayWorldIsOpen": "Your birthday world is open all day. Enjoy it!",
+  "@greetingYourBirthdayWorldIsOpen": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingAnotherTripAroundTheSun": "Another trip around the sun. Let's celebrate!",
+  "@greetingAnotherTripAroundTheSun": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingIPutMyPartyHat": "I put my party hat on just for you.",
+  "@greetingIPutMyPartyHat": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "greetingHeyThere": "Hey there",
+  "@greetingHeyThere": {
+    "description": "features/home/domain/greeting.dart"
+  },
+  "installUtopiaIsOnTheApp": "Utopia is on the App Store",
+  "@installUtopiaIsOnTheApp": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installUtopiaIsOnGooglePlay": "Utopia is on Google Play",
+  "@installUtopiaIsOnGooglePlay": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installGetTheAppForSound": "Get the app for sound in the background, notifications and more. Sign in with the same email and everything comes with you.",
+  "@installGetTheAppForSound": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installGetTheApp": "Get the app",
+  "@installGetTheApp": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installKeepPlayingHere": "Keep playing here",
+  "@installKeepPlayingHere": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installUtopiaIsOnYourHome": "Utopia is on your home screen now.",
+  "@installUtopiaIsOnYourHome": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installTapTheShareButtonIn": "Tap the Share button in Safari",
+  "@installTapTheShareButtonIn": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installChooseAddToHomeScreen": "Choose \"Add to Home Screen\"",
+  "@installChooseAddToHomeScreen": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installOpenUtopiaFromYourHome": "Open Utopia from your home screen",
+  "@installOpenUtopiaFromYourHome": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installInTheMenuBarOpen": "In the menu bar, open File",
+  "@installInTheMenuBarOpen": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installChooseAddToDock": "Choose \"Add to Dock\"",
+  "@installChooseAddToDock": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installOpenUtopiaFromYourDock": "Open Utopia from your Dock",
+  "@installOpenUtopiaFromYourDock": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installOpenYourBrowserSMenu": "Open your browser's menu",
+  "@installOpenYourBrowserSMenu": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installChooseInstallUtopia": "Choose \"Install Utopia\"",
+  "@installChooseInstallUtopia": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installOpenUtopiaLikeAnyApp": "Open Utopia like any app",
+  "@installOpenUtopiaLikeAnyApp": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installInstallUtopia": "Install Utopia",
+  "@installInstallUtopia": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installPlayFullScreenStraightFrom": "Play full screen, straight from your home screen, like any app. It's free and takes no space.",
+  "@installPlayFullScreenStraightFrom": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installInstall": "Install",
+  "@installInstall": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "installNotNow": "Not now",
+  "@installNotNow": {
+    "description": "features/install/presentation/install_sheet.dart"
+  },
+  "birthdayCouldnTChangeThatTry": "Couldn't change that. Try again?",
+  "@birthdayCouldnTChangeThatTry": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayYourBirthdaySLockedNow": "Your birthday's locked now. Report a bug if it's wrong and we'll fix it.",
+  "@birthdayYourBirthdaySLockedNow": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayCouldnTSaveThatTry": "Couldn't save that. Try again?",
+  "@birthdayCouldnTSaveThatTry": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdaySavedChipWillSeeYou": "Saved. Chip will see you on {label}.",
+  "@birthdaySavedChipWillSeeYou": {
+    "description": "features/birthday/presentation/birthday_screen.dart",
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      }
+    }
+  },
+  "birthdayItSADate": "It's a date!",
+  "@birthdayItSADate": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayWhenSYourBirthday": "When's your birthday?",
+  "@birthdayWhenSYourBirthday": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayChipThrowsYouAParty": "Chip throws you a party every year, in a world that only opens on your birthday.",
+  "@birthdayChipThrowsYouAParty": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayMonth": "Month",
+  "@birthdayMonth": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayDay": "Day",
+  "@birthdayDay": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayYourBirthdaySLockedIf": "Your birthday's locked. If it's wrong, report a bug and we'll fix it.",
+  "@birthdayYourBirthdaySLockedIf": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdaySaved": "Saved!",
+  "@birthdaySaved": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdaySaveMyBirthday": "Save my birthday",
+  "@birthdaySaveMyBirthday": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayJustTheDayAndMonth": "Just the day and month, never the year. Only you can see it.",
+  "@birthdayJustTheDayAndMonth": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdaySkipForNow": "Skip for now",
+  "@birthdaySkipForNow": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayPickAMonthAndA": "Pick a month and a day",
+  "@birthdayPickAMonthAndA": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayYourParty": "Your party: {label}",
+  "@birthdayYourParty": {
+    "description": "features/birthday/presentation/birthday_screen.dart",
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      }
+    }
+  },
+  "birthdayTellMyFriendsOnThe": "Tell my friends on the day",
+  "@birthdayTellMyFriendsOnThe": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "birthdayTheyCanSendYouA": "They can send you a birthday wish.",
+  "@birthdayTheyCanSendYouA": {
+    "description": "features/birthday/presentation/birthday_screen.dart"
+  },
+  "usernameSaved": "Saved",
+  "@usernameSaved": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameYouReNow": "You're {value} now",
+  "@usernameYouReNow": {
+    "description": "features/profile/presentation/username_dialog.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "usernameThatNameDidnTWork": "That name didn't work. Try another.",
+  "@usernameThatNameDidnTWork": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameYourName": "Your name",
+  "@usernameYourName": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameSave": "Save",
+  "@usernameSave": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameYou": "You",
+  "@usernameYou": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameNickname": "Nickname",
+  "@usernameNickname": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameWhatEveryoneSeesWriteIt": "What everyone sees. Write it any way you like: fancy letters, symbols and emoji are all fine.",
+  "@usernameWhatEveryoneSeesWriteIt": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameUsername": "Username",
+  "@usernameUsername": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameYoursAloneFriendsFindYou": "Yours alone. Friends find you with it.",
+  "@usernameYoursAloneFriendsFindYou": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "username3To20Long": "3 to 20 long",
+  "@username3To20Long": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameLettersNumbers": "Letters, numbers, _",
+  "@usernameLettersNumbers": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameYours": "Yours",
+  "@usernameYours": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameFree": "Free:",
+  "@usernameFree": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameSaving": "Saving...",
+  "@usernameSaving": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameAvailable": "Available",
+  "@usernameAvailable": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameTaken": "Taken",
+  "@usernameTaken": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "usernameChecking": "Checking",
+  "@usernameChecking": {
+    "description": "features/profile/presentation/username_dialog.dart"
+  },
+  "sideMenuCloseMenu": "Close menu",
+  "@sideMenuCloseMenu": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuPlayer": "Player",
+  "@sideMenuPlayer": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuProfile": "Profile",
+  "@sideMenuProfile": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuSketchbook": "Sketchbook",
+  "@sideMenuSketchbook": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuStore": "Store",
+  "@sideMenuStore": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuCollection": "Collection",
+  "@sideMenuCollection": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuRankings": "Rankings",
+  "@sideMenuRankings": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuNotifications": "Notifications",
+  "@sideMenuNotifications": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuFriends": "Friends",
+  "@sideMenuFriends": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuSettings": "Settings",
+  "@sideMenuSettings": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuHelpFeedback": "Help & feedback",
+  "@sideMenuHelpFeedback": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuSaveYourAccount": "Save your account",
+  "@sideMenuSaveYourAccount": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuSignOut": "Sign out",
+  "@sideMenuSignOut": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuSignOut2": "Sign out?",
+  "@sideMenuSignOut2": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuYouCanSignBackIn": "You can sign back in with your email any time.",
+  "@sideMenuYouCanSignBackIn": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuStay": "Stay",
+  "@sideMenuStay": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuGuest": "Guest",
+  "@sideMenuGuest": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuNoUsernameYet": "No username yet",
+  "@sideMenuNoUsernameYet": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "sideMenuUtopia10": "Utopia 1.0",
+  "@sideMenuUtopia10": {
+    "description": "features/home/presentation/widgets/side_menu.dart"
+  },
+  "localNotificationsFriendsAndChallenges": "Friends and challenges",
+  "@localNotificationsFriendsAndChallenges": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsFriendRequestsAndGameChallenges": "Friend requests and game challenges.",
+  "@localNotificationsFriendRequestsAndGameChallenges": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsReminders": "Reminders",
+  "@localNotificationsReminders": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsNowAndThenANudge": "Now and then, a nudge to come back and play.",
+  "@localNotificationsNowAndThenANudge": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsChipMissesYou": "Chip misses you",
+  "@localNotificationsChipMissesYou": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsOneQuickGameYourWorld": "One quick game? Your world is waiting.",
+  "@localNotificationsOneQuickGameYourWorld": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsGameTime": "Game time?",
+  "@localNotificationsGameTime": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsAChessGameTakesFive": "A chess game takes five minutes. Go on.",
+  "@localNotificationsAChessGameTakesFive": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsAnEmptySeat": "An empty seat",
+  "@localNotificationsAnEmptySeat": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsTheLudoTableIsWaiting": "The Ludo table is waiting for someone to roll a six.",
+  "@localNotificationsTheLudoTableIsWaiting": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsSomethingNewIsGlowing": "Something new is glowing",
+  "@localNotificationsSomethingNewIsGlowing": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsFreshAurasAreWaitingIn": "Fresh auras are waiting in the store.",
+  "@localNotificationsFreshAurasAreWaitingIn": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsRematch": "Rematch?",
+  "@localNotificationsRematch": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsYourFriendsAreATap": "Your friends are a tap away.",
+  "@localNotificationsYourFriendsAreATap": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsYourClockIsReady": "Your clock is ready",
+  "@localNotificationsYourClockIsReady": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsPickATimeAndFind": "Pick a time and find an opponent.",
+  "@localNotificationsPickATimeAndFind": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsRollTheDice": "Roll the dice",
+  "@localNotificationsRollTheDice": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsFancyARoundOfLudo": "Fancy a round of Ludo with friends?",
+  "@localNotificationsFancyARoundOfLudo": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsBackToUtopia": "Back to Utopia",
+  "@localNotificationsBackToUtopia": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "localNotificationsYourCoinsAreRightWhere": "Your coins are right where you left them.",
+  "@localNotificationsYourCoinsAreRightWhere": {
+    "description": "core/notifications/local_notifications.dart"
+  },
+  "notificationsNotifications": "Notifications",
+  "@notificationsNotifications": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsFriends": "Friends",
+  "@notificationsFriends": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsToday": "Today",
+  "@notificationsToday": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsEarlier": "Earlier",
+  "@notificationsEarlier": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsAccepted": "Accepted",
+  "@notificationsAccepted": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsDeclined": "Declined",
+  "@notificationsDeclined": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsTheirBirthdayIsOverCatch": "Their birthday is over. Catch them next year!",
+  "@notificationsTheirBirthdayIsOverCatch": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsCouldnTSendThatTry": "Couldn't send that. Try again?",
+  "@notificationsCouldnTSendThatTry": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsWished": "Wished!",
+  "@notificationsWished": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsUtopia": "Utopia",
+  "@notificationsUtopia": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsSomeone": "Someone",
+  "@notificationsSomeone": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsPlay": "Play",
+  "@notificationsPlay": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsAccept": "Accept",
+  "@notificationsAccept": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsWishHappyBirthday": "Wish happy birthday",
+  "@notificationsWishHappyBirthday": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsPlayAGame": "Play a game",
+  "@notificationsPlayAGame": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsAllQuiet": "All quiet",
+  "@notificationsAllQuiet": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsFriendRequestsAndChallengesWill": "Friend requests and challenges will show up here.",
+  "@notificationsFriendRequestsAndChallengesWill": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "nowPlayingClose": "Close",
+  "@nowPlayingClose": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingPrevious": "Previous",
+  "@nowPlayingPrevious": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingPause": "Pause",
+  "@nowPlayingPause": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingPlay": "Play",
+  "@nowPlayingPlay": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingNext": "Next",
+  "@nowPlayingNext": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingTapAnywhereToClose": "Tap anywhere to close",
+  "@nowPlayingTapAnywhereToClose": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingOohWhatSPlayingI": "Ooh, what's playing? I can hear it, but iPhone only shows me songs from Apple Music. Tell me what it is!",
+  "@nowPlayingOohWhatSPlayingI": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingOohWhatSPlayingLet": "Ooh, what's playing? Let me see your Apple Music and I'll show the song and the buttons here. Or just tell me what it is!",
+  "@nowPlayingOohWhatSPlayingLet": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingOohWhatSPlayingLet2": "Ooh, what's playing? Let me see it and I'll show the song, the cover and the buttons here. Or just tell me what it is!",
+  "@nowPlayingOohWhatSPlayingLet2": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingShowMyAppleMusic": "Show my Apple Music",
+  "@nowPlayingShowMyAppleMusic": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingAllow": "Allow",
+  "@nowPlayingAllow": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "nowPlayingTellChip": "Tell Chip",
+  "@nowPlayingTellChip": {
+    "description": "features/home/presentation/widgets/now_playing_widgets.dart"
+  },
+  "birthdayFebruary": "February",
+  "@birthdayFebruary": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayMarch": "March",
+  "@birthdayMarch": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayApril": "April",
+  "@birthdayApril": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayMay": "May",
+  "@birthdayMay": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayJune": "June",
+  "@birthdayJune": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayJuly": "July",
+  "@birthdayJuly": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayAugust": "August",
+  "@birthdayAugust": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdaySeptember": "September",
+  "@birthdaySeptember": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayOctober": "October",
+  "@birthdayOctober": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayNovember": "November",
+  "@birthdayNovember": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "birthdayDecember": "December",
+  "@birthdayDecember": {
+    "description": "features/birthday/domain/birthday.dart"
+  },
+  "soundControlsSound": "Sound",
+  "@soundControlsSound": {
+    "description": "core/audio/sound_controls.dart"
+  },
+  "soundControlsMusic": "Music",
+  "@soundControlsMusic": {
+    "description": "core/audio/sound_controls.dart"
+  },
+  "soundControlsDreamyLoopsInMenusUpbeat": "Dreamy loops in menus, upbeat in games",
+  "@soundControlsDreamyLoopsInMenusUpbeat": {
+    "description": "core/audio/sound_controls.dart"
+  },
+  "soundControlsSoundEffects": "Sound effects",
+  "@soundControlsSoundEffects": {
+    "description": "core/audio/sound_controls.dart"
+  },
+  "soundControlsDiceHopsCapturesAndReactions": "Dice, hops, captures and reactions",
+  "@soundControlsDiceHopsCapturesAndReactions": {
+    "description": "core/audio/sound_controls.dart"
+  },
+  "soundControlsVibration": "Vibration",
+  "@soundControlsVibration": {
+    "description": "core/audio/sound_controls.dart"
+  },
+  "soundControlsDiceCapturesYourTurn": "Dice, captures, your turn",
+  "@soundControlsDiceCapturesYourTurn": {
+    "description": "core/audio/sound_controls.dart"
+  },
+  "soundControlsSoundSettings": "Sound settings",
+  "@soundControlsSoundSettings": {
+    "description": "core/audio/sound_controls.dart"
+  },
+  "rankingCheckers": "Checkers",
+  "@rankingCheckers": {
+    "description": "features/rankings/domain/ranking.dart"
+  },
+  "rankingDoodle": "Doodle",
+  "@rankingDoodle": {
+    "description": "features/rankings/domain/ranking.dart"
+  },
+  "rankingChess": "Chess",
+  "@rankingChess": {
+    "description": "features/rankings/domain/ranking.dart"
+  },
+  "helpHelpFeedback": "Help & feedback",
+  "@helpHelpFeedback": {
+    "description": "features/help/presentation/help_sheet.dart"
+  },
+  "helpHowToPlay": "How to play",
+  "@helpHowToPlay": {
+    "description": "features/help/presentation/help_sheet.dart"
+  },
+  "helpTheRulesOfEveryGame": "The rules of every game",
+  "@helpTheRulesOfEveryGame": {
+    "description": "features/help/presentation/help_sheet.dart"
+  },
+  "helpReportABug": "Report a bug",
+  "@helpReportABug": {
+    "description": "features/help/presentation/help_sheet.dart"
+  },
+  "helpSomethingNotWorkingWeLl": "Something not working? We'll fix it",
+  "@helpSomethingNotWorkingWeLl": {
+    "description": "features/help/presentation/help_sheet.dart"
+  },
+  "helpSuggestAFeature": "Suggest a feature",
+  "@helpSuggestAFeature": {
+    "description": "features/help/presentation/help_sheet.dart"
+  },
+  "helpIdeasForGamesWorldsAnything": "Ideas for games, worlds, anything",
+  "@helpIdeasForGamesWorldsAnything": {
+    "description": "features/help/presentation/help_sheet.dart"
+  },
+  "authChoiceCouldnTStartAGuest": "Couldn't start a guest game. Try again.",
+  "@authChoiceCouldnTStartAGuest": {
+    "description": "features/auth/presentation/screens/auth_choice_screen.dart"
+  },
+  "authChoiceUtopia": "Utopia",
+  "@authChoiceUtopia": {
+    "description": "features/auth/presentation/screens/auth_choice_screen.dart"
+  },
+  "authChoiceGamesWithFriendsInA": "Games with friends,\nin a world that feels alive.",
+  "@authChoiceGamesWithFriendsInA": {
+    "description": "features/auth/presentation/screens/auth_choice_screen.dart"
+  },
+  "authChoicePlayNow": "Play now",
+  "@authChoicePlayNow": {
+    "description": "features/auth/presentation/screens/auth_choice_screen.dart"
+  },
+  "authChoiceLogInOrSignUp": "Log in or sign up",
+  "@authChoiceLogInOrSignUp": {
+    "description": "features/auth/presentation/screens/auth_choice_screen.dart"
+  },
+  "authChoiceNoAccountNeededSaveIt": "No account needed. Save it any time.",
+  "@authChoiceNoAccountNeededSaveIt": {
+    "description": "features/auth/presentation/screens/auth_choice_screen.dart"
+  },
+  "authChoicePrivacyPolicy": "Privacy Policy",
+  "@authChoicePrivacyPolicy": {
+    "description": "features/auth/presentation/screens/auth_choice_screen.dart"
+  },
+  "appDragonSetCompleteTheDragon": "Dragon set complete. The dragon flies free.",
+  "@appDragonSetCompleteTheDragon": {
+    "description": "app.dart"
+  },
+  "appHeavenSetCompleteTheGates": "Heaven set complete. The gates are open.",
+  "@appHeavenSetCompleteTheGates": {
+    "description": "app.dart"
+  },
+  "appHellSetCompleteChipGrew": "Hell set complete. Chip grew horns.",
+  "@appHellSetCompleteChipGrew": {
+    "description": "app.dart"
+  },
+  "appMusicSetCompleteChipIs": "Music set complete. Chip is on the decks.",
+  "@appMusicSetCompleteChipIs": {
+    "description": "app.dart"
+  },
+  "appHalloweenSetCompleteChipGot": "Halloween set complete. Chip got carved.",
+  "@appHalloweenSetCompleteChipGot": {
+    "description": "app.dart"
+  },
+  "appWinterSetCompleteChipWrapped": "Winter set complete. Chip wrapped up warm.",
+  "@appWinterSetCompleteChipWrapped": {
+    "description": "app.dart"
+  },
+  "appZombieSetCompleteChipGot": "Zombie set complete. Chip got bitten.",
+  "@appZombieSetCompleteChipGot": {
+    "description": "app.dart"
+  },
+  "dailyRewardCouldnTClaimItJust": "Couldn't claim it just now. Try again.",
+  "@dailyRewardCouldnTClaimItJust": {
+    "description": "features/coins/presentation/daily_reward_sheet.dart"
+  },
+  "dailyRewardDailyReward": "Daily reward",
+  "@dailyRewardDailyReward": {
+    "description": "features/coins/presentation/daily_reward_sheet.dart"
+  },
+  "dailyRewardComeBackEveryDayThe": "Come back every day: the reward grows with your streak.",
+  "@dailyRewardComeBackEveryDayThe": {
+    "description": "features/coins/presentation/daily_reward_sheet.dart"
+  },
+  "dailyRewardDayInARowKeep": "Day {streak} in a row. Keep it going!",
+  "@dailyRewardDayInARowKeep": {
+    "description": "features/coins/presentation/daily_reward_sheet.dart",
+    "placeholders": {
+      "streak": {
+        "type": "Object"
+      }
+    }
+  },
+  "dailyRewardClaimCoins": "Claim {value} coins",
+  "@dailyRewardClaimCoins": {
+    "description": "features/coins/presentation/daily_reward_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "namesThatNameDidnTWork": "That name didn't work. Try another.",
+  "@namesThatNameDidnTWork": {
+    "description": "features/profile/presentation/screens/names_screen.dart"
+  },
+  "namesWhatShouldWeCallYou": "What should we call you?",
+  "@namesWhatShouldWeCallYou": {
+    "description": "features/profile/presentation/screens/names_screen.dart"
+  },
+  "namesYourNicknameIsWhatEveryone": "Your nickname is what everyone sees: write it any way you like. Your username is how friends find you.",
+  "@namesYourNicknameIsWhatEveryone": {
+    "description": "features/profile/presentation/screens/names_screen.dart"
+  },
+  "namesContinue": "Continue",
+  "@namesContinue": {
+    "description": "features/profile/presentation/screens/names_screen.dart"
+  },
+  "nicknameRulesHiddenOrTextFlippingCharacters": "Hidden or text-flipping characters can't be used.",
+  "@nicknameRulesHiddenOrTextFlippingCharacters": {
+    "description": "features/profile/domain/nickname_rules.dart"
+  },
+  "nicknameRulesAtMost3MarksOn": "At most 3 marks on one letter.",
+  "@nicknameRulesAtMost3MarksOn": {
+    "description": "features/profile/domain/nickname_rules.dart"
+  },
+  "nicknameRulesUseAtLeast2Characters": "Use at least 2 characters you can see.",
+  "@nicknameRulesUseAtLeast2Characters": {
+    "description": "features/profile/domain/nickname_rules.dart"
+  },
+  "nicknameRulesUpToCharacters": "Up to {max} characters.",
+  "@nicknameRulesUpToCharacters": {
+    "description": "features/profile/domain/nickname_rules.dart",
+    "placeholders": {
+      "max": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationActionsSomeone": "Someone",
+  "@notificationActionsSomeone": {
+    "description": "features/notifications/presentation/notification_actions.dart"
+  },
+  "notificationActionsYouAndAreFriendsNow": "You and {value} are friends now",
+  "@notificationActionsYouAndAreFriendsNow": {
+    "description": "features/notifications/presentation/notification_actions.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationActionsThatRequestIsNoLonger": "That request is no longer open.",
+  "@notificationActionsThatRequestIsNoLonger": {
+    "description": "features/notifications/presentation/notification_actions.dart"
+  },
+  "notificationActionsThatChallengeIsNoLonger": "That challenge is no longer open.",
+  "@notificationActionsThatChallengeIsNoLonger": {
+    "description": "features/notifications/presentation/notification_actions.dart"
+  },
+  "roomEarsLetTheMusicWorldHear": "Let the Music world hear the room?",
+  "@roomEarsLetTheMusicWorldHear": {
+    "description": "features/music/presentation/room_ears.dart"
+  },
+  "roomEarsPlayMusicSingOrClap": "Play music, sing or clap, and the show dances to it: the lights, the lasers, the speakers and the crowd. It only listens for how loud it is and where the beat is. Nothing is recorded or sent anywhere. Turn it off any time in Settings.",
+  "@roomEarsPlayMusicSingOrClap": {
+    "description": "features/music/presentation/room_ears.dart"
+  },
+  "roomEarsTurnItOn": "Turn it on",
+  "@roomEarsTurnItOn": {
+    "description": "features/music/presentation/room_ears.dart"
+  },
+  "roomEarsNotNow": "Not now",
+  "@roomEarsNotNow": {
+    "description": "features/music/presentation/room_ears.dart"
+  },
+  "gameFanChess": "Chess",
+  "@gameFanChess": {
+    "description": "features/auth/presentation/widgets/game_fan.dart"
+  },
+  "gameFanLudo": "Ludo",
+  "@gameFanLudo": {
+    "description": "features/auth/presentation/widgets/game_fan.dart"
+  },
+  "gameFanCheckers": "Checkers",
+  "@gameFanCheckers": {
+    "description": "features/auth/presentation/widgets/game_fan.dart"
+  },
+  "gameFanDoodle": "Doodle",
+  "@gameFanDoodle": {
+    "description": "features/auth/presentation/widgets/game_fan.dart"
+  },
+  "joinInviteThatInviteLinkDoesnT": "That invite link doesn't work. Ask your friend for the code.",
+  "@joinInviteThatInviteLinkDoesnT": {
+    "description": "features/invites/presentation/join_invite_screen.dart"
+  },
+  "joinInviteJoining": "Joining {value}",
+  "@joinInviteJoining": {
+    "description": "features/invites/presentation/join_invite_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "joinInviteGoHome": "Go home",
+  "@joinInviteGoHome": {
+    "description": "features/invites/presentation/join_invite_screen.dart"
+  },
+  "inviteStakeChess": "Chess",
+  "@inviteStakeChess": {
+    "description": "features/friends/presentation/widgets/invite_stake_sheet.dart"
+  },
+  "inviteStakeCheckers": "Checkers",
+  "@inviteStakeCheckers": {
+    "description": "features/friends/presentation/widgets/invite_stake_sheet.dart"
+  },
+  "inviteStakeSendChallenge": "Send challenge",
+  "@inviteStakeSendChallenge": {
+    "description": "features/friends/presentation/widgets/invite_stake_sheet.dart"
+  },
+  "birthdayPartyHappyBirthday": "Happy birthday, {name}!",
+  "@birthdayPartyHappyBirthday": {
+    "description": "features/birthday/presentation/birthday_party.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "birthdayPartyYourOwnBirthdayWorldIs": "Your own birthday world is open all day, and you're wearing the Birthday Party frame. Only on your birthday, only for you.",
+  "@birthdayPartyYourOwnBirthdayWorldIs": {
+    "description": "features/birthday/presentation/birthday_party.dart"
+  },
+  "birthdayPartyLetSParty": "Let's party!",
+  "@birthdayPartyLetSParty": {
+    "description": "features/birthday/presentation/birthday_party.dart"
+  },
+  "webUpdateBannerANewVersionOfUtopia": "A new version of Utopia is ready.",
+  "@webUpdateBannerANewVersionOfUtopia": {
+    "description": "core/widgets/web_update_banner.dart"
+  },
+  "webUpdateBannerRefresh": "Refresh",
+  "@webUpdateBannerRefresh": {
+    "description": "core/widgets/web_update_banner.dart"
+  },
+  "webUpdateBannerLater": "Later",
+  "@webUpdateBannerLater": {
+    "description": "core/widgets/web_update_banner.dart"
+  },
+  "entrySelectorFree": "Free",
+  "@entrySelectorFree": {
+    "description": "core/widgets/entry_selector.dart"
+  },
+  "entrySelectorJustForFun": "Just for fun",
+  "@entrySelectorJustForFun": {
+    "description": "core/widgets/entry_selector.dart"
+  },
+  "entrySelectorWinnerGets": "Winner gets ",
+  "@entrySelectorWinnerGets": {
+    "description": "core/widgets/entry_selector.dart"
+  },
+  "answerButtonsDecline": "Decline",
+  "@answerButtonsDecline": {
+    "description": "features/notifications/presentation/answer_buttons.dart"
+  },
+  "onlineBubbleOnline": "Online",
+  "@onlineBubbleOnline": {
+    "description": "features/friends/presentation/widgets/online_bubble.dart"
+  },
+  "onlineBubbleOffline": "Offline",
+  "@onlineBubbleOffline": {
+    "description": "features/friends/presentation/widgets/online_bubble.dart"
+  },
+  "gameEventLastDay": "Last day",
+  "@gameEventLastDay": {
+    "description": "features/events/domain/game_event.dart"
+  },
+  "gameEventDayLeft": "{days} day{value} left",
+  "@gameEventDayLeft": {
+    "description": "features/events/domain/game_event.dart",
+    "placeholders": {
+      "days": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "quietLobbyOfferItSQuietRightNow": "It's quiet right now",
+  "@quietLobbyOfferItSQuietRightNow": {
+    "description": "core/widgets/quiet_lobby_offer.dart"
+  },
+  "quietLobbyOfferWeLlKeepLookingOr": "We'll keep looking. Or play a free game offline while more players come online.",
+  "@quietLobbyOfferWeLlKeepLookingOr": {
+    "description": "core/widgets/quiet_lobby_offer.dart"
+  },
+  "bouncyClose": "Close",
+  "@bouncyClose": {
+    "description": "core/widgets/bouncy_dialog.dart"
+  },
+  "profilePlayer": "Player {tag}",
+  "@profilePlayer": {
+    "description": "core/profiles/profile_repository.dart",
+    "placeholders": {
+      "tag": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationBellNotifications": "Notifications",
+  "@notificationBellNotifications": {
+    "description": "features/notifications/presentation/notification_bell.dart"
+  },
+  "friendIconButtonFriends": "Friends",
+  "@friendIconButtonFriends": {
+    "description": "features/friends/presentation/widgets/friend_icon_button.dart"
+  },
+  "splashUtopia": "Utopia",
+  "@splashUtopia": {
+    "description": "features/auth/presentation/screens/splash_screen.dart"
+  },
+  "shareInviteInviteCopiedPasteItTo": "Invite copied. Paste it to a friend.",
+  "@shareInviteInviteCopiedPasteItTo": {
+    "description": "core/widgets/share_invite.dart"
+  },
+  "coinBalancePillCoinsTapToGetMore": "Coins. Tap to get more.",
+  "@coinBalancePillCoinsTapToGetMore": {
+    "description": "core/widgets/coin_balance_pill.dart"
   }
 }

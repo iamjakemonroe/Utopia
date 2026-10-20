@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import 'coin_buddy.dart';
 import 'pop_card.dart';
 import 'primary_button.dart';
+import '../../l10n/strings.dart';
 
 /// How long a search for players runs before an offline game is offered.
 const kQuietLobbyAfter = Duration(seconds: 20);
@@ -82,13 +83,12 @@ class _QuietLobbyOfferState extends State<QuietLobbyOffer> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "It's quiet right now",
+                                strings.quietLobbyOfferItSQuietRightNow,
                                 style: AppTextStyles.display(fontSize: 17),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                "We'll keep looking. Or play a free game "
-                                'offline while more players come online.',
+                                strings.quietLobbyOfferWeLlKeepLookingOr,
                                 style: AppTextStyles.body(
                                   fontSize: 13,
                                   color: AppColors.textSecondary,

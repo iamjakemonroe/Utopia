@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../l10n/strings.dart';
 
 /// Decline and Accept (or Play) side by side, always the same height so they
 /// line up. [compact] makes small pills that sit at the end of a row;
@@ -28,7 +29,7 @@ class AnswerButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = compact ? 34.0 : 40.0;
     final decline = _AnswerButton(
-      label: 'Decline',
+      label: strings.answerButtonsDecline,
 
       height: height,
       compact: compact,

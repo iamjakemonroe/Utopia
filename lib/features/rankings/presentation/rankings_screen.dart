@@ -23,6 +23,7 @@ import '../domain/ranking.dart';
 import 'hologram/rank_hologram.dart';
 import 'rankings_widgets.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../l10n/strings.dart';
 
 /// The chess, checkers and Guess My Doodle boards. At the top, the player: their tier badge,
 /// rating (and how it's moved this week), their rating line and record,
@@ -46,10 +47,10 @@ class _RankingsScreenState extends State<RankingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rankings'),
+        title: Text(strings.rankingsRankings),
         actions: [
           IconButton(
-            tooltip: 'How rankings work',
+            tooltip: strings.rankingsHowRankingsWork,
             icon: const Icon(Icons.info_outline_rounded),
             onPressed: () => showTierGuide(context),
           ),
@@ -188,7 +189,7 @@ class _BoardState extends ConsumerState<_Board> {
                   runSpacing: AppSpacing.sm,
                   children: [
                     Text(
-                      'Top players',
+                      strings.rankingsTopPlayers,
                       style: AppTextStyles.display(fontSize: 20),
                     ),
                     if (!isGuest)
@@ -229,9 +230,7 @@ class _BoardState extends ConsumerState<_Board> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
-                      "Players tagged House are Utopia's own: they keep the "
-                      'board busy until more players join, and never win '
-                      'prizes.',
+                      strings.rankingsPlayersTaggedHouseAreUtopia,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body(
                         fontSize: 12,
@@ -240,7 +239,7 @@ class _BoardState extends ConsumerState<_Board> {
                     ),
                   ),
                 Text(
-                  'Ratings come from online games. Pull down to refresh.',
+                  strings.rankingsRatingsComeFromOnlineGames,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(
                     fontSize: 12,
@@ -447,7 +446,7 @@ class _MyRankCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              'YOUR RATING',
+                              strings.rankingsYourRating,
                               style: AppTextStyles.body(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
@@ -481,7 +480,7 @@ class _MyRankCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Last ${history.length} games',
+                    strings.rankingsLastGames(history.length),
                     style: AppTextStyles.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -503,10 +502,22 @@ class _MyRankCard extends StatelessWidget {
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
-                  _MiniStat('${r.wins}', 'Wins', AppColors.success),
-                  _MiniStat('${r.losses}', 'Losses', AppColors.error),
-                  _MiniStat('${r.draws}', 'Draws', AppColors.sky),
-                  _MiniStat('${r.best}', 'Best', AppColors.coinGold),
+                  _MiniStat(
+                    '${r.wins}',
+                    strings.rankingsWins,
+                    AppColors.success,
+                  ),
+                  _MiniStat(
+                    '${r.losses}',
+                    strings.rankingsLosses,
+                    AppColors.error,
+                  ),
+                  _MiniStat('${r.draws}', strings.rankingsDraws, AppColors.sky),
+                  _MiniStat(
+                    '${r.best}',
+                    strings.rankingsBest,
+                    AppColors.coinGold,
+                  ),
                 ],
               ),
             ],
@@ -542,7 +553,7 @@ class _InsightsHint extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            'Insights',
+            strings.rankingsInsights,
             style: AppTextStyles.body(
               fontSize: 11.5,
               fontWeight: FontWeight.w800,
@@ -567,7 +578,9 @@ class _Where extends StatelessWidget {
     final style = AppTextStyles.body(fontWeight: FontWeight.w800);
     if (place == null) {
       return Text(
-        board.myGames == 0 ? 'Not ranked yet' : 'Getting placed',
+        board.myGames == 0
+            ? strings.rankingsNotRankedYet
+            : strings.rankingsGettingPlaced,
         style: style.copyWith(color: AppColors.textSecondary),
       );
     }
@@ -578,7 +591,9 @@ class _Where extends StatelessWidget {
           const SizedBox(width: 4),
         ],
         Text(
-          friends ? '#$place among friends' : '#$place in Utopia',
+          friends
+              ? strings.rankingsAmongFriends(place)
+              : strings.rankingsInUtopia(place),
           style: style,
         ),
       ],
@@ -627,8 +642,11 @@ class _Placement extends StatelessWidget {
           Expanded(
             child: Text(
               games == 0
-                  ? 'Play $kGamesToRank online games to get your place'
-                  : '$left more ${left == 1 ? 'game' : 'games'} to get your place',
+                  ? strings.rankingsPlayOnlineGamesToGet(kGamesToRank)
+                  : strings.rankingsMoreToGetYourPlace(
+                      left,
+                      left == 1 ? 'game' : 'games',
+                    ),
               style: AppTextStyles.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -758,8 +776,8 @@ class _ScopeSwitch extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          tab(false, Icons.public_rounded, 'Everyone'),
-          tab(true, Icons.people_rounded, 'Friends'),
+          tab(false, Icons.public_rounded, strings.rankingsEveryone),
+          tab(true, Icons.people_rounded, strings.rankingsFriends),
         ],
       ),
     );
@@ -793,26 +811,24 @@ class _NobodyYet extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               Text(
                 friends
-                    ? 'None of your friends are ranked yet'
-                    : 'The podium is empty',
+                    ? strings.rankingsNoneOfYourFriendsAre
+                    : strings.rankingsThePodiumIsEmpty,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.display(fontSize: 20),
               ),
               const SizedBox(height: 4),
               Text(
                 game == 'doodle'
-                    ? 'Play $kGamesToRank public games to the end to get on '
-                          'the board. The top spot is waiting!'
-                    : 'Play $kGamesToRank online games to get on the board. '
-                          'The top spot is waiting!',
+                    ? strings.rankingsPlayPublicGamesToThe(kGamesToRank)
+                    : strings.rankingsPlayOnlineGamesToGet2(kGamesToRank),
                 textAlign: TextAlign.center,
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
               const SizedBox(height: AppSpacing.md),
               PrimaryButton(
                 label: game == 'doodle'
-                    ? 'Play Guess My Doodle'
-                    : 'Play ${_gameName(game).toLowerCase()} online',
+                    ? strings.rankingsPlayGuessMyDoodle
+                    : strings.rankingsPlayOnline(_gameName(game).toLowerCase()),
                 color: AppColors.success,
                 onPressed: () => context.push(rankedGameRoute(game)),
               ),
@@ -838,10 +854,10 @@ class _LoadError extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "Couldn't load the rankings.",
+            strings.rankingsCouldnTLoadTheRankings,
             style: AppTextStyles.body(fontWeight: FontWeight.w800),
           ),
-          TextButton(onPressed: onRetry, child: const Text('Try again')),
+          TextButton(onPressed: onRetry, child: Text(strings.rankingsTryAgain)),
         ],
       ),
     );

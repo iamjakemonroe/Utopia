@@ -19,6 +19,7 @@ import '../../store/presentation/store_controller.dart';
 import '../../store/presentation/theme_teleport.dart';
 import '../data/birthday_repository.dart';
 import 'birthday_providers.dart';
+import '../../../l10n/strings.dart';
 
 String _returnAuraKey(String userId) => 'aura.returnTo.$userId';
 String _celebratedKey(String userId) => 'birthday.celebrated.$userId';
@@ -159,21 +160,19 @@ class _BirthdaySheet extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Happy birthday, $name!',
+                    strings.birthdayPartyHappyBirthday(name),
                     textAlign: TextAlign.center,
                     style: AppTextStyles.display(fontSize: 28),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Your own birthday world is open all day, and you're "
-                    'wearing the Birthday Party frame. Only on your '
-                    'birthday, only for you.',
+                    strings.birthdayPartyYourOwnBirthdayWorldIs,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.body(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   PrimaryButton(
-                    label: "Let's party!",
+                    label: strings.birthdayPartyLetSParty,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],

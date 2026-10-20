@@ -29,6 +29,7 @@ import '../../../core/audio/game_audio.dart';
 import '../../../core/bots/bots.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../l10n/strings.dart';
 
 /// The people in the notifications, [ids] joined by commas, fetched at
 /// once: each row asking for its own went to the server once a row, and
@@ -115,10 +116,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: const BackOrHomeButton(),
-          title: const Text('Notifications'),
+          title: Text(strings.notificationsNotifications),
           actions: [
             IconButton(
-              tooltip: 'Friends',
+              tooltip: strings.notificationsFriends,
               icon: const Icon(Icons.people_alt_rounded),
               onPressed: () => showFriendsPopup(context),
             ),
@@ -137,7 +138,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     ),
                     children: [
                       if (today.isNotEmpty) ...[
-                        const _Heading('Today'),
+                        _Heading(strings.notificationsToday),
                         for (final (i, n) in today.indexed)
                           _Row(
                             notification: n,
@@ -147,7 +148,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                           ),
                       ],
                       if (earlier.isNotEmpty) ...[
-                        const _Heading('Earlier'),
+                        _Heading(strings.notificationsEarlier),
                         for (final (i, n) in earlier.indexed)
                           _Row(
                             notification: n,
@@ -240,8 +241,10 @@ class _RowState extends ConsumerState<_Row> {
       _busy = false;
       if (ok) {
         _answered = accept
-            ? (n.kind == 'friend_request' ? 'Friends' : 'Accepted')
-            : 'Declined';
+            ? (n.kind == 'friend_request'
+                  ? strings.notificationsFriends
+                  : strings.notificationsAccepted)
+            : strings.notificationsDeclined;
       }
     });
   }
@@ -263,8 +266,8 @@ class _RowState extends ConsumerState<_Row> {
         showUtopiaToast(
           context,
           e.toString().contains('not their birthday')
-              ? 'Their birthday is over. Catch them next year!'
-              : "Couldn't send that. Try again?",
+              ? strings.notificationsTheirBirthdayIsOverCatch
+              : strings.notificationsCouldnTSendThatTry,
           kind: ToastKind.error,
         );
       }
@@ -272,7 +275,7 @@ class _RowState extends ConsumerState<_Row> {
     if (!mounted) return;
     setState(() {
       _busy = false;
-      if (ok) _answered = 'Wished!';
+      if (ok) _answered = strings.notificationsWished;
     });
   }
 
@@ -295,9 +298,9 @@ class _RowState extends ConsumerState<_Row> {
         ? null
         : widget.actor ?? _known(actor);
     final name = fromUtopia
-        ? 'Utopia'
+        ? strings.notificationsUtopia
         : actor == null
-        ? 'Someone'
+        ? strings.notificationsSomeone
         : profileDisplayName(profile, actor);
     final look = NotificationLook.of(n, name);
     final open = widget.open && _answered == null;
@@ -396,7 +399,9 @@ class _RowState extends ConsumerState<_Row> {
                   padding: const EdgeInsets.only(top: 10),
                   child: AnswerButtons(
                     busy: _busy,
-                    acceptLabel: n.kind == 'game_invite' ? 'Play' : 'Accept',
+                    acceptLabel: n.kind == 'game_invite'
+                        ? strings.notificationsPlay
+                        : strings.notificationsAccept,
                     onDecline: () => _answer(false),
                     onAccept: () => _answer(true),
                   ),
@@ -431,7 +436,7 @@ class _RowState extends ConsumerState<_Row> {
                       ),
                       onPressed: _busy ? null : _wish,
                       icon: const Icon(Icons.cake_rounded, size: 18),
-                      label: const Text('Wish happy birthday'),
+                      label: Text(strings.notificationsWishHappyBirthday),
                     ),
                   ),
                 )
@@ -443,7 +448,7 @@ class _RowState extends ConsumerState<_Row> {
                     child: TextButton.icon(
                       onPressed: () => context.push('/chess'),
                       icon: const Icon(Icons.extension_rounded, size: 18),
-                      label: const Text('Play a game'),
+                      label: Text(strings.notificationsPlayAGame),
                     ),
                   ),
                 ),
@@ -477,10 +482,13 @@ class _Empty extends StatelessWidget {
           children: [
             const CoinBuddy(mood: BuddyMood.idle, size: 96),
             const SizedBox(height: AppSpacing.md),
-            Text('All quiet', style: AppTextStyles.display(fontSize: 22)),
+            Text(
+              strings.notificationsAllQuiet,
+              style: AppTextStyles.display(fontSize: 22),
+            ),
             const SizedBox(height: 4),
             Text(
-              'Friend requests and challenges will show up here.',
+              strings.notificationsFriendRequestsAndChallengesWill,
               textAlign: TextAlign.center,
               style: AppTextStyles.body(color: AppColors.textSecondary),
             ),

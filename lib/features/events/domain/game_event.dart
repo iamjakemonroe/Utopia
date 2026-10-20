@@ -1,6 +1,7 @@
 import '../../../core/theme/utopia_themes.dart';
 import '../../../core/widgets/utopia_icons.dart' show formatCoins;
 import '../../auras/domain/aura.dart';
+import '../../../l10n/strings.dart';
 
 /// What an event gives: a world or a frame (kept for good, usable whenever
 /// its season comes round), or coins (a week's quests).
@@ -83,9 +84,9 @@ class GameEvent {
   /// "6 days left", "Last day".
   String get timeLeft {
     final left = endsAt.difference(DateTime.now());
-    if (left.inHours < 24) return 'Last day';
+    if (left.inHours < 24) return strings.gameEventLastDay;
     final days = left.inDays;
-    return '$days day${days == 1 ? '' : 's'} left';
+    return strings.gameEventDayLeft(days, days == 1 ? '' : 's');
   }
 
   static GameEvent fromJson(Map<String, dynamic> json) => GameEvent(

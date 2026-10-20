@@ -1,0 +1,25 @@
+# Files tool/l10n_extract.py leaves alone: what they hold isn't words people
+# read (settings, sprite and cache keys, Chip's prompts, fonts), or it's
+# drawn as part of a picture.
+lib/main.dart
+lib/core/config/
+lib/core/platform/device_key.dart
+lib/core/platform/bot_worker_native.dart
+lib/core/platform/keyboard.dart
+lib/core/platform/web_page.dart
+lib/core/platform/web_update.dart
+lib/core/chip/chip_brain.dart
+lib/core/widgets/winter_world.dart
+lib/core/widgets/halloween_world.dart
+lib/core/widgets/birthday_world.dart
+lib/core/widgets/doodle_world.dart
+lib/features/dev/
+lib/features/house/
+lib/l10n/
+lib/web_workers/
+lib/features/chess/domain/chess_position.dart
+lib/features/chess/domain/chess_engine.dart
+lib/features/doodle_studio/domain/svg_path.dart
+lib/core/platform/web_install_web.dart
+# Mostly what Chip is told about the player (his context), not what's shown.
+lib/features/chip/presentation/chip_chat_controller.dart

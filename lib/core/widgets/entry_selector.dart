@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import 'utopia_icons.dart';
+import '../../l10n/strings.dart';
 
 /// What the winner of a game with this [entry] and [players] receives: the
 /// whole pot (there's no house cut).
@@ -87,7 +88,9 @@ class EntrySelector extends StatelessWidget {
                           const CoinIcon(size: 22),
                         const SizedBox(height: 3),
                         Text(
-                          amount == 0 ? 'Free' : formatCoins(amount),
+                          amount == 0
+                              ? strings.entrySelectorFree
+                              : formatCoins(amount),
                           style: AppTextStyles.body(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
@@ -119,7 +122,7 @@ class EntrySelector extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Just for fun',
+                      strings.entrySelectorJustForFun,
                       style: AppTextStyles.body(
                         fontSize: 14,
                         color: AppColors.textSecondary,
@@ -132,7 +135,7 @@ class EntrySelector extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Winner gets ',
+                      strings.entrySelectorWinnerGets,
                       style: AppTextStyles.body(
                         fontSize: 14,
                         color: AppColors.textSecondary,

@@ -21,6 +21,7 @@ import '../../friends/presentation/providers/friends_providers.dart';
 import '../domain/ranking.dart';
 import 'hologram/rank_hologram.dart';
 import '../../../core/profiles/profile_providers.dart';
+import '../../../l10n/strings.dart';
 
 /// Medal colors for the top three.
 const kGoldMedal = AppColors.coinGold;
@@ -295,7 +296,7 @@ class TrendChip extends StatelessWidget {
           ),
           const SizedBox(width: 3),
           Text(
-            '${up ? '+' : ''}$delta this week',
+            strings.rankingsThisWeek(up ? '+' : '', delta),
             style: AppTextStyles.body(
               fontSize: 12,
               fontWeight: FontWeight.w800,
@@ -493,7 +494,7 @@ class TierLadder extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              t.from == 0 ? 'Start' : '${t.from}',
+                              t.from == 0 ? strings.rankingsStart : '${t.from}',
                               style: AppTextStyles.body(
                                 fontSize: 10,
                                 color: AppColors.textSecondary,
@@ -534,8 +535,11 @@ class TierLadder extends StatelessWidget {
           ),
           Text(
             next == null
-                ? "You're a Legend. The very top!"
-                : '${next.from - rating} more rating to reach ${next.label}',
+                ? strings.rankingsYouReALegendThe
+                : strings.rankingsMoreRatingToReach(
+                    next.from - rating,
+                    next.label,
+                  ),
             style: AppTextStyles.body(
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -617,9 +621,9 @@ class _Step extends StatelessWidget {
     final e = entry;
     final radius = place == 1 ? 34.0 : 27.0;
     final name = e == null
-        ? 'Open spot'
+        ? strings.rankingsOpenSpot
         : me
-        ? 'You'
+        ? strings.rankingsYou
         : profileDisplayName(e.profile, e.userId);
 
     return TweenAnimationBuilder<double>(
@@ -831,7 +835,9 @@ class BoardRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tier = RankTier.of(entry.rating);
-    final name = me ? 'You' : profileDisplayName(entry.profile, entry.userId);
+    final name = me
+        ? strings.rankingsYou
+        : profileDisplayName(entry.profile, entry.userId);
     final delay = math.min(index, 10) * 40;
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
@@ -899,7 +905,7 @@ class BoardRow extends StatelessWidget {
                         TierEmblem(tier: tier, size: 15),
                         const SizedBox(width: 4),
                         Text(
-                          '${tier.label} · ${entry.games} games',
+                          strings.rankingsGames(tier.label, entry.games),
                           style: AppTextStyles.body(
                             fontSize: 12,
                             color: AppColors.textSecondary,
@@ -952,7 +958,7 @@ class HouseTag extends StatelessWidget {
           ),
           const SizedBox(width: 3),
           Text(
-            big ? 'House player' : 'House',
+            big ? strings.rankingsHousePlayer : strings.rankingsHouse,
             style: AppTextStyles.body(
               fontSize: size,
               fontWeight: FontWeight.w800,
@@ -996,7 +1002,7 @@ class MeBar extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'You',
+              strings.rankingsYou,
               style: AppTextStyles.body(fontWeight: FontWeight.w800),
             ),
           ),
@@ -1072,7 +1078,7 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
       if (mounted) {
         showUtopiaToast(
           context,
-          "Couldn't send the request. Try again.",
+          strings.rankingsCouldnTSendTheRequest,
           kind: ToastKind.error,
         );
       }
@@ -1142,9 +1148,7 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
                     const HouseTag(big: true),
                     const SizedBox(height: 6),
                     Text(
-                      "One of Utopia's house players: they play free games "
-                      "when nobody's free, and keep the board busy while it's "
-                      "new. They never win prizes.",
+                      strings.rankingsOneOfUtopiaSHouse,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body(
                         fontSize: 12.5,
@@ -1170,9 +1174,9 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
                   const SizedBox(height: AppSpacing.md),
                   Row(
                     children: [
-                      stat('${e.rating}', 'Rating'),
-                      stat('#${e.place}', 'Place'),
-                      stat('${e.games}', 'Rated games'),
+                      stat('${e.rating}', strings.rankingsRating),
+                      stat('#${e.place}', strings.rankingsPlace),
+                      stat('${e.games}', strings.rankingsRatedGames),
                     ],
                   ),
                   if (status != null &&
@@ -1182,10 +1186,12 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
                     const SizedBox(height: AppSpacing.lg),
                     PrimaryButton(
                       label: switch (status) {
-                        FriendshipStatus.friends => 'Friends',
-                        FriendshipStatus.requested => 'Request sent',
-                        FriendshipStatus.incoming => 'Accept friend request',
-                        _ => 'Add friend',
+                        FriendshipStatus.friends => strings.rankingsFriends,
+                        FriendshipStatus.requested =>
+                          strings.rankingsRequestSent,
+                        FriendshipStatus.incoming =>
+                          strings.rankingsAcceptFriendRequest,
+                        _ => strings.rankingsAddFriend,
                       },
                       color: AppColors.success,
                       onPressed:
@@ -1204,7 +1210,9 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
                   top: -10,
                   right: -10,
                   child: IconButton(
-                    tooltip: self ? 'See my stats' : 'See their stats',
+                    tooltip: self
+                        ? strings.rankingsSeeMyStats
+                        : strings.rankingsSeeTheirStats,
                     onPressed: () => showRankHologram(
                       context,
                       game: widget.game,
@@ -1246,17 +1254,12 @@ Future<void> showTierGuide(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'How rankings work',
+                strings.rankingsHowRankingsWork,
                 style: AppTextStyles.display(fontSize: 22),
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                'Everyone starts at 1000 in chess, checkers and Guess My '
-                'Doodle. Win an online game and your rating goes up; lose '
-                'and it goes down. Beating someone rated higher earns more. '
-                'After $kGamesToRank games you get a place on the board.\n\n'
-                'Guess My Doodle counts public games played to the end, '
-                'ranking everyone by their final score.',
+                strings.rankingsEveryoneStartsAt1000In(kGamesToRank),
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -1280,7 +1283,7 @@ Future<void> showTierGuide(BuildContext context) {
                         switch (t.next) {
                           final n? =>
                             '${t.from == 0 ? 'Up' : t.from} to ${n.from - 1}',
-                          null => '${t.from} and up',
+                          null => strings.rankingsAndUp(t.from),
                         },
                         style: AppTextStyles.body(
                           fontWeight: FontWeight.w700,
@@ -1292,7 +1295,7 @@ Future<void> showTierGuide(BuildContext context) {
                 ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                'The same two players count 3 games a day against each other.',
+                strings.rankingsTheSameTwoPlayersCount,
                 style: AppTextStyles.body(
                   fontSize: 12,
                   color: AppColors.textSecondary,

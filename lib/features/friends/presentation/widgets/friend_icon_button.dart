@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/friends_providers.dart';
 import 'friends_popup.dart';
+import '../../../../l10n/strings.dart';
 
 /// The person-icon in the home app bar that opens the friends popup. Shows
 /// a small badge when there are pending incoming friend requests, so
@@ -27,7 +28,7 @@ class FriendIconButton extends ConsumerWidget {
       children: [
         IconButton(
           icon: const Icon(Icons.people_alt_outlined),
-          tooltip: 'Friends',
+          tooltip: strings.friendIconButtonFriends,
           onPressed: () => showFriendsPopup(context),
         ),
         if (pendingCount > 0)

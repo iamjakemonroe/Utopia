@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart' show StringCharacters;
+import '../../../l10n/strings.dart';
 
 /// What a nickname may be: anything a player likes to write (fancy
 /// letters, symbols, any script, emoji), 2 to 24 characters as a person
@@ -42,18 +43,18 @@ abstract final class NicknameRules {
     final n = tidy(name);
     if (n.isEmpty) return null;
     if (_hidden.hasMatch(n)) {
-      return "Hidden or text-flipping characters can't be used.";
+      return strings.nicknameRulesHiddenOrTextFlippingCharacters;
     }
-    if (_stacked.hasMatch(n)) return 'At most 3 marks on one letter.';
+    if (_stacked.hasMatch(n)) return strings.nicknameRulesAtMost3MarksOn;
     final seen = n.replaceAll(_unseen, '');
     if (seen.characters.length < 2) {
-      return 'Use at least 2 characters you can see.';
+      return strings.nicknameRulesUseAtLeast2Characters;
     }
     // (And, as the server counts: what each is built of.)
     if (n.characters.length > max ||
         seen.runes.length > 64 ||
         n.runes.length > 128) {
-      return 'Up to $max characters.';
+      return strings.nicknameRulesUpToCharacters(max);
     }
     return null;
   }

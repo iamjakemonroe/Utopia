@@ -26,6 +26,7 @@ import '../../store/presentation/store_screen.dart';
 import '../../store/presentation/theme_teleport.dart';
 import '../../../core/profiles/profile_repository.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../l10n/strings.dart';
 
 /// Everything the player has, apart from the store: their worlds (bought,
 /// rented, free, and event or birthday worlds while they're open), their
@@ -43,7 +44,7 @@ class CollectionScreen extends StatelessWidget {
       initialIndex: initialTab,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Collection'),
+          title: Text(strings.collectionCollection),
           bottom: TabBar(
             labelColor: AppColors.textPrimary,
             unselectedLabelColor: AppColors.textSecondary,
@@ -53,11 +54,23 @@ class CollectionScreen extends StatelessWidget {
               fontWeight: FontWeight.w800,
               fontSize: 14,
             ),
-            tabs: const [
-              Tab(icon: Icon(Icons.public_rounded), text: 'Worlds'),
-              Tab(icon: Icon(Icons.auto_awesome_rounded), text: 'Frames'),
-              Tab(icon: Icon(Icons.casino_rounded), text: 'Ludo'),
-              Tab(icon: Icon(Icons.extension_rounded), text: 'Chess'),
+            tabs: [
+              Tab(
+                icon: Icon(Icons.public_rounded),
+                text: strings.collectionWorlds,
+              ),
+              Tab(
+                icon: Icon(Icons.auto_awesome_rounded),
+                text: strings.collectionFrames,
+              ),
+              Tab(
+                icon: Icon(Icons.casino_rounded),
+                text: strings.collectionLudo,
+              ),
+              Tab(
+                icon: Icon(Icons.extension_rounded),
+                text: strings.collectionChess,
+              ),
             ],
           ),
         ),
@@ -117,9 +130,8 @@ class _WorldsTab extends ConsumerWidget {
       child: CustomScrollView(
         slivers: [
           _Header(
-            title: 'Your worlds',
-            subtitle:
-                'Tap one to travel there. Chip takes you through a portal!',
+            title: strings.collectionYourWorlds,
+            subtitle: strings.collectionTapOneToTravelThere,
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -135,9 +147,9 @@ class _WorldsTab extends ConsumerWidget {
             ),
           ),
           if (colors.isNotEmpty) ...[
-            const _Header(
-              title: 'Your colors',
-              subtitle: 'Utopia recolored, at dawn, dusk or midnight.',
+            _Header(
+              title: strings.collectionYourColors,
+              subtitle: strings.collectionUtopiaRecoloredAtDawnDusk,
             ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -154,10 +166,9 @@ class _WorldsTab extends ConsumerWidget {
             ),
           ],
           if (waiting.isNotEmpty) ...[
-            const _Header(
-              title: 'Back next season',
-              subtitle:
-                  "Yours for good. They open again when their event's on.",
+            _Header(
+              title: strings.collectionBackNextSeason,
+              subtitle: strings.collectionYoursForGoodTheyOpen,
             ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -177,8 +188,8 @@ class _WorldsTab extends ConsumerWidget {
               ),
             ),
           ],
-          const _MoreInStore(
-            text: 'Find more worlds in the store',
+          _MoreInStore(
+            text: strings.collectionFindMoreWorldsInThe,
             location: '/store?tab=worlds',
           ),
         ],
@@ -326,9 +337,9 @@ class _WorldCard extends ConsumerWidget {
     final asleep = hold == null;
     final until = store.rentedUntil(theme.id);
     final (label, icon) = switch (hold) {
-      _Hold.here => ("You're here", Icons.check_rounded),
+      _Hold.here => (strings.collectionYouReHere, Icons.check_rounded),
       _Hold.special when theme.id == UtopiaThemes.utopiaBirthday.id => (
-        'Birthday · today',
+        strings.collectionBirthdayToday,
         Icons.cake_rounded,
       ),
       _Hold.special => (
@@ -339,14 +350,14 @@ class _WorldCard extends ConsumerWidget {
         }} · ${auraTimeLeft(until!).replaceAll(' left', '')}',
         Icons.celebration_rounded,
       ),
-      _Hold.owned => ('Owned', Icons.verified_rounded),
+      _Hold.owned => (strings.collectionOwned, Icons.verified_rounded),
       _Hold.rented => (
-        'Rented · ${auraTimeLeft(until!).replaceAll(' left', '')}',
+        strings.collectionRented(auraTimeLeft(until!).replaceAll(' left', '')),
         Icons.timer_rounded,
       ),
-      _Hold.free => ('Free', Icons.favorite_rounded),
+      _Hold.free => (strings.collectionFree, Icons.favorite_rounded),
       null => (
-        'Back next ${season?.seasonName ?? 'season'}',
+        strings.collectionBackNext(season?.seasonName ?? 'season'),
         Icons.bedtime_rounded,
       ),
     };
@@ -355,7 +366,10 @@ class _WorldCard extends ConsumerWidget {
       if (asleep) {
         showUtopiaToast(
           context,
-          '${theme.name} opens again next ${season?.seasonName ?? 'season'}.',
+          strings.collectionOpensAgainNext(
+            theme.name,
+            season?.seasonName ?? 'season',
+          ),
           icon: Icons.bedtime_rounded,
         );
         return;
@@ -460,10 +474,10 @@ class _FramesTab extends ConsumerWidget {
     return CustomScrollView(
       slivers: [
         _Header(
-          title: 'Your frames',
+          title: strings.collectionYourFrames,
           subtitle: frames.isEmpty
-              ? "You don't have a frame right now."
-              : 'Wear one around your picture, for everyone to see.',
+              ? strings.collectionYouDonTHaveA
+              : strings.collectionWearOneAroundYourPicture,
         ),
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -485,9 +499,9 @@ class _FramesTab extends ConsumerWidget {
           ),
         ),
         if (waiting.isNotEmpty) ...[
-          const _Header(
-            title: 'Back next season',
-            subtitle: "Yours for good. Wear them again when their event's on.",
+          _Header(
+            title: strings.collectionBackNextSeason,
+            subtitle: strings.collectionYoursForGoodWearThem,
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -510,8 +524,8 @@ class _FramesTab extends ConsumerWidget {
             ),
           ),
         ],
-        const _MoreInStore(
-          text: 'Find more frames in the store',
+        _MoreInStore(
+          text: strings.collectionFindMoreFramesInThe,
           location: '/store?tab=auras',
         ),
       ],
@@ -549,7 +563,10 @@ class _FrameCardState extends ConsumerState<_FrameCard> {
     if (widget.season != null) {
       showUtopiaToast(
         context,
-        'You can wear ${widget.aura.name} again next ${widget.season!.seasonName}.',
+        strings.collectionYouCanWearAgainNext(
+          widget.aura.name,
+          widget.season!.seasonName,
+        ),
         icon: Icons.bedtime_rounded,
       );
       return;
@@ -566,7 +583,7 @@ class _FrameCardState extends ConsumerState<_FrameCard> {
       if (mounted) {
         showUtopiaToast(
           context,
-          "Couldn't change your frame. Try again?",
+          strings.collectionCouldnTChangeYourFrame,
           kind: ToastKind.error,
         );
       }
@@ -579,10 +596,10 @@ class _FrameCardState extends ConsumerState<_FrameCard> {
     final aura = widget.aura;
     final asleep = widget.season != null;
     final kind = aura.birthday
-        ? 'Birthday · today'
+        ? strings.collectionBirthdayToday
         : aura.season != null
         ? (asleep
-              ? 'Back next ${widget.season!.seasonName}'
+              ? strings.collectionBackNext(widget.season!.seasonName)
               : '${widget.season?.seasonName ?? 'Event'} · ${auraTimeLeft(widget.until!).replaceAll(' left', '')}')
         : widget.until != null
         ? auraTimeLeft(widget.until!)
@@ -632,10 +649,10 @@ class _FrameCardState extends ConsumerState<_FrameCard> {
                 onPressed: _busy ? null : _toggle,
                 child: Text(
                   asleep
-                      ? 'Out of season'
+                      ? strings.collectionOutOfSeason
                       : widget.wearing
-                      ? 'Take off'
-                      : 'Wear',
+                      ? strings.collectionTakeOff
+                      : strings.collectionWear,
                   style: AppTextStyles.body(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,

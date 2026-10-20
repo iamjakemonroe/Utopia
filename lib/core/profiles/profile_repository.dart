@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../l10n/strings.dart';
 
 /// The name everyone sees: the player's nickname (`display_name`, set with
 /// set_nickname; it can have spaces and needn't be unique), else their
@@ -17,7 +18,7 @@ String profileDisplayName(Map<String, dynamic>? profile, String userId) {
     return username[0].toUpperCase() + username.substring(1);
   }
   final tag = userId.length >= 4 ? userId.substring(0, 4) : userId;
-  return 'Player $tag';
+  return strings.profilePlayer(tag);
 }
 
 /// Read access to other users' public profile fields (id, display_name,

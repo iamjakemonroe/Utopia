@@ -1,4 +1,5 @@
 import 'dart:ui';
+import '../../../l10n/strings.dart';
 
 /// Players are ranked once they've played this many rated games.
 const kGamesToRank = 5;
@@ -9,9 +10,9 @@ const rankedGames = ['chess', 'checkers', 'doodle'];
 
 /// A ranked game's name.
 String rankedGameName(String game) => switch (game) {
-  'checkers' => 'Checkers',
-  'doodle' => 'Doodle',
-  _ => 'Chess',
+  'checkers' => strings.rankingCheckers,
+  'doodle' => strings.rankingDoodle,
+  _ => strings.rankingChess,
 };
 
 /// Where a ranked game is played online.

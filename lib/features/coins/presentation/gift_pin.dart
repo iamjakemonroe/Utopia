@@ -15,6 +15,7 @@ import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../data/coin_gift_repository.dart';
+import '../../../l10n/strings.dart';
 
 /// How many digits the codes Utopia emails have (supabase/config.toml,
 /// otp_length).
@@ -23,11 +24,11 @@ const kEmailCodeLength = 8;
 /// What's wrong with [pin] as a gift PIN, in plain words (the server
 /// checks the same): null when it'll do.
 String? giftPinProblem(String pin) {
-  if (!RegExp(r'^\d{4}$').hasMatch(pin)) return 'Four digits, please.';
+  if (!RegExp(r'^\d{4}$').hasMatch(pin)) return strings.giftPinFourDigitsPlease;
   if (RegExp(r'^(\d)\1{3}$').hasMatch(pin) ||
       '0123456789'.contains(pin) ||
       '9876543210'.contains(pin)) {
-    return "That one's too easy to guess. Try another.";
+    return strings.giftPinThatOneSTooEasy;
   }
   return null;
 }
@@ -35,27 +36,26 @@ String? giftPinProblem(String pin) {
 /// How long a lock has left, in words: "in 12 minutes".
 String lockedFor(DateTime until) {
   final minutes = until.difference(DateTime.now()).inSeconds / 60;
-  if (minutes <= 1) return 'in a minute';
-  return 'in ${minutes.ceil()} minutes';
+  if (minutes <= 1) return strings.giftPinInAMinute;
+  return strings.giftPinInMinutes(minutes.ceil());
 }
 
 /// What the server said about a PIN, in plain words.
 String giftPinWhy(GiftResult result) => switch (result.why) {
   'wrong_pin' => switch (result.triesLeft) {
-    1 => 'Wrong PIN. One more try before gifts lock for a while.',
-    final n? => 'Wrong PIN. $n tries left.',
-    _ => 'Wrong PIN.',
+    1 => strings.giftPinWrongPinOneMoreTry,
+    final n? => strings.giftPinWrongPinTriesLeft(n),
+    _ => strings.giftPinWrongPin,
   },
-  'locked' =>
-    'Too many wrong tries. Try again '
-        '${result.lockedUntil == null ? 'later' : lockedFor(result.lockedUntil!)}, '
-        'or reset your PIN.',
-  'weak' => "That one's too easy to guess. Try another.",
-  'format' => 'Four digits, please.',
-  'guest' => 'Save your account first: gifts are for accounts.',
-  'verify' => 'That took a while. Send yourself a new code.',
-  'no_pin' => 'Choose a gift PIN first.',
-  _ => "Couldn't do that. Try again.",
+  'locked' => strings.giftPinTooManyWrongTriesTry(
+    result.lockedUntil == null ? 'later' : lockedFor(result.lockedUntil!),
+  ),
+  'weak' => strings.giftPinThatOneSTooEasy,
+  'format' => strings.giftPinFourDigitsPlease,
+  'guest' => strings.giftPinSaveYourAccountFirstGifts,
+  'verify' => strings.giftPinThatTookAWhileSend,
+  'no_pin' => strings.giftPinChooseAGiftPinFirst,
+  _ => strings.giftPinCouldnTDoThatTry,
 };
 
 /// "j•••@gmail.com": enough to know which email, no more.
@@ -299,7 +299,7 @@ class _KeyState extends State<_Key> {
     final back = widget.label == '<';
     return Semantics(
       button: true,
-      label: back ? 'Delete' : widget.label,
+      label: back ? strings.giftPinDelete : widget.label,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: (_) => setState(() => _down = true),
@@ -442,12 +442,7 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
         _step = _Step.code;
       });
     } catch (e) {
-      _fail(
-        friendlyError(
-          e,
-          fallback: "Couldn't send the code. Try again in a minute.",
-        ),
-      );
+      _fail(friendlyError(e, fallback: strings.giftPinCouldnTSendTheCode));
     }
   }
 
@@ -464,7 +459,7 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
         _step = _Step.choose;
       });
     } catch (_) {
-      _fail("That code didn't work. Check it, or send a new one.");
+      _fail(strings.giftPinThatCodeDidnTWork);
     }
   }
 
@@ -477,7 +472,7 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
 
   Future<void> _confirm(String pin) async {
     if (pin != _chosen) {
-      return _fail("Those didn't match. Choose one again.", to: _Step.choose);
+      return _fail(strings.giftPinThoseDidnTMatchChoose, to: _Step.choose);
     }
     setState(() => _busy = true);
     try {
@@ -500,7 +495,7 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
         },
       );
     } catch (e) {
-      _fail(friendlyError(e, fallback: "Couldn't save it. Try again."));
+      _fail(friendlyError(e, fallback: strings.giftPinCouldnTSaveItTry));
     }
   }
 
@@ -527,17 +522,15 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
             ),
             const SizedBox(height: 10),
             Text(
-              'Forgot your PIN?',
+              strings.giftPinForgotYourPin,
               textAlign: TextAlign.center,
               style: AppTextStyles.display(fontSize: 21),
             ),
             const SizedBox(height: 6),
             Text(
               email == null
-                  ? 'Your account has no email for a code. Ask us through '
-                        'Report a bug and we\'ll help.'
-                  : "We'll email a code to ${maskEmail(email)} to check "
-                        "it's you. Then choose a new PIN.",
+                  ? strings.giftPinYourAccountHasNoEmail
+                  : strings.giftPinWeLlEmailACode(maskEmail(email)),
               textAlign: TextAlign.center,
               style: AppTextStyles.body(color: AppColors.textSecondary),
             ),
@@ -556,7 +549,7 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
             if (email != null) ...[
               const SizedBox(height: AppSpacing.md),
               PrimaryButton(
-                label: 'Email me a code',
+                label: strings.giftPinEmailMeACode,
                 isLoading: _busy,
                 onPressed: _busy ? null : _sendCode,
               ),
@@ -569,10 +562,11 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
             : _resendAt!.difference(DateTime.now()).inSeconds;
         return GiftPinPad(
           key: const ValueKey('code'),
-          title: 'Enter the code',
-          subtitle:
-              'The $kEmailCodeLength digits in "Your Utopia gift PIN code", '
-              'sent to ${maskEmail(_email ?? '')}',
+          title: strings.giftPinEnterTheCode,
+          subtitle: strings.giftPinTheDigitsInYourUtopia(
+            kEmailCodeLength,
+            maskEmail(_email ?? ''),
+          ),
           length: kEmailCodeLength,
           busy: _busy,
           error: _error,
@@ -581,15 +575,17 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
           extra: TextButton(
             onPressed: wait > 0 || _busy ? null : _sendCode,
             child: Text(
-              wait > 0 ? 'Send a new code in ${wait}s' : 'Send a new code',
+              wait > 0
+                  ? strings.giftPinSendANewCodeIn(wait)
+                  : strings.giftPinSendANewCode,
             ),
           ),
         );
       case _Step.current:
         return GiftPinPad(
           key: const ValueKey('current'),
-          title: 'Your current PIN',
-          subtitle: 'Then choose a new one',
+          title: strings.giftPinYourCurrentPin,
+          subtitle: strings.giftPinThenChooseANewOne,
           error: _error,
           errorCount: _errors,
           onDone: (pin) {
@@ -603,11 +599,9 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
           title:
               widget.firstTitle ??
               (widget.goal == GiftPinGoal.set
-                  ? 'Choose a gift PIN'
-                  : 'Choose a new PIN'),
-          subtitle:
-              widget.firstSubtitle ??
-              "4 digits you'll enter for every gift. Keep it to yourself.",
+                  ? strings.giftPinChooseAGiftPin
+                  : strings.giftPinChooseANewPin),
+          subtitle: widget.firstSubtitle ?? strings.giftPin4DigitsYouLlEnter,
           error: _error,
           errorCount: _errors,
           onDone: _chooseFirst,
@@ -615,8 +609,8 @@ class _GiftPinFlowState extends ConsumerState<GiftPinFlow> {
       case _Step.again:
         return GiftPinPad(
           key: const ValueKey('again'),
-          title: 'Enter it again',
-          subtitle: 'Just to be sure',
+          title: strings.giftPinEnterItAgain,
+          subtitle: strings.giftPinJustToBeSure,
           busy: _busy,
           error: _error,
           errorCount: _errors,
@@ -653,7 +647,7 @@ class _GiftPinSheetState extends ConsumerState<_GiftPinSheet> {
     Navigator.of(context).pop();
     showUtopiaToast(
       context,
-      changed ? 'New gift PIN saved' : 'Gift PIN set',
+      changed ? strings.giftPinNewGiftPinSaved : strings.giftPinGiftPinSet,
       kind: ToastKind.success,
       icon: Icons.lock_rounded,
     );
@@ -680,15 +674,10 @@ class _GiftPinSheetState extends ConsumerState<_GiftPinSheet> {
               child: _goal != null
                   ? GiftPinFlow(goal: _goal!, onDone: _done)
                   : guest
-                  ? _note(
-                      'Save your account to send coins to friends, and give '
-                      'your gifts a PIN.',
-                    )
+                  ? _note(strings.giftPinSaveYourAccountToSend)
                   : switch (status) {
                       AsyncData(:final value) => _menu(value),
-                      AsyncError() => _note(
-                        "Couldn't check your PIN. Try again.",
-                      ),
+                      AsyncError() => _note(strings.giftPinCouldnTCheckYourPin),
                       _ => const SizedBox(
                         height: 120,
                         child: Center(child: UtopiaLoader(size: 40)),
@@ -723,24 +712,22 @@ class _GiftPinSheetState extends ConsumerState<_GiftPinSheet> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Gift PIN',
+          strings.giftPinGiftPin,
           textAlign: TextAlign.center,
           style: AppTextStyles.display(fontSize: 22),
         ),
         const SizedBox(height: 6),
         Text(
           status.set
-              ? 'Every coin gift asks for it, so only you can send your coins.'
-              : "You don't have one yet. You'll choose one before your first "
-                    'gift, or choose it now.',
+              ? strings.giftPinEveryCoinGiftAsksFor
+              : strings.giftPinYouDonTHaveOne,
           textAlign: TextAlign.center,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
         if (locked != null) ...[
           const SizedBox(height: 8),
           Text(
-            'Locked after too many wrong tries: open again '
-            '${lockedFor(locked)}, or reset it.',
+            strings.giftPinLockedAfterTooManyWrong(lockedFor(locked)),
             textAlign: TextAlign.center,
             style: AppTextStyles.body(
               fontSize: 13,
@@ -752,12 +739,12 @@ class _GiftPinSheetState extends ConsumerState<_GiftPinSheet> {
         const SizedBox(height: AppSpacing.md),
         if (!status.set)
           PrimaryButton(
-            label: 'Choose a PIN',
+            label: strings.giftPinChooseAPin,
             onPressed: () => setState(() => _goal = GiftPinGoal.set),
           )
         else ...[
           PrimaryButton(
-            label: 'Change PIN',
+            label: strings.giftPinChangePin,
             onPressed: locked != null
                 ? null
                 : () => setState(() => _goal = GiftPinGoal.change),
@@ -765,7 +752,7 @@ class _GiftPinSheetState extends ConsumerState<_GiftPinSheet> {
           const SizedBox(height: 6),
           TextButton(
             onPressed: () => setState(() => _goal = GiftPinGoal.reset),
-            child: const Text('Forgot PIN?'),
+            child: Text(strings.giftPinForgotPin),
           ),
         ],
       ],

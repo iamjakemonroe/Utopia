@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/game_card_art.dart';
+import '../../../../l10n/strings.dart';
 
 /// The four games fanned out like a hand of cards, each its living
 /// diorama from the home screen: dealt in one after another, then floating
@@ -32,10 +33,10 @@ class _GameFanState extends State<GameFan> with TickerProviderStateMixin {
 
   /// The home screen's games and colors (chess wears the world's accent).
   static List<(GameKind, String, Color)> get _games => [
-    (GameKind.chess, 'Chess', AppColors.accent),
-    (GameKind.ludo, 'Ludo', AppColors.mint),
-    (GameKind.checkers, 'Checkers', AppColors.coral),
-    (GameKind.doodle, 'Doodle', Color(0xFFFF5C9C)),
+    (GameKind.chess, strings.gameFanChess, AppColors.accent),
+    (GameKind.ludo, strings.gameFanLudo, AppColors.mint),
+    (GameKind.checkers, strings.gameFanCheckers, AppColors.coral),
+    (GameKind.doodle, strings.gameFanDoodle, Color(0xFFFF5C9C)),
   ];
 
   @override

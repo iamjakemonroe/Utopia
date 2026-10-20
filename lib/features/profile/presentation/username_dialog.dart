@@ -19,6 +19,7 @@ import '../../../core/widgets/utopia_toast.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../auth/presentation/widgets/auth_world.dart';
 import '../domain/nickname_rules.dart';
+import '../../../l10n/strings.dart';
 
 /// What the player typed, ready to save (null: unchanged).
 class ProfileNames {
@@ -83,7 +84,9 @@ Future<void> editProfileNames(BuildContext context, WidgetRef ref) async {
           : names.username ?? currentUser ?? '';
       showUtopiaToast(
         context,
-        shown.isEmpty ? 'Saved' : "You're ${_capitalized(shown)} now",
+        shown.isEmpty
+            ? strings.usernameSaved
+            : strings.usernameYouReNow(_capitalized(shown)),
         icon: Icons.badge_rounded,
         kind: ToastKind.success,
       );
@@ -92,7 +95,7 @@ Future<void> editProfileNames(BuildContext context, WidgetRef ref) async {
     if (context.mounted) {
       showUtopiaToast(
         context,
-        friendlyError(e, fallback: "That name didn't work. Try another."),
+        friendlyError(e, fallback: strings.usernameThatNameDidnTWork),
         kind: ToastKind.error,
       );
     }
@@ -127,8 +130,8 @@ class _NamesCard extends StatelessWidget {
         child: NamesForm(
           nickname: nickname,
           username: username,
-          title: 'Your name',
-          submitLabel: 'Save',
+          title: strings.usernameYourName,
+          submitLabel: strings.usernameSave,
           onSubmit: (names) => Navigator.of(context).pop(names),
         ),
       ),
@@ -303,7 +306,7 @@ class _NamesFormState extends ConsumerState<NamesForm> {
         ? _nickText
         : _userText.isNotEmpty
         ? _capitalized(_userText)
-        : (me == null ? 'You' : profileDisplayName(profile, me));
+        : (me == null ? strings.usernameYou : profileDisplayName(profile, me));
     final mood = _availability == _Availability.taken || !_nickOk
         ? BuddyMood.sad
         : _ok
@@ -392,17 +395,15 @@ class _NamesFormState extends ConsumerState<NamesForm> {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            const _FieldLabel(
-              title: 'Nickname',
-              hint:
-                  'What everyone sees. Write it any way you like: '
-                  'fancy letters, symbols and emoji are all fine.',
+            _FieldLabel(
+              title: strings.usernameNickname,
+              hint: strings.usernameWhatEveryoneSeesWriteIt,
             ),
             const SizedBox(height: 6),
             UtopiaTextField(
               controller: _nick,
               icon: Icons.badge_rounded,
-              hint: 'Nickname',
+              hint: strings.usernameNickname,
               textCapitalization: TextCapitalization.words,
               // Counted as a person counts them (an emoji family is one).
               inputFormatters: [
@@ -422,9 +423,9 @@ class _NamesFormState extends ConsumerState<NamesForm> {
                 ),
               ),
             const SizedBox(height: AppSpacing.md),
-            const _FieldLabel(
-              title: 'Username',
-              hint: 'Yours alone. Friends find you with it.',
+            _FieldLabel(
+              title: strings.usernameUsername,
+              hint: strings.usernameYoursAloneFriendsFindYou,
             ),
             const SizedBox(height: 6),
             UtopiaTextField(
@@ -443,10 +444,10 @@ class _NamesFormState extends ConsumerState<NamesForm> {
               spacing: 6,
               runSpacing: 6,
               children: [
-                _Check(ok: _userLengthOk, label: '3 to 20 long'),
-                _Check(ok: _userCharsOk, label: 'Letters, numbers, _'),
+                _Check(ok: _userLengthOk, label: strings.username3To20Long),
+                _Check(ok: _userCharsOk, label: strings.usernameLettersNumbers),
                 if (_userUnchanged && widget.username != null)
-                  const _Check(ok: true, label: 'Yours')
+                  _Check(ok: true, label: strings.usernameYours)
                 else
                   _AvailabilityCheck(state: _availability),
               ],
@@ -459,7 +460,7 @@ class _NamesFormState extends ConsumerState<NamesForm> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
-                    'Free:',
+                    strings.usernameFree,
                     style: AppTextStyles.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -483,7 +484,7 @@ class _NamesFormState extends ConsumerState<NamesForm> {
             ],
             const SizedBox(height: AppSpacing.lg),
             PrimaryButton(
-              label: widget.busy ? 'Saving...' : widget.submitLabel,
+              label: widget.busy ? strings.usernameSaving : widget.submitLabel,
               color: AppColors.success,
               onPressed: _ok && !widget.busy ? _save : null,
             ),
@@ -631,8 +632,11 @@ class _AvailabilityCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      _Availability.unknown => const _Check(ok: false, label: 'Available'),
-      _Availability.free => const _Check(ok: true, label: 'Available'),
+      _Availability.unknown => _Check(
+        ok: false,
+        label: strings.usernameAvailable,
+      ),
+      _Availability.free => _Check(ok: true, label: strings.usernameAvailable),
       _Availability.taken => Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
@@ -646,7 +650,7 @@ class _AvailabilityCheck extends StatelessWidget {
             const Icon(Icons.cancel_rounded, size: 14, color: AppColors.error),
             const SizedBox(width: 4),
             Text(
-              'Taken',
+              strings.usernameTaken,
               style: AppTextStyles.body(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -674,7 +678,7 @@ class _AvailabilityCheck extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              'Checking',
+              strings.usernameChecking,
               style: AppTextStyles.body(
                 fontSize: 12,
                 color: AppColors.textSecondary,

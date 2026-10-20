@@ -12,6 +12,7 @@ import '../../../../core/widgets/utopia_toast.dart';
 import '../../../auth/presentation/sign_up_steps.dart';
 import '../../../auth/presentation/widgets/auth_world.dart';
 import '../username_dialog.dart';
+import '../../../../l10n/strings.dart';
 
 /// A step of signing up, after the email and before the birthday: the
 /// nickname everyone sees (written any way they like) and the username
@@ -38,7 +39,7 @@ class _NamesScreenState extends ConsumerState<NamesScreen> {
       setState(() => _saving = false);
       showUtopiaToast(
         context,
-        friendlyError(e, fallback: "That name didn't work. Try another."),
+        friendlyError(e, fallback: strings.namesThatNameDidnTWork),
         kind: ToastKind.error,
       );
       return;
@@ -82,11 +83,9 @@ class _NamesScreenState extends ConsumerState<NamesScreen> {
             ),
             child: RiseIn(
               child: NamesForm(
-                title: 'What should we call you?',
-                subtitle:
-                    'Your nickname is what everyone sees: write it any way '
-                    'you like. Your username is how friends find you.',
-                submitLabel: 'Continue',
+                title: strings.namesWhatShouldWeCallYou,
+                subtitle: strings.namesYourNicknameIsWhatEveryone,
+                submitLabel: strings.namesContinue,
                 suggest: true,
                 busy: _saving,
                 chipSize: 96,

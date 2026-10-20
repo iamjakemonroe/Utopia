@@ -6,6 +6,7 @@ import '../../features/store/presentation/coin_shop.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import 'utopia_icons.dart';
+import '../../l10n/strings.dart';
 
 /// The player's coins, live from the server, with a "+" that opens the coin
 /// shop. The number rolls to its new value and the pill gives a little hop
@@ -19,7 +20,7 @@ class CoinBalancePill extends ConsumerWidget {
 
     return Semantics(
       button: true,
-      label: 'Coins. Tap to get more.',
+      label: strings.coinBalancePillCoinsTapToGetMore,
       child: GestureDetector(
         onTap: () => showCoinShop(context),
         child: Container(

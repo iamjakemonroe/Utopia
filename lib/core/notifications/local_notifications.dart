@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import '../../l10n/strings.dart';
 
 /// Notifications the phone shows itself: an alert when a friend request
 /// or a challenge arrives while Utopia isn't on screen, and the occasional
@@ -24,19 +25,20 @@ class LocalNotifications {
   /// The route a tapped notification asked to open (consumed by the app).
   final ValueNotifier<String?> tapped = ValueNotifier(null);
 
-  static const _social = AndroidNotificationDetails(
+  static final _social = AndroidNotificationDetails(
     'utopia_social',
-    'Friends and challenges',
-    channelDescription: 'Friend requests and game challenges.',
+    strings.localNotificationsFriendsAndChallenges,
+    channelDescription:
+        strings.localNotificationsFriendRequestsAndGameChallenges,
     importance: Importance.high,
     priority: Priority.high,
     color: Color(0xFF7C4DFF),
   );
 
-  static const _nudges = AndroidNotificationDetails(
+  static final _nudges = AndroidNotificationDetails(
     'utopia_reminders',
-    'Reminders',
-    channelDescription: 'Now and then, a nudge to come back and play.',
+    strings.localNotificationsReminders,
+    channelDescription: strings.localNotificationsNowAndThenANudge,
     importance: Importance.defaultImportance,
     color: Color(0xFFFFC94D),
   );
@@ -103,7 +105,7 @@ class LocalNotifications {
         title: title,
         body: body,
         payload: route,
-        notificationDetails: const NotificationDetails(
+        notificationDetails: NotificationDetails(
           android: _social,
           iOS: DarwinNotificationDetails(presentSound: true),
         ),
@@ -111,15 +113,39 @@ class LocalNotifications {
     } catch (_) {}
   }
 
-  static const _reminders = [
-    ('Chip misses you', 'One quick game? Your world is waiting.'),
-    ('Game time?', 'A chess game takes five minutes. Go on.'),
-    ('An empty seat', 'The Ludo table is waiting for someone to roll a six.'),
-    ('Something new is glowing', 'Fresh auras are waiting in the store.'),
-    ('Rematch?', 'Your friends are a tap away.'),
-    ('Your clock is ready', 'Pick a time and find an opponent.'),
-    ('Roll the dice', 'Fancy a round of Ludo with friends?'),
-    ('Back to Utopia', 'Your coins are right where you left them.'),
+  static final _reminders = [
+    (
+      strings.localNotificationsChipMissesYou,
+      strings.localNotificationsOneQuickGameYourWorld,
+    ),
+    (
+      strings.localNotificationsGameTime,
+      strings.localNotificationsAChessGameTakesFive,
+    ),
+    (
+      strings.localNotificationsAnEmptySeat,
+      strings.localNotificationsTheLudoTableIsWaiting,
+    ),
+    (
+      strings.localNotificationsSomethingNewIsGlowing,
+      strings.localNotificationsFreshAurasAreWaitingIn,
+    ),
+    (
+      strings.localNotificationsRematch,
+      strings.localNotificationsYourFriendsAreATap,
+    ),
+    (
+      strings.localNotificationsYourClockIsReady,
+      strings.localNotificationsPickATimeAndFind,
+    ),
+    (
+      strings.localNotificationsRollTheDice,
+      strings.localNotificationsFancyARoundOfLudo,
+    ),
+    (
+      strings.localNotificationsBackToUtopia,
+      strings.localNotificationsYourCoinsAreRightWhere,
+    ),
   ];
 
   /// Clears any pending reminders and, if [enabled], sets up fresh ones
@@ -145,7 +171,7 @@ class LocalNotifications {
           payload: '/home',
           scheduledDate: tz.TZDateTime.from(at.toUtc(), tz.UTC),
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-          notificationDetails: const NotificationDetails(
+          notificationDetails: NotificationDetails(
             android: _nudges,
             iOS: DarwinNotificationDetails(),
           ),

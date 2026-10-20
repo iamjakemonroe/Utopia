@@ -14,6 +14,7 @@ import '../../../core/theme/utopia_themes.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../notifications/presentation/notification_actions.dart';
+import '../../../l10n/strings.dart';
 
 /// Lets the Music world hear the room: while it's turned on (Settings >
 /// Sound), the Music world is on screen (being drawn, not just chosen: not
@@ -152,29 +153,25 @@ class _AskSheet extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                'Let the Music world hear the room?',
+                strings.roomEarsLetTheMusicWorldHear,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.display(fontSize: 22),
               ),
               const SizedBox(height: 6),
               Text(
-                'Play music, sing or clap, and the show dances to it: the '
-                'lights, the lasers, the speakers and the crowd. It only '
-                'listens for how loud it is and where the beat is. Nothing '
-                'is recorded or sent anywhere. Turn it off any time in '
-                'Settings.',
+                strings.roomEarsPlayMusicSingOrClap,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
               const SizedBox(height: AppSpacing.lg),
               PrimaryButton(
-                label: 'Turn it on',
+                label: strings.roomEarsTurnItOn,
                 onPressed: () => Navigator.of(context).pop(true),
               ),
               const SizedBox(height: 4),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Not now'),
+                child: Text(strings.roomEarsNotNow),
               ),
             ],
           ),

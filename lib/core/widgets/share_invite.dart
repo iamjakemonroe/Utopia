@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'utopia_toast.dart';
+import '../../l10n/strings.dart';
 
 /// Shares a game invite: the phone's share sheet. In a browser without one
 /// (most computers), the invite is copied instead and the player told so,
@@ -31,7 +32,7 @@ Future<void> shareInvite(
     if (!context.mounted) return;
     showUtopiaToast(
       context,
-      'Invite copied. Paste it to a friend.',
+      strings.shareInviteInviteCopiedPasteItTo,
       icon: Icons.content_copy_rounded,
       kind: ToastKind.success,
     );
