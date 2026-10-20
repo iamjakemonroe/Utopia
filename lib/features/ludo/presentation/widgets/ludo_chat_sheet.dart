@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../chat/presentation/game_chat_sheet.dart';
 import '../controllers/ludo_match_controller.dart';
 import 'ludo_pieces.dart';
+import '../../../../l10n/strings.dart';
 
 /// Ludo's chat: the shared game chat, with names in each player's seat
 /// color and war/peace reactions shown as system lines.
@@ -35,10 +36,18 @@ Future<void> showLudoChat({
       systemLine: (m) {
         if (m.kind != 'reaction') return null;
         final color = state().colorOf(m.senderId);
-        final who = color == null ? 'Someone' : ludoColorName(color);
+        final who = color == null
+            ? strings.ludoChatSomeone
+            : ludoColorName(color);
         return m.body == 'war'
-            ? ChatSystemLine('$who chose war!', sticker: 'chip:evil')
-            : ChatSystemLine('$who made peace.', sticker: 'chip:peaceful');
+            ? ChatSystemLine(
+                strings.ludoChatChoseWar(who),
+                sticker: 'chip:evil',
+              )
+            : ChatSystemLine(
+                strings.ludoChatMadePeace(who),
+                sticker: 'chip:peaceful',
+              );
       },
     ),
   );

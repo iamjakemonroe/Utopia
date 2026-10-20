@@ -8,6 +8,7 @@ import '../../store/domain/store_catalog.dart';
 import '../../store/presentation/store_controller.dart';
 import '../../store/presentation/store_screen.dart';
 import '../../store/presentation/theme_teleport.dart';
+import '../../../l10n/strings.dart';
 
 /// The Sketchbook is the Doodle world's: opens [location] (a Sketchbook
 /// route) there. In the Doodle world it just opens; if the player owns or
@@ -21,7 +22,7 @@ Future<void> openInDoodleWorld(
   String location,
 ) async {
   final router = container.read(goRouterProvider);
-  const doodle = UtopiaThemes.utopiaDoodle;
+  final doodle = UtopiaThemes.utopiaDoodle;
   if (UtopiaThemes.active.world.biome == WorldBiome.doodle) {
     router.push(location);
     return;
@@ -40,7 +41,7 @@ Future<void> openInDoodleWorld(
   if (context == null || !context.mounted) return;
   showUtopiaToast(
     context,
-    'Coloring happens in the Doodle world.',
+    strings.doodleWorldGateColoringHappensInTheDoodle,
     icon: Icons.brush_rounded,
   );
   await showWorldPreview(context, doodle);

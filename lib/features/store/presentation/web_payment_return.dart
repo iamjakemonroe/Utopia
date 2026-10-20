@@ -11,6 +11,7 @@ import '../../../core/widgets/utopia_toast.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../notifications/presentation/notification_actions.dart';
 import 'store_controller.dart';
+import '../../../l10n/strings.dart';
 
 /// In a browser, back from Flutterwave's checkout (the address says
 /// ?status=…&tx_ref=…&transaction_id=…): once the player is in, asks
@@ -49,10 +50,7 @@ class _WebPaymentReturnState extends ConsumerState<WebPaymentReturn> {
       if (!mounted) return;
     }
     if (transactionId == null || status == 'cancelled' || status == 'failed') {
-      _say(
-        "The payment didn't go through, so nothing was charged.",
-        ToastKind.warning,
-      );
+      _say(strings.webPaymentReturnThePaymentDidnTGo, ToastKind.warning);
       return;
     }
     final result = await ref
@@ -63,20 +61,19 @@ class _WebPaymentReturnState extends ConsumerState<WebPaymentReturn> {
       case 'paid':
         ref.read(gameAudioProvider).play(Sfx.purchase);
         _say(
-          'Payment received: ${formatCoins(result.coins)} coins added!',
+          strings.webPaymentReturnPaymentReceivedCoinsAdded(
+            formatCoins(result.coins),
+          ),
           ToastKind.success,
         );
         unawaited(ref.read(storeControllerProvider.notifier).refresh());
       case 'pending':
         _say(
-          'Your payment is being confirmed. Your coins will arrive in a moment.',
+          strings.webPaymentReturnYourPaymentIsBeingConfirmed,
           ToastKind.info,
         );
       default:
-        _say(
-          "We couldn't confirm that payment yet. If you were charged, your coins will arrive shortly.",
-          ToastKind.warning,
-        );
+        _say(strings.webPaymentReturnWeCouldnTConfirmThat, ToastKind.warning);
     }
   }
 

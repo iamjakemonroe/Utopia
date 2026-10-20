@@ -38,6 +38,7 @@ import '../widgets/chess_piece_art.dart';
 import '../widgets/chess_piece_styles.dart';
 import '../widgets/time_control_style.dart';
 import '../../../../core/layout/responsive.dart';
+import '../../../../l10n/strings.dart';
 
 /// Pick a clock and an entry, then play someone new, challenge a friend,
 /// or play offline. Chess and checkers share it ([game]).
@@ -181,7 +182,7 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
     if (ref.read(isAnonymousProvider)) {
       showUtopiaToast(
         context,
-        'Save your account so friends can find you.',
+        strings.chessLobbySaveYourAccountSoFriends,
         icon: Icons.person_add_alt_1_rounded,
       );
       context.push('/auth/link');
@@ -231,7 +232,9 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: const BackOrHomeButton(),
-          title: Text(_checkers ? 'Checkers' : 'Chess'),
+          title: Text(
+            _checkers ? strings.chessLobbyCheckers : strings.chessLobbyChess,
+          ),
           actions: const [
             Padding(
               padding: EdgeInsets.only(right: AppSpacing.md),
@@ -264,9 +267,9 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
                           child: GameSceneArt(game: widget.game, height: 150),
                         ),
                         const SizedBox(height: AppSpacing.lg),
-                        const _SectionLabel(
+                        _SectionLabel(
                           icon: Icons.timer_rounded,
-                          text: 'Clock',
+                          text: strings.chessLobbyClock,
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         TimeControlPicker(
@@ -277,9 +280,9 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
                           },
                         ),
                         const SizedBox(height: AppSpacing.lg),
-                        const _SectionLabel(
+                        _SectionLabel(
                           icon: Icons.toll_rounded,
-                          text: 'Entry',
+                          text: strings.chessLobbyEntry,
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         EntrySelector(
@@ -294,25 +297,25 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
                         const SizedBox(height: AppSpacing.xl),
                         CandyModeButton(
                           icon: Icons.public_rounded,
-                          label: 'Play online',
+                          label: strings.chessLobbyPlayOnline,
                           primary: true,
-                          subtitle: 'Get matched with a player now',
+                          subtitle: strings.chessLobbyGetMatchedWithAPlayer,
                           colors: const [Color(0xFF6BF0B0), Color(0xFF1FB877)],
                           onTap: _playOnline,
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         CandyModeButton(
                           icon: Icons.group_rounded,
-                          label: 'Play a friend',
-                          subtitle: 'Send a challenge to someone you know',
+                          label: strings.chessLobbyPlayAFriend,
+                          subtitle: strings.chessLobbySendAChallengeToSomeone,
                           colors: const [Color(0xFFB79BFF), Color(0xFF7B5CFF)],
                           onTap: _playFriend,
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         CandyModeButton(
                           icon: Icons.smart_toy_rounded,
-                          label: 'Play offline',
-                          subtitle: 'Chip, Robo or a friend on this phone',
+                          label: strings.chessLobbyPlayOffline,
+                          subtitle: strings.chessLobbyChipRoboOrAFriend,
                           colors: const [Color(0xFF8FD8FF), Color(0xFF2E8FE0)],
                           onTap: _openBot,
                         ),
@@ -434,13 +437,13 @@ class _BotSheetState extends State<_BotSheet> {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  'Play offline',
+                  strings.chessLobbyPlayOffline,
                   style: AppTextStyles.display(fontSize: 22),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                const _SectionLabel(
+                _SectionLabel(
                   icon: Icons.smart_toy_rounded,
-                  text: 'Opponent',
+                  text: strings.chessLobbyOpponent,
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Row(
@@ -448,7 +451,7 @@ class _BotSheetState extends State<_BotSheet> {
                     choice(
                       kChessChip.key,
                       _opponent,
-                      'Chip',
+                      strings.chessLobbyChip,
                       (v) => _opponent = v,
                       icon: const CoinBuddy(mood: BuddyMood.happy, size: 54),
                     ),
@@ -456,7 +459,7 @@ class _BotSheetState extends State<_BotSheet> {
                     choice(
                       kChessRobot.key,
                       _opponent,
-                      'Robo',
+                      strings.chessLobbyRobo,
                       (v) => _opponent = v,
                       icon: const SizedBox(
                         height: 54,
@@ -472,7 +475,7 @@ class _BotSheetState extends State<_BotSheet> {
                       choice(
                         'local',
                         _opponent,
-                        'A friend',
+                        strings.chessLobbyAFriend,
                         (v) => _opponent = v,
                         icon: SizedBox(
                           height: 54,
@@ -489,33 +492,46 @@ class _BotSheetState extends State<_BotSheet> {
                 if (_opponent == 'local') ...[
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Two players on this phone, taking turns.',
+                    strings.chessLobbyTwoPlayersOnThisPhone,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.body(color: AppColors.textSecondary),
                   ),
                 ],
                 if (_opponent != 'local') ...[
                   const SizedBox(height: AppSpacing.md),
-                  const _SectionLabel(icon: Icons.speed_rounded, text: 'Level'),
+                  _SectionLabel(
+                    icon: Icons.speed_rounded,
+                    text: strings.chessLobbyLevel,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
                   Row(
                     children: [
-                      choice(BotLevel.easy, _level, 'Easy', (v) => _level = v),
+                      choice(
+                        BotLevel.easy,
+                        _level,
+                        strings.chessLobbyEasy,
+                        (v) => _level = v,
+                      ),
                       const SizedBox(width: 8),
                       choice(
                         BotLevel.normal,
                         _level,
-                        'Normal',
+                        strings.chessLobbyNormal,
                         (v) => _level = v,
                       ),
                       const SizedBox(width: 8),
-                      choice(BotLevel.hard, _level, 'Hard', (v) => _level = v),
+                      choice(
+                        BotLevel.hard,
+                        _level,
+                        strings.chessLobbyHard,
+                        (v) => _level = v,
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const _SectionLabel(
+                  _SectionLabel(
                     icon: Icons.contrast_rounded,
-                    text: 'You play',
+                    text: strings.chessLobbyYouPlay,
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Row(
@@ -523,16 +539,25 @@ class _BotSheetState extends State<_BotSheet> {
                       choice(
                         'white',
                         _color,
-                        widget.checkers ? 'Dark' : 'White',
+                        widget.checkers
+                            ? strings.chessLobbyDark
+                            : strings.chessLobbyWhite,
                         (v) => _color = v,
                       ),
                       const SizedBox(width: 8),
-                      choice('random', _color, 'Random', (v) => _color = v),
+                      choice(
+                        'random',
+                        _color,
+                        strings.chessLobbyRandom,
+                        (v) => _color = v,
+                      ),
                       const SizedBox(width: 8),
                       choice(
                         'black',
                         _color,
-                        widget.checkers ? 'Light' : 'Black',
+                        widget.checkers
+                            ? strings.chessLobbyLight
+                            : strings.chessLobbyBlack,
                         (v) => _color = v,
                       ),
                     ],
@@ -540,7 +565,7 @@ class _BotSheetState extends State<_BotSheet> {
                   if (widget.checkers) ...[
                     const SizedBox(height: 6),
                     Text(
-                      'Dark moves first.',
+                      strings.chessLobbyDarkMovesFirst,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body(
                         fontSize: 13,
@@ -550,15 +575,20 @@ class _BotSheetState extends State<_BotSheet> {
                   ],
                 ],
                 const SizedBox(height: AppSpacing.md),
-                const _SectionLabel(icon: Icons.timer_rounded, text: 'Clock'),
+                _SectionLabel(
+                  icon: Icons.timer_rounded,
+                  text: strings.chessLobbyClock,
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 Row(
                   children: [
-                    choice(false, _clock != null, 'No clock', (_) {
+                    choice(false, _clock != null, strings.chessLobbyNoClock, (
+                      _,
+                    ) {
                       _clock = null;
                     }),
                     const SizedBox(width: 8),
-                    choice(true, _clock != null, 'Clock', (_) {
+                    choice(true, _clock != null, strings.chessLobbyClock, (_) {
                       _clock = _lastClock;
                     }),
                   ],
@@ -575,7 +605,7 @@ class _BotSheetState extends State<_BotSheet> {
                 ],
                 const SizedBox(height: AppSpacing.lg),
                 PrimaryButton(
-                  label: 'Start game',
+                  label: strings.chessLobbyStartGame,
                   color: const Color(0xFF2E8FE0),
                   onPressed: () => Navigator.of(
                     context,
@@ -706,7 +736,7 @@ class _SearchingViewState extends State<_SearchingView>
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              'Finding an opponent',
+              strings.chessLobbyFindingAnOpponent,
               style: AppTextStyles.display(fontSize: 22),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -728,7 +758,7 @@ class _SearchingViewState extends State<_SearchingView>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Free',
+                    strings.chessLobbyFree,
                     style: AppTextStyles.body(fontWeight: FontWeight.w800),
                   ),
                 ] else
@@ -752,12 +782,15 @@ class _SearchingViewState extends State<_SearchingView>
             // A free game finds someone soon; a staked one can take a
             // while, so Chip's on offer.
             if (widget.entry > 0)
-              QuietLobbyOffer(label: 'Play Chip', onPlay: widget.onPlayChip),
+              QuietLobbyOffer(
+                label: strings.chessLobbyPlayChip,
+                onPlay: widget.onPlayChip,
+              ),
             const SizedBox(height: AppSpacing.xl),
             TextButton.icon(
               onPressed: widget.onCancel,
               icon: const Icon(Icons.close_rounded),
-              label: const Text('Cancel'),
+              label: Text(strings.chessLobbyCancel),
             ),
           ],
         ),

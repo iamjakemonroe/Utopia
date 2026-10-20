@@ -1,3 +1,5 @@
+import '../../../l10n/strings.dart';
+
 /// Keeps public-game chat friendly. Runs in the app before a message is
 /// sent (the server masks again as a backstop no client can skip, see
 /// mask_offensive in the Ludo v2 migration).
@@ -139,14 +141,14 @@ class ChatFilter {
   }
 
   /// One-tap phrases for chat.
-  static const quickPhrases = [
+  static final quickPhrases = [
     'Good luck!',
-    'Nice move!',
-    'Well played!',
-    'So close!',
-    "Let's go!",
-    'Your turn',
-    'Oops!',
-    'Good game!',
+    strings.chatFilterNiceMove,
+    strings.chatFilterWellPlayed,
+    strings.chatFilterSoClose,
+    strings.chatFilterLetSGo,
+    strings.chatFilterYourTurn,
+    strings.chatFilterOops,
+    strings.chatFilterGoodGame,
   ];
 }

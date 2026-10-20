@@ -44,6 +44,7 @@ import '../widgets/promotion_sheet.dart';
 import '../widgets/time_control_style.dart';
 import '../../../events/presentation/events_controller.dart';
 import '../../../../core/layout/game_stage.dart';
+import '../../../../l10n/strings.dart';
 
 const _whiteInk = Color(0xFFF4EEDC);
 const _blackInk = Color(0xFFB79BFF);
@@ -203,10 +204,13 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
     ref.listen(voicePlaybackProvider, (_, _) {});
 
     if (state.loading) {
-      return const Scaffold(
+      return Scaffold(
         body: AppBackground(
           child: Center(
-            child: UtopiaLoader(size: 88, label: 'Setting up the board'),
+            child: UtopiaLoader(
+              size: 88,
+              label: strings.chessMatchSettingUpTheBoard,
+            ),
           ),
         ),
       );
@@ -222,7 +226,7 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
                 const CoinBuddy(mood: BuddyMood.sad, size: 80),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  "We couldn't find this game.",
+                  strings.chessMatchWeCouldnTFindThis,
                   style: AppTextStyles.body(color: AppColors.textSecondary),
                 ),
               ],
@@ -253,7 +257,9 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
-          tooltip: playing ? 'Leave game' : 'Close',
+          tooltip: playing
+              ? strings.chessMatchLeaveGame
+              : strings.chessMatchClose,
           onPressed: () => _confirmLeave(context, controller, playing),
         ),
         title: _TimeControlTitle(state: state),
@@ -266,7 +272,7 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
           if (playing)
             IconButton(
               icon: const Icon(Icons.flag_rounded),
-              tooltip: 'Resign',
+              tooltip: strings.chessMatchResign,
               onPressed: () => _confirmLeave(context, controller, playing),
             ),
         ],
@@ -424,8 +430,10 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
                   playAgainRoute: '/chess',
                   describe: (result, won) => switch (result) {
                     'checkmate' =>
-                      won ? 'Checkmate. Beautifully played.' : 'Checkmated.',
-                    'stalemate' => 'Stalemate: no legal moves left.',
+                      won
+                          ? strings.chessMatchCheckmateBeautifullyPlayed
+                          : strings.chessMatchCheckmated,
+                    'stalemate' => strings.chessMatchStalemateNoLegalMovesLeft,
                     _ => null,
                   },
                   onReview: () => setState(() => _showResult = false),
@@ -461,12 +469,12 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
     final ok = await confirmBouncy(
       context: context,
       audio: ref.read(gameAudioProvider),
-      title: 'Resign this game?',
+      title: strings.chessMatchResignThisGame,
       message: stake > 0
-          ? 'Your opponent wins the game and the prize.'
-          : 'Your opponent wins the game.',
-      confirmLabel: 'Resign',
-      cancelLabel: 'Keep playing',
+          ? strings.chessMatchYourOpponentWinsTheGame
+          : strings.chessMatchYourOpponentWinsTheGame2,
+      confirmLabel: strings.chessMatchResign,
+      cancelLabel: strings.chessMatchKeepPlaying,
       destructive: true,
       hero: const CoinBuddy(mood: BuddyMood.sad, size: 76),
     );
@@ -495,7 +503,7 @@ class _TimeControlTitle extends StatelessWidget {
         Icon(speedIcon(tc.speed), color: color, size: 20),
         const SizedBox(width: 6),
         Text(
-          state.timed ? tc.label : 'Chess',
+          state.timed ? tc.label : strings.chessMatchChess,
           style: AppTextStyles.display(fontSize: 18),
         ),
         if (state.stake > 0) ...[
@@ -538,9 +546,9 @@ class _PlayerBar extends ConsumerWidget {
         ? null
         : ref.watch(profileByIdProvider(userId!)).valueOrNull;
     final name = isMe
-        ? 'You'
+        ? strings.chessMatchYou
         : userId == null
-        ? 'Opponent'
+        ? strings.chessMatchOpponent
         : profileDisplayName(profile, userId!);
     final live = state.isActive && !state.isOver;
     final running =
@@ -800,8 +808,11 @@ class _StatusLineState extends State<_StatusLine>
             const SizedBox(width: 6),
             Text(
               state.displayPly == 0
-                  ? 'Starting position'
-                  : 'Move ${state.displayPly} of ${state.history.length}',
+                  ? strings.chessMatchStartingPosition
+                  : strings.chessMatchMoveOf(
+                      state.displayPly,
+                      state.history.length,
+                    ),
               style: AppTextStyles.body(
                 color: AppColors.readable(AppColors.sky),
                 fontWeight: FontWeight.w800,
@@ -821,7 +832,7 @@ class _StatusLineState extends State<_StatusLine>
                     color: AppColors.error,
                   ),
                   child: Text(
-                    'Back to live',
+                    strings.chessMatchBackToLive,
                     style: AppTextStyles.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w900,
@@ -844,24 +855,28 @@ class _StatusLineState extends State<_StatusLine>
     final (IconData icon, String text, Color color) = check
         ? (
             Icons.warning_amber_rounded,
-            state.isMyTurn ? "You're in check" : 'Check!',
+            state.isMyTurn
+                ? strings.chessMatchYouReInCheck
+                : strings.chessMatchCheck,
             AppColors.error,
           )
         : state.isMyTurn
         ? (
             Icons.touch_app_rounded,
             firstMove != null
-                ? 'Your move · ${(firstMove / 1000).ceil()}s to start'
+                ? strings.chessMatchYourMoveSToStart((firstMove / 1000).ceil())
                 : lastWasTheirs && state.lastSan != null
                 ? 'Your move · they played ${state.lastSan}'
-                : 'Your move',
+                : strings.chessMatchYourMove,
             AppColors.accentSecondary,
           )
         : (
             Icons.hourglass_top_rounded,
             firstMove != null
-                ? 'Waiting for the first move · ${(firstMove / 1000).ceil()}s'
-                : 'Their move',
+                ? strings.chessMatchWaitingForTheFirstMove(
+                    (firstMove / 1000).ceil(),
+                  )
+                : strings.chessMatchTheirMove,
             AppColors.textSecondary,
           );
 

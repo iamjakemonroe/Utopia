@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/frame_island.dart';
+import '../../../../l10n/strings.dart';
 
 /// The least time the die tumbles, so it reads as a real roll.
 const kDiceTumbleMin = Duration(milliseconds: 300);
@@ -201,8 +202,8 @@ class _LudoDiceState extends ConsumerState<LudoDice>
     return Semantics(
       button: widget.enabled,
       label: widget.enabled
-          ? 'Roll the die'
-          : 'Die showing ${widget.value ?? ''}',
+          ? strings.ludoDiceRollTheDie
+          : strings.ludoDiceDieShowing(widget.value ?? ''),
       child: GestureDetector(
         onTap: _handleTap,
         child: FrameIsland(

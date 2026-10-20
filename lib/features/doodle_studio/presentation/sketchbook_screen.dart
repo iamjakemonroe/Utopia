@@ -17,6 +17,7 @@ import '../domain/coloring_pages.dart';
 import '../domain/line_art.dart';
 import 'art_render.dart';
 import 'studio_toolbar.dart';
+import '../../../l10n/strings.dart';
 
 /// The Doodle world's sketchbook: start a new sketch or pick a picture to
 /// color, and everything made so far, newest first (tap to carry on, hold
@@ -59,14 +60,14 @@ class _SketchbookScreenState extends ConsumerState<SketchbookScreen> {
                 child: Row(
                   children: [
                     StudioButton(
-                      tooltip: 'Back',
+                      tooltip: strings.sketchbookBack,
                       icon: Icons.arrow_back_rounded,
                       onTap: () => context.pop(),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Sketchbook',
+                        strings.sketchbookSketchbook,
                         style: AppTextStyles.display(
                           fontSize: 26,
                           color: kStudioInk,
@@ -82,7 +83,7 @@ class _SketchbookScreenState extends ConsumerState<SketchbookScreen> {
               padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
               sliver: SliverToBoxAdapter(
                 child: Text(
-                  'Draw anything, or color a picture. Everything saves as you go.',
+                  strings.sketchbookDrawAnythingOrColorA,
                   style: AppTextStyles.body(
                     color: kStudioInk.withValues(alpha: 0.7),
                   ),
@@ -105,8 +106,8 @@ class _SketchbookScreenState extends ConsumerState<SketchbookScreen> {
                             index: 0,
                             child: _StartCard(
                               icon: Icons.draw_rounded,
-                              title: 'New sketch',
-                              subtitle: 'A blank page',
+                              title: strings.sketchbookNewSketch,
+                              subtitle: strings.sketchbookABlankPage,
                               onTap: () {
                                 ref.read(gameAudioProvider).play(Sfx.drawer);
                                 context.push('/sketchbook/new');
@@ -120,8 +121,8 @@ class _SketchbookScreenState extends ConsumerState<SketchbookScreen> {
                             index: 1,
                             child: _StartCard(
                               icon: Icons.palette_rounded,
-                              title: 'Color a picture',
-                              subtitle: 'Or search any picture',
+                              title: strings.sketchbookColorAPicture,
+                              subtitle: strings.sketchbookOrSearchAnyPicture,
                               onTap: () => _pickPage(context, ref),
                             ),
                           ),
@@ -136,7 +137,7 @@ class _SketchbookScreenState extends ConsumerState<SketchbookScreen> {
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               sliver: SliverToBoxAdapter(
                 child: Text(
-                  'My art',
+                  strings.sketchbookMyArt,
                   style: AppTextStyles.display(fontSize: 20, color: kStudioInk),
                 ),
               ),
@@ -147,7 +148,7 @@ class _SketchbookScreenState extends ConsumerState<SketchbookScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(28),
                     child: Text(
-                      'Nothing here yet. What you draw and color shows up here.',
+                      strings.sketchbookNothingHereYetWhatYou,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body(
                         color: kStudioInk.withValues(alpha: 0.6),
@@ -364,22 +365,25 @@ class _ArtTile extends ConsumerWidget {
           side: const BorderSide(color: kStudioInk, width: 2),
         ),
         title: Text(
-          'Delete this?',
+          strings.sketchbookDeleteThis,
           style: AppTextStyles.display(fontSize: 20, color: kStudioInk),
         ),
         content: Text(
-          "It'll be gone from your sketchbook for good.",
+          strings.sketchbookItLlBeGoneFrom,
           style: AppTextStyles.body(color: kStudioInk),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Keep it', style: TextStyle(color: kStudioInk)),
+            child: Text(
+              strings.sketchbookKeepIt,
+              style: TextStyle(color: kStudioInk),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text(
-              'Delete',
+            child: Text(
+              strings.sketchbookDelete,
               style: TextStyle(
                 color: Color(0xFFE0361A),
                 fontWeight: FontWeight.w800,
@@ -483,23 +487,20 @@ class _PagePickerState extends ConsumerState<_PagePicker> {
       case 'ready':
         final p = await library.fetch(ask.id!);
         if (p != null && p.ready) return _open(p.page, from: p);
-        say("Couldn't open that one. Try again?", kind: ToastKind.error);
+        say(strings.sketchbookCouldnTOpenThatOne, kind: ToastKind.error);
       case 'drawing':
         ref.invalidate(myPicturesProvider);
         _search.clear();
         setState(() => _query = '');
-        say("Chip's drawing it. It'll be in Yours in about a minute.");
+        say(strings.sketchbookChipSDrawingItIt);
       case 'refused':
-        say("Chip can't draw that one. Try something else?");
+        say(strings.sketchbookChipCanTDrawThat);
       case 'limited':
-        say('Chip has drawn all he can today. Ask again tomorrow!');
+        say(strings.sketchbookChipHasDrawnAllHe);
       case 'off':
-        say("Chip's pencil isn't ready yet. Try again later.");
+        say(strings.sketchbookChipSPencilIsnT);
       default:
-        say(
-          "Couldn't reach Chip. Check your connection and try again.",
-          kind: ToastKind.error,
-        );
+        say(strings.sketchbookCouldnTReachChipCheck, kind: ToastKind.error);
     }
   }
 
@@ -584,7 +585,7 @@ class _PagePickerState extends ConsumerState<_PagePicker> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
               child: Text(
-                'Pick a picture to color',
+                strings.sketchbookPickAPictureToColor,
                 style: AppTextStyles.display(fontSize: 20, color: kStudioInk),
               ),
             ),
@@ -610,7 +611,7 @@ class _PagePickerState extends ConsumerState<_PagePicker> {
                       slivers: [
                         if (nothing) askCard,
                         if (mine.isNotEmpty) ...[
-                          heading('Yours'),
+                          heading(strings.sketchbookYours),
                           grid([
                             for (final p in mine)
                               _Pop(
@@ -624,7 +625,7 @@ class _PagePickerState extends ConsumerState<_PagePicker> {
                           ]),
                         ],
                         if (builtIn.isNotEmpty) ...[
-                          heading("Utopia's pictures"),
+                          heading(strings.sketchbookUtopiaSPictures),
                           grid([
                             for (final page in builtIn)
                               _Pop(
@@ -639,8 +640,8 @@ class _PagePickerState extends ConsumerState<_PagePicker> {
                         if (shared.isNotEmpty) ...[
                           heading(
                             query.isEmpty
-                                ? 'Drawn for players'
-                                : 'From the library',
+                                ? strings.sketchbookDrawnForPlayers
+                                : strings.sketchbookFromTheLibrary,
                           ),
                           grid([
                             for (final p in shared)
@@ -715,7 +716,7 @@ class _SearchBox extends StatelessWidget {
           counterText: '',
           border: InputBorder.none,
           prefixIcon: const Icon(Icons.search_rounded, color: kStudioInk),
-          hintText: 'Search any picture: a lion, a castle...',
+          hintText: strings.sketchbookSearchAnyPictureALion,
           hintStyle: AppTextStyles.body(
             color: kStudioInk.withValues(alpha: 0.45),
           ),
@@ -796,7 +797,9 @@ class _LibraryTile extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
-                    failed ? "Didn't work out" : 'Chip is drawing...',
+                    failed
+                        ? strings.sketchbookDidnTWorkOut
+                        : strings.sketchbookChipIsDrawing,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.body(
                       fontSize: 12,
@@ -811,7 +814,7 @@ class _LibraryTile extends ConsumerWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          p.title.isEmpty ? 'New picture' : p.title,
+          p.title.isEmpty ? strings.sketchbookNewPicture : p.title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.body(
@@ -858,7 +861,7 @@ class _AskChip extends StatelessWidget {
                 children: [
                   if (prominent)
                     Text(
-                      'Nobody has asked for that yet.',
+                      strings.sketchbookNobodyHasAskedForThat,
                       style: AppTextStyles.body(
                         fontSize: 13,
                         color: kStudioInk.withValues(alpha: 0.65),
@@ -866,10 +869,10 @@ class _AskChip extends StatelessWidget {
                     ),
                   Text(
                     busy
-                        ? 'Asking Chip...'
+                        ? strings.sketchbookAskingChip
                         : prominent
-                        ? 'Ask Chip to draw "$subject"'
-                        : 'Not quite? Ask Chip to draw "$subject"',
+                        ? strings.sketchbookAskChipToDraw(subject)
+                        : strings.sketchbookNotQuiteAskChipTo(subject),
                     style: AppTextStyles.display(
                       fontSize: prominent ? 17 : 15,
                       color: kStudioInk,

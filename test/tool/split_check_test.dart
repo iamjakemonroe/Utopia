@@ -168,10 +168,7 @@ void main() {
             ),
           );
           await tester.pump();
-          await _shoot(
-            tester,
-            'world_${theme.id}${on ? '_set' : ''}_$k',
-          );
+          await _shoot(tester, 'world_${theme.id}${on ? '_set' : ''}_$k');
         }
       });
     }

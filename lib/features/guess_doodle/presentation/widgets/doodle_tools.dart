@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../doodle_studio/domain/art_doc.dart';
+import '../../../../l10n/strings.dart';
 
 /// The drawer's colors: the basics, plus skin tones and browns that come
 /// up all the time (faces, food, animals).
@@ -131,7 +132,7 @@ class DoodleTools extends StatelessWidget {
               const Spacer(),
               _ToolButton(
                 glyph: const _EraserGlyph(),
-                label: 'Eraser',
+                label: strings.doodleToolsEraser,
                 selected: pen.erasing,
                 onTap: () {
                   HapticFeedback.selectionClick();
@@ -140,12 +141,12 @@ class DoodleTools extends StatelessWidget {
               ),
               _ToolButton(
                 icon: Icons.undo_rounded,
-                label: 'Undo',
+                label: strings.doodleToolsUndo,
                 onTap: canUndo ? onUndo : null,
               ),
               _ToolButton(
                 icon: Icons.delete_sweep_rounded,
-                label: 'Clear',
+                label: strings.doodleToolsClear,
                 onTap: canUndo ? onClear : null,
               ),
             ],

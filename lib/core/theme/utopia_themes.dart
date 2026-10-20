@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/strings.dart';
 
 /// Which world a theme's background is built from (see utopia_world.dart).
 enum WorldBiome {
@@ -203,7 +204,7 @@ class UtopiaThemes {
 
   /// The free worlds a new account starts in, one picked at random by the
   /// server (profiles.equipped_theme's default).
-  static const starters = [utopiaCalm, utopiaWarm, utopiaAdventure];
+  static final starters = [utopiaCalm, utopiaWarm, utopiaAdventure];
 
   /// The free world [userId] goes back to when a rented world runs out:
   /// always the same one for the same player.
@@ -265,12 +266,12 @@ class UtopiaThemes {
 
   // ── The four Utopia worlds, hand-tuned ───────────────────────────────────
 
-  static const utopiaTwilight = UtopiaTheme(
+  static final utopiaTwilight = UtopiaTheme(
     // Its id stays utopia_dark: players own and wear it by that.
     id: 'utopia_dark',
-    name: 'Utopia Twilight',
-    family: 'Utopia',
-    tagline: 'Twilight islands floating over a sea of clouds.',
+    name: strings.utopiaThemesUtopiaTwilight,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesTwilightIslandsFloatingOverA,
     background: Color(0xFF120B2E),
     surface: Color(0xFF241A4D),
     surfaceElevated: Color(0xFF2C2160),
@@ -317,11 +318,11 @@ class UtopiaThemes {
   );
 
   /// Pure black and white, nothing in between. Free.
-  static const noir = UtopiaTheme(
+  static final noir = UtopiaTheme(
     id: 'noir',
-    name: 'Noir',
-    family: 'Utopia',
-    tagline: 'Pure black, pure white. Nothing in between.',
+    name: strings.utopiaThemesNoir,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesPureBlackPureWhiteNothing,
     background: Color(0xFF000000),
     surface: Color(0xFF0D0D0D),
     surfaceElevated: Color(0xFF161616),
@@ -368,11 +369,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaCalm = UtopiaTheme(
+  static final utopiaCalm = UtopiaTheme(
     id: 'utopia_calm',
-    name: 'Utopia Calm',
-    family: 'Utopia',
-    tagline: 'A glassy ocean at dusk. Breathe in.',
+    name: strings.utopiaThemesUtopiaCalm,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesAGlassyOceanAtDusk,
     background: Color(0xFF0B1A2E),
     surface: Color(0xFF16304A),
     surfaceElevated: Color(0xFF1D3B59),
@@ -419,11 +420,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaAdventure = UtopiaTheme(
+  static final utopiaAdventure = UtopiaTheme(
     id: 'utopia_adventure',
-    name: 'Utopia Adventure',
-    family: 'Utopia',
-    tagline: 'Peaks, floating rocks and a balloon to chase.',
+    name: strings.utopiaThemesUtopiaAdventure,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesPeaksFloatingRocksAndA,
     background: Color(0xFF0D1F1C),
     surface: Color(0xFF173A35),
     surfaceElevated: Color(0xFF1E4842),
@@ -470,11 +471,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaWarm = UtopiaTheme(
+  static final utopiaWarm = UtopiaTheme(
     id: 'utopia_warm',
-    name: 'Utopia Warm',
-    family: 'Utopia',
-    tagline: 'Golden dunes and a sky full of lanterns.',
+    name: strings.utopiaThemesUtopiaWarm,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesGoldenDunesAndASky,
     background: Color(0xFF24100E),
     surface: Color(0xFF3E1E1A),
     surfaceElevated: Color(0xFF4C2620),
@@ -521,11 +522,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaAlien = UtopiaTheme(
+  static final utopiaAlien = UtopiaTheme(
     id: 'utopia_alien',
-    name: 'Utopia Alien',
-    family: 'Utopia',
-    tagline: 'Glowing mushrooms, two moons and something in the sky.',
+    name: strings.utopiaThemesUtopiaAlien,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesGlowingMushroomsTwoMoonsAnd,
     background: Color(0xFF0B0F24),
     surface: Color(0xFF17203D),
     surfaceElevated: Color(0xFF1E2A4D),
@@ -571,11 +572,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaTech = UtopiaTheme(
+  static final utopiaTech = UtopiaTheme(
     id: 'utopia_tech',
-    name: 'Utopia Tech',
-    family: 'Utopia',
-    tagline: 'A neon city that never sleeps, over a glowing grid.',
+    name: strings.utopiaThemesUtopiaTech,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesANeonCityThatNever,
     background: Color(0xFF070A1A),
     surface: Color(0xFF121A33),
     surfaceElevated: Color(0xFF19234A),
@@ -622,11 +623,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaAnime = UtopiaTheme(
+  static final utopiaAnime = UtopiaTheme(
     id: 'utopia_anime',
-    name: 'Utopia Anime',
-    family: 'Utopia',
-    tagline: 'Cherry blossoms, a quiet shrine and a mountain at dusk.',
+    name: strings.utopiaThemesUtopiaAnime,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesCherryBlossomsAQuietShrine,
     background: Color(0xFF1A1230),
     surface: Color(0xFF2E2150),
     surfaceElevated: Color(0xFF3A2A63),
@@ -675,12 +676,11 @@ class UtopiaThemes {
 
   /// A samurai castle at sunset, dark wood and lantern light: shadow
   /// fighters sparring, a dragon circling the sky.
-  static const utopiaDojo = UtopiaTheme(
+  static final utopiaDojo = UtopiaTheme(
     id: 'utopia_dojo',
-    name: 'Utopia Dojo',
-    family: 'Utopia',
-    tagline:
-        'A samurai castle at sunset, shadow fighters sparring and a dragon circling the sky.',
+    name: strings.utopiaThemesUtopiaDojo,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesASamuraiCastleAtSunset,
     background: Color(0xFF140B07),
     surface: Color(0xFF231510),
     surfaceElevated: Color(0xFF2E1C14),
@@ -729,12 +729,11 @@ class UtopiaThemes {
 
   /// A graveyard at midnight, all dark greens and fog. Worn with the Zombie
   /// Bite aura it gets deader still, and Chip gets bitten.
-  static const utopiaZombie = UtopiaTheme(
+  static final utopiaZombie = UtopiaTheme(
     id: 'utopia_zombie',
-    name: 'Utopia Zombie',
-    family: 'Utopia',
-    tagline:
-        'A graveyard under a sick green moon, where the dead never stay down for long.',
+    name: strings.utopiaThemesUtopiaZombie,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesAGraveyardUnderASick,
     background: Color(0xFF060807),
     surface: Color(0xFF101511),
     surfaceElevated: Color(0xFF182019),
@@ -782,11 +781,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaHeaven = UtopiaTheme(
+  static final utopiaHeaven = UtopiaTheme(
     id: 'utopia_heaven',
-    name: 'Utopia Heaven',
-    family: 'Utopia',
-    tagline: 'Pearly gates above the clouds, where the light never sets.',
+    name: strings.utopiaThemesUtopiaHeaven,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesPearlyGatesAboveTheClouds,
     background: Color(0xFF141A3A),
     surface: Color(0xFF1C2350),
     surfaceElevated: Color(0xFF262F66),
@@ -833,11 +832,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaHell = UtopiaTheme(
+  static final utopiaHell = UtopiaTheme(
     id: 'utopia_hell',
-    name: 'Utopia Hell',
-    family: 'Utopia',
-    tagline: 'A sea of fire under a blood moon. Something is watching.',
+    name: strings.utopiaThemesUtopiaHell,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesASeaOfFireUnder,
     background: Color(0xFF120504),
     surface: Color(0xFF1E0A07),
     surfaceElevated: Color(0xFF2A100B),
@@ -885,11 +884,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaMusic = UtopiaTheme(
+  static final utopiaMusic = UtopiaTheme(
     id: 'utopia_music',
-    name: 'Utopia Music',
-    family: 'Utopia',
-    tagline: 'The show never ends. Lasers up, bass down, hands in the air.',
+    name: strings.utopiaThemesUtopiaMusic,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesTheShowNeverEndsLasers,
     background: Color(0xFF0A0618),
     surface: Color(0xFF140C2A),
     surfaceElevated: Color(0xFF1E1240),
@@ -938,11 +937,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaHalloween = UtopiaTheme(
+  static final utopiaHalloween = UtopiaTheme(
     id: 'utopia_halloween',
-    name: 'Utopia Halloween',
-    family: 'Utopia',
-    tagline: "All Hallows' Eve, every night. Don't look at the tower window.",
+    name: strings.utopiaThemesUtopiaHalloween,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesAllHallowsEveEveryNight,
     background: Color(0xFF0D0716),
     surface: Color(0xFF1A0F26),
     surfaceElevated: Color(0xFF261636),
@@ -991,11 +990,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaWinter = UtopiaTheme(
+  static final utopiaWinter = UtopiaTheme(
     id: 'utopia_winter',
-    name: 'Utopia Winter',
-    family: 'Utopia',
-    tagline: 'Snow on a cabin by a frozen lake. Listen for sleigh bells.',
+    name: strings.utopiaThemesUtopiaWinter,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesSnowOnACabinBy,
     background: Color(0xFF0A1230),
     surface: Color(0xFF121D42),
     surfaceElevated: Color(0xFF1B2A56),
@@ -1045,11 +1044,11 @@ class UtopiaThemes {
   );
 
   /// A birthday party at dusk, only ever seen on the player's own birthday.
-  static const utopiaBirthday = UtopiaTheme(
+  static final utopiaBirthday = UtopiaTheme(
     id: 'utopia_birthday',
-    name: 'Your Birthday',
-    family: 'Utopia',
-    tagline: 'A party in the sky, just for you. Happy birthday!',
+    name: strings.utopiaThemesYourBirthday,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesAPartyInTheSky,
     background: Color(0xFF241044),
     surface: Color(0xFF321A5A),
     surfaceElevated: Color(0xFF3F2370),
@@ -1100,11 +1099,11 @@ class UtopiaThemes {
 
   /// Utopia sketched in ink on paper. The one light world: paper cards,
   /// ink text, ink buttons.
-  static const utopiaDoodle = UtopiaTheme(
+  static final utopiaDoodle = UtopiaTheme(
     id: 'utopia_doodle',
-    name: 'Utopia Doodle',
-    family: 'Utopia',
-    tagline: 'Everything drawn in ink on paper, and still alive.',
+    name: strings.utopiaThemesUtopiaDoodle,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesEverythingDrawnInInkOn,
     background: Color(0xFFF7F3EA),
     surface: Color(0xFFFFFDF7),
     surfaceElevated: Color(0xFFFFFFFF),
@@ -1154,11 +1153,11 @@ class UtopiaThemes {
     ),
   );
 
-  static const utopiaDeep = UtopiaTheme(
+  static final utopiaDeep = UtopiaTheme(
     id: 'utopia_deep',
-    name: 'Utopia Deep',
-    family: 'Utopia',
-    tagline: 'Down under the waves, where the light comes in shafts.',
+    name: strings.utopiaThemesUtopiaDeep,
+    family: strings.utopiaThemesUtopia,
+    tagline: strings.utopiaThemesDownUnderTheWavesWhere,
     background: Color(0xFF0A4A75),
     surface: Color(0xFF082E4D),
     surfaceElevated: Color(0xFF0C3A5E),
@@ -1207,33 +1206,103 @@ class UtopiaThemes {
 
   // ── 12 color families × 3 shades, generated from a hue ──────────────────
 
-  static const _families = [
-    _Family('ruby', 'Ruby', 352, 0.75, WorldBiome.peaks, 'Molten ridges'),
-    _Family('ember', 'Ember', 22, 0.85, WorldBiome.dunes, 'Copper dunes'),
-    _Family('sunbeam', 'Sunbeam', 45, 0.9, WorldBiome.dunes, 'Honey skies'),
-    _Family('jade', 'Jade', 150, 0.6, WorldBiome.islands, 'Emerald isles'),
-    _Family('lagoon', 'Lagoon', 178, 0.65, WorldBiome.ocean, 'Teal shallows'),
-    _Family('azure', 'Azure', 205, 0.75, WorldBiome.ocean, 'Open sea'),
-    _Family('sapphire', 'Sapphire', 225, 0.7, WorldBiome.islands, 'Deep blue'),
+  static final _families = [
+    _Family(
+      'ruby',
+      strings.utopiaThemesRuby,
+      352,
+      0.75,
+      WorldBiome.peaks,
+      strings.utopiaThemesMoltenRidges,
+    ),
+    _Family(
+      'ember',
+      strings.utopiaThemesEmber,
+      22,
+      0.85,
+      WorldBiome.dunes,
+      strings.utopiaThemesCopperDunes,
+    ),
+    _Family(
+      'sunbeam',
+      strings.utopiaThemesSunbeam,
+      45,
+      0.9,
+      WorldBiome.dunes,
+      strings.utopiaThemesHoneySkies,
+    ),
+    _Family(
+      'jade',
+      strings.utopiaThemesJade,
+      150,
+      0.6,
+      WorldBiome.islands,
+      strings.utopiaThemesEmeraldIsles,
+    ),
+    _Family(
+      'lagoon',
+      strings.utopiaThemesLagoon,
+      178,
+      0.65,
+      WorldBiome.ocean,
+      strings.utopiaThemesTealShallows,
+    ),
+    _Family(
+      'azure',
+      strings.utopiaThemesAzure,
+      205,
+      0.75,
+      WorldBiome.ocean,
+      strings.utopiaThemesOpenSea,
+    ),
+    _Family(
+      'sapphire',
+      strings.utopiaThemesSapphire,
+      225,
+      0.7,
+      WorldBiome.islands,
+      strings.utopiaThemesDeepBlue,
+    ),
     _Family(
       'amethyst',
-      'Amethyst',
+      strings.utopiaThemesAmethyst,
       270,
       0.6,
       WorldBiome.islands,
-      'Violet isles',
+      strings.utopiaThemesVioletIsles,
     ),
     _Family(
       'blossom',
-      'Blossom',
+      strings.utopiaThemesBlossom,
       325,
       0.7,
       WorldBiome.islands,
-      'Cherry clouds',
+      strings.utopiaThemesCherryClouds,
     ),
-    _Family('rosegold', 'Rose Gold', 12, 0.45, WorldBiome.dunes, 'Rosy sands'),
-    _Family('onyx', 'Onyx', 240, 0.08, WorldBiome.peaks, 'Obsidian peaks'),
-    _Family('pearl', 'Pearl', 215, 0.14, WorldBiome.peaks, 'Moonlit snow'),
+    _Family(
+      'rosegold',
+      strings.utopiaThemesRoseGold,
+      12,
+      0.45,
+      WorldBiome.dunes,
+      strings.utopiaThemesRosySands,
+    ),
+    _Family(
+      'onyx',
+      strings.utopiaThemesOnyx,
+      240,
+      0.08,
+      WorldBiome.peaks,
+      strings.utopiaThemesObsidianPeaks,
+    ),
+    _Family(
+      'pearl',
+      strings.utopiaThemesPearl,
+      215,
+      0.14,
+      WorldBiome.peaks,
+      strings.utopiaThemesMoonlitSnow,
+    ),
   ];
 
   static UtopiaTheme _colorTheme(_Family f, _Shade shade) {

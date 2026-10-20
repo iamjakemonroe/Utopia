@@ -18,6 +18,7 @@ import '../../../chat/domain/voice_note.dart';
 import '../widgets/ludo_board.dart';
 import '../widgets/ludo_dice.dart';
 import '../widgets/ludo_pieces.dart';
+import '../../../../l10n/strings.dart';
 
 final ludoRepositoryProvider = Provider<LudoRepository>((ref) {
   return LudoRepository(ref.watch(supabaseClientProvider));
@@ -287,8 +288,9 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
         .watchMatch(_matchId)
         .listen(
           _onMatchRow,
-          onError: (Object e) =>
-              state = state.copyWith(error: 'Connection lost. Reconnecting.'),
+          onError: (Object e) => state = state.copyWith(
+            error: strings.ludoMatchConnectionLostReconnecting,
+          ),
         );
     _chatSub = _repository.watchChat(_matchId).listen(_onChat, onError: (_) {});
     _turnClock = Timer.periodic(
@@ -496,7 +498,10 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
 
   void _onMatchRow(Map<String, dynamic>? row) {
     if (row == null) {
-      state = state.copyWith(loading: false, error: 'Match not found');
+      state = state.copyWith(
+        loading: false,
+        error: strings.ludoMatchMatchNotFound,
+      );
       return;
     }
     final game = LudoState.fromJson(row['state'] as Map<String, dynamic>);
@@ -664,8 +669,10 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
       return null;
     } catch (e) {
       final message = e.toString();
-      if (message.contains('slow down')) return 'Whoa, slow down a little!';
-      return "Couldn't send that message.";
+      if (message.contains('slow down')) {
+        return strings.ludoMatchWhoaSlowDownALittle;
+      }
+      return strings.ludoMatchCouldnTSendThatMessage;
     }
   }
 
@@ -692,9 +699,9 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
       return null;
     } catch (e) {
       if (e.toString().contains('slow down')) {
-        return 'Whoa, slow down a little!';
+        return strings.ludoMatchWhoaSlowDownALittle;
       }
-      return "Couldn't send your voice note.";
+      return strings.ludoMatchCouldnTSendYourVoice;
     }
   }
 
@@ -747,7 +754,7 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
         );
         state = state.copyWith(busy: false);
       } catch (_) {
-        await _resync("Couldn't send your roll. Reconnecting.");
+        await _resync(strings.ludoMatchCouldnTSendYourRoll);
         return;
       }
     }
@@ -816,7 +823,7 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
         await _repository.recordRoll(matchId: _matchId, state: shown.toJson());
         state = state.copyWith(busy: false);
       } catch (_) {
-        await _resync("Couldn't send your roll. Reconnecting.");
+        await _resync(strings.ludoMatchCouldnTSendYourRoll);
         return;
       }
     }
@@ -912,7 +919,7 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
       state = state.copyWith(busy: false);
       if (state.isActive) _maybeReportResult(next);
     } catch (_) {
-      await _resync("That move didn't go through. Reconnecting.");
+      await _resync(strings.ludoMatchThatMoveDidnTGo);
     }
   }
 

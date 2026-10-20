@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../domain/time_control.dart';
+import '../../../../l10n/strings.dart';
 
 /// Entry amounts offered for chess games (0 is free).
 const List<int> kChessEntries = [0, 25, 50, 100, 250, 500];
@@ -78,8 +79,11 @@ class TimeControlPicker extends StatelessWidget {
               ),
               Text(
                 value.increment == 0
-                    ? '  ·  ${value.minutes} min each'
-                    : '  ·  ${value.minutes} min  +${value.increment}s a move',
+                    ? strings.timeControlStyleMinEach(value.minutes)
+                    : strings.timeControlStyleMinSAMove(
+                        value.minutes,
+                        value.increment,
+                      ),
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
             ],

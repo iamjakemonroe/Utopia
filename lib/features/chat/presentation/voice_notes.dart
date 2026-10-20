@@ -18,6 +18,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../data/chat_repository.dart';
 import '../domain/voice_note.dart';
+import '../../../l10n/strings.dart';
 
 // ── playback ──────────────────────────────────────────────────────────────
 
@@ -401,7 +402,7 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
       if (mounted) {
         showUtopiaToast(
           context,
-          'Allow microphone access in Settings to send voice notes.',
+          strings.voiceNotesAllowMicrophoneAccessInSettings,
           icon: Icons.mic_off_rounded,
           kind: ToastKind.warning,
         );
@@ -444,7 +445,7 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
       if (mounted) {
         showUtopiaToast(
           context,
-          "Couldn't start recording.",
+          strings.voiceNotesCouldnTStartRecording,
           kind: ToastKind.error,
         );
       }
@@ -520,7 +521,7 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
   Widget build(BuildContext context) {
     if (!_recording) {
       return IconButton.filled(
-        tooltip: 'Record a voice note',
+        tooltip: strings.voiceNotesRecordAVoiceNote,
         style: IconButton.styleFrom(backgroundColor: AppColors.surfaceElevated),
         icon: _sending
             ? const SizedBox.square(
@@ -544,7 +545,7 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
-          tooltip: 'Delete',
+          tooltip: strings.voiceNotesDelete,
           icon: const Icon(Icons.delete_outline_rounded),
           color: AppColors.textSecondary,
           onPressed: _cancel,
@@ -620,7 +621,7 @@ class _VoiceRecorderButtonState extends ConsumerState<VoiceRecorderButton>
         ),
         const SizedBox(width: 6),
         IconButton.filled(
-          tooltip: 'Send',
+          tooltip: strings.voiceNotesSend,
           style: IconButton.styleFrom(backgroundColor: AppColors.success),
           icon: const Icon(Icons.send_rounded, color: Colors.white),
           onPressed: _send,

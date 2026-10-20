@@ -25,7 +25,10 @@ void main() {
     expect(NicknameRules.problem('\u202EkaJ'), contains('Hidden'));
     expect(NicknameRules.problem('\u3164\u3164\u3164'), contains('see'));
     expect(NicknameRules.problem('J'), contains('see'));
-    expect(NicknameRules.problem('Ja\u0301\u0302\u0303\u0304ke'), contains('marks'));
+    expect(
+      NicknameRules.problem('Ja\u0301\u0302\u0303\u0304ke'),
+      contains('marks'),
+    );
     expect(NicknameRules.problem('a' * 25), contains('24'));
   });
 

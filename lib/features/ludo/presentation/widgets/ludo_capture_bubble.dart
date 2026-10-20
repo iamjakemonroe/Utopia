@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/frame_island.dart';
+import '../../../../l10n/strings.dart';
 
 /// How far the piece is from the middle of what's anchored over it, when
 /// the board kept that inside its edges: its point still points at it.
@@ -119,7 +120,7 @@ class _LudoCaptureBadgeState extends State<LudoCaptureBadge>
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'React',
+                                    strings.ludoCaptureBubbleReact,
                                     style: AppTextStyles.body(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w900,
@@ -235,14 +236,14 @@ class _LudoReactionCardState extends State<LudoReactionCard>
                             children: [
                               _Choice(
                                 mood: BuddyMood.evil,
-                                label: 'War',
+                                label: strings.ludoCaptureBubbleWar,
                                 tint: AppColors.error,
                                 onTap: widget.onWar,
                               ),
                               const SizedBox(width: 10),
                               _Choice(
                                 mood: BuddyMood.peaceful,
-                                label: 'Peace',
+                                label: strings.ludoCaptureBubblePeace,
                                 tint: AppColors.success,
                                 onTap: widget.onPeace,
                               ),

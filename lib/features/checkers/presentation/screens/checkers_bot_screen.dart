@@ -31,6 +31,7 @@ import '../widgets/checkers_board.dart';
 import '../widgets/checkers_disc.dart';
 import '../../../events/presentation/events_controller.dart';
 import '../../../../core/layout/game_stage.dart';
+import '../../../../l10n/strings.dart';
 
 /// Checkers on this phone, no internet needed: against Chip or Robo (who
 /// think off the main thread and react to the game), or two people taking
@@ -197,7 +198,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
       OfflineGame(
         kind: GameKind.checkers,
         route: _route,
-        opponent: widget.opponent?.name ?? 'a friend',
+        opponent: widget.opponent?.name ?? strings.checkersBotAFriend,
         data: {
           'moves': [for (final m in _moves) m.notation],
           if (clock != null) ...{
@@ -284,37 +285,49 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     });
   }
 
-  static const _chipLines = {
+  static final _chipLines = {
     _Moment.start: [
       "Let's play! Dark goes first.",
-      "Ready? I've been practising my jumps!",
-      'Good luck! Have fun!',
+      strings.checkersBotReadyIVeBeenPractising,
+      strings.checkersBotGoodLuckHaveFun,
     ],
-    _Moment.botCapture: ['Hop! Gotcha.', 'Mine now!', 'Yoink!'],
-    _Moment.playerCapture: ['Hey! I needed that.', 'Oof, nice jump.', 'Nooo!'],
-    _Moment.botDouble: ['Double jump!', 'Boing boing!', 'Two for one!'],
+    _Moment.botCapture: ['Hop! Gotcha.', strings.checkersBotMineNow, 'Yoink!'],
+    _Moment.playerCapture: [
+      'Hey! I needed that.',
+      strings.checkersBotOofNiceJump,
+      'Nooo!',
+    ],
+    _Moment.botDouble: [
+      'Double jump!',
+      strings.checkersBotBoingBoing,
+      'Two for one!',
+    ],
     _Moment.playerDouble: [
       'Two at once?!',
-      'Whoa, a double!',
-      "That's not fair... it is fair.",
+      strings.checkersBotWhoaADouble,
+      strings.checkersBotThatSNotFairIt,
     ],
-    _Moment.botKing: ['Crown me!', "I'm a king now!", 'All hail me!'],
+    _Moment.botKing: [
+      'Crown me!',
+      strings.checkersBotIMAKingNow,
+      'All hail me!',
+    ],
     _Moment.playerKing: [
       'Oh no, you got a king.',
-      'Your Majesty...',
-      'Kings go backwards too. Eek.',
+      strings.checkersBotYourMajesty,
+      strings.checkersBotKingsGoBackwardsTooEek,
     ],
     _Moment.botWin: ['I won! Good game!', 'No moves left for you! Rematch?'],
     _Moment.playerWin: ['You got me! Well played.', "I'm all out of moves!"],
     _Moment.draw: ['A draw! Nobody loses.', 'Even match!'],
   };
 
-  static const _roboLines = {
+  static final _roboLines = {
     _Moment.start: ['BEEP. GAME START.', 'CHECKERS MODULE LOADED.'],
     _Moment.botCapture: ['TARGET ACQUIRED.', 'PIECE COLLECTED.'],
     _Moment.playerCapture: [
       'PIECE LOST. RECALCULATING.',
-      'ERROR: PIECE MISSING.',
+      strings.checkersBotErrorPieceMissing,
     ],
     _Moment.botDouble: ['CHAIN JUMP EXECUTED.', 'EFFICIENCY: 200 PERCENT.'],
     _Moment.playerDouble: ['MULTIPLE LOSSES DETECTED.', 'ALERT. ALERT.'],
@@ -322,7 +335,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     _Moment.playerKing: ['WARNING: HUMAN KING.', 'THREAT LEVEL RAISED.'],
     _Moment.botWin: [
       'NO MOVES REMAIN. GG HUMAN.',
-      'VICTORY PROTOCOL COMPLETE.',
+      strings.checkersBotVictoryProtocolComplete,
     ],
     _Moment.playerWin: ['SYSTEM DEFEATED. WELL PLAYED.', 'REBOOTING PRIDE.'],
     _Moment.draw: ['DRAW. NO WINNER.', 'STALEMATE. COMPUTING... OK.'],
@@ -526,8 +539,9 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     });
   }
 
-  String _sideName(CheckersSide side) =>
-      side == CheckersSide.dark ? 'Dark' : 'Light';
+  String _sideName(CheckersSide side) => side == CheckersSide.dark
+      ? strings.checkersBotDark
+      : strings.checkersBotLight;
 
   @override
   Widget build(BuildContext context) {
@@ -551,57 +565,61 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     final iWon = _over && (_twoPlayer ? winner != null : winner == _me);
     final last = _shownPly == 0 ? null : _moves[_shownPly - 1];
     final levelName = switch (widget.level) {
-      BotLevel.easy => 'Easy',
-      BotLevel.normal => 'Normal',
-      BotLevel.hard => 'Hard',
+      BotLevel.easy => strings.checkersBotEasy,
+      BotLevel.normal => strings.checkersBotNormal,
+      BotLevel.hard => strings.checkersBotHard,
     };
     final toMove = _pos.toMove;
 
     final String status;
     if (_over) {
       status = winner == null
-          ? 'Draw'
+          ? strings.checkersBotDraw
           : _flagged != null && _twoPlayer
-          ? '${_sideName(_flagged!)} ran out of time'
+          ? strings.checkersBotRanOutOfTime(_sideName(_flagged!))
           : _flagged == _me
-          ? 'Out of time'
+          ? strings.checkersBotOutOfTime
           : _twoPlayer
           ? '${_sideName(winner)} wins!'
           : winner == _me
-          ? 'You won!'
+          ? strings.checkersBotYouWon
           : '${widget.opponent!.name} won';
     } else if (_thinking) {
-      status = '${widget.opponent!.name} is thinking...';
+      status = strings.checkersBotIsThinking(widget.opponent!.name);
     } else if (_twoPlayer) {
       status = mustCapture
-          ? '${_sideName(toMove)}: you must take a piece'
-          : "${_sideName(toMove)}'s move";
+          ? strings.checkersBotYouMustTakeAPiece(_sideName(toMove))
+          : strings.checkersBotSMove(_sideName(toMove));
     } else {
-      status = mustCapture ? 'You must take a piece' : 'Your move';
+      status = mustCapture
+          ? strings.checkersBotYouMustTakeAPiece2
+          : strings.checkersBotYourMove;
     }
 
     final scaffold = Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
-          tooltip: 'Close',
+          tooltip: strings.checkersBotClose,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           [
-            _twoPlayer ? 'Checkers · one phone' : 'vs ${widget.opponent!.name}',
+            _twoPlayer
+                ? strings.checkersBotCheckersOnePhone
+                : 'vs ${widget.opponent!.name}',
             ?widget.clock?.label,
           ].join(' · '),
         ),
         actions: [
           const SoundQuickToggle(),
           IconButton(
-            tooltip: 'Take back',
+            tooltip: strings.checkersBotTakeBack,
             icon: const Icon(Icons.undo_rounded),
             onPressed: _moves.isEmpty || _over ? null : _takeBack,
           ),
           IconButton(
-            tooltip: 'Resign',
+            tooltip: strings.checkersBotResign,
             icon: const Icon(Icons.flag_rounded),
             onPressed: _over ? null : _resign,
           ),
@@ -721,7 +739,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
                     children: [
                       UserAvatar.fromProfile(
                         profile,
-                        fallbackInitial: 'You',
+                        fallbackInitial: strings.checkersBotYou,
                         radius: 20,
                       ),
                       const SizedBox(width: 10),
@@ -739,7 +757,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
                       if (_over && !_showResult)
                         TextButton(
                           onPressed: () => setState(() => _showResult = true),
-                          child: const Text('Result'),
+                          child: Text(strings.checkersBotResult),
                         ),
                       if (_clock != null)
                         ClockPill(
@@ -768,19 +786,19 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
                 child: _Result(
                   persona: widget.opponent,
                   title: _over && winner == null
-                      ? "It's a draw"
+                      ? strings.checkersBotItSADraw
                       : _flagged != null && _twoPlayer
-                      ? '${_sideName(_flagged!)} ran out of time'
+                      ? strings.checkersBotRanOutOfTime(_sideName(_flagged!))
                       : _flagged == _me
-                      ? 'Out of time'
+                      ? strings.checkersBotOutOfTime
                       : _flagged != null
-                      ? '${widget.opponent!.name} ran out of time'
+                      ? strings.checkersBotRanOutOfTime(widget.opponent!.name)
                       : _twoPlayer
                       ? '${_sideName(winner!)} wins!'
                       : iWon
-                      ? 'You won!'
+                      ? strings.checkersBotYouWon
                       : _resigned
-                      ? 'You resigned'
+                      ? strings.checkersBotYouResigned
                       : '${widget.opponent!.name} won',
                   won: iWon,
                   draw: winner == null,
@@ -825,7 +843,9 @@ class _SideBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = side == CheckersSide.dark ? 'Dark' : 'Light';
+    final name = side == CheckersSide.dark
+        ? strings.checkersBotDark
+        : strings.checkersBotLight;
     final bar = PopCard(
       borderRadius: 20,
       tint: active ? AppColors.accentSecondary : null,
@@ -851,7 +871,7 @@ class _SideBar extends StatelessWidget {
           ),
           if (taken > 0)
             Text(
-              'Took $taken',
+              strings.checkersBotTook(taken),
               style: AppTextStyles.body(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
@@ -859,7 +879,10 @@ class _SideBar extends StatelessWidget {
               ),
             ),
           if (onResult != null)
-            TextButton(onPressed: onResult, child: const Text('Result')),
+            TextButton(
+              onPressed: onResult,
+              child: Text(strings.checkersBotResult),
+            ),
           if (clock != null) ...[const SizedBox(width: 8), clock!],
         ],
       ),
@@ -972,7 +995,9 @@ class _BotBar extends StatelessWidget {
                           style: AppTextStyles.display(fontSize: 20),
                         ),
                         Text(
-                          thinking ? 'Thinking...' : '$level · offline',
+                          thinking
+                              ? strings.checkersBotThinking
+                              : strings.checkersBotOffline(level),
                           style: AppTextStyles.body(
                             fontSize: 13,
                             color: AppColors.textSecondary,
@@ -1051,7 +1076,7 @@ class _Result extends StatelessWidget {
                   Text(title, style: AppTextStyles.display(fontSize: 28)),
                   const SizedBox(height: AppSpacing.lg),
                   PrimaryButton(
-                    label: 'Play again',
+                    label: strings.checkersBotPlayAgain,
                     color: AppColors.success,
                     onPressed: onAgain,
                   ),
@@ -1061,13 +1086,13 @@ class _Result extends StatelessWidget {
                       Expanded(
                         child: TextButton(
                           onPressed: onReview,
-                          child: const Text('See the board'),
+                          child: Text(strings.checkersBotSeeTheBoard),
                         ),
                       ),
                       Expanded(
                         child: TextButton(
                           onPressed: onDone,
-                          child: const Text('Done'),
+                          child: Text(strings.checkersBotDone),
                         ),
                       ),
                     ],

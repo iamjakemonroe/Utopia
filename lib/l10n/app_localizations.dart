@@ -5791,6 +5791,6012 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Coins. Tap to get more.'**
   String get coinBalancePillCoinsTapToGetMore;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Twilight'**
+  String get utopiaThemesUtopiaTwilight;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia'**
+  String get utopiaThemesUtopia;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Twilight islands floating over a sea of clouds.'**
+  String get utopiaThemesTwilightIslandsFloatingOverA;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Noir'**
+  String get utopiaThemesNoir;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pure black, pure white. Nothing in between.'**
+  String get utopiaThemesPureBlackPureWhiteNothing;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Calm'**
+  String get utopiaThemesUtopiaCalm;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A glassy ocean at dusk. Breathe in.'**
+  String get utopiaThemesAGlassyOceanAtDusk;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Adventure'**
+  String get utopiaThemesUtopiaAdventure;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Peaks, floating rocks and a balloon to chase.'**
+  String get utopiaThemesPeaksFloatingRocksAndA;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Warm'**
+  String get utopiaThemesUtopiaWarm;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Golden dunes and a sky full of lanterns.'**
+  String get utopiaThemesGoldenDunesAndASky;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Alien'**
+  String get utopiaThemesUtopiaAlien;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Glowing mushrooms, two moons and something in the sky.'**
+  String get utopiaThemesGlowingMushroomsTwoMoonsAnd;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Tech'**
+  String get utopiaThemesUtopiaTech;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A neon city that never sleeps, over a glowing grid.'**
+  String get utopiaThemesANeonCityThatNever;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Anime'**
+  String get utopiaThemesUtopiaAnime;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Cherry blossoms, a quiet shrine and a mountain at dusk.'**
+  String get utopiaThemesCherryBlossomsAQuietShrine;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Dojo'**
+  String get utopiaThemesUtopiaDojo;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A samurai castle at sunset, shadow fighters sparring and a dragon circling the sky.'**
+  String get utopiaThemesASamuraiCastleAtSunset;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Zombie'**
+  String get utopiaThemesUtopiaZombie;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A graveyard under a sick green moon, where the dead never stay down for long.'**
+  String get utopiaThemesAGraveyardUnderASick;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Heaven'**
+  String get utopiaThemesUtopiaHeaven;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pearly gates above the clouds, where the light never sets.'**
+  String get utopiaThemesPearlyGatesAboveTheClouds;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Hell'**
+  String get utopiaThemesUtopiaHell;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A sea of fire under a blood moon. Something is watching.'**
+  String get utopiaThemesASeaOfFireUnder;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Music'**
+  String get utopiaThemesUtopiaMusic;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The show never ends. Lasers up, bass down, hands in the air.'**
+  String get utopiaThemesTheShowNeverEndsLasers;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Halloween'**
+  String get utopiaThemesUtopiaHalloween;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'All Hallows\' Eve, every night. Don\'t look at the tower window.'**
+  String get utopiaThemesAllHallowsEveEveryNight;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Winter'**
+  String get utopiaThemesUtopiaWinter;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Snow on a cabin by a frozen lake. Listen for sleigh bells.'**
+  String get utopiaThemesSnowOnACabinBy;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your Birthday'**
+  String get utopiaThemesYourBirthday;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A party in the sky, just for you. Happy birthday!'**
+  String get utopiaThemesAPartyInTheSky;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Doodle'**
+  String get utopiaThemesUtopiaDoodle;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Everything drawn in ink on paper, and still alive.'**
+  String get utopiaThemesEverythingDrawnInInkOn;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Deep'**
+  String get utopiaThemesUtopiaDeep;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Down under the waves, where the light comes in shafts.'**
+  String get utopiaThemesDownUnderTheWavesWhere;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ruby'**
+  String get utopiaThemesRuby;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Molten ridges'**
+  String get utopiaThemesMoltenRidges;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ember'**
+  String get utopiaThemesEmber;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Copper dunes'**
+  String get utopiaThemesCopperDunes;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sunbeam'**
+  String get utopiaThemesSunbeam;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Honey skies'**
+  String get utopiaThemesHoneySkies;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Jade'**
+  String get utopiaThemesJade;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald isles'**
+  String get utopiaThemesEmeraldIsles;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Lagoon'**
+  String get utopiaThemesLagoon;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Teal shallows'**
+  String get utopiaThemesTealShallows;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Azure'**
+  String get utopiaThemesAzure;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Open sea'**
+  String get utopiaThemesOpenSea;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sapphire'**
+  String get utopiaThemesSapphire;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Deep blue'**
+  String get utopiaThemesDeepBlue;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Amethyst'**
+  String get utopiaThemesAmethyst;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Violet isles'**
+  String get utopiaThemesVioletIsles;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Blossom'**
+  String get utopiaThemesBlossom;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Cherry clouds'**
+  String get utopiaThemesCherryClouds;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rose Gold'**
+  String get utopiaThemesRoseGold;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rosy sands'**
+  String get utopiaThemesRosySands;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Onyx'**
+  String get utopiaThemesOnyx;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Obsidian peaks'**
+  String get utopiaThemesObsidianPeaks;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pearl'**
+  String get utopiaThemesPearl;
+
+  /// core/theme/utopia_themes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Moonlit snow'**
+  String get utopiaThemesMoonlitSnow;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Common'**
+  String get auraCommon;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rare'**
+  String get auraRare;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Legendary'**
+  String get auraLegendary;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Mythic'**
+  String get auraMythic;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'3 days'**
+  String get aura3Days;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'1 week'**
+  String get aura1Week;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'1 month'**
+  String get aura1Month;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Dragon Coil'**
+  String get auraDragonCoil;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A dragon wound round your picture, breathing fire. In the Dojo world, it flies free and Chip squares up to it.'**
+  String get auraADragonWoundRoundYour;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Crimson Fury'**
+  String get auraCrimsonFury;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Red lightning, a roaring fire vortex and shockwaves. Pure fury.'**
+  String get auraRedLightningARoaringFire;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Supernova'**
+  String get auraSupernova;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A star exploding around you, over and over.'**
+  String get auraAStarExplodingAroundYou;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Event Horizon'**
+  String get auraEventHorizon;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A black hole with a blazing disk, pulling the light in.'**
+  String get auraABlackHoleWithA;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Frostfire'**
+  String get auraFrostfire;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ice and fire chasing each other round. Sparks where they meet.'**
+  String get auraIceAndFireChasingEach;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ring of Fire'**
+  String get auraRingOfFire;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A blazing ring of fire, spinning all around you.'**
+  String get auraABlazingRingOfFire;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Bite'**
+  String get auraZombieBite;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rotting hands claw up to grab you. Something took a bite. In the Zombie world, Chip gets bitten too.'**
+  String get auraRottingHandsClawUpTo;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Encore'**
+  String get auraEncore;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your picture on a spinning record, an equalizer jumping all around it on the beat. In the Music world, Chip takes the decks.'**
+  String get auraYourPictureOnASpinning;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Jack\'s Lantern'**
+  String get auraJackSLantern;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Black brambles round your picture, grinning jack-o\'-lanterns on the rim, a spider on its web and bats circling. In the Halloween world, Chip gets carved.'**
+  String get auraBlackBramblesRoundYourPicture;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Snow Globe'**
+  String get auraSnowGlobe;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your picture sealed in a snow globe on a polished stand, the snow swirling up round you every time it\'s shaken. In the Winter world, Chip wraps up warm.'**
+  String get auraYourPictureSealedInA;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Inferno'**
+  String get auraInferno;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A frame of lava running down both sides, flames trying to catch, obsidian horns and tail. In the Hell world, Chip grows horns.'**
+  String get auraAFrameOfLavaRunning;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Phoenix'**
+  String get auraPhoenix;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Wings of flame that beat behind you.'**
+  String get auraWingsOfFlameThatBeat;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Galaxy'**
+  String get auraGalaxy;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A spiral of stars turning around you.'**
+  String get auraASpiralOfStarsTurning;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Shadow Flame'**
+  String get auraShadowFlame;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Dark fire with a glowing green heart.'**
+  String get auraDarkFireWithAGlowing;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Violet Storm'**
+  String get auraVioletStorm;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Purple lightning crackling all around you.'**
+  String get auraPurpleLightningCracklingAllAround;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'White Storm'**
+  String get auraWhiteStorm;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'White lightning crackling all around you.'**
+  String get auraWhiteLightningCracklingAllAround;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Blue Storm'**
+  String get auraBlueStorm;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Electric blue bolts, never still.'**
+  String get auraElectricBlueBoltsNeverStill;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald Storm'**
+  String get auraEmeraldStorm;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Green lightning with a wild streak.'**
+  String get auraGreenLightningWithAWild;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Golden Storm'**
+  String get auraGoldenStorm;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Gold bolts, like a crown of thunder.'**
+  String get auraGoldBoltsLikeACrown;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pink Storm'**
+  String get auraPinkStorm;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Hot pink lightning that never calms down.'**
+  String get auraHotPinkLightningThatNever;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sunburst'**
+  String get auraSunburst;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Golden rays turning slowly, like a sunrise.'**
+  String get auraGoldenRaysTurningSlowlyLike;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Prism'**
+  String get auraPrism;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A rainbow ring that never stops turning.'**
+  String get auraARainbowRingThatNever;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Orbit'**
+  String get auraOrbit;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Little planets circling your picture.'**
+  String get auraLittlePlanetsCirclingYourPicture;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Neon Pulse'**
+  String get auraNeonPulse;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Two neon rings racing opposite ways.'**
+  String get auraTwoNeonRingsRacingOpposite;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Tidal'**
+  String get auraTidal;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Waves rolling around you, splashing as they go.'**
+  String get auraWavesRollingAroundYouSplashing;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Angel Halo'**
+  String get auraAngelHalo;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A golden halo and feathers drifting down. In the Heaven world, Chip gets his wings.'**
+  String get auraAGoldenHaloAndFeathers;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Bubble Ring'**
+  String get auraBubbleRing;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Soap bubbles drifting up and away.'**
+  String get auraSoapBubblesDriftingUpAnd;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sakura'**
+  String get auraSakura;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Cherry petals dancing in a circle.'**
+  String get auraCherryPetalsDancingInA;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Frost'**
+  String get auraFrost;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ice crystals and a cool blue shimmer.'**
+  String get auraIceCrystalsAndACool;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Lovestruck'**
+  String get auraLovestruck;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Hearts circling you, beating as they go.'**
+  String get auraHeartsCirclingYouBeatingAs;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Fireflies'**
+  String get auraFireflies;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Little lights wandering around you at dusk.'**
+  String get auraLittleLightsWanderingAroundYou;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Starlight'**
+  String get auraStarlight;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Stars twinkling all around your picture.'**
+  String get auraStarsTwinklingAllAroundYour;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Autumn Leaves'**
+  String get auraAutumnLeaves;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Golden leaves swirling on the wind.'**
+  String get auraGoldenLeavesSwirlingOnThe;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Maestro'**
+  String get auraMaestro;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A ring of wet paint, with a brush painting around you.'**
+  String get auraARingOfWetPaint;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip Maestro'**
+  String get auraChipMaestro;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday Party'**
+  String get auraBirthdayParty;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A ribbon in every color, a party hat, balloons and a little cake. Only on your birthday.'**
+  String get auraARibbonInEveryColor;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get auraExpired;
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{inDays}d {value}h left'**
+  String auraDHLeft(Object inDays, Object value);
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{inHours}h {value}m left'**
+  String auraHMLeft(Object inHours, Object value);
+
+  /// features/auras/domain/aura.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value}m left'**
+  String auraMLeft(Object value);
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Turn my photo into a coloring page'**
+  String get chipChatTurnMyPhotoIntoA;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Tell me a joke'**
+  String get chipChatTellMeAJoke;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Which world should I try?'**
+  String get chipChatWhichWorldShouldITry;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How do I play Ludo?'**
+  String get chipChatHowDoIPlayLudo;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Help me with my homework'**
+  String get chipChatHelpMeWithMyHomework;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open that photo.'**
+  String get chipChatCouldnTOpenThatPhoto;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That picture isn\'t ready to color yet.'**
+  String get chipChatThatPictureIsnTReady;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'your photo'**
+  String get chipChatYourPhoto;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your free real portrait'**
+  String get chipChatYourFreeRealPortrait;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip has a photo-quality coloring page made that looks just like {who}. Your first one is free; after that, real portraits come with Chip Maestro.'**
+  String chipChatChipHasAPhotoQuality(Object who);
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get chipChatNotNow;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw it free'**
+  String get chipChatDrawItFree;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s this month\'s real portraits. More when your plan renews!'**
+  String get chipChatThatSThisMonthS;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s all the real portraits for today. More tomorrow!'**
+  String get chipChatThatSAllTheReal;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Real portraits are coming soon.'**
+  String get chipChatRealPortraitsAreComingSoon;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Send Chip the photo again first.'**
+  String get chipChatSendChipThePhotoAgain;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start the portrait. Try again?'**
+  String get chipChatCouldnTStartThePortrait;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new chat?'**
+  String get chipChatStartANewChat;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip will forget this conversation.'**
+  String get chipChatChipWillForgetThisConversation;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get chipChatKeepIt;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'New chat'**
+  String get chipChatNewChat;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Store'**
+  String get chipChatOpenTheStore;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'See auras'**
+  String get chipChatSeeAuras;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Change world'**
+  String get chipChatChangeWorld;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Get coins'**
+  String get chipChatGetCoins;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Open Friends'**
+  String get chipChatOpenFriends;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get chipChatNotifications;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get chipChatSettings;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile'**
+  String get chipChatYourProfile;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Sketchbook'**
+  String get chipChatOpenTheSketchbook;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How to play chess'**
+  String get chipChatHowToPlayChess;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How to play checkers'**
+  String get chipChatHowToPlayCheckers;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How to play Ludo'**
+  String get chipChatHowToPlayLudo;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play chess'**
+  String get chipChatPlayChess;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play checkers'**
+  String get chipChatPlayCheckers;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play Ludo'**
+  String get chipChatPlayLudo;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play Guess My Doodle'**
+  String get chipChatPlayGuessMyDoodle;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save your account'**
+  String get chipChatSaveYourAccount;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Report a bug'**
+  String get chipChatReportABug;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest a feature'**
+  String get chipChatSuggestAFeature;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip'**
+  String get chipChatChip;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking...'**
+  String get chipChatThinking;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your buddy in Utopia. Ask me anything.'**
+  String get chipChatYourBuddyInUtopiaAsk;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw it for real · Free'**
+  String get chipChatDrawItForRealFree;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw it for real · {left} left'**
+  String chipChatDrawItForRealLeft(Object left);
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw it for real with Chip Maestro'**
+  String get chipChatDrawItForRealWith;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Color it with Chip'**
+  String get chipChatColorItWithChip;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep chatting · {value} coins'**
+  String chipChatKeepChattingCoins(Object value);
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Tell Chip about the photo'**
+  String get chipChatTellChipAboutThePhoto;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Say something to Chip'**
+  String get chipChatSaySomethingToChip;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Hi! I know every corner of Utopia, and plenty outside it. Ask me anything, have me draw you a picture to color, or just say hello.'**
+  String get chipChatHiIKnowEveryCorner;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Found a bug, or got an idea? Pass it on and the team will see it.'**
+  String get chipChatFoundABugOrGot;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get chipChatSend;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Send Chip a photo'**
+  String get chipChatSendChipAPhoto;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Photo for Chip'**
+  String get chipChatPhotoForChip;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the photo'**
+  String get chipChatRemoveThePhoto;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Color it'**
+  String get chipChatColorIt;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Travel to Doodle to color it'**
+  String get chipChatTravelToDoodleToColor;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Get the Doodle world to color it'**
+  String get chipChatGetTheDoodleWorldTo;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Drawing {subject}...'**
+  String chipChatDrawing(Object subject);
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'I can\'t draw that one. Try something else?'**
+  String get chipChatICanTDrawThat;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve drawn all I can today. Ask me again tomorrow!'**
+  String get chipChatIVeDrawnAllI;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'My pencil isn\'t ready yet.'**
+  String get chipChatMyPencilIsnTReady;
+
+  /// features/chip/presentation/chip_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That drawing didn\'t work out. Ask me again?'**
+  String get chipChatThatDrawingDidnTWork;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get chessBotWhite;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get chessBotBlack;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'a friend'**
+  String get chessBotAFriend;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ready? I\'ve been practising!'**
+  String get chessBotReadyIVeBeenPractising;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Good luck! Have fun!'**
+  String get chessBotGoodLuckHaveFun;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Mine now!'**
+  String get chessBotMineNow;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Oof, nice one.'**
+  String get chessBotOofNiceOne;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nooo, my piece!'**
+  String get chessBotNoooMyPiece;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Watch your king!'**
+  String get chessBotWatchYourKing;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Whoa, check?'**
+  String get chessBotWhoaCheck;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Checkmate... you\'re good!'**
+  String get chessBotCheckmateYouReGood;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'ERROR: PIECE MISSING.'**
+  String get chessBotErrorPieceMissing;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this game?'**
+  String get chessBotLeaveThisGame;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'This game ends here and won\'t be saved.'**
+  String get chessBotThisGameEndsHereAnd;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your game against {value} ends here and won\'t be saved.'**
+  String chessBotYourGameAgainstEndsHere(Object value);
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get chessBotLeave;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep playing'**
+  String get chessBotKeepPlaying;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Resign this game?'**
+  String get chessBotResignThisGame;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} wins this one.'**
+  String chessBotWinsThisOne(Object value);
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Resign'**
+  String get chessBotResign;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get chessBotEasy;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get chessBotNormal;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get chessBotHard;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave game'**
+  String get chessBotLeaveGame;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get chessBotClose;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chess · one phone'**
+  String get chessBotChessOnePhone;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Take back'**
+  String get chessBotTakeBack;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw'**
+  String get chessBotDraw;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} ran out of time'**
+  String chessBotRanOutOfTime(Object value);
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value}: check!'**
+  String chessBotCheck(Object value);
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value}\'s move'**
+  String chessBotSMove(Object value);
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get chessBotYou;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You won!'**
+  String get chessBotYouWon;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Out of time'**
+  String get chessBotOutOfTime;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} is thinking...'**
+  String chessBotIsThinking(Object value);
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Check! Protect your king'**
+  String get chessBotCheckProtectYourKing;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your move'**
+  String get chessBotYourMove;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get chessBotResult;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s a draw'**
+  String get chessBotItSADraw;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking...'**
+  String get chessBotThinking;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{level} · offline'**
+  String chessBotOffline(Object level);
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Their time ran out!'**
+  String get chessBotTheirTimeRanOut;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You resigned'**
+  String get chessBotYouResigned;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get chessBotPlayAgain;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'See the board'**
+  String get chessBotSeeTheBoard;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get chessBotDone;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pouch'**
+  String get storeCatalogPouch;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sack'**
+  String get storeCatalogSack;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chest'**
+  String get storeCatalogChest;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get storeCatalogPopular;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Vault'**
+  String get storeCatalogVault;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Mountain'**
+  String get storeCatalogMountain;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Dragon\'s Hoard'**
+  String get storeCatalogDragonSHoard;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Best value'**
+  String get storeCatalogBestValue;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Starter pack'**
+  String get storeCatalogStarterPack;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Once only'**
+  String get storeCatalogOnceOnly;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Gloss'**
+  String get storeCatalogClassicGloss;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Shiny enamel pins, the timeless look.'**
+  String get storeCatalogShinyEnamelPinsTheTimeless;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Bubble Pop'**
+  String get storeCatalogBubblePop;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Wobbly soap bubbles that shimmer as they hop.'**
+  String get storeCatalogWobblySoapBubblesThatShimmer;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Jelly Buddies'**
+  String get storeCatalogJellyBuddies;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Squishy jelly critters that blink and jiggle.'**
+  String get storeCatalogSquishyJellyCrittersThatBlink;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Crystal Shards'**
+  String get storeCatalogCrystalShards;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Faceted gems that catch the light.'**
+  String get storeCatalogFacetedGemsThatCatchThe;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Candy Swirl'**
+  String get storeCatalogCandySwirl;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Spinning lollipops, sweet and glossy.'**
+  String get storeCatalogSpinningLollipopsSweetAndGlossy;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Cosmic Orbs'**
+  String get storeCatalogCosmicOrbs;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Tiny ringed planets with orbiting moons.'**
+  String get storeCatalogTinyRingedPlanetsWithOrbiting;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Royal Crowns'**
+  String get storeCatalogRoyalCrowns;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Gold-crowned pieces with jewel hearts.'**
+  String get storeCatalogGoldCrownedPiecesWithJewel;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get storeCatalogClassic;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ivory and violet, clean and readable.'**
+  String get storeCatalogIvoryAndVioletCleanAnd;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chess Buddies'**
+  String get storeCatalogChessBuddies;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pieces with faces: they blink, cheer, panic and faint.'**
+  String get storeCatalogPiecesWithFacesTheyBlink;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Monster Mash'**
+  String get storeCatalogMonsterMash;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Horns, fangs and one very big eye. They mean business.'**
+  String get storeCatalogHornsFangsAndOneVery;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Robo Knights'**
+  String get storeCatalogRoboKnights;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chrome pieces with LED faces that scan the board.'**
+  String get storeCatalogChromePiecesWithLedFaces;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Crystal'**
+  String get storeCatalogCrystal;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ice-clear pieces with a frosted glow.'**
+  String get storeCatalogIceClearPiecesWithA;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Royal Gold'**
+  String get storeCatalogRoyalGold;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Gold against obsidian, fit for a throne.'**
+  String get storeCatalogGoldAgainstObsidianFitFor;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Neon'**
+  String get storeCatalogNeon;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pieces that glow like an arcade at night.'**
+  String get storeCatalogPiecesThatGlowLikeAn;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Candy'**
+  String get storeCatalogCandy;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Bubblegum pink and mint, sweet as it gets.'**
+  String get storeCatalogBubblegumPinkAndMintSweet;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Pack'**
+  String storeCatalogPack(Object value);
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Every World'**
+  String get storeCatalogEveryWorld;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{name} Chess'**
+  String storeCatalogChess(Object name);
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ruby'**
+  String get storeCatalogRuby;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ember'**
+  String get storeCatalogEmber;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sunbeam'**
+  String get storeCatalogSunbeam;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Jade'**
+  String get storeCatalogJade;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Lagoon'**
+  String get storeCatalogLagoon;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Azure'**
+  String get storeCatalogAzure;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sapphire'**
+  String get storeCatalogSapphire;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Amethyst'**
+  String get storeCatalogAmethyst;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Blossom'**
+  String get storeCatalogBlossom;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rose Gold'**
+  String get storeCatalogRoseGold;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Onyx'**
+  String get storeCatalogOnyx;
+
+  /// features/store/domain/store_catalog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pearl'**
+  String get storeCatalogPearl;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'a friend'**
+  String get checkersBotAFriend;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ready? I\'ve been practising my jumps!'**
+  String get checkersBotReadyIVeBeenPractising;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Good luck! Have fun!'**
+  String get checkersBotGoodLuckHaveFun;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Mine now!'**
+  String get checkersBotMineNow;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Oof, nice jump.'**
+  String get checkersBotOofNiceJump;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Boing boing!'**
+  String get checkersBotBoingBoing;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Whoa, a double!'**
+  String get checkersBotWhoaADouble;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s not fair... it is fair.'**
+  String get checkersBotThatSNotFairIt;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m a king now!'**
+  String get checkersBotIMAKingNow;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your Majesty...'**
+  String get checkersBotYourMajesty;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Kings go backwards too. Eek.'**
+  String get checkersBotKingsGoBackwardsTooEek;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'ERROR: PIECE MISSING.'**
+  String get checkersBotErrorPieceMissing;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'VICTORY PROTOCOL COMPLETE.'**
+  String get checkersBotVictoryProtocolComplete;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get checkersBotDark;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get checkersBotLight;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get checkersBotEasy;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get checkersBotNormal;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get checkersBotHard;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw'**
+  String get checkersBotDraw;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} ran out of time'**
+  String checkersBotRanOutOfTime(Object value);
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Out of time'**
+  String get checkersBotOutOfTime;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You won!'**
+  String get checkersBotYouWon;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} is thinking...'**
+  String checkersBotIsThinking(Object value);
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value}: you must take a piece'**
+  String checkersBotYouMustTakeAPiece(Object value);
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value}\'s move'**
+  String checkersBotSMove(Object value);
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You must take a piece'**
+  String get checkersBotYouMustTakeAPiece2;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your move'**
+  String get checkersBotYourMove;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get checkersBotClose;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Checkers · one phone'**
+  String get checkersBotCheckersOnePhone;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Take back'**
+  String get checkersBotTakeBack;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Resign'**
+  String get checkersBotResign;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get checkersBotYou;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get checkersBotResult;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s a draw'**
+  String get checkersBotItSADraw;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You resigned'**
+  String get checkersBotYouResigned;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Took {taken}'**
+  String checkersBotTook(Object taken);
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking...'**
+  String get checkersBotThinking;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{level} · offline'**
+  String checkersBotOffline(Object level);
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get checkersBotPlayAgain;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'See the board'**
+  String get checkersBotSeeTheBoard;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get checkersBotDone;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get ludoPlayerDark;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get ludoPlayerLight;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get ludoPlayerWhite;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get ludoPlayerBlack;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get ludoPlayerYou;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Gloss'**
+  String get ludoPlayerClassicGloss;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get ludoPlayerClassic;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {value}'**
+  String ludoPlayerJoined(Object value);
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ludo wins'**
+  String get ludoPlayerLudoWins;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chess wins'**
+  String get ludoPlayerChessWins;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Checkers wins'**
+  String get ludoPlayerCheckersWins;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Doodle wins'**
+  String get ludoPlayerDoodleWins;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Played'**
+  String get ludoPlayerPlayed;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Win rate'**
+  String get ludoPlayerWinRate;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute chat'**
+  String get ludoPlayerUnmuteChat;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Mute chat'**
+  String get ludoPlayerMuteChat;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get ludoPlayerReport;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Feb'**
+  String get ludoPlayerFeb;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Mar'**
+  String get ludoPlayerMar;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Apr'**
+  String get ludoPlayerApr;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get ludoPlayerMay;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Jun'**
+  String get ludoPlayerJun;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Jul'**
+  String get ludoPlayerJul;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Aug'**
+  String get ludoPlayerAug;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sep'**
+  String get ludoPlayerSep;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Oct'**
+  String get ludoPlayerOct;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nov'**
+  String get ludoPlayerNov;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Dec'**
+  String get ludoPlayerDec;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save your account to add friends'**
+  String get ludoPlayerSaveYourAccountToAdd;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Add friend'**
+  String get ludoPlayerAddFriend;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get ludoPlayerFriends;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent'**
+  String get ludoPlayerRequestSent;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Accept friend request'**
+  String get ludoPlayerAcceptFriendRequest;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send the request. Try again.'**
+  String get ludoPlayerCouldnTSendTheRequest;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Report this player'**
+  String get ludoPlayerReportThisPlayer;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Offensive chat'**
+  String get ludoPlayerOffensiveChat;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Cheating'**
+  String get ludoPlayerCheating;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leaving games on purpose'**
+  String get ludoPlayerLeavingGamesOnPurpose;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate name or picture'**
+  String get ludoPlayerInappropriateNameOrPicture;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get ludoPlayerSomethingElse;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks. Our team will take a look.'**
+  String get ludoPlayerThanksOurTeamWillTake;
+
+  /// features/ludo/presentation/widgets/ludo_player_card.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send the report. Try again.'**
+  String get ludoPlayerCouldnTSendTheReport;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Out of time! Miss one more turn and you leave the game.'**
+  String get ludoMatchOutOfTimeMissOne;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Out of time! Your turn passed.'**
+  String get ludoMatchOutOfTimeYourTurn;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this game?'**
+  String get ludoMatchLeaveThisGame;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'This game against the bots will end.'**
+  String get ludoMatchThisGameAgainstTheBots;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll lose your {stake}-coin entry{value}.'**
+  String ludoMatchYouLlLoseYourCoin(Object stake, Object value);
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll lose this game{value}.'**
+  String ludoMatchYouLlLoseThisGame(Object value);
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave game'**
+  String get ludoMatchLeaveGame;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep playing'**
+  String get ludoMatchKeepPlaying;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sound & music'**
+  String get ludoMatchSoundMusic;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How to play'**
+  String get ludoMatchHowToPlay;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get ludoMatchChat;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Setting up the board'**
+  String get ludoMatchSettingUpTheBoard;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ludo'**
+  String get ludoMatchLudo;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Game menu'**
+  String get ludoMatchGameMenu;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get ludoMatchFree;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You left this game.'**
+  String get ludoMatchYouLeftThisGame;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} captured! Tap the piece to react, or roll on'**
+  String ludoMatchCapturedTapThePieceTo(Object value);
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Captured! Tap your piece to react, or roll on'**
+  String get ludoMatchCapturedTapYourPieceTo;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value}, tap a glowing piece'**
+  String ludoMatchTapAGlowingPiece(Object value);
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a glowing piece to move'**
+  String get ludoMatchTapAGlowingPieceTo;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value}\'s turn. Tap the die!'**
+  String ludoMatchSTurnTapTheDie(Object value);
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your turn. Tap the die!'**
+  String get ludoMatchYourTurnTapTheDie;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} is playing'**
+  String ludoMatchIsPlaying(Object value);
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Result under review'**
+  String get ludoMatchResultUnderReview;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You won!'**
+  String get ludoMatchYouWon;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You came {value}'**
+  String ludoMatchYouCame(Object value);
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Game over'**
+  String get ludoMatchGameOver;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get ludoMatchSomeone;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'All four pieces home!'**
+  String get ludoMatchAllFourPiecesHome;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{winnerName} got all four pieces home first.'**
+  String ludoMatchGotAllFourPiecesHome(Object winnerName);
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone else left. The win is yours.'**
+  String get ludoMatchEveryoneElseLeftTheWin;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The others ran out of time. You win!'**
+  String get ludoMatchTheOthersRanOutOf;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You ran out of time.'**
+  String get ludoMatchYouRanOutOfTime;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get ludoMatchHome;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get ludoMatchPlayAgain;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get ludoMatchYou;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} · Left the game'**
+  String ludoMatchLeftTheGame(Object value);
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip Maestro is in the Utopia app on your phone.'**
+  String get storeChipMaestroIsInThe;
+
+  /// features/store/data/store_repository.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save your account to buy coins.'**
+  String get storeSaveYourAccountToBuy;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the payment page. Try again.'**
+  String get storeCouldnTOpenThePayment;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Coin top-ups are coming soon.'**
+  String get storeCoinTopUpsAreComing;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to buy coins.'**
+  String get storeSignInToBuyCoins;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The store isn\'t available right now. Try again soon.'**
+  String get storeTheStoreIsnTAvailable;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start the purchase.'**
+  String get storeCouldnTStartThePurchase;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip Maestro is coming soon.'**
+  String get storeChipMaestroIsComingSoon;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to join Chip Maestro.'**
+  String get storeSignInToJoinChip;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to restore yet.'**
+  String get storeNothingToRestoreYet;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for your purchases…'**
+  String get storeLookingForYourPurchases;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t look for your purchases.'**
+  String get storeCouldnTLookForYour;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Test top-ups aren\'t available on this server.'**
+  String get storeTestTopUpsArenT;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment is still going through. Chip Maestro starts as soon as it does.'**
+  String get storeYourPaymentIsStillGoing;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment is still going through. Your coins arrive as soon as it does.'**
+  String get storeYourPaymentIsStillGoing2;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase didn\'t go through.'**
+  String get storeThePurchaseDidnTGo;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Chip Maestro!'**
+  String get storeWelcomeToChipMaestro;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your Chip Maestro plan is back.'**
+  String get storeYourChipMaestroPlanIs;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That Chip Maestro plan belongs to another Utopia account.'**
+  String get storeThatChipMaestroPlanBelongs;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received. Chip Maestro will start the next time you open Utopia.'**
+  String get storePaymentReceivedChipMaestroWill;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Those coins went to the account that bought them.'**
+  String get storeThoseCoinsWentToThe;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That payment was cancelled, so no coins were added.'**
+  String get storeThatPaymentWasCancelledSo;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received. Your coins will arrive the next time you open Utopia.'**
+  String get storePaymentReceivedYourCoinsWill;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough coins yet.'**
+  String get storeNotEnoughCoinsYet;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You need {value} coins for that.'**
+  String storeYouNeedCoinsForThat(Object value);
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t unlock that. Check your connection and try again.'**
+  String get storeCouldnTUnlockThatCheck;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock it first.'**
+  String get storeUnlockItFirst;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t equip that. Try again?'**
+  String get storeCouldnTEquipThatTry;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your welcome pass has ended: back to your own pieces. Keep a favourite set from the store any time.'**
+  String get storeYourWelcomePassHasEnded;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your birthday party is over. See you next year!'**
+  String get storeYourBirthdayPartyIsOver;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} is over. {name} comes back next {value2}.'**
+  String storeIsOverComesBackNext(Object value, Object name, Object value2);
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your time in {name} ran out. Rent it again any time.'**
+  String storeYourTimeInRanOut(Object name);
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You need more coins for that.'**
+  String get storeYouNeedMoreCoinsFor;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t rent that world. Try again.'**
+  String get storeCouldnTRentThatWorld;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Someone in the room needs more coins for this game.'**
+  String get ludoLobbySomeoneInTheRoomNeeds;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find that room. Check the code.'**
+  String get ludoLobbyWeCouldnTFindThat;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You need at least 2 players to start.'**
+  String get ludoLobbyYouNeedAtLeast2;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ludo'**
+  String get ludoLobbyLudo;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How to play'**
+  String get ludoLobbyHowToPlay;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play online'**
+  String get ludoLobbyPlayOnline;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Join a table of 2 or 4 players'**
+  String get ludoLobbyJoinATableOf2;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play with friends'**
+  String get ludoLobbyPlayWithFriends;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Make a room or join one with a code'**
+  String get ludoLobbyMakeARoomOrJoin;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play offline'**
+  String get ludoLobbyPlayOffline;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Bots, or friends taking turns on this phone'**
+  String get ludoLobbyBotsOrFriendsTakingTurns;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'2 to 6\nplayers'**
+  String get ludoLobby2To6Players;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Timed\nturns'**
+  String get ludoLobbyTimedTurns;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chat &\nreactions'**
+  String get ludoLobbyChatReactions;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Private\nrooms'**
+  String get ludoLobbyPrivateRooms;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Friends on this phone'**
+  String get ludoLobbyFriendsOnThisPhone;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get ludoLobbyNone;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a seat to sit there'**
+  String get ludoLobbyTapASeatToSit;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get ludoLobbyYou;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Start game'**
+  String get ludoLobbyStartGame;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get ludoLobbyPlay;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Join room'**
+  String get ludoLobbyJoinRoom;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Classic board'**
+  String get ludoLobbyClassicBoard;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Star board'**
+  String get ludoLobbyStarBoard;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Create room'**
+  String get ludoLobbyCreateRoom;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get ludoLobbyCreate;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get ludoLobbyJoin;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Finding an opponent'**
+  String get ludoLobbyFindingAnOpponent;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Gathering players'**
+  String get ludoLobbyGatheringPlayers;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get ludoLobbyFree;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play with bots'**
+  String get ludoLobbyPlayWithBots;
+
+  /// features/ludo/presentation/screens/ludo_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get ludoLobbyCancel;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find that game. Check the code.'**
+  String get guessDoodleLobbyWeCouldnTFindThat;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That game is full.'**
+  String get guessDoodleLobbyThatGameIsFull;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That game has ended.'**
+  String get guessDoodleLobbyThatGameHasEnded;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Finding a game'**
+  String get guessDoodleLobbyFindingAGame;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Guess My Doodle'**
+  String get guessDoodleLobbyGuessMyDoodle;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How to play'**
+  String get guessDoodleLobbyHowToPlay;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play online'**
+  String get guessDoodleLobbyPlayOnline;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Jump into a game with players anywhere'**
+  String get guessDoodleLobbyJumpIntoAGameWith;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play with friends'**
+  String get guessDoodleLobbyPlayWithFriends;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Make a game or join one with a code'**
+  String get guessDoodleLobbyMakeAGameOrJoin;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip draws, you guess'**
+  String get guessDoodleLobbyChipDrawsYouGuess;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Guess his doodles on your own'**
+  String get guessDoodleLobbyGuessHisDoodlesOnYour;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'1 to 20\nplayers'**
+  String get guessDoodleLobby1To20Players;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw &\nguess'**
+  String get guessDoodleLobbyDrawGuess;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Faster guess,\nmore points'**
+  String get guessDoodleLobbyFasterGuessMorePoints;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Private\ngames'**
+  String get guessDoodleLobbyPrivateGames;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Join game'**
+  String get guessDoodleLobbyJoinGame;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rounds'**
+  String get guessDoodleLobbyRounds;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Time to draw'**
+  String get guessDoodleLobbyTimeToDraw;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Create game'**
+  String get guessDoodleLobbyCreateGame;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get guessDoodleLobbyCreate;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get guessDoodleLobbyJoin;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Take turns drawing'**
+  String get guessDoodleLobbyTakeTurnsDrawing;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'One player picks a word from three and draws it. No letters or numbers in the drawing.'**
+  String get guessDoodleLobbyOnePlayerPicksAWord;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Guess in the chat'**
+  String get guessDoodleLobbyGuessInTheChat;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone else types guesses. A right guess is never shown to the others, and \"so close\" tells only you when you nearly have it.'**
+  String get guessDoodleLobbyEveryoneElseTypesGuessesA;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Be quick'**
+  String get guessDoodleLobbyBeQuick;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The sooner you guess, the more points you get, with a bonus for the first. The drawer scores for everyone who gets it.'**
+  String get guessDoodleLobbyTheSoonerYouGuessThe;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Hints'**
+  String get guessDoodleLobbyHints;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Letters of the word appear as the clock runs down.'**
+  String get guessDoodleLobbyLettersOfTheWordAppear;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Win'**
+  String get guessDoodleLobbyWin;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone draws once each round. The most points after the last round wins.'**
+  String get guessDoodleLobbyEveryoneDrawsOnceEachRound;
+
+  /// features/guess_doodle/presentation/guess_doodle_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get guessDoodleLobbyGotIt;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this one.'**
+  String get studioCouldnTOpenThisOne;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve colored lots today. Ask me again tomorrow!'**
+  String get studioIVeColoredLotsToday;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'I can\'t color that one.'**
+  String get studioICanTColorThat;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'My paintbrush isn\'t ready yet.'**
+  String get studioMyPaintbrushIsnTReady;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'I couldn\'t color it just now. Try again?'**
+  String get studioICouldnTColorIt;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Utopia to add to your photos in Settings, then try again.'**
+  String get studioAllowUtopiaToAddTo;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to your photos'**
+  String get studioSavedToYourPhotos;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save to your photos. Try again.'**
+  String get studioCouldnTSaveToYour;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get studioKeepIt;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Start over?'**
+  String get studioStartOver;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Everything on this page will be cleared.'**
+  String get studioEverythingOnThisPageWill;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Clear it'**
+  String get studioClearIt;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this?'**
+  String get studioDeleteThis;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'It\'ll be gone from your sketchbook for good.'**
+  String get studioItLlBeGoneFrom;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get studioDelete;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sketchbook'**
+  String get studioSketchbook;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Coloring'**
+  String get studioColoring;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sketch'**
+  String get studioSketch;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get studioBack;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save, will try again'**
+  String get studioCouldnTSaveWillTry;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Saved in Utopia'**
+  String get studioSavedInUtopia;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a shape to fill it'**
+  String get studioTapAShapeToFill;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw anything'**
+  String get studioDrawAnything;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get studioUndo;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Redo'**
+  String get studioRedo;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save picture'**
+  String get studioSavePicture;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save to Photos'**
+  String get studioSaveToPhotos;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get studioMore;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Start over'**
+  String get studioStartOver2;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your page ready…'**
+  String get studioGettingYourPageReady;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get studioZoomIn;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get studioZoomOut;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Fit the page'**
+  String get studioFitThePage;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Color with Chip'**
+  String get studioColorWithChip;
+
+  /// features/doodle_studio/presentation/studio_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip is coloring your picture…'**
+  String get studioChipIsColoringYourPicture;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get storeStore;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Worlds'**
+  String get storeWorlds;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Auras'**
+  String get storeAuras;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ludo'**
+  String get storeLudo;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chess'**
+  String get storeChess;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save your account so your purchases are never lost.'**
+  String get storeSaveYourAccountSoYour;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked!'**
+  String get storeUnlocked;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Where to first?'**
+  String get storeWhereToFirst;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re already here'**
+  String get storeYouReAlreadyHere;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Travel to {name}'**
+  String storeTravelTo(Object name);
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a world'**
+  String get storePickAWorld;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Equip now'**
+  String get storeEquipNow;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get storeLater;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia worlds'**
+  String get storeUtopiaWorlds;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Every world has its own living sky. Changing worlds sends Chip through a portal!'**
+  String get storeEveryWorldHasItsOwn;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Every World'**
+  String get storeEveryWorld;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'All {value} worlds and {length} colors, now and forever.'**
+  String storeAllWorldsAndColorsNow(Object value, Object length);
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Color worlds'**
+  String get storeColorWorlds;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'12 colors, each at dawn, dusk and midnight.'**
+  String get store12ColorsEachAtDawn;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get storeOwned;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get storeCurrent;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get storeFree;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get storeLocked;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re here'**
+  String get storeYouReHere;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Travel to this world'**
+  String get storeTravelToThisWorld;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A week more in {name}'**
+  String storeAWeekMoreIn(Object name);
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'or rent it for a week'**
+  String get storeOrRentItForA;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rent for a week · {value}'**
+  String storeRentForAWeek(Object value);
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Add a week · {value}'**
+  String storeAddAWeek(Object value);
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pack · {value}'**
+  String storePack(Object value);
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Equipped'**
+  String get storeEquipped;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Equipping'**
+  String get storeEquipping;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Equip'**
+  String get storeEquip;
+
+  /// features/store/presentation/store_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Animated'**
+  String get storeAnimated;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save your account so friends can find you.'**
+  String get chessLobbySaveYourAccountSoFriends;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Checkers'**
+  String get chessLobbyCheckers;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chess'**
+  String get chessLobbyChess;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Clock'**
+  String get chessLobbyClock;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Entry'**
+  String get chessLobbyEntry;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play online'**
+  String get chessLobbyPlayOnline;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Get matched with a player now'**
+  String get chessLobbyGetMatchedWithAPlayer;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play a friend'**
+  String get chessLobbyPlayAFriend;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Send a challenge to someone you know'**
+  String get chessLobbySendAChallengeToSomeone;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play offline'**
+  String get chessLobbyPlayOffline;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip, Robo or a friend on this phone'**
+  String get chessLobbyChipRoboOrAFriend;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent'**
+  String get chessLobbyOpponent;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip'**
+  String get chessLobbyChip;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Robo'**
+  String get chessLobbyRobo;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A friend'**
+  String get chessLobbyAFriend;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Two players on this phone, taking turns.'**
+  String get chessLobbyTwoPlayersOnThisPhone;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get chessLobbyLevel;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get chessLobbyEasy;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get chessLobbyNormal;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get chessLobbyHard;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You play'**
+  String get chessLobbyYouPlay;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get chessLobbyDark;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get chessLobbyWhite;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get chessLobbyRandom;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get chessLobbyLight;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get chessLobbyBlack;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Dark moves first.'**
+  String get chessLobbyDarkMovesFirst;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'No clock'**
+  String get chessLobbyNoClock;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Start game'**
+  String get chessLobbyStartGame;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Finding an opponent'**
+  String get chessLobbyFindingAnOpponent;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get chessLobbyFree;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play Chip'**
+  String get chessLobbyPlayChip;
+
+  /// features/chess/presentation/screens/chess_lobby_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get chessLobbyCancel;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Someone needs more coins for this game.'**
+  String get ludoRoomSomeoneNeedsMoreCoinsFor;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for at least one friend to join.'**
+  String get ludoRoomWaitForAtLeastOne;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start the game. Try again.'**
+  String get ludoRoomCouldnTStartTheGame;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Someone just took that seat.'**
+  String get ludoRoomSomeoneJustTookThatSeat;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t change seats. Try again.'**
+  String get ludoRoomCouldnTChangeSeatsTry;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied'**
+  String get ludoRoomCodeCopied;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Come play Ludo with me in Utopia! Tap to join, or use room code {code}: {value}'**
+  String ludoRoomComePlayLudoWithMe(Object code, Object value);
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ludo in Utopia'**
+  String get ludoRoomLudoInUtopia;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Opening the room'**
+  String get ludoRoomOpeningTheRoom;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Private room'**
+  String get ludoRoomPrivateRoom;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Share code'**
+  String get ludoRoomShareCode;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Players'**
+  String get ludoRoomPlayers;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Start game'**
+  String get ludoRoomStartGame;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for friends'**
+  String get ludoRoomWaitingForFriends;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The host will start the game'**
+  String get ludoRoomTheHostWillStartThe;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Close room'**
+  String get ludoRoomCloseRoom;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave room'**
+  String get ludoRoomLeaveRoom;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'ROOM CODE'**
+  String get ludoRoomRoomCode;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get ludoRoomCopy;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get ludoRoomShare;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get ludoRoomClassic;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Star board'**
+  String get ludoRoomStarBoard;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get ludoRoomFree;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'40s turns'**
+  String get ludoRoom40sTurns;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Seat'**
+  String get ludoRoomSeat;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get ludoRoomYou;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Take this seat'**
+  String get ludoRoomTakeThisSeat;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play as {name}'**
+  String ludoRoomPlayAs(Object name);
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Share invite'**
+  String get ludoRoomShareInvite;
+
+  /// features/ludo/presentation/screens/ludo_room_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Send the room code to a friend'**
+  String get ludoRoomSendTheRoomCodeTo;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get sketchbookBack;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sketchbook'**
+  String get sketchbookSketchbook;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw anything, or color a picture. Everything saves as you go.'**
+  String get sketchbookDrawAnythingOrColorA;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'New sketch'**
+  String get sketchbookNewSketch;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A blank page'**
+  String get sketchbookABlankPage;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Color a picture'**
+  String get sketchbookColorAPicture;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Or search any picture'**
+  String get sketchbookOrSearchAnyPicture;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'My art'**
+  String get sketchbookMyArt;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet. What you draw and color shows up here.'**
+  String get sketchbookNothingHereYetWhatYou;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this?'**
+  String get sketchbookDeleteThis;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'It\'ll be gone from your sketchbook for good.'**
+  String get sketchbookItLlBeGoneFrom;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get sketchbookKeepIt;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get sketchbookDelete;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open that one. Try again?'**
+  String get sketchbookCouldnTOpenThatOne;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip\'s drawing it. It\'ll be in Yours in about a minute.'**
+  String get sketchbookChipSDrawingItIt;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip can\'t draw that one. Try something else?'**
+  String get sketchbookChipCanTDrawThat;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip has drawn all he can today. Ask again tomorrow!'**
+  String get sketchbookChipHasDrawnAllHe;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip\'s pencil isn\'t ready yet. Try again later.'**
+  String get sketchbookChipSPencilIsnT;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach Chip. Check your connection and try again.'**
+  String get sketchbookCouldnTReachChipCheck;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a picture to color'**
+  String get sketchbookPickAPictureToColor;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Yours'**
+  String get sketchbookYours;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia\'s pictures'**
+  String get sketchbookUtopiaSPictures;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Drawn for players'**
+  String get sketchbookDrawnForPlayers;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'From the library'**
+  String get sketchbookFromTheLibrary;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Search any picture: a lion, a castle...'**
+  String get sketchbookSearchAnyPictureALion;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t work out'**
+  String get sketchbookDidnTWorkOut;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip is drawing...'**
+  String get sketchbookChipIsDrawing;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'New picture'**
+  String get sketchbookNewPicture;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody has asked for that yet.'**
+  String get sketchbookNobodyHasAskedForThat;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Asking Chip...'**
+  String get sketchbookAskingChip;
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ask Chip to draw \"{subject}\"'**
+  String sketchbookAskChipToDraw(Object subject);
+
+  /// features/doodle_studio/presentation/sketchbook_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Not quite? Ask Chip to draw \"{subject}\"'**
+  String sketchbookNotQuiteAskChipTo(Object subject);
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Starting soon'**
+  String get doodleOverlaysStartingSoon;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Finding players'**
+  String get doodleOverlaysFindingPlayers;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The game starts when someone else joins.'**
+  String get doodleOverlaysTheGameStartsWhenSomeone;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends'**
+  String get doodleOverlaysInviteFriends;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get doodleOverlaysCopy;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get doodleOverlaysShare;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{length} of {maxPlayers} players'**
+  String doodleOverlaysOfPlayers(Object length, Object maxPlayers);
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Start game'**
+  String get doodleOverlaysStartGame;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for friends'**
+  String get doodleOverlaysWaitingForFriends;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for {value} to start'**
+  String doodleOverlaysWaitingForToStart(Object value);
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Starting in {s}'**
+  String doodleOverlaysStartingIn(Object s);
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Here we go'**
+  String get doodleOverlaysHereWeGo;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} is picking a word'**
+  String doodleOverlaysIsPickingAWord(Object value);
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Get ready to guess'**
+  String get doodleOverlaysGetReadyToGuess;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a word to draw'**
+  String get doodleOverlaysPickAWordToDraw;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody got it'**
+  String get doodleOverlaysNobodyGotIt;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The word was'**
+  String get doodleOverlaysTheWordWas;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You won!'**
+  String get doodleOverlaysYouWon;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Final scores'**
+  String get doodleOverlaysFinalScores;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get doodleOverlaysPlayAgain;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The host can start another game'**
+  String get doodleOverlaysTheHostCanStartAnother;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get doodleOverlaysLeave;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Next game in {s}'**
+  String doodleOverlaysNextGameIn(Object s);
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Next game starting'**
+  String get doodleOverlaysNextGameStarting;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'This game has ended'**
+  String get doodleOverlaysThisGameHasEnded;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get doodleOverlaysBack;
+
+  /// features/guess_doodle/presentation/widgets/doodle_overlays.dart
+  ///
+  /// In en, this message translates to:
+  /// **'and {count} more'**
+  String doodleOverlaysAndMore(Object count);
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get boardMatchPartsChat;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Previous move'**
+  String get boardMatchPartsPreviousMove;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Moves will show up here'**
+  String get boardMatchPartsMovesWillShowUpHere;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get boardMatchPartsStart;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Next move'**
+  String get boardMatchPartsNextMove;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your win'**
+  String get boardMatchPartsYourWin;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get boardMatchPartsResult;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get boardMatchPartsPlayAgain;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get boardMatchPartsUnderReview;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Called off'**
+  String get boardMatchPartsCalledOff;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Victory!'**
+  String get boardMatchPartsVictory;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Defeat'**
+  String get boardMatchPartsDefeat;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw'**
+  String get boardMatchPartsDraw;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You and your opponent reported different results. We\'ll sort it out.'**
+  String get boardMatchPartsYouAndYourOpponentReported;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your opponent resigned.'**
+  String get boardMatchPartsYourOpponentResigned;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You resigned.'**
+  String get boardMatchPartsYouResigned;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody can win from here.'**
+  String get boardMatchPartsNobodyCanWinFromHere;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Their clock ran out.'**
+  String get boardMatchPartsTheirClockRanOut;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your clock ran out.'**
+  String get boardMatchPartsYourClockRanOut;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A first move didn\'t come in time. Your coins are back.'**
+  String get boardMatchPartsAFirstMoveDidnT;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'A first move didn\'t come in time.'**
+  String get boardMatchPartsAFirstMoveDidnT2;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sending your prize'**
+  String get boardMatchPartsSendingYourPrize;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Wrapping up'**
+  String get boardMatchPartsWrappingUp;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get boardMatchPartsHome;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Review the game'**
+  String get boardMatchPartsReviewTheGame;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rating {round}'**
+  String boardMatchPartsRating(Object round);
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get boardMatchPartsYou;
+
+  /// features/chess/presentation/widgets/board_match_parts.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent'**
+  String get boardMatchPartsOpponent;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Hmm, what shall I draw?'**
+  String get chipDoodleHmmWhatShallIDraw;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Oops, my pencil broke!'**
+  String get chipDoodleOopsMyPencilBroke;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You got it! +{lastPoints}'**
+  String chipDoodleYouGotIt(Object lastPoints);
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'It was {value}!'**
+  String chipDoodleItWas(Object value);
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'What a game!'**
+  String get chipDoodleWhatAGame;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'So close! Keep going.'**
+  String get chipDoodleSoCloseKeepGoing;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Quick, time is nearly up!'**
+  String get chipDoodleQuickTimeIsNearlyUp;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s a little hint!'**
+  String get chipDoodleHereSALittleHint;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nope! Look again.'**
+  String get chipDoodleNopeLookAgain;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Watch closely...'**
+  String get chipDoodleWatchClosely;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'What do you think it is?'**
+  String get chipDoodleWhatDoYouThinkIt;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip draws'**
+  String get chipDoodleChipDraws;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip couldn\'t draw just now.'**
+  String get chipDoodleChipCouldnTDrawJust;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get chipDoodleTryAgain;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'See your score'**
+  String get chipDoodleSeeYourScore;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Next doodle'**
+  String get chipDoodleNextDoodle;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'New best score!'**
+  String get chipDoodleNewBestScore;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Great guessing!'**
+  String get chipDoodleGreatGuessing;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You guessed {guessedCount} of {rounds}'**
+  String chipDoodleYouGuessedOf(Object guessedCount, Object rounds);
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your best: {best}'**
+  String chipDoodleYourBest(Object best);
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get chipDoodlePlayAgain;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get chipDoodleDone;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{text} · so close!'**
+  String chipDoodleSoClose(Object text);
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Type your guess'**
+  String get chipDoodleTypeYourGuess;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Get ready...'**
+  String get chipDoodleGetReady;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Guess'**
+  String get chipDoodleGuess;
+
+  /// features/guess_doodle/presentation/chip_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Skip this one'**
+  String get chipDoodleSkipThisOne;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Setting up the board'**
+  String get chessMatchSettingUpTheBoard;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find this game.'**
+  String get chessMatchWeCouldnTFindThis;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave game'**
+  String get chessMatchLeaveGame;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get chessMatchClose;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Resign'**
+  String get chessMatchResign;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Checkmate. Beautifully played.'**
+  String get chessMatchCheckmateBeautifullyPlayed;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Checkmated.'**
+  String get chessMatchCheckmated;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Stalemate: no legal moves left.'**
+  String get chessMatchStalemateNoLegalMovesLeft;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Resign this game?'**
+  String get chessMatchResignThisGame;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your opponent wins the game and the prize.'**
+  String get chessMatchYourOpponentWinsTheGame;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your opponent wins the game.'**
+  String get chessMatchYourOpponentWinsTheGame2;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep playing'**
+  String get chessMatchKeepPlaying;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chess'**
+  String get chessMatchChess;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get chessMatchYou;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent'**
+  String get chessMatchOpponent;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Starting position'**
+  String get chessMatchStartingPosition;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Move {displayPly} of {length}'**
+  String chessMatchMoveOf(Object displayPly, Object length);
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Back to live'**
+  String get chessMatchBackToLive;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in check'**
+  String get chessMatchYouReInCheck;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Check!'**
+  String get chessMatchCheck;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your move · {value}s to start'**
+  String chessMatchYourMoveSToStart(Object value);
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your move'**
+  String get chessMatchYourMove;
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the first move · {value}s'**
+  String chessMatchWaitingForTheFirstMove(Object value);
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Their move'**
+  String get chessMatchTheirMove;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Setting up the board'**
+  String get checkersMatchSettingUpTheBoard;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find this game.'**
+  String get checkersMatchWeCouldnTFindThis;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave game'**
+  String get checkersMatchLeaveGame;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get checkersMatchClose;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Resign'**
+  String get checkersMatchResign;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'No moves left for them. Well played.'**
+  String get checkersMatchNoMovesLeftForThem;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You ran out of moves.'**
+  String get checkersMatchYouRanOutOfMoves;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Forty moves each with no progress.'**
+  String get checkersMatchFortyMovesEachWithNo;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Resign this game?'**
+  String get checkersMatchResignThisGame;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your opponent wins the game and the prize.'**
+  String get checkersMatchYourOpponentWinsTheGame;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your opponent wins the game.'**
+  String get checkersMatchYourOpponentWinsTheGame2;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep playing'**
+  String get checkersMatchKeepPlaying;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Checkers'**
+  String get checkersMatchCheckers;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get checkersMatchYou;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent'**
+  String get checkersMatchOpponent;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Took {count}'**
+  String checkersMatchTook(Object count);
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'1 king'**
+  String get checkersMatch1King;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Starting position'**
+  String get checkersMatchStartingPosition;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Move {displayPly} of {length}'**
+  String checkersMatchMoveOf(Object displayPly, Object length);
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Back to live'**
+  String get checkersMatchBackToLive;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You must take a piece'**
+  String get checkersMatchYouMustTakeAPiece;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your move · {value}s to start'**
+  String checkersMatchYourMoveSToStart(Object value);
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your move'**
+  String get checkersMatchYourMove;
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the first move · {value}s'**
+  String checkersMatchWaitingForTheFirstMove(Object value);
+
+  /// features/checkers/presentation/screens/checkers_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Their move'**
+  String get checkersMatchTheirMove;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Slow down a little'**
+  String get guessDoodleSlowDownALittle;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not in this game anymore'**
+  String get guessDoodleYouReNotInThis;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the game?'**
+  String get guessDoodleLeaveTheGame;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The others will carry on without you.'**
+  String get guessDoodleTheOthersWillCarryOn;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get guessDoodleStay;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get guessDoodleLeave;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied'**
+  String get guessDoodleCodeCopied;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Come play Guess My Doodle with me in Utopia! Tap to join, or use game code {code}: {value}'**
+  String guessDoodleComePlayGuessMyDoodle(Object code, Object value);
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Guess My Doodle in Utopia'**
+  String get guessDoodleGuessMyDoodleInUtopia;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Clear the drawing?'**
+  String get guessDoodleClearTheDrawing;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t undo this.'**
+  String get guessDoodleYouCanTUndoThis;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get guessDoodleKeepIt;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get guessDoodleClear;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with players who got it'**
+  String get guessDoodleChatWithPlayersWhoGot;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Type your guess'**
+  String get guessDoodleTypeYourGuess;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Only players who guess will see this'**
+  String get guessDoodleOnlyPlayersWhoGuessWill;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Say something'**
+  String get guessDoodleSaySomething;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Guess My Doodle'**
+  String get guessDoodleGuessMyDoodle;
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Round {round} of {rounds}'**
+  String guessDoodleRoundOf(Object round, Object rounds);
+
+  /// features/guess_doodle/presentation/guess_doodle_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You got it!'**
+  String get guessDoodleYouGotIt;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How to play Ludo'**
+  String get ludoRulesHowToPlayLudo;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Roll a 6 to start'**
+  String get ludoRulesRollA6ToStart;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Each piece waits in your yard until you roll a 6. Then it hops out onto your start square.'**
+  String get ludoRulesEachPieceWaitsInYour;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Race around the board'**
+  String get ludoRulesRaceAroundTheBoard;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pieces move by the number you roll. Tap a glowing piece to move it. If only one move is possible, it moves on its own.'**
+  String get ludoRulesPiecesMoveByTheNumber;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Timed turns'**
+  String get ludoRulesTimedTurns;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn passes. Miss three turns in a row and you leave the game.'**
+  String get ludoRulesTheRingAroundYourPicture;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Capture to send them home'**
+  String get ludoRulesCaptureToSendThemHome;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Land exactly on an opponent to send their piece back to its yard. Stars and start squares are safe.'**
+  String get ludoRulesLandExactlyOnAnOpponent;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'War or peace'**
+  String get ludoRulesWarOrPeace;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'After a capture, pick a reaction before the bubble runs out: an evil cackle or a peaceful hug. Everyone sees it.'**
+  String get ludoRulesAfterACapturePickA;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus rolls'**
+  String get ludoRulesBonusRolls;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rolling a 6, capturing, or getting a piece home earns another roll. Three 6s in a row and you lose the turn.'**
+  String get ludoRulesRollingA6CapturingOr;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Get all four home'**
+  String get ludoRulesGetAllFourHome;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Go up your own colored path into the center. You need the exact number to finish. The first player with all four pieces home wins.'**
+  String get ludoRulesGoUpYourOwnColored;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Leaving ends your game'**
+  String get ludoRulesLeavingEndsYourGame;
+
+  /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'If you leave, you lose this game and your entry stays in the prize. With more than two players, the game carries on.'**
+  String get ludoRulesIfYouLeaveYouLose;
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is yours for {label}'**
+  String auraIsYoursFor(Object name, Object label);
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t buy that aura. Try again.'**
+  String get auraCouldnTBuyThatAura;
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t change your aura.'**
+  String get auraCouldnTChangeYourAura;
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get auraYou;
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Comes with {plan}. Yours to wear while you\'re a member.'**
+  String auraComesWithYoursToWear(Object plan);
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'No longer sold. Yours to wear until it runs out.'**
+  String get auraNoLongerSoldYoursTo;
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Add {label} · {value}'**
+  String auraAdd(Object label, Object value);
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Buy for {value} coins'**
+  String auraBuyForCoins(Object value);
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You have '**
+  String get auraYouHave;
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Yours · {value}'**
+  String auraYours(Object value);
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Take off'**
+  String get auraTakeOff;
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Wear'**
+  String get auraWear;
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{value} a day'**
+  String auraADay(Object value);
+
+  /// features/auras/presentation/aura_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Best value'**
+  String get auraBestValue;
+
+  /// features/ludo/presentation/controllers/ludo_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Connection lost. Reconnecting.'**
+  String get ludoMatchConnectionLostReconnecting;
+
+  /// features/ludo/presentation/controllers/ludo_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Match not found'**
+  String get ludoMatchMatchNotFound;
+
+  /// features/ludo/presentation/controllers/ludo_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Whoa, slow down a little!'**
+  String get ludoMatchWhoaSlowDownALittle;
+
+  /// features/ludo/presentation/controllers/ludo_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send that message.'**
+  String get ludoMatchCouldnTSendThatMessage;
+
+  /// features/ludo/presentation/controllers/ludo_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send your voice note.'**
+  String get ludoMatchCouldnTSendYourVoice;
+
+  /// features/ludo/presentation/controllers/ludo_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send your roll. Reconnecting.'**
+  String get ludoMatchCouldnTSendYourRoll;
+
+  /// features/ludo/presentation/controllers/ludo_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That move didn\'t go through. Reconnecting.'**
+  String get ludoMatchThatMoveDidnTGo;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Black and white shading'**
+  String get chipPaintBlackAndWhiteShading;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pastel'**
+  String get chipPaintPastel;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sunset'**
+  String get chipPaintSunset;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Neon'**
+  String get chipPaintNeon;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ocean'**
+  String get chipPaintOcean;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Autumn'**
+  String get chipPaintAutumn;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Royal gold'**
+  String get chipPaintRoyalGold;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'How should I color it?'**
+  String get chipPaintHowShouldIColorIt;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Or describe it, like \"only blues\"'**
+  String get chipPaintOrDescribeItLikeOnly;
+
+  /// features/doodle_studio/presentation/chip_paint.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Color it'**
+  String get chipPaintColorIt;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pencil'**
+  String get studioToolbarPencil;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ink pen'**
+  String get studioToolbarInkPen;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Marker'**
+  String get studioToolbarMarker;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Soft brush'**
+  String get studioToolbarSoftBrush;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Highlighter'**
+  String get studioToolbarHighlighter;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Eraser'**
+  String get studioToolbarEraser;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Paint bucket'**
+  String get studioToolbarPaintBucket;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get studioToolbarColor;
+
+  /// features/doodle_studio/presentation/studio_toolbar.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Brush size {value}'**
+  String studioToolbarBrushSize(Object value);
+
+  /// features/store/presentation/coin_shop.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Test build: packs are free so you can try them.'**
+  String get coinShopTestBuildPacksAreFree;
+
+  /// features/store/presentation/coin_shop.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save your account to buy coins.'**
+  String get coinShopSaveYourAccountToBuy;
+
+  /// features/store/presentation/coin_shop.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Save your account so your coins are never lost.'**
+  String get coinShopSaveYourAccountSoYour;
+
+  /// features/store/presentation/coin_shop.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Coin top-ups are coming soon'**
+  String get coinShopCoinTopUpsAreComing;
+
+  /// features/store/presentation/coin_shop.dart
+  ///
+  /// In en, this message translates to:
+  /// **'For now, earn them by playing: claim your daily reward every day, and win games with an entry.'**
+  String get coinShopForNowEarnThemBy;
+
+  /// features/store/presentation/coin_shop.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Coins'**
+  String get coinShopCoins;
+
+  /// features/store/presentation/coin_shop.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You need {value} more for that game.'**
+  String coinShopYouNeedMoreForThat(Object value);
+
+  /// features/store/presentation/coin_shop.dart
+  ///
+  /// In en, this message translates to:
+  /// **'+{percent}% extra'**
+  String coinShopExtra(Object percent);
+
+  /// features/store/data/store_repository.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You already have the starter pack.'**
+  String get storeYouAlreadyHaveTheStarter;
+
+  /// features/store/data/store_repository.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Coin top-ups on the web are coming soon.'**
+  String get storeCoinTopUpsOnThe;
+
+  /// features/store/data/store_repository.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start the payment. Try again.'**
+  String get storeCouldnTStartThePayment;
+
+  /// features/store/data/store_repository.dart
+  ///
+  /// In en, this message translates to:
+  /// **'GH₵'**
+  String get storeGh;
+
+  /// features/store/data/store_repository.dart
+  ///
+  /// In en, this message translates to:
+  /// **'KSh '**
+  String get storeKsh;
+
+  /// features/guess_doodle/presentation/widgets/doodle_chat.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get doodleChatSomeone;
+
+  /// features/guess_doodle/presentation/widgets/doodle_chat.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get doodleChatYou;
+
+  /// features/guess_doodle/presentation/widgets/doodle_chat.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You got it!'**
+  String get doodleChatYouGotIt;
+
+  /// features/guess_doodle/presentation/widgets/doodle_chat.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{name} got it!'**
+  String doodleChatGotIt(Object name);
+
+  /// features/guess_doodle/presentation/widgets/doodle_chat.dart
+  ///
+  /// In en, this message translates to:
+  /// **'\"{text}\" is so close!'**
+  String doodleChatIsSoClose(Object text);
+
+  /// features/guess_doodle/presentation/widgets/doodle_chat.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The word was {body}'**
+  String doodleChatTheWordWas(Object body);
+
+  /// features/guess_doodle/presentation/widgets/doodle_chat.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your turn to draw'**
+  String get doodleChatYourTurnToDraw;
+
+  /// features/guess_doodle/presentation/widgets/doodle_chat.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is drawing'**
+  String doodleChatIsDrawing(Object name);
+
+  /// features/doodle_studio/domain/coloring_pages.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Mandala'**
+  String get coloringPagesMandala;
+
+  /// features/doodle_studio/domain/coloring_pages.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip'**
+  String get coloringPagesChip;
+
+  /// features/doodle_studio/domain/coloring_pages.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Floating island'**
+  String get coloringPagesFloatingIsland;
+
+  /// features/doodle_studio/domain/coloring_pages.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Little dragon'**
+  String get coloringPagesLittleDragon;
+
+  /// features/doodle_studio/domain/coloring_pages.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rocket'**
+  String get coloringPagesRocket;
+
+  /// features/doodle_studio/domain/coloring_pages.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Castle'**
+  String get coloringPagesCastle;
+
+  /// features/doodle_studio/domain/coloring_pages.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Under the sea'**
+  String get coloringPagesUnderTheSea;
+
+  /// features/doodle_studio/domain/coloring_pages.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Garden'**
+  String get coloringPagesGarden;
+
+  /// features/chat/presentation/game_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Some words were hidden. Keep it friendly.'**
+  String get gameChatSomeWordsWereHiddenKeep;
+
+  /// features/chat/presentation/game_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get gameChatChat;
+
+  /// features/chat/presentation/game_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Friends chat'**
+  String get gameChatFriendsChat;
+
+  /// features/chat/presentation/game_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly chat'**
+  String get gameChatFriendlyChat;
+
+  /// features/chat/presentation/game_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Say hi'**
+  String get gameChatSayHi;
+
+  /// features/chat/presentation/game_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Message your friends'**
+  String get gameChatMessageYourFriends;
+
+  /// features/chat/presentation/game_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Say something nice'**
+  String get gameChatSaySomethingNice;
+
+  /// features/chat/presentation/game_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get gameChatYou;
+
+  /// core/bots/bots.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Player {value}'**
+  String botsPlayer(Object value);
+
+  /// core/bots/bots.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Pip'**
+  String get botsPip;
+
+  /// core/bots/bots.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Momo'**
+  String get botsMomo;
+
+  /// core/bots/bots.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Kiki'**
+  String get botsKiki;
+
+  /// core/bots/bots.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Bolt'**
+  String get botsBolt;
+
+  /// core/bots/bots.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nova'**
+  String get botsNova;
+
+  /// core/bots/bots.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip'**
+  String get botsChip;
+
+  /// core/bots/bots.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Robo'**
+  String get botsRobo;
+
+  /// features/chat/domain/chat_filter.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nice move!'**
+  String get chatFilterNiceMove;
+
+  /// features/chat/domain/chat_filter.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Well played!'**
+  String get chatFilterWellPlayed;
+
+  /// features/chat/domain/chat_filter.dart
+  ///
+  /// In en, this message translates to:
+  /// **'So close!'**
+  String get chatFilterSoClose;
+
+  /// features/chat/domain/chat_filter.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go!'**
+  String get chatFilterLetSGo;
+
+  /// features/chat/domain/chat_filter.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your turn'**
+  String get chatFilterYourTurn;
+
+  /// features/chat/domain/chat_filter.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Oops!'**
+  String get chatFilterOops;
+
+  /// features/chat/domain/chat_filter.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Good game!'**
+  String get chatFilterGoodGame;
+
+  /// features/chat/presentation/game_chat_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Whoa, slow down a little!'**
+  String get gameChatWhoaSlowDownALittle;
+
+  /// features/chat/presentation/game_chat_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send that message.'**
+  String get gameChatCouldnTSendThatMessage;
+
+  /// features/chat/presentation/game_chat_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send your voice note.'**
+  String get gameChatCouldnTSendYourVoice;
+
+  /// features/auras/presentation/auras_tab.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get aurasTabYou;
+
+  /// features/auras/presentation/auras_tab.dart
+  ///
+  /// In en, this message translates to:
+  /// **'No aura yet'**
+  String get aurasTabNoAuraYet;
+
+  /// features/auras/presentation/auras_tab.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Wear one and everyone sees it around your picture, in every game.'**
+  String get aurasTabWearOneAndEveryoneSees;
+
+  /// features/auras/presentation/auras_tab.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Wearing now · {value}'**
+  String aurasTabWearingNow(Object value);
+
+  /// features/auras/presentation/auras_tab.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Wearing'**
+  String get aurasTabWearing;
+
+  /// features/auras/presentation/auras_tab.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get aurasTabOwned;
+
+  /// features/chat/presentation/voice_notes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Allow microphone access in Settings to send voice notes.'**
+  String get voiceNotesAllowMicrophoneAccessInSettings;
+
+  /// features/chat/presentation/voice_notes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start recording.'**
+  String get voiceNotesCouldnTStartRecording;
+
+  /// features/chat/presentation/voice_notes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Record a voice note'**
+  String get voiceNotesRecordAVoiceNote;
+
+  /// features/chat/presentation/voice_notes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get voiceNotesDelete;
+
+  /// features/chat/presentation/voice_notes.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get voiceNotesSend;
+
+  /// features/store/presentation/web_payment_return.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The payment didn\'t go through, so nothing was charged.'**
+  String get webPaymentReturnThePaymentDidnTGo;
+
+  /// features/store/presentation/web_payment_return.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received: {value} coins added!'**
+  String webPaymentReturnPaymentReceivedCoinsAdded(Object value);
+
+  /// features/store/presentation/web_payment_return.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment is being confirmed. Your coins will arrive in a moment.'**
+  String get webPaymentReturnYourPaymentIsBeingConfirmed;
+
+  /// features/store/presentation/web_payment_return.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm that payment yet. If you were charged, your coins will arrive shortly.'**
+  String get webPaymentReturnWeCouldnTConfirmThat;
+
+  /// features/chess/domain/time_control.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Bullet'**
+  String get timeControlBullet;
+
+  /// features/chess/domain/time_control.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Blitz'**
+  String get timeControlBlitz;
+
+  /// features/chess/domain/time_control.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Rapid'**
+  String get timeControlRapid;
+
+  /// features/chess/domain/time_control.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Classical'**
+  String get timeControlClassical;
+
+  /// features/ludo/presentation/widgets/ludo_seat_panel.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get ludoSeatPanelYou;
+
+  /// features/ludo/presentation/widgets/ludo_seat_panel.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Open seat'**
+  String get ludoSeatPanelOpenSeat;
+
+  /// features/ludo/presentation/widgets/ludo_seat_panel.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get ludoSeatPanelLeft;
+
+  /// features/ludo/presentation/widgets/ludo_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get ludoChatSomeone;
+
+  /// features/ludo/presentation/widgets/ludo_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{who} chose war!'**
+  String ludoChatChoseWar(Object who);
+
+  /// features/ludo/presentation/widgets/ludo_chat_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{who} made peace.'**
+  String ludoChatMadePeace(Object who);
+
+  /// features/ludo/presentation/widgets/ludo_capture_bubble.dart
+  ///
+  /// In en, this message translates to:
+  /// **'React'**
+  String get ludoCaptureBubbleReact;
+
+  /// features/ludo/presentation/widgets/ludo_capture_bubble.dart
+  ///
+  /// In en, this message translates to:
+  /// **'War'**
+  String get ludoCaptureBubbleWar;
+
+  /// features/ludo/presentation/widgets/ludo_capture_bubble.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Peace'**
+  String get ludoCaptureBubblePeace;
+
+  /// features/guess_doodle/presentation/widgets/doodle_tools.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Eraser'**
+  String get doodleToolsEraser;
+
+  /// features/guess_doodle/presentation/widgets/doodle_tools.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get doodleToolsUndo;
+
+  /// features/guess_doodle/presentation/widgets/doodle_tools.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get doodleToolsClear;
+
+  /// features/ludo/presentation/widgets/ludo_dice.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Roll the die'**
+  String get ludoDiceRollTheDie;
+
+  /// features/ludo/presentation/widgets/ludo_dice.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Die showing {value}'**
+  String ludoDiceDieShowing(Object value);
+
+  /// features/chess/presentation/widgets/time_control_style.dart
+  ///
+  /// In en, this message translates to:
+  /// **'  ·  {minutes} min each'**
+  String timeControlStyleMinEach(Object minutes);
+
+  /// features/chess/presentation/widgets/time_control_style.dart
+  ///
+  /// In en, this message translates to:
+  /// **'  ·  {minutes} min  +{increment}s a move'**
+  String timeControlStyleMinSAMove(Object minutes, Object increment);
+
+  /// features/chess/presentation/sent_challenges.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge to {name} cancelled.'**
+  String sentChallengesChallengeToCancelled(Object name);
+
+  /// features/chess/presentation/sent_challenges.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t cancel it. Try again.'**
+  String get sentChallengesCouldnTCancelItTry;
+
+  /// features/chess/presentation/controllers/chess_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Match not found'**
+  String get chessMatchMatchNotFound;
+
+  /// features/chess/presentation/controllers/chess_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That move didn\'t go through. Reconnecting.'**
+  String get chessMatchThatMoveDidnTGo;
+
+  /// features/checkers/presentation/controllers/checkers_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Match not found'**
+  String get checkersMatchMatchNotFound;
+
+  /// features/checkers/presentation/controllers/checkers_match_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'That move didn\'t go through. Reconnecting.'**
+  String get checkersMatchThatMoveDidnTGo;
+
+  /// features/store/presentation/theme_teleport.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to'**
+  String get themeTeleportWelcomeTo;
+
+  /// features/guess_doodle/presentation/widgets/doodle_header.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Draw'**
+  String get doodleHeaderDraw;
+
+  /// features/guess_doodle/data/chip_doodle_repository.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip couldn\'t draw just now. Check your connection and try again.'**
+  String get chipDoodleChipCouldnTDrawJust2;
+
+  /// features/doodle_studio/presentation/doodle_world_gate.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Coloring happens in the Doodle world.'**
+  String get doodleWorldGateColoringHappensInTheDoodle;
+
+  /// features/chip/presentation/floating_chip.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with Chip'**
+  String get floatingChipChatWithChip;
+
+  /// features/chess/presentation/widgets/promotion_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Promote your pawn'**
+  String get promotionPromoteYourPawn;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -78,8 +78,9 @@ Future<void> _shoot(
   WidgetTester tester, {
   required String name,
   required List<ChipLine> lines,
-  UtopiaTheme world = UtopiaThemes.utopiaTwilight,
+  UtopiaTheme? world,
 }) async {
+  world ??= UtopiaThemes.utopiaTwilight;
   UtopiaThemes.active = world;
   addTearDown(() => UtopiaThemes.active = UtopiaThemes.utopiaTwilight);
   tester.view.physicalSize = const Size(1290, 2796);

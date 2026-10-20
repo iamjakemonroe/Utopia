@@ -11,6 +11,7 @@ import '../../domain/chess_position.dart';
 import '../../domain/chess_types.dart';
 import '../../domain/time_control.dart';
 import '../../../house/presentation/house_waker.dart';
+import '../../../../l10n/strings.dart';
 
 final chessRepositoryProvider = Provider<ChessRepository>((ref) {
   return ChessRepository(ref.watch(supabaseClientProvider));
@@ -376,7 +377,10 @@ class ChessMatchController extends StateNotifier<ChessMatchState> {
 
   void _onMatchRow(Map<String, dynamic>? row) {
     if (row == null) {
-      state = state.copyWith(loading: false, error: 'Match not found');
+      state = state.copyWith(
+        loading: false,
+        error: strings.chessMatchMatchNotFound,
+      );
       return;
     }
     final firstRow = _row == null;
@@ -692,9 +696,7 @@ class ChessMatchController extends StateNotifier<ChessMatchState> {
             if (fresh != null) _row = fresh;
             if (mounted) _sync();
           });
-          state = state.copyWith(
-            error: "That move didn't go through. Reconnecting.",
-          );
+          state = state.copyWith(error: strings.chessMatchThatMoveDidnTGo);
         });
   }
 

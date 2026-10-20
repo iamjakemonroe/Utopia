@@ -18,6 +18,7 @@ import '../domain/voice_note.dart';
 import 'chat_sticker.dart';
 import 'voice_notes.dart';
 import '../../../core/audio/sound_controls.dart';
+import '../../../l10n/strings.dart';
 
 /// A centered note in the chat instead of a bubble ("Red chose war!").
 class ChatSystemLine {
@@ -127,7 +128,7 @@ class _ChatSheetState extends ConsumerState<_ChatSheet> {
 
   Future<void> _send(String text, {String kind = 'text'}) async {
     if (!widget.config.friends && kind == 'text' && !ChatFilter.isClean(text)) {
-      setState(() => _notice = 'Some words were hidden. Keep it friendly.');
+      setState(() => _notice = strings.gameChatSomeWordsWereHiddenKeep);
     } else {
       setState(() => _notice = null);
     }
@@ -200,7 +201,10 @@ class _ChatSheetState extends ConsumerState<_ChatSheet> {
                 ),
                 child: Row(
                   children: [
-                    Text('Chat', style: AppTextStyles.display(fontSize: 22)),
+                    Text(
+                      strings.gameChatChat,
+                      style: AppTextStyles.display(fontSize: 22),
+                    ),
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -225,7 +229,9 @@ class _ChatSheetState extends ConsumerState<_ChatSheet> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            friends ? 'Friends chat' : 'Friendly chat',
+                            friends
+                                ? strings.gameChatFriendsChat
+                                : strings.gameChatFriendlyChat,
                             style: AppTextStyles.body(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -246,7 +252,7 @@ class _ChatSheetState extends ConsumerState<_ChatSheet> {
                             const ChatSticker(id: 'chip:happy', size: 64),
                             const SizedBox(height: 6),
                             Text(
-                              'Say hi',
+                              strings.gameChatSayHi,
                               style: AppTextStyles.body(
                                 color: AppColors.textSecondary,
                               ),
@@ -359,8 +365,8 @@ class _ChatSheetState extends ConsumerState<_ChatSheet> {
                           decoration: InputDecoration(
                             counterText: '',
                             hintText: friends
-                                ? 'Message your friends'
-                                : 'Say something nice',
+                                ? strings.gameChatMessageYourFriends
+                                : strings.gameChatSaySomethingNice,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 12,
@@ -417,7 +423,9 @@ class _Bubble extends ConsumerWidget {
     final profile = ref
         .watch(profileByIdProvider(message.senderId))
         .valueOrNull;
-    final name = mine ? 'You' : profileDisplayName(profile, message.senderId);
+    final name = mine
+        ? strings.gameChatYou
+        : profileDisplayName(profile, message.senderId);
     final seat = accent ?? AppColors.glowRing;
     final emoteOnly = message.kind == 'emote';
     final voice = message.kind == 'voice'

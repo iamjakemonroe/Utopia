@@ -10,6 +10,7 @@ import '../../../chess/presentation/controllers/chess_match_controller.dart'
     show chessRepositoryProvider, kFirstMoveWindow;
 import '../../domain/checkers_engine.dart';
 import '../../../house/presentation/house_waker.dart';
+import '../../../../l10n/strings.dart';
 
 const checkersEngine = CheckersEngine();
 
@@ -323,7 +324,10 @@ class CheckersMatchController extends StateNotifier<CheckersMatchState> {
 
   void _onMatchRow(Map<String, dynamic>? row) {
     if (row == null) {
-      state = state.copyWith(loading: false, error: 'Match not found');
+      state = state.copyWith(
+        loading: false,
+        error: strings.checkersMatchMatchNotFound,
+      );
       return;
     }
     final firstRow = _row == null;
@@ -564,9 +568,7 @@ class CheckersMatchController extends StateNotifier<CheckersMatchState> {
             if (fresh != null) _row = fresh;
             if (mounted) _sync();
           });
-          state = state.copyWith(
-            error: "That move didn't go through. Reconnecting.",
-          );
+          state = state.copyWith(error: strings.checkersMatchThatMoveDidnTGo);
         });
   }
 

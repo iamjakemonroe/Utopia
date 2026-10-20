@@ -40,6 +40,7 @@ import '../widgets/checkers_board.dart';
 import '../widgets/checkers_disc.dart';
 import '../../../events/presentation/events_controller.dart';
 import '../../../../core/layout/game_stage.dart';
+import '../../../../l10n/strings.dart';
 
 const _darkInk = Color(0xFFB79BFF);
 const _lightInk = Color(0xFFF4EEDC);
@@ -178,10 +179,13 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
     ref.listen(voicePlaybackProvider, (_, _) {});
 
     if (state.loading) {
-      return const Scaffold(
+      return Scaffold(
         body: AppBackground(
           child: Center(
-            child: UtopiaLoader(size: 88, label: 'Setting up the board'),
+            child: UtopiaLoader(
+              size: 88,
+              label: strings.checkersMatchSettingUpTheBoard,
+            ),
           ),
         ),
       );
@@ -197,7 +201,7 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
                 const CoinBuddy(mood: BuddyMood.sad, size: 80),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  "We couldn't find this game.",
+                  strings.checkersMatchWeCouldnTFindThis,
                   style: AppTextStyles.body(color: AppColors.textSecondary),
                 ),
               ],
@@ -223,7 +227,9 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
-          tooltip: playing ? 'Leave game' : 'Close',
+          tooltip: playing
+              ? strings.checkersMatchLeaveGame
+              : strings.checkersMatchClose,
           onPressed: () => _confirmLeave(context, controller, playing),
         ),
         title: _Title(state: state),
@@ -236,7 +242,7 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
           if (playing)
             IconButton(
               icon: const Icon(Icons.flag_rounded),
-              tooltip: 'Resign',
+              tooltip: strings.checkersMatchResign,
               onPressed: () => _confirmLeave(context, controller, playing),
             ),
         ],
@@ -389,9 +395,9 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
                   describe: (result, won) => switch (result) {
                     'win' =>
                       won
-                          ? 'No moves left for them. Well played.'
-                          : 'You ran out of moves.',
-                    'draw' => 'Forty moves each with no progress.',
+                          ? strings.checkersMatchNoMovesLeftForThem
+                          : strings.checkersMatchYouRanOutOfMoves,
+                    'draw' => strings.checkersMatchFortyMovesEachWithNo,
                     _ => null,
                   },
                   onReview: () => setState(() => _showResult = false),
@@ -422,12 +428,12 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
     final ok = await confirmBouncy(
       context: context,
       audio: ref.read(gameAudioProvider),
-      title: 'Resign this game?',
+      title: strings.checkersMatchResignThisGame,
       message: stake > 0
-          ? 'Your opponent wins the game and the prize.'
-          : 'Your opponent wins the game.',
-      confirmLabel: 'Resign',
-      cancelLabel: 'Keep playing',
+          ? strings.checkersMatchYourOpponentWinsTheGame
+          : strings.checkersMatchYourOpponentWinsTheGame2,
+      confirmLabel: strings.checkersMatchResign,
+      cancelLabel: strings.checkersMatchKeepPlaying,
       destructive: true,
       hero: const CoinBuddy(mood: BuddyMood.sad, size: 76),
     );
@@ -456,7 +462,7 @@ class _Title extends StatelessWidget {
         Icon(speedIcon(tc.speed), color: color, size: 20),
         const SizedBox(width: 6),
         Text(
-          state.timed ? tc.label : 'Checkers',
+          state.timed ? tc.label : strings.checkersMatchCheckers,
           style: AppTextStyles.display(fontSize: 18),
         ),
         if (state.stake > 0) ...[
@@ -497,9 +503,9 @@ class _PlayerBar extends ConsumerWidget {
         ? null
         : ref.watch(profileByIdProvider(userId!)).valueOrNull;
     final name = isMe
-        ? 'You'
+        ? strings.checkersMatchYou
         : userId == null
-        ? 'Opponent'
+        ? strings.checkersMatchOpponent
         : profileDisplayName(profile, userId!);
     final live = state.isActive && !state.isOver;
     final running =
@@ -634,12 +640,15 @@ class _Taken extends StatelessWidget {
       height: 18,
       child: Row(
         children: [
-          if (count > 0) Text('Took $count', style: style),
+          if (count > 0) Text(strings.checkersMatchTook(count), style: style),
           if (count > 0 && kings > 0) Text('  ·  ', style: style),
           if (kings > 0) ...[
             const CrownIcon(size: 14),
             const SizedBox(width: 3),
-            Text(kings == 1 ? '1 king' : '$kings kings', style: style),
+            Text(
+              kings == 1 ? strings.checkersMatch1King : '$kings kings',
+              style: style,
+            ),
           ],
         ],
       ),
@@ -705,8 +714,11 @@ class _StatusLineState extends State<_StatusLine>
             const SizedBox(width: 6),
             Text(
               state.displayPly == 0
-                  ? 'Starting position'
-                  : 'Move ${state.displayPly} of ${state.history.length}',
+                  ? strings.checkersMatchStartingPosition
+                  : strings.checkersMatchMoveOf(
+                      state.displayPly,
+                      state.history.length,
+                    ),
               style: AppTextStyles.body(
                 color: AppColors.readable(AppColors.sky),
                 fontWeight: FontWeight.w800,
@@ -726,7 +738,7 @@ class _StatusLineState extends State<_StatusLine>
                     color: AppColors.error,
                   ),
                   child: Text(
-                    'Back to live',
+                    strings.checkersMatchBackToLive,
                     style: AppTextStyles.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w900,
@@ -745,20 +757,28 @@ class _StatusLineState extends State<_StatusLine>
     final firstMove = state.firstMoveMsLeft;
     final capture = state.isMyTurn && state.mustCapture;
     final (IconData icon, String text, Color color) = capture
-        ? (Icons.bolt_rounded, 'You must take a piece', const Color(0xFFFF7A45))
+        ? (
+            Icons.bolt_rounded,
+            strings.checkersMatchYouMustTakeAPiece,
+            const Color(0xFFFF7A45),
+          )
         : state.isMyTurn
         ? (
             Icons.touch_app_rounded,
             firstMove != null
-                ? 'Your move · ${(firstMove / 1000).ceil()}s to start'
-                : 'Your move',
+                ? strings.checkersMatchYourMoveSToStart(
+                    (firstMove / 1000).ceil(),
+                  )
+                : strings.checkersMatchYourMove,
             AppColors.accentSecondary,
           )
         : (
             Icons.hourglass_top_rounded,
             firstMove != null
-                ? 'Waiting for the first move · ${(firstMove / 1000).ceil()}s'
-                : 'Their move',
+                ? strings.checkersMatchWaitingForTheFirstMove(
+                    (firstMove / 1000).ceil(),
+                  )
+                : strings.checkersMatchTheirMove,
             AppColors.textSecondary,
           );
 

@@ -30,6 +30,7 @@ import '../../store/presentation/coin_shop.dart';
 import '../../maestro/presentation/maestro_providers.dart';
 import '../../maestro/presentation/maestro_sheet.dart';
 import 'chip_chat_controller.dart';
+import '../../../l10n/strings.dart';
 
 /// Opens a chat with Chip: he sits on top making faces at what's said, the
 /// conversation floats underneath, and a few starter questions help when
@@ -66,13 +67,13 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
   /// A photo picked to send with the next message.
   Uint8List? _attached;
 
-  static const _starters = [
+  static final _starters = [
     'Draw me something to color',
-    'Turn my photo into a coloring page',
-    'Tell me a joke',
-    'Which world should I try?',
-    'How do I play Ludo?',
-    'Help me with my homework',
+    strings.chipChatTurnMyPhotoIntoA,
+    strings.chipChatTellMeAJoke,
+    strings.chipChatWhichWorldShouldITry,
+    strings.chipChatHowDoIPlayLudo,
+    strings.chipChatHelpMeWithMyHomework,
   ];
 
   @override
@@ -116,7 +117,9 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
       final bytes = await picked.readAsBytes();
       if (mounted) setState(() => _attached = bytes);
     } catch (_) {
-      if (mounted) showUtopiaToast(context, "Couldn't open that photo.");
+      if (mounted) {
+        showUtopiaToast(context, strings.chipChatCouldnTOpenThatPhoto);
+      }
     }
   }
 
@@ -131,7 +134,7 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
     } catch (_) {}
     if (!mounted) return;
     if (picture == null || !picture.ready) {
-      showUtopiaToast(context, "That picture isn't ready to color yet.");
+      showUtopiaToast(context, strings.chipChatThatPictureIsnTReady);
       return;
     }
     await library.keep(picture);
@@ -156,24 +159,20 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
       return;
     }
     if (offer.state == 'free') {
-      final who = offer.fromPhoto ? 'your photo' : offer.subject;
+      final who = offer.fromPhoto ? strings.chipChatYourPhoto : offer.subject;
       final yes = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Your free real portrait'),
-          content: Text(
-            'Chip has a photo-quality coloring page made that looks just like '
-            '$who. Your first one is free; after that, real portraits come '
-            'with Chip Maestro.',
-          ),
+          title: Text(strings.chipChatYourFreeRealPortrait),
+          content: Text(strings.chipChatChipHasAPhotoQuality(who)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Not now'),
+              child: Text(strings.chipChatNotNow),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Draw it free'),
+              child: Text(strings.chipChatDrawItFree),
             ),
           ],
         ),
@@ -192,17 +191,17 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
         showUtopiaToast(
           context,
           ask.month
-              ? "That's this month's real portraits. More when your plan renews!"
-              : "That's all the real portraits for today. More tomorrow!",
+              ? strings.chipChatThatSThisMonthS
+              : strings.chipChatThatSAllTheReal,
         );
       case 'off':
-        showUtopiaToast(context, 'Real portraits are coming soon.');
+        showUtopiaToast(context, strings.chipChatRealPortraitsAreComingSoon);
       case 'photo':
-        showUtopiaToast(context, 'Send Chip the photo again first.');
+        showUtopiaToast(context, strings.chipChatSendChipThePhotoAgain);
       case 'busy':
         break;
       default:
-        showUtopiaToast(context, "Couldn't start the portrait. Try again?");
+        showUtopiaToast(context, strings.chipChatCouldnTStartThePortrait);
     }
   }
 
@@ -235,16 +234,16 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Start a new chat?'),
-        content: const Text('Chip will forget this conversation.'),
+        title: Text(strings.chipChatStartANewChat),
+        content: Text(strings.chipChatChipWillForgetThisConversation),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Keep it'),
+            child: Text(strings.chipChatKeepIt),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('New chat'),
+            child: Text(strings.chipChatNewChat),
           ),
         ],
       ),
@@ -254,29 +253,32 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
 
   /// Where Chip's buttons go: the label, and the screen (or null for the
   /// ones that open over the current screen).
-  static const _places = <String, (String, String?)>{
-    'store': ('Open the Store', '/store'),
-    'auras': ('See auras', '/store?tab=auras'),
-    'worlds': ('Change world', '/collection'),
-    'coins': ('Get coins', null),
-    'friends': ('Open Friends', null),
-    'notifications': ('Notifications', '/notifications'),
-    'settings': ('Settings', '/settings'),
-    'profile': ('Your profile', '/profile'),
-    'sketchbook': ('Open the Sketchbook', '/sketchbook'),
-    'how_to_play_chess': ('How to play chess', '/how-to-play'),
+  static final _places = <String, (String, String?)>{
+    'store': (strings.chipChatOpenTheStore, '/store'),
+    'auras': (strings.chipChatSeeAuras, '/store?tab=auras'),
+    'worlds': (strings.chipChatChangeWorld, '/collection'),
+    'coins': (strings.chipChatGetCoins, null),
+    'friends': (strings.chipChatOpenFriends, null),
+    'notifications': (strings.chipChatNotifications, '/notifications'),
+    'settings': (strings.chipChatSettings, '/settings'),
+    'profile': (strings.chipChatYourProfile, '/profile'),
+    'sketchbook': (strings.chipChatOpenTheSketchbook, '/sketchbook'),
+    'how_to_play_chess': (strings.chipChatHowToPlayChess, '/how-to-play'),
     'how_to_play_checkers': (
-      'How to play checkers',
+      strings.chipChatHowToPlayCheckers,
       '/how-to-play?game=checkers',
     ),
-    'how_to_play_ludo': ('How to play Ludo', '/how-to-play?game=ludo'),
-    'chess': ('Play chess', '/chess'),
-    'checkers': ('Play checkers', '/checkers'),
-    'ludo': ('Play Ludo', '/ludo'),
-    'guess_my_doodle': ('Play Guess My Doodle', '/guess-my-doodle'),
-    'save_account': ('Save your account', '/auth/link'),
-    'report_bug': ('Report a bug', null),
-    'suggest_feature': ('Suggest a feature', null),
+    'how_to_play_ludo': (
+      strings.chipChatHowToPlayLudo,
+      '/how-to-play?game=ludo',
+    ),
+    'chess': (strings.chipChatPlayChess, '/chess'),
+    'checkers': (strings.chipChatPlayCheckers, '/checkers'),
+    'ludo': (strings.chipChatPlayLudo, '/ludo'),
+    'guess_my_doodle': (strings.chipChatPlayGuessMyDoodle, '/guess-my-doodle'),
+    'save_account': (strings.chipChatSaveYourAccount, '/auth/link'),
+    'report_bug': (strings.chipChatReportABug, null),
+    'suggest_feature': (strings.chipChatSuggestAFeature, null),
   };
 
   void _go(String place) {
@@ -367,15 +369,15 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Chip',
+                              strings.chipChatChip,
                               style: AppTextStyles.display(fontSize: 24),
                             ),
                             AnimatedSwitcher(
                               duration: const Duration(milliseconds: 250),
                               child: Text(
                                 chat.thinking
-                                    ? 'Thinking...'
-                                    : 'Your buddy in Utopia. Ask me anything.',
+                                    ? strings.chipChatThinking
+                                    : strings.chipChatYourBuddyInUtopiaAsk,
                                 key: ValueKey(chat.thinking),
                                 style: AppTextStyles.body(
                                   fontSize: 13,
@@ -388,7 +390,7 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                       ),
                       if (chat.lines.isNotEmpty && !chat.thinking)
                         IconButton(
-                          tooltip: 'New chat',
+                          tooltip: strings.chipChatNewChat,
                           icon: const Icon(Icons.add_comment_rounded),
                           onPressed: _newChat,
                         ),
@@ -447,25 +449,29 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                                 if (line.portrait case final offer?)
                                   _GoButton(
                                     label: switch (offer.state) {
-                                      'free' => 'Draw it for real · Free',
+                                      'free' =>
+                                        strings.chipChatDrawItForRealFree,
                                       'maestro' =>
-                                        'Draw it for real · ${offer.left} left',
-                                      _ => 'Draw it for real with Chip Maestro',
+                                        strings.chipChatDrawItForRealLeft(
+                                          offer.left,
+                                        ),
+                                      _ => strings.chipChatDrawItForRealWith,
                                     },
                                     icon: Icons.auto_awesome_rounded,
                                     onTap: () => _takePortrait(i, offer),
                                   ),
                                 if (paintStyle != null && paintId != null)
                                   _GoButton(
-                                    label: 'Color it with Chip',
+                                    label: strings.chipChatColorItWithChip,
                                     icon: Icons.palette_rounded,
                                     onTap: () => _paint(paintId, paintStyle),
                                   ),
                                 if (line.limit == 'coins' &&
                                     i == chat.lines.length - 1)
                                   _GoButton(
-                                    label:
-                                        'Keep chatting · ${line.price ?? 20} coins',
+                                    label: strings.chipChatKeepChattingCoins(
+                                      line.price ?? 20,
+                                    ),
                                     icon: Icons.monetization_on_rounded,
                                     onTap: () => ref
                                         .read(chipChatProvider.notifier)
@@ -522,8 +528,8 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                           decoration: InputDecoration(
                             counterText: '',
                             hintText: _attached != null
-                                ? 'Tell Chip about the photo'
-                                : 'Say something to Chip',
+                                ? strings.chipChatTellChipAboutThePhoto
+                                : strings.chipChatSaySomethingToChip,
                             hintStyle: AppTextStyles.body(
                               color: AppColors.textSecondary,
                             ),
@@ -577,8 +583,7 @@ class _Starters extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         Text(
-          "Hi! I know every corner of Utopia, and plenty outside it. Ask me "
-          'anything, have me draw you a picture to color, or just say hello.',
+          strings.chipChatHiIKnowEveryCorner,
           style: AppTextStyles.body(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -612,7 +617,7 @@ class _Starters extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          'Found a bug, or got an idea? Pass it on and the team will see it.',
+          strings.chipChatFoundABugOrGot,
           style: AppTextStyles.body(
             fontSize: 13,
             color: AppColors.textSecondary,
@@ -625,7 +630,7 @@ class _Starters extends StatelessWidget {
           children: [
             ActionChip(
               avatar: const Icon(Icons.bug_report_rounded, size: 18),
-              label: const Text('Report a bug'),
+              label: Text(strings.chipChatReportABug),
               labelStyle: AppTextStyles.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -634,7 +639,7 @@ class _Starters extends StatelessWidget {
             ),
             ActionChip(
               avatar: const Icon(Icons.lightbulb_rounded, size: 18),
-              label: const Text('Suggest a feature'),
+              label: Text(strings.chipChatSuggestAFeature),
               labelStyle: AppTextStyles.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -781,7 +786,7 @@ class _SendButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Send',
+      label: strings.chipChatSend,
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
@@ -817,7 +822,7 @@ class _PhotoButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Send Chip a photo',
+      label: strings.chipChatSendChipAPhoto,
       child: GestureDetector(
         onTap: onTap,
         child: Container(
@@ -865,7 +870,7 @@ class _AttachedPhoto extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Photo for Chip',
+              strings.chipChatPhotoForChip,
               style: AppTextStyles.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -874,7 +879,7 @@ class _AttachedPhoto extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Remove the photo',
+            tooltip: strings.chipChatRemoveThePhoto,
             onPressed: onRemove,
             icon: Icon(Icons.close_rounded, color: AppColors.textSecondary),
           ),
@@ -1054,7 +1059,7 @@ class _PictureCard extends ConsumerWidget {
   (String, IconData) _action(WidgetRef ref) {
     ref.watch(themeControllerProvider);
     if (UtopiaThemes.active.world.biome == WorldBiome.doodle) {
-      return ('Color it', Icons.palette_rounded);
+      return (strings.chipChatColorIt, Icons.palette_rounded);
     }
     var owned = false;
     try {
@@ -1068,9 +1073,12 @@ class _PictureCard extends ConsumerWidget {
       // works, and the trip there checks again.
     }
     if (owned) {
-      return ('Travel to Doodle to color it', Icons.rocket_launch_rounded);
+      return (
+        strings.chipChatTravelToDoodleToColor,
+        Icons.rocket_launch_rounded,
+      );
     }
-    return ('Get the Doodle world to color it', Icons.storefront_rounded);
+    return (strings.chipChatGetTheDoodleWorldTo, Icons.storefront_rounded);
   }
 
   @override
@@ -1087,18 +1095,12 @@ class _PictureCard extends ConsumerWidget {
     }
     final subject = picture.subject;
     final (mood, note) = switch (status) {
-      'drawing' => (BuddyMood.thinking, 'Drawing $subject...'),
+      'drawing' => (BuddyMood.thinking, strings.chipChatDrawing(subject)),
       'ready' => (BuddyMood.excited, drawn!.title),
-      'refused' => (
-        BuddyMood.sad,
-        "I can't draw that one. Try something else?",
-      ),
-      'limited' => (
-        BuddyMood.sad,
-        "I've drawn all I can today. Ask me again tomorrow!",
-      ),
-      'off' => (BuddyMood.thinking, "My pencil isn't ready yet."),
-      _ => (BuddyMood.sad, "That drawing didn't work out. Ask me again?"),
+      'refused' => (BuddyMood.sad, strings.chipChatICanTDrawThat),
+      'limited' => (BuddyMood.sad, strings.chipChatIVeDrawnAllI),
+      'off' => (BuddyMood.thinking, strings.chipChatMyPencilIsnTReady),
+      _ => (BuddyMood.sad, strings.chipChatThatDrawingDidnTWork),
     };
     final width = _chatWidth(context) * 0.58;
     return Padding(

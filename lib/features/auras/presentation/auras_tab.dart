@@ -16,6 +16,7 @@ import 'aura_sheet.dart';
 import 'mythic_badge.dart';
 import '../../events/presentation/event_widgets.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../l10n/strings.dart';
 
 /// The aura shop: what you're wearing now, then every aura by tier, each
 /// shown live around your own picture.
@@ -28,7 +29,9 @@ class AurasTab extends ConsumerWidget {
     final profile = me == null
         ? null
         : ref.watch(profileByIdProvider(me)).valueOrNull;
-    final name = me == null ? 'You' : profileDisplayName(profile, me);
+    final name = me == null
+        ? strings.aurasTabYou
+        : profileDisplayName(profile, me);
     final wearing = Aura.byId(activeAura(profile));
     final until = DateTime.tryParse(
       profile?['aura_expires_at'] as String? ?? '',
@@ -75,14 +78,18 @@ class AurasTab extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          wearing == null ? 'No aura yet' : wearing.name,
+                          wearing == null
+                              ? strings.aurasTabNoAuraYet
+                              : wearing.name,
                           style: AppTextStyles.display(fontSize: 20),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           wearing == null
-                              ? 'Wear one and everyone sees it around your picture, in every game.'
-                              : 'Wearing now · ${auraTimeLeft(until!)}',
+                              ? strings.aurasTabWearOneAndEveryoneSees
+                              : strings.aurasTabWearingNow(
+                                  auraTimeLeft(until!),
+                                ),
                           style: AppTextStyles.body(
                             fontSize: 13,
                             color: AppColors.textSecondary,
@@ -235,7 +242,9 @@ class _AuraCard extends StatelessWidget {
                             color: AppColors.success,
                           ),
                           child: Text(
-                            wearing ? 'Wearing' : 'Owned',
+                            wearing
+                                ? strings.aurasTabWearing
+                                : strings.aurasTabOwned,
                             style: AppTextStyles.body(
                               fontSize: 10,
                               fontWeight: FontWeight.w900,

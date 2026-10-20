@@ -245,7 +245,7 @@ class WelcomeWeekSheet extends ConsumerWidget {
       1,
       30,
     );
-    const worlds = [
+    final worlds = [
       UtopiaThemes.utopiaHeaven,
       UtopiaThemes.utopiaDojo,
       UtopiaThemes.utopiaHell,

@@ -33,7 +33,7 @@ void main() {
         ],
         child: MaterialApp(
           home: const String.fromEnvironment('SCENE') == 'checkers'
-              ? const CheckersBotScreen(
+              ? CheckersBotScreen(
                   opponent: kChessChip,
                   level: BotLevel.easy,
                   mySide: CheckersSide.dark,

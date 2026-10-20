@@ -22,6 +22,7 @@ import 'widgets/doodle_canvas_view.dart';
 import 'widgets/doodle_header.dart';
 import '../../../core/layout/game_stage.dart';
 import '../../../core/platform/keyboard.dart';
+import '../../../l10n/strings.dart';
 
 /// "Chip draws, you guess": Chip doodles a word stroke by stroke and the
 /// player races to guess it, five times. Faster guesses score more; letters
@@ -140,30 +141,35 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
     final g = _game;
     switch (g.phase) {
       case ChipDoodlePhase.loading:
-        return ('Hmm, what shall I draw?', BuddyMood.thinking);
+        return (strings.chipDoodleHmmWhatShallIDraw, BuddyMood.thinking);
       case ChipDoodlePhase.error:
-        return ('Oops, my pencil broke!', BuddyMood.sad);
+        return (strings.chipDoodleOopsMyPencilBroke, BuddyMood.sad);
       case ChipDoodlePhase.reveal:
         return g.guessed
-            ? ('You got it! +${g.lastPoints}', BuddyMood.excited)
-            : ('It was ${_article(g.current!.word)}!', BuddyMood.happy);
+            ? (strings.chipDoodleYouGotIt(g.lastPoints), BuddyMood.excited)
+            : (
+                strings.chipDoodleItWas(_article(g.current!.word)),
+                BuddyMood.happy,
+              );
       case ChipDoodlePhase.over:
-        return ('What a game!', BuddyMood.excited);
+        return (strings.chipDoodleWhatAGame, BuddyMood.excited);
       case ChipDoodlePhase.drawing:
         final last = g.guesses.firstOrNull;
         if (last?.verdict == GuessVerdict.close) {
-          return ('So close! Keep going.', BuddyMood.excited);
+          return (strings.chipDoodleSoCloseKeepGoing, BuddyMood.excited);
         }
         if (g.left <= 10) {
-          return ('Quick, time is nearly up!', BuddyMood.thinking);
+          return (strings.chipDoodleQuickTimeIsNearlyUp, BuddyMood.thinking);
         }
         if (g.hints.isNotEmpty) {
-          return ("Here's a little hint!", BuddyMood.happy);
+          return (strings.chipDoodleHereSALittleHint, BuddyMood.happy);
         }
-        if (last != null) return ('Nope! Look again.', BuddyMood.happy);
+        if (last != null) {
+          return (strings.chipDoodleNopeLookAgain, BuddyMood.happy);
+        }
         return g.elapsed < 6
-            ? ('Watch closely...', BuddyMood.happy)
-            : ('What do you think it is?', BuddyMood.thinking);
+            ? (strings.chipDoodleWatchClosely, BuddyMood.happy)
+            : (strings.chipDoodleWhatDoYouThinkIt, BuddyMood.thinking);
     }
   }
 
@@ -184,7 +190,7 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
         children: [
           Scaffold(
             appBar: AppBar(
-              title: const Text('Chip draws'),
+              title: Text(strings.chipDoodleChipDraws),
               actions: [
                 Padding(
                   padding: const EdgeInsets.only(right: AppSpacing.md),
@@ -292,12 +298,15 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
           child: _Card(
             children: [
               Text(
-                g.error ?? "Chip couldn't draw just now.",
+                g.error ?? strings.chipDoodleChipCouldnTDrawJust,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.body(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: AppSpacing.md),
-              PrimaryButton(label: 'Try again', onPressed: g.retry),
+              PrimaryButton(
+                label: strings.chipDoodleTryAgain,
+                onPressed: g.retry,
+              ),
             ],
           ),
         );
@@ -307,7 +316,9 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
             child: PrimaryButton(
-              label: g.lastRound ? 'See your score' : 'Next doodle',
+              label: g.lastRound
+                  ? strings.chipDoodleSeeYourScore
+                  : strings.chipDoodleNextDoodle,
               color: AppColors.success,
               onPressed: () {
                 _audio.play(Sfx.tap);
@@ -321,7 +332,9 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
           child: _Card(
             children: [
               Text(
-                _newBest ? 'New best score!' : 'Great guessing!',
+                _newBest
+                    ? strings.chipDoodleNewBestScore
+                    : strings.chipDoodleGreatGuessing,
                 style: AppTextStyles.display(fontSize: 24),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -333,12 +346,12 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
                 ),
               ),
               Text(
-                'You guessed ${g.guessedCount} of ${g.rounds}',
+                strings.chipDoodleYouGuessedOf(g.guessedCount, g.rounds),
                 style: AppTextStyles.body(fontWeight: FontWeight.w700),
               ),
               if (!_newBest && _best > 0)
                 Text(
-                  'Your best: $_best',
+                  strings.chipDoodleYourBest(_best),
                   style: AppTextStyles.body(
                     fontSize: 13,
                     color: AppColors.textSecondary,
@@ -346,7 +359,7 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
                 ),
               const SizedBox(height: AppSpacing.md),
               PrimaryButton(
-                label: 'Play again',
+                label: strings.chipDoodlePlayAgain,
                 color: AppColors.success,
                 onPressed: () {
                   _audio.play(Sfx.tap);
@@ -356,7 +369,7 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).maybePop(),
-                child: const Text('Done'),
+                child: Text(strings.chipDoodleDone),
               ),
             ],
           ),
@@ -498,7 +511,7 @@ class _Guesses extends StatelessWidget {
               ),
               child: Text(
                 guess.verdict == GuessVerdict.close
-                    ? '${guess.text} \u00b7 so close!'
+                    ? strings.chipDoodleSoClose(guess.text)
                     : guess.text,
                 style:
                     AppTextStyles.body(
@@ -555,7 +568,9 @@ class _GuessField extends StatelessWidget {
             onSubmitted: (_) => onSend(),
             style: AppTextStyles.body(fontWeight: FontWeight.w700),
             decoration: InputDecoration(
-              hintText: enabled ? 'Type your guess' : 'Get ready...',
+              hintText: enabled
+                  ? strings.chipDoodleTypeYourGuess
+                  : strings.chipDoodleGetReady,
               counterText: '',
               filled: true,
               fillColor: Colors.black.withValues(alpha: 0.28),
@@ -572,12 +587,12 @@ class _GuessField extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         IconButton.filled(
-          tooltip: 'Guess',
+          tooltip: strings.chipDoodleGuess,
           onPressed: enabled ? onSend : null,
           icon: const Icon(Icons.send_rounded),
         ),
         IconButton(
-          tooltip: 'Skip this one',
+          tooltip: strings.chipDoodleSkipThisOne,
           onPressed: enabled ? onSkip : null,
           icon: const Icon(Icons.skip_next_rounded),
         ),

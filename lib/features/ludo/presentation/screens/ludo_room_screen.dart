@@ -32,6 +32,7 @@ import 'ludo_lobby_screen.dart';
 import '../../../invites/domain/game_invite.dart';
 import '../../../../core/analytics/analytics.dart';
 import '../../../../core/layout/responsive.dart';
+import '../../../../l10n/strings.dart';
 
 /// A friends' room: the code to share, a seat for each color filling up as
 /// friends join, and the host's start button. Everyone is taken to the game
@@ -139,10 +140,10 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
       showUtopiaToast(
         context,
         text.contains('insufficient balance:')
-            ? 'Someone needs more coins for this game.'
+            ? strings.ludoRoomSomeoneNeedsMoreCoinsFor
             : text.contains('at least 2')
-            ? 'Wait for at least one friend to join.'
-            : "Couldn't start the game. Try again.",
+            ? strings.ludoRoomWaitForAtLeastOne
+            : strings.ludoRoomCouldnTStartTheGame,
         kind: ToastKind.error,
       );
     }
@@ -177,8 +178,8 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
       showUtopiaToast(
         context,
         e.toString().contains('taken')
-            ? 'Someone just took that seat.'
-            : "Couldn't change seats. Try again.",
+            ? strings.ludoRoomSomeoneJustTookThatSeat
+            : strings.ludoRoomCouldnTChangeSeatsTry,
         kind: ToastKind.error,
       );
     }
@@ -189,7 +190,7 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
     ref.read(gameAudioProvider).play(Sfx.tap);
     showUtopiaToast(
       context,
-      'Code copied',
+      strings.ludoRoomCodeCopied,
       icon: Icons.content_copy_rounded,
       kind: ToastKind.success,
     );
@@ -201,10 +202,11 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
     final box = context.findRenderObject() as RenderBox?;
     await shareInvite(
       context,
-      text:
-          'Come play Ludo with me in Utopia! Tap to join, or use room code '
-          '$code: ${GameInvite(InviteGame.ludo, code).link}',
-      subject: 'Ludo in Utopia',
+      text: strings.ludoRoomComePlayLudoWithMe(
+        code,
+        GameInvite(InviteGame.ludo, code).link,
+      ),
+      subject: strings.ludoRoomLudoInUtopia,
       origin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
     );
   }
@@ -215,10 +217,13 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
     final me = ref.watch(currentUserProvider)?.id;
 
     if (room == null) {
-      return const Scaffold(
+      return Scaffold(
         body: AppBackground(
           child: Center(
-            child: UtopiaLoader(size: 80, label: 'Opening the room'),
+            child: UtopiaLoader(
+              size: 80,
+              label: strings.ludoRoomOpeningTheRoom,
+            ),
           ),
         ),
       );
@@ -240,10 +245,10 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Private room'),
+        title: Text(strings.ludoRoomPrivateRoom),
         actions: [
           IconButton(
-            tooltip: 'Share code',
+            tooltip: strings.ludoRoomShareCode,
             icon: const Icon(Icons.ios_share_rounded),
             onPressed: () => _share(code),
           ),
@@ -273,7 +278,10 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
                     color: AppColors.accentSecondary,
                   ),
                   const SizedBox(width: 8),
-                  Text('Players', style: AppTextStyles.display(fontSize: 18)),
+                  Text(
+                    strings.ludoRoomPlayers,
+                    style: AppTextStyles.display(fontSize: 18),
+                  ),
                   const Spacer(),
                   Text(
                     '${_members.length} / $max',
@@ -319,7 +327,9 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
               const SizedBox(height: AppSpacing.xl),
               if (isHost)
                 PrimaryButton(
-                  label: ready ? 'Start game' : 'Waiting for friends',
+                  label: ready
+                      ? strings.ludoRoomStartGame
+                      : strings.ludoRoomWaitingForFriends,
                   color: ready ? AppColors.success : null,
                   isLoading: _starting,
                   onPressed: ready ? _start : null,
@@ -330,7 +340,7 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
                     const UtopiaLoader(size: 40, bubbles: false),
                     const SizedBox(height: 4),
                     Text(
-                      'The host will start the game',
+                      strings.ludoRoomTheHostWillStartThe,
                       style: AppTextStyles.body(color: AppColors.textSecondary),
                     ),
                   ],
@@ -340,7 +350,11 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
                 child: TextButton.icon(
                   onPressed: () => context.pop(),
                   icon: const Icon(Icons.logout_rounded, size: 18),
-                  label: Text(isHost ? 'Close room' : 'Leave room'),
+                  label: Text(
+                    isHost
+                        ? strings.ludoRoomCloseRoom
+                        : strings.ludoRoomLeaveRoom,
+                  ),
                 ),
               ),
             ],
@@ -377,7 +391,7 @@ class _CodeCard extends StatelessWidget {
               Icon(Icons.vpn_key_rounded, size: 16, color: AppColors.coinGold),
               const SizedBox(width: 6),
               Text(
-                'ROOM CODE',
+                strings.ludoRoomRoomCode,
                 style: AppTextStyles.body(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
@@ -397,7 +411,7 @@ class _CodeCard extends StatelessWidget {
               Expanded(
                 child: _PillButton(
                   icon: Icons.content_copy_rounded,
-                  label: 'Copy',
+                  label: strings.ludoRoomCopy,
                   color: AppColors.sky,
                   onTap: onCopy,
                 ),
@@ -406,7 +420,7 @@ class _CodeCard extends StatelessWidget {
               Expanded(
                 child: _PillButton(
                   icon: Icons.share_rounded,
-                  label: 'Share',
+                  label: strings.ludoRoomShare,
                   color: AppColors.success,
                   onTap: onShare,
                 ),
@@ -503,12 +517,12 @@ class _InfoChips extends StatelessWidget {
             size: 16,
             color: AppColors.sky,
           ),
-          players <= 4 ? 'Classic' : 'Star board',
+          players <= 4 ? strings.ludoRoomClassic : strings.ludoRoomStarBoard,
         ),
         if (entry == 0)
           chip(
             Icon(Icons.favorite_rounded, size: 16, color: AppColors.coral),
-            'Free',
+            strings.ludoRoomFree,
           )
         else ...[
           chip(const CoinIcon(size: 16), formatCoins(entry)),
@@ -519,7 +533,7 @@ class _InfoChips extends StatelessWidget {
         ],
         chip(
           const Icon(Icons.timer_rounded, size: 16, color: Color(0xFFFF5C9C)),
-          '40s turns',
+          strings.ludoRoom40sTurns,
         ),
       ],
     );
@@ -569,8 +583,8 @@ class _SeatState extends ConsumerState<_Seat>
         ? null
         : ref.watch(profileByIdProvider(id)).valueOrNull;
     final name = id == null
-        ? 'Seat'
-        : (widget.isMe ? 'You' : profileDisplayName(profile, id));
+        ? strings.ludoRoomSeat
+        : (widget.isMe ? strings.ludoRoomYou : profileDisplayName(profile, id));
     final seat = ludoColorPalette[widget.color]!;
     final filled = id != null;
 
@@ -744,8 +758,8 @@ class _SeatDrawer extends StatelessWidget {
                 index: 0,
                 icon: Icons.event_seat_rounded,
                 color: seat,
-                label: 'Take this seat',
-                caption: 'Play as $name',
+                label: strings.ludoRoomTakeThisSeat,
+                caption: strings.ludoRoomPlayAs(name),
                 onTap: () => Navigator.of(context).pop('take'),
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -753,8 +767,8 @@ class _SeatDrawer extends StatelessWidget {
                 index: 1,
                 icon: Icons.share_rounded,
                 color: AppColors.success,
-                label: 'Share invite',
-                caption: 'Send the room code to a friend',
+                label: strings.ludoRoomShareInvite,
+                caption: strings.ludoRoomSendTheRoomCodeTo,
                 onTap: () => Navigator.of(context).pop('share'),
               ),
             ],

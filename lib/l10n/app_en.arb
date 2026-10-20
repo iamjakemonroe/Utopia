@@ -4411,5 +4411,4497 @@
   "coinBalancePillCoinsTapToGetMore": "Coins. Tap to get more.",
   "@coinBalancePillCoinsTapToGetMore": {
     "description": "core/widgets/coin_balance_pill.dart"
+  },
+  "utopiaThemesUtopiaTwilight": "Utopia Twilight",
+  "@utopiaThemesUtopiaTwilight": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopia": "Utopia",
+  "@utopiaThemesUtopia": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesTwilightIslandsFloatingOverA": "Twilight islands floating over a sea of clouds.",
+  "@utopiaThemesTwilightIslandsFloatingOverA": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesNoir": "Noir",
+  "@utopiaThemesNoir": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesPureBlackPureWhiteNothing": "Pure black, pure white. Nothing in between.",
+  "@utopiaThemesPureBlackPureWhiteNothing": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaCalm": "Utopia Calm",
+  "@utopiaThemesUtopiaCalm": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesAGlassyOceanAtDusk": "A glassy ocean at dusk. Breathe in.",
+  "@utopiaThemesAGlassyOceanAtDusk": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaAdventure": "Utopia Adventure",
+  "@utopiaThemesUtopiaAdventure": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesPeaksFloatingRocksAndA": "Peaks, floating rocks and a balloon to chase.",
+  "@utopiaThemesPeaksFloatingRocksAndA": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaWarm": "Utopia Warm",
+  "@utopiaThemesUtopiaWarm": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesGoldenDunesAndASky": "Golden dunes and a sky full of lanterns.",
+  "@utopiaThemesGoldenDunesAndASky": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaAlien": "Utopia Alien",
+  "@utopiaThemesUtopiaAlien": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesGlowingMushroomsTwoMoonsAnd": "Glowing mushrooms, two moons and something in the sky.",
+  "@utopiaThemesGlowingMushroomsTwoMoonsAnd": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaTech": "Utopia Tech",
+  "@utopiaThemesUtopiaTech": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesANeonCityThatNever": "A neon city that never sleeps, over a glowing grid.",
+  "@utopiaThemesANeonCityThatNever": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaAnime": "Utopia Anime",
+  "@utopiaThemesUtopiaAnime": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesCherryBlossomsAQuietShrine": "Cherry blossoms, a quiet shrine and a mountain at dusk.",
+  "@utopiaThemesCherryBlossomsAQuietShrine": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaDojo": "Utopia Dojo",
+  "@utopiaThemesUtopiaDojo": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesASamuraiCastleAtSunset": "A samurai castle at sunset, shadow fighters sparring and a dragon circling the sky.",
+  "@utopiaThemesASamuraiCastleAtSunset": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaZombie": "Utopia Zombie",
+  "@utopiaThemesUtopiaZombie": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesAGraveyardUnderASick": "A graveyard under a sick green moon, where the dead never stay down for long.",
+  "@utopiaThemesAGraveyardUnderASick": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaHeaven": "Utopia Heaven",
+  "@utopiaThemesUtopiaHeaven": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesPearlyGatesAboveTheClouds": "Pearly gates above the clouds, where the light never sets.",
+  "@utopiaThemesPearlyGatesAboveTheClouds": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaHell": "Utopia Hell",
+  "@utopiaThemesUtopiaHell": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesASeaOfFireUnder": "A sea of fire under a blood moon. Something is watching.",
+  "@utopiaThemesASeaOfFireUnder": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaMusic": "Utopia Music",
+  "@utopiaThemesUtopiaMusic": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesTheShowNeverEndsLasers": "The show never ends. Lasers up, bass down, hands in the air.",
+  "@utopiaThemesTheShowNeverEndsLasers": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaHalloween": "Utopia Halloween",
+  "@utopiaThemesUtopiaHalloween": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesAllHallowsEveEveryNight": "All Hallows' Eve, every night. Don't look at the tower window.",
+  "@utopiaThemesAllHallowsEveEveryNight": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaWinter": "Utopia Winter",
+  "@utopiaThemesUtopiaWinter": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesSnowOnACabinBy": "Snow on a cabin by a frozen lake. Listen for sleigh bells.",
+  "@utopiaThemesSnowOnACabinBy": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesYourBirthday": "Your Birthday",
+  "@utopiaThemesYourBirthday": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesAPartyInTheSky": "A party in the sky, just for you. Happy birthday!",
+  "@utopiaThemesAPartyInTheSky": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaDoodle": "Utopia Doodle",
+  "@utopiaThemesUtopiaDoodle": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesEverythingDrawnInInkOn": "Everything drawn in ink on paper, and still alive.",
+  "@utopiaThemesEverythingDrawnInInkOn": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesUtopiaDeep": "Utopia Deep",
+  "@utopiaThemesUtopiaDeep": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesDownUnderTheWavesWhere": "Down under the waves, where the light comes in shafts.",
+  "@utopiaThemesDownUnderTheWavesWhere": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesRuby": "Ruby",
+  "@utopiaThemesRuby": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesMoltenRidges": "Molten ridges",
+  "@utopiaThemesMoltenRidges": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesEmber": "Ember",
+  "@utopiaThemesEmber": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesCopperDunes": "Copper dunes",
+  "@utopiaThemesCopperDunes": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesSunbeam": "Sunbeam",
+  "@utopiaThemesSunbeam": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesHoneySkies": "Honey skies",
+  "@utopiaThemesHoneySkies": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesJade": "Jade",
+  "@utopiaThemesJade": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesEmeraldIsles": "Emerald isles",
+  "@utopiaThemesEmeraldIsles": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesLagoon": "Lagoon",
+  "@utopiaThemesLagoon": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesTealShallows": "Teal shallows",
+  "@utopiaThemesTealShallows": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesAzure": "Azure",
+  "@utopiaThemesAzure": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesOpenSea": "Open sea",
+  "@utopiaThemesOpenSea": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesSapphire": "Sapphire",
+  "@utopiaThemesSapphire": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesDeepBlue": "Deep blue",
+  "@utopiaThemesDeepBlue": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesAmethyst": "Amethyst",
+  "@utopiaThemesAmethyst": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesVioletIsles": "Violet isles",
+  "@utopiaThemesVioletIsles": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesBlossom": "Blossom",
+  "@utopiaThemesBlossom": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesCherryClouds": "Cherry clouds",
+  "@utopiaThemesCherryClouds": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesRoseGold": "Rose Gold",
+  "@utopiaThemesRoseGold": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesRosySands": "Rosy sands",
+  "@utopiaThemesRosySands": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesOnyx": "Onyx",
+  "@utopiaThemesOnyx": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesObsidianPeaks": "Obsidian peaks",
+  "@utopiaThemesObsidianPeaks": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesPearl": "Pearl",
+  "@utopiaThemesPearl": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "utopiaThemesMoonlitSnow": "Moonlit snow",
+  "@utopiaThemesMoonlitSnow": {
+    "description": "core/theme/utopia_themes.dart"
+  },
+  "auraCommon": "Common",
+  "@auraCommon": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraRare": "Rare",
+  "@auraRare": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraLegendary": "Legendary",
+  "@auraLegendary": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraMythic": "Mythic",
+  "@auraMythic": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "aura3Days": "3 days",
+  "@aura3Days": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "aura1Week": "1 week",
+  "@aura1Week": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "aura1Month": "1 month",
+  "@aura1Month": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraDragonCoil": "Dragon Coil",
+  "@auraDragonCoil": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraADragonWoundRoundYour": "A dragon wound round your picture, breathing fire. In the Dojo world, it flies free and Chip squares up to it.",
+  "@auraADragonWoundRoundYour": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraCrimsonFury": "Crimson Fury",
+  "@auraCrimsonFury": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraRedLightningARoaringFire": "Red lightning, a roaring fire vortex and shockwaves. Pure fury.",
+  "@auraRedLightningARoaringFire": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraSupernova": "Supernova",
+  "@auraSupernova": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraAStarExplodingAroundYou": "A star exploding around you, over and over.",
+  "@auraAStarExplodingAroundYou": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraEventHorizon": "Event Horizon",
+  "@auraEventHorizon": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraABlackHoleWithA": "A black hole with a blazing disk, pulling the light in.",
+  "@auraABlackHoleWithA": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraFrostfire": "Frostfire",
+  "@auraFrostfire": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraIceAndFireChasingEach": "Ice and fire chasing each other round. Sparks where they meet.",
+  "@auraIceAndFireChasingEach": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraRingOfFire": "Ring of Fire",
+  "@auraRingOfFire": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraABlazingRingOfFire": "A blazing ring of fire, spinning all around you.",
+  "@auraABlazingRingOfFire": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraZombieBite": "Zombie Bite",
+  "@auraZombieBite": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraRottingHandsClawUpTo": "Rotting hands claw up to grab you. Something took a bite. In the Zombie world, Chip gets bitten too.",
+  "@auraRottingHandsClawUpTo": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraEncore": "Encore",
+  "@auraEncore": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraYourPictureOnASpinning": "Your picture on a spinning record, an equalizer jumping all around it on the beat. In the Music world, Chip takes the decks.",
+  "@auraYourPictureOnASpinning": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraJackSLantern": "Jack's Lantern",
+  "@auraJackSLantern": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraBlackBramblesRoundYourPicture": "Black brambles round your picture, grinning jack-o'-lanterns on the rim, a spider on its web and bats circling. In the Halloween world, Chip gets carved.",
+  "@auraBlackBramblesRoundYourPicture": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraSnowGlobe": "Snow Globe",
+  "@auraSnowGlobe": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraYourPictureSealedInA": "Your picture sealed in a snow globe on a polished stand, the snow swirling up round you every time it's shaken. In the Winter world, Chip wraps up warm.",
+  "@auraYourPictureSealedInA": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraInferno": "Inferno",
+  "@auraInferno": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraAFrameOfLavaRunning": "A frame of lava running down both sides, flames trying to catch, obsidian horns and tail. In the Hell world, Chip grows horns.",
+  "@auraAFrameOfLavaRunning": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraPhoenix": "Phoenix",
+  "@auraPhoenix": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraWingsOfFlameThatBeat": "Wings of flame that beat behind you.",
+  "@auraWingsOfFlameThatBeat": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraGalaxy": "Galaxy",
+  "@auraGalaxy": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraASpiralOfStarsTurning": "A spiral of stars turning around you.",
+  "@auraASpiralOfStarsTurning": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraShadowFlame": "Shadow Flame",
+  "@auraShadowFlame": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraDarkFireWithAGlowing": "Dark fire with a glowing green heart.",
+  "@auraDarkFireWithAGlowing": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraVioletStorm": "Violet Storm",
+  "@auraVioletStorm": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraPurpleLightningCracklingAllAround": "Purple lightning crackling all around you.",
+  "@auraPurpleLightningCracklingAllAround": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraWhiteStorm": "White Storm",
+  "@auraWhiteStorm": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraWhiteLightningCracklingAllAround": "White lightning crackling all around you.",
+  "@auraWhiteLightningCracklingAllAround": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraBlueStorm": "Blue Storm",
+  "@auraBlueStorm": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraElectricBlueBoltsNeverStill": "Electric blue bolts, never still.",
+  "@auraElectricBlueBoltsNeverStill": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraEmeraldStorm": "Emerald Storm",
+  "@auraEmeraldStorm": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraGreenLightningWithAWild": "Green lightning with a wild streak.",
+  "@auraGreenLightningWithAWild": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraGoldenStorm": "Golden Storm",
+  "@auraGoldenStorm": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraGoldBoltsLikeACrown": "Gold bolts, like a crown of thunder.",
+  "@auraGoldBoltsLikeACrown": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraPinkStorm": "Pink Storm",
+  "@auraPinkStorm": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraHotPinkLightningThatNever": "Hot pink lightning that never calms down.",
+  "@auraHotPinkLightningThatNever": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraSunburst": "Sunburst",
+  "@auraSunburst": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraGoldenRaysTurningSlowlyLike": "Golden rays turning slowly, like a sunrise.",
+  "@auraGoldenRaysTurningSlowlyLike": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraPrism": "Prism",
+  "@auraPrism": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraARainbowRingThatNever": "A rainbow ring that never stops turning.",
+  "@auraARainbowRingThatNever": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraOrbit": "Orbit",
+  "@auraOrbit": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraLittlePlanetsCirclingYourPicture": "Little planets circling your picture.",
+  "@auraLittlePlanetsCirclingYourPicture": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraNeonPulse": "Neon Pulse",
+  "@auraNeonPulse": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraTwoNeonRingsRacingOpposite": "Two neon rings racing opposite ways.",
+  "@auraTwoNeonRingsRacingOpposite": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraTidal": "Tidal",
+  "@auraTidal": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraWavesRollingAroundYouSplashing": "Waves rolling around you, splashing as they go.",
+  "@auraWavesRollingAroundYouSplashing": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraAngelHalo": "Angel Halo",
+  "@auraAngelHalo": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraAGoldenHaloAndFeathers": "A golden halo and feathers drifting down. In the Heaven world, Chip gets his wings.",
+  "@auraAGoldenHaloAndFeathers": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraBubbleRing": "Bubble Ring",
+  "@auraBubbleRing": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraSoapBubblesDriftingUpAnd": "Soap bubbles drifting up and away.",
+  "@auraSoapBubblesDriftingUpAnd": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraSakura": "Sakura",
+  "@auraSakura": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraCherryPetalsDancingInA": "Cherry petals dancing in a circle.",
+  "@auraCherryPetalsDancingInA": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraFrost": "Frost",
+  "@auraFrost": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraIceCrystalsAndACool": "Ice crystals and a cool blue shimmer.",
+  "@auraIceCrystalsAndACool": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraLovestruck": "Lovestruck",
+  "@auraLovestruck": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraHeartsCirclingYouBeatingAs": "Hearts circling you, beating as they go.",
+  "@auraHeartsCirclingYouBeatingAs": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraFireflies": "Fireflies",
+  "@auraFireflies": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraLittleLightsWanderingAroundYou": "Little lights wandering around you at dusk.",
+  "@auraLittleLightsWanderingAroundYou": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraStarlight": "Starlight",
+  "@auraStarlight": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraStarsTwinklingAllAroundYour": "Stars twinkling all around your picture.",
+  "@auraStarsTwinklingAllAroundYour": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraAutumnLeaves": "Autumn Leaves",
+  "@auraAutumnLeaves": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraGoldenLeavesSwirlingOnThe": "Golden leaves swirling on the wind.",
+  "@auraGoldenLeavesSwirlingOnThe": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraMaestro": "Maestro",
+  "@auraMaestro": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraARingOfWetPaint": "A ring of wet paint, with a brush painting around you.",
+  "@auraARingOfWetPaint": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraChipMaestro": "Chip Maestro",
+  "@auraChipMaestro": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraBirthdayParty": "Birthday Party",
+  "@auraBirthdayParty": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraARibbonInEveryColor": "A ribbon in every color, a party hat, balloons and a little cake. Only on your birthday.",
+  "@auraARibbonInEveryColor": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraExpired": "Expired",
+  "@auraExpired": {
+    "description": "features/auras/domain/aura.dart"
+  },
+  "auraDHLeft": "{inDays}d {value}h left",
+  "@auraDHLeft": {
+    "description": "features/auras/domain/aura.dart",
+    "placeholders": {
+      "inDays": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "auraHMLeft": "{inHours}h {value}m left",
+  "@auraHMLeft": {
+    "description": "features/auras/domain/aura.dart",
+    "placeholders": {
+      "inHours": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "auraMLeft": "{value}m left",
+  "@auraMLeft": {
+    "description": "features/auras/domain/aura.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipChatTurnMyPhotoIntoA": "Turn my photo into a coloring page",
+  "@chipChatTurnMyPhotoIntoA": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatTellMeAJoke": "Tell me a joke",
+  "@chipChatTellMeAJoke": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatWhichWorldShouldITry": "Which world should I try?",
+  "@chipChatWhichWorldShouldITry": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatHowDoIPlayLudo": "How do I play Ludo?",
+  "@chipChatHowDoIPlayLudo": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatHelpMeWithMyHomework": "Help me with my homework",
+  "@chipChatHelpMeWithMyHomework": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatCouldnTOpenThatPhoto": "Couldn't open that photo.",
+  "@chipChatCouldnTOpenThatPhoto": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatThatPictureIsnTReady": "That picture isn't ready to color yet.",
+  "@chipChatThatPictureIsnTReady": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatYourPhoto": "your photo",
+  "@chipChatYourPhoto": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatYourFreeRealPortrait": "Your free real portrait",
+  "@chipChatYourFreeRealPortrait": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatChipHasAPhotoQuality": "Chip has a photo-quality coloring page made that looks just like {who}. Your first one is free; after that, real portraits come with Chip Maestro.",
+  "@chipChatChipHasAPhotoQuality": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart",
+    "placeholders": {
+      "who": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipChatNotNow": "Not now",
+  "@chipChatNotNow": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatDrawItFree": "Draw it free",
+  "@chipChatDrawItFree": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatThatSThisMonthS": "That's this month's real portraits. More when your plan renews!",
+  "@chipChatThatSThisMonthS": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatThatSAllTheReal": "That's all the real portraits for today. More tomorrow!",
+  "@chipChatThatSAllTheReal": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatRealPortraitsAreComingSoon": "Real portraits are coming soon.",
+  "@chipChatRealPortraitsAreComingSoon": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatSendChipThePhotoAgain": "Send Chip the photo again first.",
+  "@chipChatSendChipThePhotoAgain": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatCouldnTStartThePortrait": "Couldn't start the portrait. Try again?",
+  "@chipChatCouldnTStartThePortrait": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatStartANewChat": "Start a new chat?",
+  "@chipChatStartANewChat": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatChipWillForgetThisConversation": "Chip will forget this conversation.",
+  "@chipChatChipWillForgetThisConversation": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatKeepIt": "Keep it",
+  "@chipChatKeepIt": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatNewChat": "New chat",
+  "@chipChatNewChat": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatOpenTheStore": "Open the Store",
+  "@chipChatOpenTheStore": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatSeeAuras": "See auras",
+  "@chipChatSeeAuras": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatChangeWorld": "Change world",
+  "@chipChatChangeWorld": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatGetCoins": "Get coins",
+  "@chipChatGetCoins": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatOpenFriends": "Open Friends",
+  "@chipChatOpenFriends": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatNotifications": "Notifications",
+  "@chipChatNotifications": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatSettings": "Settings",
+  "@chipChatSettings": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatYourProfile": "Your profile",
+  "@chipChatYourProfile": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatOpenTheSketchbook": "Open the Sketchbook",
+  "@chipChatOpenTheSketchbook": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatHowToPlayChess": "How to play chess",
+  "@chipChatHowToPlayChess": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatHowToPlayCheckers": "How to play checkers",
+  "@chipChatHowToPlayCheckers": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatHowToPlayLudo": "How to play Ludo",
+  "@chipChatHowToPlayLudo": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatPlayChess": "Play chess",
+  "@chipChatPlayChess": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatPlayCheckers": "Play checkers",
+  "@chipChatPlayCheckers": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatPlayLudo": "Play Ludo",
+  "@chipChatPlayLudo": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatPlayGuessMyDoodle": "Play Guess My Doodle",
+  "@chipChatPlayGuessMyDoodle": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatSaveYourAccount": "Save your account",
+  "@chipChatSaveYourAccount": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatReportABug": "Report a bug",
+  "@chipChatReportABug": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatSuggestAFeature": "Suggest a feature",
+  "@chipChatSuggestAFeature": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatChip": "Chip",
+  "@chipChatChip": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatThinking": "Thinking...",
+  "@chipChatThinking": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatYourBuddyInUtopiaAsk": "Your buddy in Utopia. Ask me anything.",
+  "@chipChatYourBuddyInUtopiaAsk": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatDrawItForRealFree": "Draw it for real · Free",
+  "@chipChatDrawItForRealFree": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatDrawItForRealLeft": "Draw it for real · {left} left",
+  "@chipChatDrawItForRealLeft": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart",
+    "placeholders": {
+      "left": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipChatDrawItForRealWith": "Draw it for real with Chip Maestro",
+  "@chipChatDrawItForRealWith": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatColorItWithChip": "Color it with Chip",
+  "@chipChatColorItWithChip": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatKeepChattingCoins": "Keep chatting · {value} coins",
+  "@chipChatKeepChattingCoins": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipChatTellChipAboutThePhoto": "Tell Chip about the photo",
+  "@chipChatTellChipAboutThePhoto": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatSaySomethingToChip": "Say something to Chip",
+  "@chipChatSaySomethingToChip": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatHiIKnowEveryCorner": "Hi! I know every corner of Utopia, and plenty outside it. Ask me anything, have me draw you a picture to color, or just say hello.",
+  "@chipChatHiIKnowEveryCorner": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatFoundABugOrGot": "Found a bug, or got an idea? Pass it on and the team will see it.",
+  "@chipChatFoundABugOrGot": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatSend": "Send",
+  "@chipChatSend": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatSendChipAPhoto": "Send Chip a photo",
+  "@chipChatSendChipAPhoto": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatPhotoForChip": "Photo for Chip",
+  "@chipChatPhotoForChip": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatRemoveThePhoto": "Remove the photo",
+  "@chipChatRemoveThePhoto": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatColorIt": "Color it",
+  "@chipChatColorIt": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatTravelToDoodleToColor": "Travel to Doodle to color it",
+  "@chipChatTravelToDoodleToColor": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatGetTheDoodleWorldTo": "Get the Doodle world to color it",
+  "@chipChatGetTheDoodleWorldTo": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatDrawing": "Drawing {subject}...",
+  "@chipChatDrawing": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart",
+    "placeholders": {
+      "subject": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipChatICanTDrawThat": "I can't draw that one. Try something else?",
+  "@chipChatICanTDrawThat": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatIVeDrawnAllI": "I've drawn all I can today. Ask me again tomorrow!",
+  "@chipChatIVeDrawnAllI": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatMyPencilIsnTReady": "My pencil isn't ready yet.",
+  "@chipChatMyPencilIsnTReady": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chipChatThatDrawingDidnTWork": "That drawing didn't work out. Ask me again?",
+  "@chipChatThatDrawingDidnTWork": {
+    "description": "features/chip/presentation/chip_chat_sheet.dart"
+  },
+  "chessBotWhite": "White",
+  "@chessBotWhite": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotBlack": "Black",
+  "@chessBotBlack": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotAFriend": "a friend",
+  "@chessBotAFriend": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotReadyIVeBeenPractising": "Ready? I've been practising!",
+  "@chessBotReadyIVeBeenPractising": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotGoodLuckHaveFun": "Good luck! Have fun!",
+  "@chessBotGoodLuckHaveFun": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotMineNow": "Mine now!",
+  "@chessBotMineNow": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotOofNiceOne": "Oof, nice one.",
+  "@chessBotOofNiceOne": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotNoooMyPiece": "Nooo, my piece!",
+  "@chessBotNoooMyPiece": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotWatchYourKing": "Watch your king!",
+  "@chessBotWatchYourKing": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotWhoaCheck": "Whoa, check?",
+  "@chessBotWhoaCheck": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotCheckmateYouReGood": "Checkmate... you're good!",
+  "@chessBotCheckmateYouReGood": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotErrorPieceMissing": "ERROR: PIECE MISSING.",
+  "@chessBotErrorPieceMissing": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotLeaveThisGame": "Leave this game?",
+  "@chessBotLeaveThisGame": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotThisGameEndsHereAnd": "This game ends here and won't be saved.",
+  "@chessBotThisGameEndsHereAnd": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotYourGameAgainstEndsHere": "Your game against {value} ends here and won't be saved.",
+  "@chessBotYourGameAgainstEndsHere": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessBotLeave": "Leave",
+  "@chessBotLeave": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotKeepPlaying": "Keep playing",
+  "@chessBotKeepPlaying": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotResignThisGame": "Resign this game?",
+  "@chessBotResignThisGame": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotWinsThisOne": "{value} wins this one.",
+  "@chessBotWinsThisOne": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessBotResign": "Resign",
+  "@chessBotResign": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotEasy": "Easy",
+  "@chessBotEasy": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotNormal": "Normal",
+  "@chessBotNormal": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotHard": "Hard",
+  "@chessBotHard": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotLeaveGame": "Leave game",
+  "@chessBotLeaveGame": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotClose": "Close",
+  "@chessBotClose": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotChessOnePhone": "Chess · one phone",
+  "@chessBotChessOnePhone": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotTakeBack": "Take back",
+  "@chessBotTakeBack": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotDraw": "Draw",
+  "@chessBotDraw": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotRanOutOfTime": "{value} ran out of time",
+  "@chessBotRanOutOfTime": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessBotCheck": "{value}: check!",
+  "@chessBotCheck": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessBotSMove": "{value}'s move",
+  "@chessBotSMove": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessBotYou": "You",
+  "@chessBotYou": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotYouWon": "You won!",
+  "@chessBotYouWon": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotOutOfTime": "Out of time",
+  "@chessBotOutOfTime": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotIsThinking": "{value} is thinking...",
+  "@chessBotIsThinking": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessBotCheckProtectYourKing": "Check! Protect your king",
+  "@chessBotCheckProtectYourKing": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotYourMove": "Your move",
+  "@chessBotYourMove": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotResult": "Result",
+  "@chessBotResult": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotItSADraw": "It's a draw",
+  "@chessBotItSADraw": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotThinking": "Thinking...",
+  "@chessBotThinking": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotOffline": "{level} · offline",
+  "@chessBotOffline": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart",
+    "placeholders": {
+      "level": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessBotTheirTimeRanOut": "Their time ran out!",
+  "@chessBotTheirTimeRanOut": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotYouResigned": "You resigned",
+  "@chessBotYouResigned": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotPlayAgain": "Play again",
+  "@chessBotPlayAgain": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotSeeTheBoard": "See the board",
+  "@chessBotSeeTheBoard": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotDone": "Done",
+  "@chessBotDone": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "storeCatalogPouch": "Pouch",
+  "@storeCatalogPouch": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogSack": "Sack",
+  "@storeCatalogSack": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogChest": "Chest",
+  "@storeCatalogChest": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogPopular": "Popular",
+  "@storeCatalogPopular": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogVault": "Vault",
+  "@storeCatalogVault": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogMountain": "Mountain",
+  "@storeCatalogMountain": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogDragonSHoard": "Dragon's Hoard",
+  "@storeCatalogDragonSHoard": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogBestValue": "Best value",
+  "@storeCatalogBestValue": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogStarterPack": "Starter pack",
+  "@storeCatalogStarterPack": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogOnceOnly": "Once only",
+  "@storeCatalogOnceOnly": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogClassicGloss": "Classic Gloss",
+  "@storeCatalogClassicGloss": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogShinyEnamelPinsTheTimeless": "Shiny enamel pins, the timeless look.",
+  "@storeCatalogShinyEnamelPinsTheTimeless": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogBubblePop": "Bubble Pop",
+  "@storeCatalogBubblePop": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogWobblySoapBubblesThatShimmer": "Wobbly soap bubbles that shimmer as they hop.",
+  "@storeCatalogWobblySoapBubblesThatShimmer": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogJellyBuddies": "Jelly Buddies",
+  "@storeCatalogJellyBuddies": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogSquishyJellyCrittersThatBlink": "Squishy jelly critters that blink and jiggle.",
+  "@storeCatalogSquishyJellyCrittersThatBlink": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogCrystalShards": "Crystal Shards",
+  "@storeCatalogCrystalShards": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogFacetedGemsThatCatchThe": "Faceted gems that catch the light.",
+  "@storeCatalogFacetedGemsThatCatchThe": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogCandySwirl": "Candy Swirl",
+  "@storeCatalogCandySwirl": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogSpinningLollipopsSweetAndGlossy": "Spinning lollipops, sweet and glossy.",
+  "@storeCatalogSpinningLollipopsSweetAndGlossy": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogCosmicOrbs": "Cosmic Orbs",
+  "@storeCatalogCosmicOrbs": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogTinyRingedPlanetsWithOrbiting": "Tiny ringed planets with orbiting moons.",
+  "@storeCatalogTinyRingedPlanetsWithOrbiting": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogRoyalCrowns": "Royal Crowns",
+  "@storeCatalogRoyalCrowns": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogGoldCrownedPiecesWithJewel": "Gold-crowned pieces with jewel hearts.",
+  "@storeCatalogGoldCrownedPiecesWithJewel": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogClassic": "Classic",
+  "@storeCatalogClassic": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogIvoryAndVioletCleanAnd": "Ivory and violet, clean and readable.",
+  "@storeCatalogIvoryAndVioletCleanAnd": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogChessBuddies": "Chess Buddies",
+  "@storeCatalogChessBuddies": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogPiecesWithFacesTheyBlink": "Pieces with faces: they blink, cheer, panic and faint.",
+  "@storeCatalogPiecesWithFacesTheyBlink": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogMonsterMash": "Monster Mash",
+  "@storeCatalogMonsterMash": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogHornsFangsAndOneVery": "Horns, fangs and one very big eye. They mean business.",
+  "@storeCatalogHornsFangsAndOneVery": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogRoboKnights": "Robo Knights",
+  "@storeCatalogRoboKnights": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogChromePiecesWithLedFaces": "Chrome pieces with LED faces that scan the board.",
+  "@storeCatalogChromePiecesWithLedFaces": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogCrystal": "Crystal",
+  "@storeCatalogCrystal": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogIceClearPiecesWithA": "Ice-clear pieces with a frosted glow.",
+  "@storeCatalogIceClearPiecesWithA": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogRoyalGold": "Royal Gold",
+  "@storeCatalogRoyalGold": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogGoldAgainstObsidianFitFor": "Gold against obsidian, fit for a throne.",
+  "@storeCatalogGoldAgainstObsidianFitFor": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogNeon": "Neon",
+  "@storeCatalogNeon": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogPiecesThatGlowLikeAn": "Pieces that glow like an arcade at night.",
+  "@storeCatalogPiecesThatGlowLikeAn": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogCandy": "Candy",
+  "@storeCatalogCandy": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogBubblegumPinkAndMintSweet": "Bubblegum pink and mint, sweet as it gets.",
+  "@storeCatalogBubblegumPinkAndMintSweet": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogPack": "{value} Pack",
+  "@storeCatalogPack": {
+    "description": "features/store/domain/store_catalog.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeCatalogEveryWorld": "Every World",
+  "@storeCatalogEveryWorld": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogChess": "{name} Chess",
+  "@storeCatalogChess": {
+    "description": "features/store/domain/store_catalog.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeCatalogRuby": "Ruby",
+  "@storeCatalogRuby": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogEmber": "Ember",
+  "@storeCatalogEmber": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogSunbeam": "Sunbeam",
+  "@storeCatalogSunbeam": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogJade": "Jade",
+  "@storeCatalogJade": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogLagoon": "Lagoon",
+  "@storeCatalogLagoon": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogAzure": "Azure",
+  "@storeCatalogAzure": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogSapphire": "Sapphire",
+  "@storeCatalogSapphire": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogAmethyst": "Amethyst",
+  "@storeCatalogAmethyst": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogBlossom": "Blossom",
+  "@storeCatalogBlossom": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogRoseGold": "Rose Gold",
+  "@storeCatalogRoseGold": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogOnyx": "Onyx",
+  "@storeCatalogOnyx": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "storeCatalogPearl": "Pearl",
+  "@storeCatalogPearl": {
+    "description": "features/store/domain/store_catalog.dart"
+  },
+  "checkersBotAFriend": "a friend",
+  "@checkersBotAFriend": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotReadyIVeBeenPractising": "Ready? I've been practising my jumps!",
+  "@checkersBotReadyIVeBeenPractising": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotGoodLuckHaveFun": "Good luck! Have fun!",
+  "@checkersBotGoodLuckHaveFun": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotMineNow": "Mine now!",
+  "@checkersBotMineNow": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotOofNiceJump": "Oof, nice jump.",
+  "@checkersBotOofNiceJump": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotBoingBoing": "Boing boing!",
+  "@checkersBotBoingBoing": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotWhoaADouble": "Whoa, a double!",
+  "@checkersBotWhoaADouble": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotThatSNotFairIt": "That's not fair... it is fair.",
+  "@checkersBotThatSNotFairIt": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotIMAKingNow": "I'm a king now!",
+  "@checkersBotIMAKingNow": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotYourMajesty": "Your Majesty...",
+  "@checkersBotYourMajesty": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotKingsGoBackwardsTooEek": "Kings go backwards too. Eek.",
+  "@checkersBotKingsGoBackwardsTooEek": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotErrorPieceMissing": "ERROR: PIECE MISSING.",
+  "@checkersBotErrorPieceMissing": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotVictoryProtocolComplete": "VICTORY PROTOCOL COMPLETE.",
+  "@checkersBotVictoryProtocolComplete": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotDark": "Dark",
+  "@checkersBotDark": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotLight": "Light",
+  "@checkersBotLight": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotEasy": "Easy",
+  "@checkersBotEasy": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotNormal": "Normal",
+  "@checkersBotNormal": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotHard": "Hard",
+  "@checkersBotHard": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotDraw": "Draw",
+  "@checkersBotDraw": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotRanOutOfTime": "{value} ran out of time",
+  "@checkersBotRanOutOfTime": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersBotOutOfTime": "Out of time",
+  "@checkersBotOutOfTime": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotYouWon": "You won!",
+  "@checkersBotYouWon": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotIsThinking": "{value} is thinking...",
+  "@checkersBotIsThinking": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersBotYouMustTakeAPiece": "{value}: you must take a piece",
+  "@checkersBotYouMustTakeAPiece": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersBotSMove": "{value}'s move",
+  "@checkersBotSMove": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersBotYouMustTakeAPiece2": "You must take a piece",
+  "@checkersBotYouMustTakeAPiece2": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotYourMove": "Your move",
+  "@checkersBotYourMove": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotClose": "Close",
+  "@checkersBotClose": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotCheckersOnePhone": "Checkers · one phone",
+  "@checkersBotCheckersOnePhone": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotTakeBack": "Take back",
+  "@checkersBotTakeBack": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotResign": "Resign",
+  "@checkersBotResign": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotYou": "You",
+  "@checkersBotYou": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotResult": "Result",
+  "@checkersBotResult": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotItSADraw": "It's a draw",
+  "@checkersBotItSADraw": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotYouResigned": "You resigned",
+  "@checkersBotYouResigned": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotTook": "Took {taken}",
+  "@checkersBotTook": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart",
+    "placeholders": {
+      "taken": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersBotThinking": "Thinking...",
+  "@checkersBotThinking": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotOffline": "{level} · offline",
+  "@checkersBotOffline": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart",
+    "placeholders": {
+      "level": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersBotPlayAgain": "Play again",
+  "@checkersBotPlayAgain": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotSeeTheBoard": "See the board",
+  "@checkersBotSeeTheBoard": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotDone": "Done",
+  "@checkersBotDone": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "ludoPlayerDark": "Dark",
+  "@ludoPlayerDark": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerLight": "Light",
+  "@ludoPlayerLight": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerWhite": "White",
+  "@ludoPlayerWhite": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerBlack": "Black",
+  "@ludoPlayerBlack": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerYou": "You",
+  "@ludoPlayerYou": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerClassicGloss": "Classic Gloss",
+  "@ludoPlayerClassicGloss": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerClassic": "Classic",
+  "@ludoPlayerClassic": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerJoined": "Joined {value}",
+  "@ludoPlayerJoined": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoPlayerLudoWins": "Ludo wins",
+  "@ludoPlayerLudoWins": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerChessWins": "Chess wins",
+  "@ludoPlayerChessWins": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerCheckersWins": "Checkers wins",
+  "@ludoPlayerCheckersWins": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerDoodleWins": "Doodle wins",
+  "@ludoPlayerDoodleWins": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerPlayed": "Played",
+  "@ludoPlayerPlayed": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerWinRate": "Win rate",
+  "@ludoPlayerWinRate": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerUnmuteChat": "Unmute chat",
+  "@ludoPlayerUnmuteChat": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerMuteChat": "Mute chat",
+  "@ludoPlayerMuteChat": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerReport": "Report",
+  "@ludoPlayerReport": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerFeb": "Feb",
+  "@ludoPlayerFeb": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerMar": "Mar",
+  "@ludoPlayerMar": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerApr": "Apr",
+  "@ludoPlayerApr": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerMay": "May",
+  "@ludoPlayerMay": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerJun": "Jun",
+  "@ludoPlayerJun": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerJul": "Jul",
+  "@ludoPlayerJul": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerAug": "Aug",
+  "@ludoPlayerAug": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerSep": "Sep",
+  "@ludoPlayerSep": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerOct": "Oct",
+  "@ludoPlayerOct": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerNov": "Nov",
+  "@ludoPlayerNov": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerDec": "Dec",
+  "@ludoPlayerDec": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerSaveYourAccountToAdd": "Save your account to add friends",
+  "@ludoPlayerSaveYourAccountToAdd": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerAddFriend": "Add friend",
+  "@ludoPlayerAddFriend": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerFriends": "Friends",
+  "@ludoPlayerFriends": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerRequestSent": "Request sent",
+  "@ludoPlayerRequestSent": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerAcceptFriendRequest": "Accept friend request",
+  "@ludoPlayerAcceptFriendRequest": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerCouldnTSendTheRequest": "Couldn't send the request. Try again.",
+  "@ludoPlayerCouldnTSendTheRequest": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerReportThisPlayer": "Report this player",
+  "@ludoPlayerReportThisPlayer": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerOffensiveChat": "Offensive chat",
+  "@ludoPlayerOffensiveChat": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerCheating": "Cheating",
+  "@ludoPlayerCheating": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerLeavingGamesOnPurpose": "Leaving games on purpose",
+  "@ludoPlayerLeavingGamesOnPurpose": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerInappropriateNameOrPicture": "Inappropriate name or picture",
+  "@ludoPlayerInappropriateNameOrPicture": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerSomethingElse": "Something else",
+  "@ludoPlayerSomethingElse": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerThanksOurTeamWillTake": "Thanks. Our team will take a look.",
+  "@ludoPlayerThanksOurTeamWillTake": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoPlayerCouldnTSendTheReport": "Couldn't send the report. Try again.",
+  "@ludoPlayerCouldnTSendTheReport": {
+    "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
+  },
+  "ludoMatchOutOfTimeMissOne": "Out of time! Miss one more turn and you leave the game.",
+  "@ludoMatchOutOfTimeMissOne": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchOutOfTimeYourTurn": "Out of time! Your turn passed.",
+  "@ludoMatchOutOfTimeYourTurn": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchLeaveThisGame": "Leave this game?",
+  "@ludoMatchLeaveThisGame": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchThisGameAgainstTheBots": "This game against the bots will end.",
+  "@ludoMatchThisGameAgainstTheBots": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchYouLlLoseYourCoin": "You'll lose your {stake}-coin entry{value}.",
+  "@ludoMatchYouLlLoseYourCoin": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "stake": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchYouLlLoseThisGame": "You'll lose this game{value}.",
+  "@ludoMatchYouLlLoseThisGame": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchLeaveGame": "Leave game",
+  "@ludoMatchLeaveGame": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchKeepPlaying": "Keep playing",
+  "@ludoMatchKeepPlaying": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchSoundMusic": "Sound & music",
+  "@ludoMatchSoundMusic": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchHowToPlay": "How to play",
+  "@ludoMatchHowToPlay": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchChat": "Chat",
+  "@ludoMatchChat": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchSettingUpTheBoard": "Setting up the board",
+  "@ludoMatchSettingUpTheBoard": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchLudo": "Ludo",
+  "@ludoMatchLudo": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchGameMenu": "Game menu",
+  "@ludoMatchGameMenu": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchFree": "Free",
+  "@ludoMatchFree": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchYouLeftThisGame": "You left this game.",
+  "@ludoMatchYouLeftThisGame": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchCapturedTapThePieceTo": "{value} captured! Tap the piece to react, or roll on",
+  "@ludoMatchCapturedTapThePieceTo": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchCapturedTapYourPieceTo": "Captured! Tap your piece to react, or roll on",
+  "@ludoMatchCapturedTapYourPieceTo": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchTapAGlowingPiece": "{value}, tap a glowing piece",
+  "@ludoMatchTapAGlowingPiece": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchTapAGlowingPieceTo": "Tap a glowing piece to move",
+  "@ludoMatchTapAGlowingPieceTo": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchSTurnTapTheDie": "{value}'s turn. Tap the die!",
+  "@ludoMatchSTurnTapTheDie": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchYourTurnTapTheDie": "Your turn. Tap the die!",
+  "@ludoMatchYourTurnTapTheDie": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchIsPlaying": "{value} is playing",
+  "@ludoMatchIsPlaying": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchResultUnderReview": "Result under review",
+  "@ludoMatchResultUnderReview": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchYouWon": "You won!",
+  "@ludoMatchYouWon": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchYouCame": "You came {value}",
+  "@ludoMatchYouCame": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchGameOver": "Game over",
+  "@ludoMatchGameOver": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchSomeone": "Someone",
+  "@ludoMatchSomeone": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchAllFourPiecesHome": "All four pieces home!",
+  "@ludoMatchAllFourPiecesHome": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchGotAllFourPiecesHome": "{winnerName} got all four pieces home first.",
+  "@ludoMatchGotAllFourPiecesHome": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "winnerName": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchEveryoneElseLeftTheWin": "Everyone else left. The win is yours.",
+  "@ludoMatchEveryoneElseLeftTheWin": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchTheOthersRanOutOf": "The others ran out of time. You win!",
+  "@ludoMatchTheOthersRanOutOf": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchYouRanOutOfTime": "You ran out of time.",
+  "@ludoMatchYouRanOutOfTime": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchHome": "Home",
+  "@ludoMatchHome": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchPlayAgain": "Play again",
+  "@ludoMatchPlayAgain": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchYou": "You",
+  "@ludoMatchYou": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchLeftTheGame": "{value} · Left the game",
+  "@ludoMatchLeftTheGame": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeChipMaestroIsInThe": "Chip Maestro is in the Utopia app on your phone.",
+  "@storeChipMaestroIsInThe": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeSaveYourAccountToBuy": "Save your account to buy coins.",
+  "@storeSaveYourAccountToBuy": {
+    "description": "features/store/data/store_repository.dart"
+  },
+  "storeCouldnTOpenThePayment": "Couldn't open the payment page. Try again.",
+  "@storeCouldnTOpenThePayment": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeCoinTopUpsAreComing": "Coin top-ups are coming soon.",
+  "@storeCoinTopUpsAreComing": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeSignInToBuyCoins": "Sign in to buy coins.",
+  "@storeSignInToBuyCoins": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeTheStoreIsnTAvailable": "The store isn't available right now. Try again soon.",
+  "@storeTheStoreIsnTAvailable": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeCouldnTStartThePurchase": "Couldn't start the purchase.",
+  "@storeCouldnTStartThePurchase": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeChipMaestroIsComingSoon": "Chip Maestro is coming soon.",
+  "@storeChipMaestroIsComingSoon": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeSignInToJoinChip": "Sign in to join Chip Maestro.",
+  "@storeSignInToJoinChip": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeNothingToRestoreYet": "Nothing to restore yet.",
+  "@storeNothingToRestoreYet": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeLookingForYourPurchases": "Looking for your purchases…",
+  "@storeLookingForYourPurchases": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeCouldnTLookForYour": "Couldn't look for your purchases.",
+  "@storeCouldnTLookForYour": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeTestTopUpsArenT": "Test top-ups aren't available on this server.",
+  "@storeTestTopUpsArenT": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeYourPaymentIsStillGoing": "Your payment is still going through. Chip Maestro starts as soon as it does.",
+  "@storeYourPaymentIsStillGoing": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeYourPaymentIsStillGoing2": "Your payment is still going through. Your coins arrive as soon as it does.",
+  "@storeYourPaymentIsStillGoing2": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeThePurchaseDidnTGo": "The purchase didn't go through.",
+  "@storeThePurchaseDidnTGo": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeWelcomeToChipMaestro": "Welcome to Chip Maestro!",
+  "@storeWelcomeToChipMaestro": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeYourChipMaestroPlanIs": "Your Chip Maestro plan is back.",
+  "@storeYourChipMaestroPlanIs": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeThatChipMaestroPlanBelongs": "That Chip Maestro plan belongs to another Utopia account.",
+  "@storeThatChipMaestroPlanBelongs": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storePaymentReceivedChipMaestroWill": "Payment received. Chip Maestro will start the next time you open Utopia.",
+  "@storePaymentReceivedChipMaestroWill": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeThoseCoinsWentToThe": "Those coins went to the account that bought them.",
+  "@storeThoseCoinsWentToThe": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeThatPaymentWasCancelledSo": "That payment was cancelled, so no coins were added.",
+  "@storeThatPaymentWasCancelledSo": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storePaymentReceivedYourCoinsWill": "Payment received. Your coins will arrive the next time you open Utopia.",
+  "@storePaymentReceivedYourCoinsWill": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeNotEnoughCoinsYet": "Not enough coins yet.",
+  "@storeNotEnoughCoinsYet": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeYouNeedCoinsForThat": "You need {value} coins for that.",
+  "@storeYouNeedCoinsForThat": {
+    "description": "features/store/presentation/store_controller.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeCouldnTUnlockThatCheck": "Couldn't unlock that. Check your connection and try again.",
+  "@storeCouldnTUnlockThatCheck": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeUnlockItFirst": "Unlock it first.",
+  "@storeUnlockItFirst": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeCouldnTEquipThatTry": "Couldn't equip that. Try again?",
+  "@storeCouldnTEquipThatTry": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeYourWelcomePassHasEnded": "Your welcome pass has ended: back to your own pieces. Keep a favourite set from the store any time.",
+  "@storeYourWelcomePassHasEnded": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeYourBirthdayPartyIsOver": "Your birthday party is over. See you next year!",
+  "@storeYourBirthdayPartyIsOver": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeIsOverComesBackNext": "{value} is over. {name} comes back next {value2}.",
+  "@storeIsOverComesBackNext": {
+    "description": "features/store/presentation/store_controller.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeYourTimeInRanOut": "Your time in {name} ran out. Rent it again any time.",
+  "@storeYourTimeInRanOut": {
+    "description": "features/store/presentation/store_controller.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeYouNeedMoreCoinsFor": "You need more coins for that.",
+  "@storeYouNeedMoreCoinsFor": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "storeCouldnTRentThatWorld": "Couldn't rent that world. Try again.",
+  "@storeCouldnTRentThatWorld": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "ludoLobbySomeoneInTheRoomNeeds": "Someone in the room needs more coins for this game.",
+  "@ludoLobbySomeoneInTheRoomNeeds": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyWeCouldnTFindThat": "We couldn't find that room. Check the code.",
+  "@ludoLobbyWeCouldnTFindThat": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyYouNeedAtLeast2": "You need at least 2 players to start.",
+  "@ludoLobbyYouNeedAtLeast2": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyLudo": "Ludo",
+  "@ludoLobbyLudo": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyHowToPlay": "How to play",
+  "@ludoLobbyHowToPlay": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyPlayOnline": "Play online",
+  "@ludoLobbyPlayOnline": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyJoinATableOf2": "Join a table of 2 or 4 players",
+  "@ludoLobbyJoinATableOf2": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyPlayWithFriends": "Play with friends",
+  "@ludoLobbyPlayWithFriends": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyMakeARoomOrJoin": "Make a room or join one with a code",
+  "@ludoLobbyMakeARoomOrJoin": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyPlayOffline": "Play offline",
+  "@ludoLobbyPlayOffline": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyBotsOrFriendsTakingTurns": "Bots, or friends taking turns on this phone",
+  "@ludoLobbyBotsOrFriendsTakingTurns": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobby2To6Players": "2 to 6\nplayers",
+  "@ludoLobby2To6Players": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyTimedTurns": "Timed\nturns",
+  "@ludoLobbyTimedTurns": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyChatReactions": "Chat &\nreactions",
+  "@ludoLobbyChatReactions": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyPrivateRooms": "Private\nrooms",
+  "@ludoLobbyPrivateRooms": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyFriendsOnThisPhone": "Friends on this phone",
+  "@ludoLobbyFriendsOnThisPhone": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyNone": "None",
+  "@ludoLobbyNone": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyTapASeatToSit": "Tap a seat to sit there",
+  "@ludoLobbyTapASeatToSit": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyYou": "You",
+  "@ludoLobbyYou": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyStartGame": "Start game",
+  "@ludoLobbyStartGame": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyPlay": "Play",
+  "@ludoLobbyPlay": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyJoinRoom": "Join room",
+  "@ludoLobbyJoinRoom": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyClassicBoard": "Classic board",
+  "@ludoLobbyClassicBoard": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyStarBoard": "Star board",
+  "@ludoLobbyStarBoard": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyCreateRoom": "Create room",
+  "@ludoLobbyCreateRoom": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyCreate": "Create",
+  "@ludoLobbyCreate": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyJoin": "Join",
+  "@ludoLobbyJoin": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyFindingAnOpponent": "Finding an opponent",
+  "@ludoLobbyFindingAnOpponent": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyGatheringPlayers": "Gathering players",
+  "@ludoLobbyGatheringPlayers": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyFree": "Free",
+  "@ludoLobbyFree": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyPlayWithBots": "Play with bots",
+  "@ludoLobbyPlayWithBots": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "ludoLobbyCancel": "Cancel",
+  "@ludoLobbyCancel": {
+    "description": "features/ludo/presentation/screens/ludo_lobby_screen.dart"
+  },
+  "guessDoodleLobbyWeCouldnTFindThat": "We couldn't find that game. Check the code.",
+  "@guessDoodleLobbyWeCouldnTFindThat": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyThatGameIsFull": "That game is full.",
+  "@guessDoodleLobbyThatGameIsFull": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyThatGameHasEnded": "That game has ended.",
+  "@guessDoodleLobbyThatGameHasEnded": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyFindingAGame": "Finding a game",
+  "@guessDoodleLobbyFindingAGame": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyGuessMyDoodle": "Guess My Doodle",
+  "@guessDoodleLobbyGuessMyDoodle": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyHowToPlay": "How to play",
+  "@guessDoodleLobbyHowToPlay": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyPlayOnline": "Play online",
+  "@guessDoodleLobbyPlayOnline": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyJumpIntoAGameWith": "Jump into a game with players anywhere",
+  "@guessDoodleLobbyJumpIntoAGameWith": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyPlayWithFriends": "Play with friends",
+  "@guessDoodleLobbyPlayWithFriends": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyMakeAGameOrJoin": "Make a game or join one with a code",
+  "@guessDoodleLobbyMakeAGameOrJoin": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyChipDrawsYouGuess": "Chip draws, you guess",
+  "@guessDoodleLobbyChipDrawsYouGuess": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyGuessHisDoodlesOnYour": "Guess his doodles on your own",
+  "@guessDoodleLobbyGuessHisDoodlesOnYour": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobby1To20Players": "1 to 20\nplayers",
+  "@guessDoodleLobby1To20Players": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyDrawGuess": "Draw &\nguess",
+  "@guessDoodleLobbyDrawGuess": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyFasterGuessMorePoints": "Faster guess,\nmore points",
+  "@guessDoodleLobbyFasterGuessMorePoints": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyPrivateGames": "Private\ngames",
+  "@guessDoodleLobbyPrivateGames": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyJoinGame": "Join game",
+  "@guessDoodleLobbyJoinGame": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyRounds": "Rounds",
+  "@guessDoodleLobbyRounds": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyTimeToDraw": "Time to draw",
+  "@guessDoodleLobbyTimeToDraw": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyCreateGame": "Create game",
+  "@guessDoodleLobbyCreateGame": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyCreate": "Create",
+  "@guessDoodleLobbyCreate": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyJoin": "Join",
+  "@guessDoodleLobbyJoin": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyTakeTurnsDrawing": "Take turns drawing",
+  "@guessDoodleLobbyTakeTurnsDrawing": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyOnePlayerPicksAWord": "One player picks a word from three and draws it. No letters or numbers in the drawing.",
+  "@guessDoodleLobbyOnePlayerPicksAWord": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyGuessInTheChat": "Guess in the chat",
+  "@guessDoodleLobbyGuessInTheChat": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyEveryoneElseTypesGuessesA": "Everyone else types guesses. A right guess is never shown to the others, and \"so close\" tells only you when you nearly have it.",
+  "@guessDoodleLobbyEveryoneElseTypesGuessesA": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyBeQuick": "Be quick",
+  "@guessDoodleLobbyBeQuick": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyTheSoonerYouGuessThe": "The sooner you guess, the more points you get, with a bonus for the first. The drawer scores for everyone who gets it.",
+  "@guessDoodleLobbyTheSoonerYouGuessThe": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyHints": "Hints",
+  "@guessDoodleLobbyHints": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyLettersOfTheWordAppear": "Letters of the word appear as the clock runs down.",
+  "@guessDoodleLobbyLettersOfTheWordAppear": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyWin": "Win",
+  "@guessDoodleLobbyWin": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyEveryoneDrawsOnceEachRound": "Everyone draws once each round. The most points after the last round wins.",
+  "@guessDoodleLobbyEveryoneDrawsOnceEachRound": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "guessDoodleLobbyGotIt": "Got it",
+  "@guessDoodleLobbyGotIt": {
+    "description": "features/guess_doodle/presentation/guess_doodle_lobby_screen.dart"
+  },
+  "studioCouldnTOpenThisOne": "Couldn't open this one.",
+  "@studioCouldnTOpenThisOne": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioIVeColoredLotsToday": "I've colored lots today. Ask me again tomorrow!",
+  "@studioIVeColoredLotsToday": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioICanTColorThat": "I can't color that one.",
+  "@studioICanTColorThat": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioMyPaintbrushIsnTReady": "My paintbrush isn't ready yet.",
+  "@studioMyPaintbrushIsnTReady": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioICouldnTColorIt": "I couldn't color it just now. Try again?",
+  "@studioICouldnTColorIt": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioAllowUtopiaToAddTo": "Allow Utopia to add to your photos in Settings, then try again.",
+  "@studioAllowUtopiaToAddTo": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioSavedToYourPhotos": "Saved to your photos",
+  "@studioSavedToYourPhotos": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioCouldnTSaveToYour": "Couldn't save to your photos. Try again.",
+  "@studioCouldnTSaveToYour": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioKeepIt": "Keep it",
+  "@studioKeepIt": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioStartOver": "Start over?",
+  "@studioStartOver": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioEverythingOnThisPageWill": "Everything on this page will be cleared.",
+  "@studioEverythingOnThisPageWill": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioClearIt": "Clear it",
+  "@studioClearIt": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioDeleteThis": "Delete this?",
+  "@studioDeleteThis": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioItLlBeGoneFrom": "It'll be gone from your sketchbook for good.",
+  "@studioItLlBeGoneFrom": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioDelete": "Delete",
+  "@studioDelete": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioSketchbook": "Sketchbook",
+  "@studioSketchbook": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioColoring": "Coloring",
+  "@studioColoring": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioSketch": "Sketch",
+  "@studioSketch": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioBack": "Back",
+  "@studioBack": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioCouldnTSaveWillTry": "Couldn't save, will try again",
+  "@studioCouldnTSaveWillTry": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioSavedInUtopia": "Saved in Utopia",
+  "@studioSavedInUtopia": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioTapAShapeToFill": "Tap a shape to fill it",
+  "@studioTapAShapeToFill": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioDrawAnything": "Draw anything",
+  "@studioDrawAnything": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioUndo": "Undo",
+  "@studioUndo": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioRedo": "Redo",
+  "@studioRedo": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioSavePicture": "Save picture",
+  "@studioSavePicture": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioSaveToPhotos": "Save to Photos",
+  "@studioSaveToPhotos": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioMore": "More",
+  "@studioMore": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioStartOver2": "Start over",
+  "@studioStartOver2": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioGettingYourPageReady": "Getting your page ready…",
+  "@studioGettingYourPageReady": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioZoomIn": "Zoom in",
+  "@studioZoomIn": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioZoomOut": "Zoom out",
+  "@studioZoomOut": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioFitThePage": "Fit the page",
+  "@studioFitThePage": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioColorWithChip": "Color with Chip",
+  "@studioColorWithChip": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "studioChipIsColoringYourPicture": "Chip is coloring your picture…",
+  "@studioChipIsColoringYourPicture": {
+    "description": "features/doodle_studio/presentation/studio_screen.dart"
+  },
+  "storeStore": "Store",
+  "@storeStore": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeWorlds": "Worlds",
+  "@storeWorlds": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeAuras": "Auras",
+  "@storeAuras": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeLudo": "Ludo",
+  "@storeLudo": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeChess": "Chess",
+  "@storeChess": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeSaveYourAccountSoYour": "Save your account so your purchases are never lost.",
+  "@storeSaveYourAccountSoYour": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeUnlocked": "Unlocked!",
+  "@storeUnlocked": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeWhereToFirst": "Where to first?",
+  "@storeWhereToFirst": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeYouReAlreadyHere": "You're already here",
+  "@storeYouReAlreadyHere": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeTravelTo": "Travel to {name}",
+  "@storeTravelTo": {
+    "description": "features/store/presentation/store_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "storePickAWorld": "Pick a world",
+  "@storePickAWorld": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeEquipNow": "Equip now",
+  "@storeEquipNow": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeLater": "Later",
+  "@storeLater": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeUtopiaWorlds": "Utopia worlds",
+  "@storeUtopiaWorlds": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeEveryWorldHasItsOwn": "Every world has its own living sky. Changing worlds sends Chip through a portal!",
+  "@storeEveryWorldHasItsOwn": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeEveryWorld": "Every World",
+  "@storeEveryWorld": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeAllWorldsAndColorsNow": "All {value} worlds and {length} colors, now and forever.",
+  "@storeAllWorldsAndColorsNow": {
+    "description": "features/store/presentation/store_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "length": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeColorWorlds": "Color worlds",
+  "@storeColorWorlds": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "store12ColorsEachAtDawn": "12 colors, each at dawn, dusk and midnight.",
+  "@store12ColorsEachAtDawn": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeOwned": "Owned",
+  "@storeOwned": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeCurrent": "Current",
+  "@storeCurrent": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeFree": "Free",
+  "@storeFree": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeLocked": "Locked",
+  "@storeLocked": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeYouReHere": "You're here",
+  "@storeYouReHere": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeTravelToThisWorld": "Travel to this world",
+  "@storeTravelToThisWorld": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeAWeekMoreIn": "A week more in {name}",
+  "@storeAWeekMoreIn": {
+    "description": "features/store/presentation/store_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeOrRentItForA": "or rent it for a week",
+  "@storeOrRentItForA": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeRentForAWeek": "Rent for a week · {value}",
+  "@storeRentForAWeek": {
+    "description": "features/store/presentation/store_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeAddAWeek": "Add a week · {value}",
+  "@storeAddAWeek": {
+    "description": "features/store/presentation/store_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "storePack": "Pack · {value}",
+  "@storePack": {
+    "description": "features/store/presentation/store_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeEquipped": "Equipped",
+  "@storeEquipped": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeEquipping": "Equipping",
+  "@storeEquipping": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeEquip": "Equip",
+  "@storeEquip": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "storeAnimated": "Animated",
+  "@storeAnimated": {
+    "description": "features/store/presentation/store_screen.dart"
+  },
+  "chessLobbySaveYourAccountSoFriends": "Save your account so friends can find you.",
+  "@chessLobbySaveYourAccountSoFriends": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyCheckers": "Checkers",
+  "@chessLobbyCheckers": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyChess": "Chess",
+  "@chessLobbyChess": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyClock": "Clock",
+  "@chessLobbyClock": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyEntry": "Entry",
+  "@chessLobbyEntry": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyPlayOnline": "Play online",
+  "@chessLobbyPlayOnline": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyGetMatchedWithAPlayer": "Get matched with a player now",
+  "@chessLobbyGetMatchedWithAPlayer": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyPlayAFriend": "Play a friend",
+  "@chessLobbyPlayAFriend": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbySendAChallengeToSomeone": "Send a challenge to someone you know",
+  "@chessLobbySendAChallengeToSomeone": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyPlayOffline": "Play offline",
+  "@chessLobbyPlayOffline": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyChipRoboOrAFriend": "Chip, Robo or a friend on this phone",
+  "@chessLobbyChipRoboOrAFriend": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyOpponent": "Opponent",
+  "@chessLobbyOpponent": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyChip": "Chip",
+  "@chessLobbyChip": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyRobo": "Robo",
+  "@chessLobbyRobo": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyAFriend": "A friend",
+  "@chessLobbyAFriend": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyTwoPlayersOnThisPhone": "Two players on this phone, taking turns.",
+  "@chessLobbyTwoPlayersOnThisPhone": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyLevel": "Level",
+  "@chessLobbyLevel": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyEasy": "Easy",
+  "@chessLobbyEasy": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyNormal": "Normal",
+  "@chessLobbyNormal": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyHard": "Hard",
+  "@chessLobbyHard": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyYouPlay": "You play",
+  "@chessLobbyYouPlay": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyDark": "Dark",
+  "@chessLobbyDark": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyWhite": "White",
+  "@chessLobbyWhite": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyRandom": "Random",
+  "@chessLobbyRandom": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyLight": "Light",
+  "@chessLobbyLight": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyBlack": "Black",
+  "@chessLobbyBlack": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyDarkMovesFirst": "Dark moves first.",
+  "@chessLobbyDarkMovesFirst": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyNoClock": "No clock",
+  "@chessLobbyNoClock": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyStartGame": "Start game",
+  "@chessLobbyStartGame": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyFindingAnOpponent": "Finding an opponent",
+  "@chessLobbyFindingAnOpponent": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyFree": "Free",
+  "@chessLobbyFree": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyPlayChip": "Play Chip",
+  "@chessLobbyPlayChip": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "chessLobbyCancel": "Cancel",
+  "@chessLobbyCancel": {
+    "description": "features/chess/presentation/screens/chess_lobby_screen.dart"
+  },
+  "ludoRoomSomeoneNeedsMoreCoinsFor": "Someone needs more coins for this game.",
+  "@ludoRoomSomeoneNeedsMoreCoinsFor": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomWaitForAtLeastOne": "Wait for at least one friend to join.",
+  "@ludoRoomWaitForAtLeastOne": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomCouldnTStartTheGame": "Couldn't start the game. Try again.",
+  "@ludoRoomCouldnTStartTheGame": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomSomeoneJustTookThatSeat": "Someone just took that seat.",
+  "@ludoRoomSomeoneJustTookThatSeat": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomCouldnTChangeSeatsTry": "Couldn't change seats. Try again.",
+  "@ludoRoomCouldnTChangeSeatsTry": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomCodeCopied": "Code copied",
+  "@ludoRoomCodeCopied": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomComePlayLudoWithMe": "Come play Ludo with me in Utopia! Tap to join, or use room code {code}: {value}",
+  "@ludoRoomComePlayLudoWithMe": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart",
+    "placeholders": {
+      "code": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoRoomLudoInUtopia": "Ludo in Utopia",
+  "@ludoRoomLudoInUtopia": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomOpeningTheRoom": "Opening the room",
+  "@ludoRoomOpeningTheRoom": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomPrivateRoom": "Private room",
+  "@ludoRoomPrivateRoom": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomShareCode": "Share code",
+  "@ludoRoomShareCode": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomPlayers": "Players",
+  "@ludoRoomPlayers": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomStartGame": "Start game",
+  "@ludoRoomStartGame": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomWaitingForFriends": "Waiting for friends",
+  "@ludoRoomWaitingForFriends": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomTheHostWillStartThe": "The host will start the game",
+  "@ludoRoomTheHostWillStartThe": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomCloseRoom": "Close room",
+  "@ludoRoomCloseRoom": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomLeaveRoom": "Leave room",
+  "@ludoRoomLeaveRoom": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomRoomCode": "ROOM CODE",
+  "@ludoRoomRoomCode": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomCopy": "Copy",
+  "@ludoRoomCopy": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomShare": "Share",
+  "@ludoRoomShare": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomClassic": "Classic",
+  "@ludoRoomClassic": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomStarBoard": "Star board",
+  "@ludoRoomStarBoard": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomFree": "Free",
+  "@ludoRoomFree": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoom40sTurns": "40s turns",
+  "@ludoRoom40sTurns": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomSeat": "Seat",
+  "@ludoRoomSeat": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomYou": "You",
+  "@ludoRoomYou": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomTakeThisSeat": "Take this seat",
+  "@ludoRoomTakeThisSeat": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomPlayAs": "Play as {name}",
+  "@ludoRoomPlayAs": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoRoomShareInvite": "Share invite",
+  "@ludoRoomShareInvite": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "ludoRoomSendTheRoomCodeTo": "Send the room code to a friend",
+  "@ludoRoomSendTheRoomCodeTo": {
+    "description": "features/ludo/presentation/screens/ludo_room_screen.dart"
+  },
+  "sketchbookBack": "Back",
+  "@sketchbookBack": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookSketchbook": "Sketchbook",
+  "@sketchbookSketchbook": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookDrawAnythingOrColorA": "Draw anything, or color a picture. Everything saves as you go.",
+  "@sketchbookDrawAnythingOrColorA": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookNewSketch": "New sketch",
+  "@sketchbookNewSketch": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookABlankPage": "A blank page",
+  "@sketchbookABlankPage": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookColorAPicture": "Color a picture",
+  "@sketchbookColorAPicture": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookOrSearchAnyPicture": "Or search any picture",
+  "@sketchbookOrSearchAnyPicture": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookMyArt": "My art",
+  "@sketchbookMyArt": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookNothingHereYetWhatYou": "Nothing here yet. What you draw and color shows up here.",
+  "@sketchbookNothingHereYetWhatYou": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookDeleteThis": "Delete this?",
+  "@sketchbookDeleteThis": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookItLlBeGoneFrom": "It'll be gone from your sketchbook for good.",
+  "@sketchbookItLlBeGoneFrom": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookKeepIt": "Keep it",
+  "@sketchbookKeepIt": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookDelete": "Delete",
+  "@sketchbookDelete": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookCouldnTOpenThatOne": "Couldn't open that one. Try again?",
+  "@sketchbookCouldnTOpenThatOne": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookChipSDrawingItIt": "Chip's drawing it. It'll be in Yours in about a minute.",
+  "@sketchbookChipSDrawingItIt": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookChipCanTDrawThat": "Chip can't draw that one. Try something else?",
+  "@sketchbookChipCanTDrawThat": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookChipHasDrawnAllHe": "Chip has drawn all he can today. Ask again tomorrow!",
+  "@sketchbookChipHasDrawnAllHe": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookChipSPencilIsnT": "Chip's pencil isn't ready yet. Try again later.",
+  "@sketchbookChipSPencilIsnT": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookCouldnTReachChipCheck": "Couldn't reach Chip. Check your connection and try again.",
+  "@sketchbookCouldnTReachChipCheck": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookPickAPictureToColor": "Pick a picture to color",
+  "@sketchbookPickAPictureToColor": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookYours": "Yours",
+  "@sketchbookYours": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookUtopiaSPictures": "Utopia's pictures",
+  "@sketchbookUtopiaSPictures": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookDrawnForPlayers": "Drawn for players",
+  "@sketchbookDrawnForPlayers": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookFromTheLibrary": "From the library",
+  "@sketchbookFromTheLibrary": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookSearchAnyPictureALion": "Search any picture: a lion, a castle...",
+  "@sketchbookSearchAnyPictureALion": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookDidnTWorkOut": "Didn't work out",
+  "@sketchbookDidnTWorkOut": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookChipIsDrawing": "Chip is drawing...",
+  "@sketchbookChipIsDrawing": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookNewPicture": "New picture",
+  "@sketchbookNewPicture": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookNobodyHasAskedForThat": "Nobody has asked for that yet.",
+  "@sketchbookNobodyHasAskedForThat": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookAskingChip": "Asking Chip...",
+  "@sketchbookAskingChip": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
+  },
+  "sketchbookAskChipToDraw": "Ask Chip to draw \"{subject}\"",
+  "@sketchbookAskChipToDraw": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart",
+    "placeholders": {
+      "subject": {
+        "type": "Object"
+      }
+    }
+  },
+  "sketchbookNotQuiteAskChipTo": "Not quite? Ask Chip to draw \"{subject}\"",
+  "@sketchbookNotQuiteAskChipTo": {
+    "description": "features/doodle_studio/presentation/sketchbook_screen.dart",
+    "placeholders": {
+      "subject": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleOverlaysStartingSoon": "Starting soon",
+  "@doodleOverlaysStartingSoon": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysFindingPlayers": "Finding players",
+  "@doodleOverlaysFindingPlayers": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysTheGameStartsWhenSomeone": "The game starts when someone else joins.",
+  "@doodleOverlaysTheGameStartsWhenSomeone": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysInviteFriends": "Invite friends",
+  "@doodleOverlaysInviteFriends": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysCopy": "Copy",
+  "@doodleOverlaysCopy": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysShare": "Share",
+  "@doodleOverlaysShare": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysOfPlayers": "{length} of {maxPlayers} players",
+  "@doodleOverlaysOfPlayers": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart",
+    "placeholders": {
+      "length": {
+        "type": "Object"
+      },
+      "maxPlayers": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleOverlaysStartGame": "Start game",
+  "@doodleOverlaysStartGame": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysWaitingForFriends": "Waiting for friends",
+  "@doodleOverlaysWaitingForFriends": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysWaitingForToStart": "Waiting for {value} to start",
+  "@doodleOverlaysWaitingForToStart": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleOverlaysStartingIn": "Starting in {s}",
+  "@doodleOverlaysStartingIn": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart",
+    "placeholders": {
+      "s": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleOverlaysHereWeGo": "Here we go",
+  "@doodleOverlaysHereWeGo": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysIsPickingAWord": "{value} is picking a word",
+  "@doodleOverlaysIsPickingAWord": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleOverlaysGetReadyToGuess": "Get ready to guess",
+  "@doodleOverlaysGetReadyToGuess": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysPickAWordToDraw": "Pick a word to draw",
+  "@doodleOverlaysPickAWordToDraw": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysNobodyGotIt": "Nobody got it",
+  "@doodleOverlaysNobodyGotIt": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysTheWordWas": "The word was",
+  "@doodleOverlaysTheWordWas": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysYouWon": "You won!",
+  "@doodleOverlaysYouWon": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysFinalScores": "Final scores",
+  "@doodleOverlaysFinalScores": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysPlayAgain": "Play again",
+  "@doodleOverlaysPlayAgain": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysTheHostCanStartAnother": "The host can start another game",
+  "@doodleOverlaysTheHostCanStartAnother": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysLeave": "Leave",
+  "@doodleOverlaysLeave": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysNextGameIn": "Next game in {s}",
+  "@doodleOverlaysNextGameIn": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart",
+    "placeholders": {
+      "s": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleOverlaysNextGameStarting": "Next game starting",
+  "@doodleOverlaysNextGameStarting": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysThisGameHasEnded": "This game has ended",
+  "@doodleOverlaysThisGameHasEnded": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysBack": "Back",
+  "@doodleOverlaysBack": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart"
+  },
+  "doodleOverlaysAndMore": "and {count} more",
+  "@doodleOverlaysAndMore": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_overlays.dart",
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "boardMatchPartsChat": "Chat",
+  "@boardMatchPartsChat": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsPreviousMove": "Previous move",
+  "@boardMatchPartsPreviousMove": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsMovesWillShowUpHere": "Moves will show up here",
+  "@boardMatchPartsMovesWillShowUpHere": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsStart": "Start",
+  "@boardMatchPartsStart": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsNextMove": "Next move",
+  "@boardMatchPartsNextMove": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsYourWin": "Your win",
+  "@boardMatchPartsYourWin": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsResult": "Result",
+  "@boardMatchPartsResult": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsPlayAgain": "Play again",
+  "@boardMatchPartsPlayAgain": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsUnderReview": "Under review",
+  "@boardMatchPartsUnderReview": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsCalledOff": "Called off",
+  "@boardMatchPartsCalledOff": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsVictory": "Victory!",
+  "@boardMatchPartsVictory": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsDefeat": "Defeat",
+  "@boardMatchPartsDefeat": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsDraw": "Draw",
+  "@boardMatchPartsDraw": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsYouAndYourOpponentReported": "You and your opponent reported different results. We'll sort it out.",
+  "@boardMatchPartsYouAndYourOpponentReported": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsYourOpponentResigned": "Your opponent resigned.",
+  "@boardMatchPartsYourOpponentResigned": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsYouResigned": "You resigned.",
+  "@boardMatchPartsYouResigned": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsNobodyCanWinFromHere": "Nobody can win from here.",
+  "@boardMatchPartsNobodyCanWinFromHere": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsTheirClockRanOut": "Their clock ran out.",
+  "@boardMatchPartsTheirClockRanOut": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsYourClockRanOut": "Your clock ran out.",
+  "@boardMatchPartsYourClockRanOut": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsAFirstMoveDidnT": "A first move didn't come in time. Your coins are back.",
+  "@boardMatchPartsAFirstMoveDidnT": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsAFirstMoveDidnT2": "A first move didn't come in time.",
+  "@boardMatchPartsAFirstMoveDidnT2": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsSendingYourPrize": "Sending your prize",
+  "@boardMatchPartsSendingYourPrize": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsWrappingUp": "Wrapping up",
+  "@boardMatchPartsWrappingUp": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsHome": "Home",
+  "@boardMatchPartsHome": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsReviewTheGame": "Review the game",
+  "@boardMatchPartsReviewTheGame": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsRating": "Rating {round}",
+  "@boardMatchPartsRating": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart",
+    "placeholders": {
+      "round": {
+        "type": "Object"
+      }
+    }
+  },
+  "boardMatchPartsYou": "You",
+  "@boardMatchPartsYou": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "boardMatchPartsOpponent": "Opponent",
+  "@boardMatchPartsOpponent": {
+    "description": "features/chess/presentation/widgets/board_match_parts.dart"
+  },
+  "chipDoodleHmmWhatShallIDraw": "Hmm, what shall I draw?",
+  "@chipDoodleHmmWhatShallIDraw": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleOopsMyPencilBroke": "Oops, my pencil broke!",
+  "@chipDoodleOopsMyPencilBroke": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleYouGotIt": "You got it! +{lastPoints}",
+  "@chipDoodleYouGotIt": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart",
+    "placeholders": {
+      "lastPoints": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipDoodleItWas": "It was {value}!",
+  "@chipDoodleItWas": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipDoodleWhatAGame": "What a game!",
+  "@chipDoodleWhatAGame": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleSoCloseKeepGoing": "So close! Keep going.",
+  "@chipDoodleSoCloseKeepGoing": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleQuickTimeIsNearlyUp": "Quick, time is nearly up!",
+  "@chipDoodleQuickTimeIsNearlyUp": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleHereSALittleHint": "Here's a little hint!",
+  "@chipDoodleHereSALittleHint": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleNopeLookAgain": "Nope! Look again.",
+  "@chipDoodleNopeLookAgain": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleWatchClosely": "Watch closely...",
+  "@chipDoodleWatchClosely": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleWhatDoYouThinkIt": "What do you think it is?",
+  "@chipDoodleWhatDoYouThinkIt": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleChipDraws": "Chip draws",
+  "@chipDoodleChipDraws": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleChipCouldnTDrawJust": "Chip couldn't draw just now.",
+  "@chipDoodleChipCouldnTDrawJust": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleTryAgain": "Try again",
+  "@chipDoodleTryAgain": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleSeeYourScore": "See your score",
+  "@chipDoodleSeeYourScore": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleNextDoodle": "Next doodle",
+  "@chipDoodleNextDoodle": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleNewBestScore": "New best score!",
+  "@chipDoodleNewBestScore": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleGreatGuessing": "Great guessing!",
+  "@chipDoodleGreatGuessing": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleYouGuessedOf": "You guessed {guessedCount} of {rounds}",
+  "@chipDoodleYouGuessedOf": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart",
+    "placeholders": {
+      "guessedCount": {
+        "type": "Object"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipDoodleYourBest": "Your best: {best}",
+  "@chipDoodleYourBest": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart",
+    "placeholders": {
+      "best": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipDoodlePlayAgain": "Play again",
+  "@chipDoodlePlayAgain": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleDone": "Done",
+  "@chipDoodleDone": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleSoClose": "{text} · so close!",
+  "@chipDoodleSoClose": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart",
+    "placeholders": {
+      "text": {
+        "type": "Object"
+      }
+    }
+  },
+  "chipDoodleTypeYourGuess": "Type your guess",
+  "@chipDoodleTypeYourGuess": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleGetReady": "Get ready...",
+  "@chipDoodleGetReady": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleGuess": "Guess",
+  "@chipDoodleGuess": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chipDoodleSkipThisOne": "Skip this one",
+  "@chipDoodleSkipThisOne": {
+    "description": "features/guess_doodle/presentation/chip_doodle_screen.dart"
+  },
+  "chessMatchSettingUpTheBoard": "Setting up the board",
+  "@chessMatchSettingUpTheBoard": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchWeCouldnTFindThis": "We couldn't find this game.",
+  "@chessMatchWeCouldnTFindThis": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchLeaveGame": "Leave game",
+  "@chessMatchLeaveGame": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchClose": "Close",
+  "@chessMatchClose": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchResign": "Resign",
+  "@chessMatchResign": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchCheckmateBeautifullyPlayed": "Checkmate. Beautifully played.",
+  "@chessMatchCheckmateBeautifullyPlayed": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchCheckmated": "Checkmated.",
+  "@chessMatchCheckmated": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchStalemateNoLegalMovesLeft": "Stalemate: no legal moves left.",
+  "@chessMatchStalemateNoLegalMovesLeft": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchResignThisGame": "Resign this game?",
+  "@chessMatchResignThisGame": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchYourOpponentWinsTheGame": "Your opponent wins the game and the prize.",
+  "@chessMatchYourOpponentWinsTheGame": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchYourOpponentWinsTheGame2": "Your opponent wins the game.",
+  "@chessMatchYourOpponentWinsTheGame2": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchKeepPlaying": "Keep playing",
+  "@chessMatchKeepPlaying": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchChess": "Chess",
+  "@chessMatchChess": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchYou": "You",
+  "@chessMatchYou": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchOpponent": "Opponent",
+  "@chessMatchOpponent": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchStartingPosition": "Starting position",
+  "@chessMatchStartingPosition": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchMoveOf": "Move {displayPly} of {length}",
+  "@chessMatchMoveOf": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart",
+    "placeholders": {
+      "displayPly": {
+        "type": "Object"
+      },
+      "length": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessMatchBackToLive": "Back to live",
+  "@chessMatchBackToLive": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchYouReInCheck": "You're in check",
+  "@chessMatchYouReInCheck": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchCheck": "Check!",
+  "@chessMatchCheck": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchYourMoveSToStart": "Your move · {value}s to start",
+  "@chessMatchYourMoveSToStart": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessMatchYourMove": "Your move",
+  "@chessMatchYourMove": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "chessMatchWaitingForTheFirstMove": "Waiting for the first move · {value}s",
+  "@chessMatchWaitingForTheFirstMove": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessMatchTheirMove": "Their move",
+  "@chessMatchTheirMove": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart"
+  },
+  "checkersMatchSettingUpTheBoard": "Setting up the board",
+  "@checkersMatchSettingUpTheBoard": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchWeCouldnTFindThis": "We couldn't find this game.",
+  "@checkersMatchWeCouldnTFindThis": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchLeaveGame": "Leave game",
+  "@checkersMatchLeaveGame": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchClose": "Close",
+  "@checkersMatchClose": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchResign": "Resign",
+  "@checkersMatchResign": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchNoMovesLeftForThem": "No moves left for them. Well played.",
+  "@checkersMatchNoMovesLeftForThem": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchYouRanOutOfMoves": "You ran out of moves.",
+  "@checkersMatchYouRanOutOfMoves": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchFortyMovesEachWithNo": "Forty moves each with no progress.",
+  "@checkersMatchFortyMovesEachWithNo": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchResignThisGame": "Resign this game?",
+  "@checkersMatchResignThisGame": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchYourOpponentWinsTheGame": "Your opponent wins the game and the prize.",
+  "@checkersMatchYourOpponentWinsTheGame": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchYourOpponentWinsTheGame2": "Your opponent wins the game.",
+  "@checkersMatchYourOpponentWinsTheGame2": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchKeepPlaying": "Keep playing",
+  "@checkersMatchKeepPlaying": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchCheckers": "Checkers",
+  "@checkersMatchCheckers": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchYou": "You",
+  "@checkersMatchYou": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchOpponent": "Opponent",
+  "@checkersMatchOpponent": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchTook": "Took {count}",
+  "@checkersMatchTook": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart",
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersMatch1King": "1 king",
+  "@checkersMatch1King": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchStartingPosition": "Starting position",
+  "@checkersMatchStartingPosition": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchMoveOf": "Move {displayPly} of {length}",
+  "@checkersMatchMoveOf": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart",
+    "placeholders": {
+      "displayPly": {
+        "type": "Object"
+      },
+      "length": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersMatchBackToLive": "Back to live",
+  "@checkersMatchBackToLive": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchYouMustTakeAPiece": "You must take a piece",
+  "@checkersMatchYouMustTakeAPiece": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchYourMoveSToStart": "Your move · {value}s to start",
+  "@checkersMatchYourMoveSToStart": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersMatchYourMove": "Your move",
+  "@checkersMatchYourMove": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "checkersMatchWaitingForTheFirstMove": "Waiting for the first move · {value}s",
+  "@checkersMatchWaitingForTheFirstMove": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkersMatchTheirMove": "Their move",
+  "@checkersMatchTheirMove": {
+    "description": "features/checkers/presentation/screens/checkers_match_screen.dart"
+  },
+  "guessDoodleSlowDownALittle": "Slow down a little",
+  "@guessDoodleSlowDownALittle": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleYouReNotInThis": "You're not in this game anymore",
+  "@guessDoodleYouReNotInThis": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleLeaveTheGame": "Leave the game?",
+  "@guessDoodleLeaveTheGame": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleTheOthersWillCarryOn": "The others will carry on without you.",
+  "@guessDoodleTheOthersWillCarryOn": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleStay": "Stay",
+  "@guessDoodleStay": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleLeave": "Leave",
+  "@guessDoodleLeave": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleCodeCopied": "Code copied",
+  "@guessDoodleCodeCopied": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleComePlayGuessMyDoodle": "Come play Guess My Doodle with me in Utopia! Tap to join, or use game code {code}: {value}",
+  "@guessDoodleComePlayGuessMyDoodle": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart",
+    "placeholders": {
+      "code": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "guessDoodleGuessMyDoodleInUtopia": "Guess My Doodle in Utopia",
+  "@guessDoodleGuessMyDoodleInUtopia": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleClearTheDrawing": "Clear the drawing?",
+  "@guessDoodleClearTheDrawing": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleYouCanTUndoThis": "You can't undo this.",
+  "@guessDoodleYouCanTUndoThis": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleKeepIt": "Keep it",
+  "@guessDoodleKeepIt": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleClear": "Clear",
+  "@guessDoodleClear": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleChatWithPlayersWhoGot": "Chat with players who got it",
+  "@guessDoodleChatWithPlayersWhoGot": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleTypeYourGuess": "Type your guess",
+  "@guessDoodleTypeYourGuess": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleOnlyPlayersWhoGuessWill": "Only players who guess will see this",
+  "@guessDoodleOnlyPlayersWhoGuessWill": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleSaySomething": "Say something",
+  "@guessDoodleSaySomething": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleGuessMyDoodle": "Guess My Doodle",
+  "@guessDoodleGuessMyDoodle": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "guessDoodleRoundOf": "Round {round} of {rounds}",
+  "@guessDoodleRoundOf": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart",
+    "placeholders": {
+      "round": {
+        "type": "Object"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
+  },
+  "guessDoodleYouGotIt": "You got it!",
+  "@guessDoodleYouGotIt": {
+    "description": "features/guess_doodle/presentation/guess_doodle_screen.dart"
+  },
+  "ludoRulesHowToPlayLudo": "How to play Ludo",
+  "@ludoRulesHowToPlayLudo": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesRollA6ToStart": "Roll a 6 to start",
+  "@ludoRulesRollA6ToStart": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesEachPieceWaitsInYour": "Each piece waits in your yard until you roll a 6. Then it hops out onto your start square.",
+  "@ludoRulesEachPieceWaitsInYour": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesRaceAroundTheBoard": "Race around the board",
+  "@ludoRulesRaceAroundTheBoard": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesPiecesMoveByTheNumber": "Pieces move by the number you roll. Tap a glowing piece to move it. If only one move is possible, it moves on its own.",
+  "@ludoRulesPiecesMoveByTheNumber": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesTimedTurns": "Timed turns",
+  "@ludoRulesTimedTurns": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesTheRingAroundYourPicture": "The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn passes. Miss three turns in a row and you leave the game.",
+  "@ludoRulesTheRingAroundYourPicture": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesCaptureToSendThemHome": "Capture to send them home",
+  "@ludoRulesCaptureToSendThemHome": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesLandExactlyOnAnOpponent": "Land exactly on an opponent to send their piece back to its yard. Stars and start squares are safe.",
+  "@ludoRulesLandExactlyOnAnOpponent": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesWarOrPeace": "War or peace",
+  "@ludoRulesWarOrPeace": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesAfterACapturePickA": "After a capture, pick a reaction before the bubble runs out: an evil cackle or a peaceful hug. Everyone sees it.",
+  "@ludoRulesAfterACapturePickA": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesBonusRolls": "Bonus rolls",
+  "@ludoRulesBonusRolls": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesRollingA6CapturingOr": "Rolling a 6, capturing, or getting a piece home earns another roll. Three 6s in a row and you lose the turn.",
+  "@ludoRulesRollingA6CapturingOr": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesGetAllFourHome": "Get all four home",
+  "@ludoRulesGetAllFourHome": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesGoUpYourOwnColored": "Go up your own colored path into the center. You need the exact number to finish. The first player with all four pieces home wins.",
+  "@ludoRulesGoUpYourOwnColored": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesLeavingEndsYourGame": "Leaving ends your game",
+  "@ludoRulesLeavingEndsYourGame": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "ludoRulesIfYouLeaveYouLose": "If you leave, you lose this game and your entry stays in the prize. With more than two players, the game carries on.",
+  "@ludoRulesIfYouLeaveYouLose": {
+    "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
+  },
+  "auraIsYoursFor": "{name} is yours for {label}",
+  "@auraIsYoursFor": {
+    "description": "features/auras/presentation/aura_sheet.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "label": {
+        "type": "Object"
+      }
+    }
+  },
+  "auraCouldnTBuyThatAura": "Couldn't buy that aura. Try again.",
+  "@auraCouldnTBuyThatAura": {
+    "description": "features/auras/presentation/aura_sheet.dart"
+  },
+  "auraCouldnTChangeYourAura": "Couldn't change your aura.",
+  "@auraCouldnTChangeYourAura": {
+    "description": "features/auras/presentation/aura_sheet.dart"
+  },
+  "auraYou": "You",
+  "@auraYou": {
+    "description": "features/auras/presentation/aura_sheet.dart"
+  },
+  "auraComesWithYoursToWear": "Comes with {plan}. Yours to wear while you're a member.",
+  "@auraComesWithYoursToWear": {
+    "description": "features/auras/presentation/aura_sheet.dart",
+    "placeholders": {
+      "plan": {
+        "type": "Object"
+      }
+    }
+  },
+  "auraNoLongerSoldYoursTo": "No longer sold. Yours to wear until it runs out.",
+  "@auraNoLongerSoldYoursTo": {
+    "description": "features/auras/presentation/aura_sheet.dart"
+  },
+  "auraAdd": "Add {label} · {value}",
+  "@auraAdd": {
+    "description": "features/auras/presentation/aura_sheet.dart",
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      },
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "auraBuyForCoins": "Buy for {value} coins",
+  "@auraBuyForCoins": {
+    "description": "features/auras/presentation/aura_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "auraYouHave": "You have ",
+  "@auraYouHave": {
+    "description": "features/auras/presentation/aura_sheet.dart"
+  },
+  "auraYours": "Yours · {value}",
+  "@auraYours": {
+    "description": "features/auras/presentation/aura_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "auraTakeOff": "Take off",
+  "@auraTakeOff": {
+    "description": "features/auras/presentation/aura_sheet.dart"
+  },
+  "auraWear": "Wear",
+  "@auraWear": {
+    "description": "features/auras/presentation/aura_sheet.dart"
+  },
+  "auraADay": "{value} a day",
+  "@auraADay": {
+    "description": "features/auras/presentation/aura_sheet.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "auraBestValue": "Best value",
+  "@auraBestValue": {
+    "description": "features/auras/presentation/aura_sheet.dart"
+  },
+  "ludoMatchConnectionLostReconnecting": "Connection lost. Reconnecting.",
+  "@ludoMatchConnectionLostReconnecting": {
+    "description": "features/ludo/presentation/controllers/ludo_match_controller.dart"
+  },
+  "ludoMatchMatchNotFound": "Match not found",
+  "@ludoMatchMatchNotFound": {
+    "description": "features/ludo/presentation/controllers/ludo_match_controller.dart"
+  },
+  "ludoMatchWhoaSlowDownALittle": "Whoa, slow down a little!",
+  "@ludoMatchWhoaSlowDownALittle": {
+    "description": "features/ludo/presentation/controllers/ludo_match_controller.dart"
+  },
+  "ludoMatchCouldnTSendThatMessage": "Couldn't send that message.",
+  "@ludoMatchCouldnTSendThatMessage": {
+    "description": "features/ludo/presentation/controllers/ludo_match_controller.dart"
+  },
+  "ludoMatchCouldnTSendYourVoice": "Couldn't send your voice note.",
+  "@ludoMatchCouldnTSendYourVoice": {
+    "description": "features/ludo/presentation/controllers/ludo_match_controller.dart"
+  },
+  "ludoMatchCouldnTSendYourRoll": "Couldn't send your roll. Reconnecting.",
+  "@ludoMatchCouldnTSendYourRoll": {
+    "description": "features/ludo/presentation/controllers/ludo_match_controller.dart"
+  },
+  "ludoMatchThatMoveDidnTGo": "That move didn't go through. Reconnecting.",
+  "@ludoMatchThatMoveDidnTGo": {
+    "description": "features/ludo/presentation/controllers/ludo_match_controller.dart"
+  },
+  "chipPaintBlackAndWhiteShading": "Black and white shading",
+  "@chipPaintBlackAndWhiteShading": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintPastel": "Pastel",
+  "@chipPaintPastel": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintSunset": "Sunset",
+  "@chipPaintSunset": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintNeon": "Neon",
+  "@chipPaintNeon": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintOcean": "Ocean",
+  "@chipPaintOcean": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintAutumn": "Autumn",
+  "@chipPaintAutumn": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintRoyalGold": "Royal gold",
+  "@chipPaintRoyalGold": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintHowShouldIColorIt": "How should I color it?",
+  "@chipPaintHowShouldIColorIt": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintOrDescribeItLikeOnly": "Or describe it, like \"only blues\"",
+  "@chipPaintOrDescribeItLikeOnly": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "chipPaintColorIt": "Color it",
+  "@chipPaintColorIt": {
+    "description": "features/doodle_studio/presentation/chip_paint.dart"
+  },
+  "studioToolbarPencil": "Pencil",
+  "@studioToolbarPencil": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart"
+  },
+  "studioToolbarInkPen": "Ink pen",
+  "@studioToolbarInkPen": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart"
+  },
+  "studioToolbarMarker": "Marker",
+  "@studioToolbarMarker": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart"
+  },
+  "studioToolbarSoftBrush": "Soft brush",
+  "@studioToolbarSoftBrush": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart"
+  },
+  "studioToolbarHighlighter": "Highlighter",
+  "@studioToolbarHighlighter": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart"
+  },
+  "studioToolbarEraser": "Eraser",
+  "@studioToolbarEraser": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart"
+  },
+  "studioToolbarPaintBucket": "Paint bucket",
+  "@studioToolbarPaintBucket": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart"
+  },
+  "studioToolbarColor": "Color",
+  "@studioToolbarColor": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart"
+  },
+  "studioToolbarBrushSize": "Brush size {value}",
+  "@studioToolbarBrushSize": {
+    "description": "features/doodle_studio/presentation/studio_toolbar.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "coinShopTestBuildPacksAreFree": "Test build: packs are free so you can try them.",
+  "@coinShopTestBuildPacksAreFree": {
+    "description": "features/store/presentation/coin_shop.dart"
+  },
+  "coinShopSaveYourAccountToBuy": "Save your account to buy coins.",
+  "@coinShopSaveYourAccountToBuy": {
+    "description": "features/store/presentation/coin_shop.dart"
+  },
+  "coinShopSaveYourAccountSoYour": "Save your account so your coins are never lost.",
+  "@coinShopSaveYourAccountSoYour": {
+    "description": "features/store/presentation/coin_shop.dart"
+  },
+  "coinShopCoinTopUpsAreComing": "Coin top-ups are coming soon",
+  "@coinShopCoinTopUpsAreComing": {
+    "description": "features/store/presentation/coin_shop.dart"
+  },
+  "coinShopForNowEarnThemBy": "For now, earn them by playing: claim your daily reward every day, and win games with an entry.",
+  "@coinShopForNowEarnThemBy": {
+    "description": "features/store/presentation/coin_shop.dart"
+  },
+  "coinShopCoins": "Coins",
+  "@coinShopCoins": {
+    "description": "features/store/presentation/coin_shop.dart"
+  },
+  "coinShopYouNeedMoreForThat": "You need {value} more for that game.",
+  "@coinShopYouNeedMoreForThat": {
+    "description": "features/store/presentation/coin_shop.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "coinShopExtra": "+{percent}% extra",
+  "@coinShopExtra": {
+    "description": "features/store/presentation/coin_shop.dart",
+    "placeholders": {
+      "percent": {
+        "type": "Object"
+      }
+    }
+  },
+  "storeYouAlreadyHaveTheStarter": "You already have the starter pack.",
+  "@storeYouAlreadyHaveTheStarter": {
+    "description": "features/store/data/store_repository.dart"
+  },
+  "storeCoinTopUpsOnThe": "Coin top-ups on the web are coming soon.",
+  "@storeCoinTopUpsOnThe": {
+    "description": "features/store/data/store_repository.dart"
+  },
+  "storeCouldnTStartThePayment": "Couldn't start the payment. Try again.",
+  "@storeCouldnTStartThePayment": {
+    "description": "features/store/data/store_repository.dart"
+  },
+  "storeGh": "GH₵",
+  "@storeGh": {
+    "description": "features/store/data/store_repository.dart"
+  },
+  "storeKsh": "KSh ",
+  "@storeKsh": {
+    "description": "features/store/data/store_repository.dart"
+  },
+  "doodleChatSomeone": "Someone",
+  "@doodleChatSomeone": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_chat.dart"
+  },
+  "doodleChatYou": "You",
+  "@doodleChatYou": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_chat.dart"
+  },
+  "doodleChatYouGotIt": "You got it!",
+  "@doodleChatYouGotIt": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_chat.dart"
+  },
+  "doodleChatGotIt": "{name} got it!",
+  "@doodleChatGotIt": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_chat.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleChatIsSoClose": "\"{text}\" is so close!",
+  "@doodleChatIsSoClose": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_chat.dart",
+    "placeholders": {
+      "text": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleChatTheWordWas": "The word was {body}",
+  "@doodleChatTheWordWas": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_chat.dart",
+    "placeholders": {
+      "body": {
+        "type": "Object"
+      }
+    }
+  },
+  "doodleChatYourTurnToDraw": "Your turn to draw",
+  "@doodleChatYourTurnToDraw": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_chat.dart"
+  },
+  "doodleChatIsDrawing": "{name} is drawing",
+  "@doodleChatIsDrawing": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_chat.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "coloringPagesMandala": "Mandala",
+  "@coloringPagesMandala": {
+    "description": "features/doodle_studio/domain/coloring_pages.dart"
+  },
+  "coloringPagesChip": "Chip",
+  "@coloringPagesChip": {
+    "description": "features/doodle_studio/domain/coloring_pages.dart"
+  },
+  "coloringPagesFloatingIsland": "Floating island",
+  "@coloringPagesFloatingIsland": {
+    "description": "features/doodle_studio/domain/coloring_pages.dart"
+  },
+  "coloringPagesLittleDragon": "Little dragon",
+  "@coloringPagesLittleDragon": {
+    "description": "features/doodle_studio/domain/coloring_pages.dart"
+  },
+  "coloringPagesRocket": "Rocket",
+  "@coloringPagesRocket": {
+    "description": "features/doodle_studio/domain/coloring_pages.dart"
+  },
+  "coloringPagesCastle": "Castle",
+  "@coloringPagesCastle": {
+    "description": "features/doodle_studio/domain/coloring_pages.dart"
+  },
+  "coloringPagesUnderTheSea": "Under the sea",
+  "@coloringPagesUnderTheSea": {
+    "description": "features/doodle_studio/domain/coloring_pages.dart"
+  },
+  "coloringPagesGarden": "Garden",
+  "@coloringPagesGarden": {
+    "description": "features/doodle_studio/domain/coloring_pages.dart"
+  },
+  "gameChatSomeWordsWereHiddenKeep": "Some words were hidden. Keep it friendly.",
+  "@gameChatSomeWordsWereHiddenKeep": {
+    "description": "features/chat/presentation/game_chat_sheet.dart"
+  },
+  "gameChatChat": "Chat",
+  "@gameChatChat": {
+    "description": "features/chat/presentation/game_chat_sheet.dart"
+  },
+  "gameChatFriendsChat": "Friends chat",
+  "@gameChatFriendsChat": {
+    "description": "features/chat/presentation/game_chat_sheet.dart"
+  },
+  "gameChatFriendlyChat": "Friendly chat",
+  "@gameChatFriendlyChat": {
+    "description": "features/chat/presentation/game_chat_sheet.dart"
+  },
+  "gameChatSayHi": "Say hi",
+  "@gameChatSayHi": {
+    "description": "features/chat/presentation/game_chat_sheet.dart"
+  },
+  "gameChatMessageYourFriends": "Message your friends",
+  "@gameChatMessageYourFriends": {
+    "description": "features/chat/presentation/game_chat_sheet.dart"
+  },
+  "gameChatSaySomethingNice": "Say something nice",
+  "@gameChatSaySomethingNice": {
+    "description": "features/chat/presentation/game_chat_sheet.dart"
+  },
+  "gameChatYou": "You",
+  "@gameChatYou": {
+    "description": "features/chat/presentation/game_chat_sheet.dart"
+  },
+  "botsPlayer": "Player {value}",
+  "@botsPlayer": {
+    "description": "core/bots/bots.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "botsPip": "Pip",
+  "@botsPip": {
+    "description": "core/bots/bots.dart"
+  },
+  "botsMomo": "Momo",
+  "@botsMomo": {
+    "description": "core/bots/bots.dart"
+  },
+  "botsKiki": "Kiki",
+  "@botsKiki": {
+    "description": "core/bots/bots.dart"
+  },
+  "botsBolt": "Bolt",
+  "@botsBolt": {
+    "description": "core/bots/bots.dart"
+  },
+  "botsNova": "Nova",
+  "@botsNova": {
+    "description": "core/bots/bots.dart"
+  },
+  "botsChip": "Chip",
+  "@botsChip": {
+    "description": "core/bots/bots.dart"
+  },
+  "botsRobo": "Robo",
+  "@botsRobo": {
+    "description": "core/bots/bots.dart"
+  },
+  "chatFilterNiceMove": "Nice move!",
+  "@chatFilterNiceMove": {
+    "description": "features/chat/domain/chat_filter.dart"
+  },
+  "chatFilterWellPlayed": "Well played!",
+  "@chatFilterWellPlayed": {
+    "description": "features/chat/domain/chat_filter.dart"
+  },
+  "chatFilterSoClose": "So close!",
+  "@chatFilterSoClose": {
+    "description": "features/chat/domain/chat_filter.dart"
+  },
+  "chatFilterLetSGo": "Let's go!",
+  "@chatFilterLetSGo": {
+    "description": "features/chat/domain/chat_filter.dart"
+  },
+  "chatFilterYourTurn": "Your turn",
+  "@chatFilterYourTurn": {
+    "description": "features/chat/domain/chat_filter.dart"
+  },
+  "chatFilterOops": "Oops!",
+  "@chatFilterOops": {
+    "description": "features/chat/domain/chat_filter.dart"
+  },
+  "chatFilterGoodGame": "Good game!",
+  "@chatFilterGoodGame": {
+    "description": "features/chat/domain/chat_filter.dart"
+  },
+  "gameChatWhoaSlowDownALittle": "Whoa, slow down a little!",
+  "@gameChatWhoaSlowDownALittle": {
+    "description": "features/chat/presentation/game_chat_controller.dart"
+  },
+  "gameChatCouldnTSendThatMessage": "Couldn't send that message.",
+  "@gameChatCouldnTSendThatMessage": {
+    "description": "features/chat/presentation/game_chat_controller.dart"
+  },
+  "gameChatCouldnTSendYourVoice": "Couldn't send your voice note.",
+  "@gameChatCouldnTSendYourVoice": {
+    "description": "features/chat/presentation/game_chat_controller.dart"
+  },
+  "aurasTabYou": "You",
+  "@aurasTabYou": {
+    "description": "features/auras/presentation/auras_tab.dart"
+  },
+  "aurasTabNoAuraYet": "No aura yet",
+  "@aurasTabNoAuraYet": {
+    "description": "features/auras/presentation/auras_tab.dart"
+  },
+  "aurasTabWearOneAndEveryoneSees": "Wear one and everyone sees it around your picture, in every game.",
+  "@aurasTabWearOneAndEveryoneSees": {
+    "description": "features/auras/presentation/auras_tab.dart"
+  },
+  "aurasTabWearingNow": "Wearing now · {value}",
+  "@aurasTabWearingNow": {
+    "description": "features/auras/presentation/auras_tab.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "aurasTabWearing": "Wearing",
+  "@aurasTabWearing": {
+    "description": "features/auras/presentation/auras_tab.dart"
+  },
+  "aurasTabOwned": "Owned",
+  "@aurasTabOwned": {
+    "description": "features/auras/presentation/auras_tab.dart"
+  },
+  "voiceNotesAllowMicrophoneAccessInSettings": "Allow microphone access in Settings to send voice notes.",
+  "@voiceNotesAllowMicrophoneAccessInSettings": {
+    "description": "features/chat/presentation/voice_notes.dart"
+  },
+  "voiceNotesCouldnTStartRecording": "Couldn't start recording.",
+  "@voiceNotesCouldnTStartRecording": {
+    "description": "features/chat/presentation/voice_notes.dart"
+  },
+  "voiceNotesRecordAVoiceNote": "Record a voice note",
+  "@voiceNotesRecordAVoiceNote": {
+    "description": "features/chat/presentation/voice_notes.dart"
+  },
+  "voiceNotesDelete": "Delete",
+  "@voiceNotesDelete": {
+    "description": "features/chat/presentation/voice_notes.dart"
+  },
+  "voiceNotesSend": "Send",
+  "@voiceNotesSend": {
+    "description": "features/chat/presentation/voice_notes.dart"
+  },
+  "webPaymentReturnThePaymentDidnTGo": "The payment didn't go through, so nothing was charged.",
+  "@webPaymentReturnThePaymentDidnTGo": {
+    "description": "features/store/presentation/web_payment_return.dart"
+  },
+  "webPaymentReturnPaymentReceivedCoinsAdded": "Payment received: {value} coins added!",
+  "@webPaymentReturnPaymentReceivedCoinsAdded": {
+    "description": "features/store/presentation/web_payment_return.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "webPaymentReturnYourPaymentIsBeingConfirmed": "Your payment is being confirmed. Your coins will arrive in a moment.",
+  "@webPaymentReturnYourPaymentIsBeingConfirmed": {
+    "description": "features/store/presentation/web_payment_return.dart"
+  },
+  "webPaymentReturnWeCouldnTConfirmThat": "We couldn't confirm that payment yet. If you were charged, your coins will arrive shortly.",
+  "@webPaymentReturnWeCouldnTConfirmThat": {
+    "description": "features/store/presentation/web_payment_return.dart"
+  },
+  "timeControlBullet": "Bullet",
+  "@timeControlBullet": {
+    "description": "features/chess/domain/time_control.dart"
+  },
+  "timeControlBlitz": "Blitz",
+  "@timeControlBlitz": {
+    "description": "features/chess/domain/time_control.dart"
+  },
+  "timeControlRapid": "Rapid",
+  "@timeControlRapid": {
+    "description": "features/chess/domain/time_control.dart"
+  },
+  "timeControlClassical": "Classical",
+  "@timeControlClassical": {
+    "description": "features/chess/domain/time_control.dart"
+  },
+  "ludoSeatPanelYou": "You",
+  "@ludoSeatPanelYou": {
+    "description": "features/ludo/presentation/widgets/ludo_seat_panel.dart"
+  },
+  "ludoSeatPanelOpenSeat": "Open seat",
+  "@ludoSeatPanelOpenSeat": {
+    "description": "features/ludo/presentation/widgets/ludo_seat_panel.dart"
+  },
+  "ludoSeatPanelLeft": "Left",
+  "@ludoSeatPanelLeft": {
+    "description": "features/ludo/presentation/widgets/ludo_seat_panel.dart"
+  },
+  "ludoChatSomeone": "Someone",
+  "@ludoChatSomeone": {
+    "description": "features/ludo/presentation/widgets/ludo_chat_sheet.dart"
+  },
+  "ludoChatChoseWar": "{who} chose war!",
+  "@ludoChatChoseWar": {
+    "description": "features/ludo/presentation/widgets/ludo_chat_sheet.dart",
+    "placeholders": {
+      "who": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoChatMadePeace": "{who} made peace.",
+  "@ludoChatMadePeace": {
+    "description": "features/ludo/presentation/widgets/ludo_chat_sheet.dart",
+    "placeholders": {
+      "who": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoCaptureBubbleReact": "React",
+  "@ludoCaptureBubbleReact": {
+    "description": "features/ludo/presentation/widgets/ludo_capture_bubble.dart"
+  },
+  "ludoCaptureBubbleWar": "War",
+  "@ludoCaptureBubbleWar": {
+    "description": "features/ludo/presentation/widgets/ludo_capture_bubble.dart"
+  },
+  "ludoCaptureBubblePeace": "Peace",
+  "@ludoCaptureBubblePeace": {
+    "description": "features/ludo/presentation/widgets/ludo_capture_bubble.dart"
+  },
+  "doodleToolsEraser": "Eraser",
+  "@doodleToolsEraser": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_tools.dart"
+  },
+  "doodleToolsUndo": "Undo",
+  "@doodleToolsUndo": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_tools.dart"
+  },
+  "doodleToolsClear": "Clear",
+  "@doodleToolsClear": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_tools.dart"
+  },
+  "ludoDiceRollTheDie": "Roll the die",
+  "@ludoDiceRollTheDie": {
+    "description": "features/ludo/presentation/widgets/ludo_dice.dart"
+  },
+  "ludoDiceDieShowing": "Die showing {value}",
+  "@ludoDiceDieShowing": {
+    "description": "features/ludo/presentation/widgets/ludo_dice.dart",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "timeControlStyleMinEach": "  ·  {minutes} min each",
+  "@timeControlStyleMinEach": {
+    "description": "features/chess/presentation/widgets/time_control_style.dart",
+    "placeholders": {
+      "minutes": {
+        "type": "Object"
+      }
+    }
+  },
+  "timeControlStyleMinSAMove": "  ·  {minutes} min  +{increment}s a move",
+  "@timeControlStyleMinSAMove": {
+    "description": "features/chess/presentation/widgets/time_control_style.dart",
+    "placeholders": {
+      "minutes": {
+        "type": "Object"
+      },
+      "increment": {
+        "type": "Object"
+      }
+    }
+  },
+  "sentChallengesChallengeToCancelled": "Challenge to {name} cancelled.",
+  "@sentChallengesChallengeToCancelled": {
+    "description": "features/chess/presentation/sent_challenges.dart",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "sentChallengesCouldnTCancelItTry": "Couldn't cancel it. Try again.",
+  "@sentChallengesCouldnTCancelItTry": {
+    "description": "features/chess/presentation/sent_challenges.dart"
+  },
+  "chessMatchMatchNotFound": "Match not found",
+  "@chessMatchMatchNotFound": {
+    "description": "features/chess/presentation/controllers/chess_match_controller.dart"
+  },
+  "chessMatchThatMoveDidnTGo": "That move didn't go through. Reconnecting.",
+  "@chessMatchThatMoveDidnTGo": {
+    "description": "features/chess/presentation/controllers/chess_match_controller.dart"
+  },
+  "checkersMatchMatchNotFound": "Match not found",
+  "@checkersMatchMatchNotFound": {
+    "description": "features/checkers/presentation/controllers/checkers_match_controller.dart"
+  },
+  "checkersMatchThatMoveDidnTGo": "That move didn't go through. Reconnecting.",
+  "@checkersMatchThatMoveDidnTGo": {
+    "description": "features/checkers/presentation/controllers/checkers_match_controller.dart"
+  },
+  "themeTeleportWelcomeTo": "Welcome to",
+  "@themeTeleportWelcomeTo": {
+    "description": "features/store/presentation/theme_teleport.dart"
+  },
+  "doodleHeaderDraw": "Draw",
+  "@doodleHeaderDraw": {
+    "description": "features/guess_doodle/presentation/widgets/doodle_header.dart"
+  },
+  "chipDoodleChipCouldnTDrawJust2": "Chip couldn't draw just now. Check your connection and try again.",
+  "@chipDoodleChipCouldnTDrawJust2": {
+    "description": "features/guess_doodle/data/chip_doodle_repository.dart"
+  },
+  "doodleWorldGateColoringHappensInTheDoodle": "Coloring happens in the Doodle world.",
+  "@doodleWorldGateColoringHappensInTheDoodle": {
+    "description": "features/doodle_studio/presentation/doodle_world_gate.dart"
+  },
+  "floatingChipChatWithChip": "Chat with Chip",
+  "@floatingChipChatWithChip": {
+    "description": "features/chip/presentation/floating_chip.dart"
+  },
+  "promotionPromoteYourPawn": "Promote your pawn",
+  "@promotionPromoteYourPawn": {
+    "description": "features/chess/presentation/widgets/promotion_sheet.dart"
   }
 }

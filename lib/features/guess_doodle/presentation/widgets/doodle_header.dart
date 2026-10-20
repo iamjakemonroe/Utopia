@@ -10,6 +10,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../domain/doodle_game.dart';
 import 'doodle_chat.dart';
+import '../../../../l10n/strings.dart';
 
 /// Seconds left until [endsAt] on the server's clock, as a ring that
 /// drains, going red for the last ten.
@@ -195,7 +196,7 @@ class DoodleWordBar extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: Text(
-                'Draw',
+                strings.doodleHeaderDraw,
                 style: AppTextStyles.body(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,

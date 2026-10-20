@@ -48,8 +48,7 @@ final _invites = [
 
 // The same, sent by the player: waiting for their friend.
 final _sent = [
-  for (final invite in _invites)
-    {...invite, 'to_user': invite['from_user']},
+  for (final invite in _invites) {...invite, 'to_user': invite['from_user']},
 ];
 
 void main() {

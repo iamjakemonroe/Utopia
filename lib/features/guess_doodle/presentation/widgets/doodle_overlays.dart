@@ -15,6 +15,7 @@ import '../../../ludo/presentation/screens/ludo_lobby_screen.dart'
     show CodeTiles;
 import '../../domain/doodle_game.dart';
 import 'doodle_chat.dart';
+import '../../../../l10n/strings.dart';
 
 /// A soft dark veil over the paper, so what's on it stays readable.
 class _Veil extends StatelessWidget {
@@ -91,7 +92,9 @@ class DoodleWaitingRoom extends ConsumerWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                enough ? 'Starting soon' : 'Finding players',
+                enough
+                    ? strings.doodleOverlaysStartingSoon
+                    : strings.doodleOverlaysFindingPlayers,
                 style: AppTextStyles.display(fontSize: 24),
               ),
               const SizedBox(height: 4),
@@ -99,7 +102,7 @@ class DoodleWaitingRoom extends ConsumerWidget {
                 _Countdown(endsAt: game.phaseEndsAt!, offset: offset)
               else
                 Text(
-                  'The game starts when someone else joins.',
+                  strings.doodleOverlaysTheGameStartsWhenSomeone,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(
                     fontSize: 14,
@@ -108,7 +111,7 @@ class DoodleWaitingRoom extends ConsumerWidget {
                 ),
             ] else ...[
               Text(
-                'Invite friends',
+                strings.doodleOverlaysInviteFriends,
                 style: AppTextStyles.display(fontSize: 22),
               ),
               const SizedBox(height: 10),
@@ -122,13 +125,13 @@ class DoodleWaitingRoom extends ConsumerWidget {
                 children: [
                   _SmallButton(
                     icon: Icons.content_copy_rounded,
-                    label: 'Copy',
+                    label: strings.doodleOverlaysCopy,
                     onTap: onCopy,
                   ),
                   const SizedBox(width: 10),
                   _SmallButton(
                     icon: Icons.ios_share_rounded,
-                    label: 'Share',
+                    label: strings.doodleOverlaysShare,
                     onTap: onShare,
                   ),
                 ],
@@ -136,7 +139,7 @@ class DoodleWaitingRoom extends ConsumerWidget {
             ],
             const SizedBox(height: 14),
             Text(
-              '${players.length} of ${game.maxPlayers} players',
+              strings.doodleOverlaysOfPlayers(players.length, game.maxPlayers),
               style: AppTextStyles.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
@@ -165,13 +168,17 @@ class DoodleWaitingRoom extends ConsumerWidget {
                 SizedBox(
                   width: 240,
                   child: PrimaryButton(
-                    label: enough ? 'Start game' : 'Waiting for friends',
+                    label: enough
+                        ? strings.doodleOverlaysStartGame
+                        : strings.doodleOverlaysWaitingForFriends,
                     onPressed: enough ? onStart : null,
                   ),
                 )
               else
                 Text(
-                  'Waiting for ${doodleName(ref, game.hostId, me)} to start',
+                  strings.doodleOverlaysWaitingForToStart(
+                    doodleName(ref, game.hostId, me),
+                  ),
                   style: AppTextStyles.body(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -324,7 +331,9 @@ class _CountdownState extends State<_Countdown> {
         child: child,
       ),
       child: Text(
-        s > 0 ? 'Starting in $s' : 'Here we go',
+        s > 0
+            ? strings.doodleOverlaysStartingIn(s)
+            : strings.doodleOverlaysHereWeGo,
         key: ValueKey(s),
         style: AppTextStyles.display(
           fontSize: 20,
@@ -368,13 +377,15 @@ class _DoodleChoosingState extends ConsumerState<DoodleChoosing> {
             const CoinBuddy(mood: BuddyMood.thinking, size: 110),
             const SizedBox(height: 8),
             Text(
-              '${doodleName(ref, widget.drawerId, widget.me)} is picking a word',
+              strings.doodleOverlaysIsPickingAWord(
+                doodleName(ref, widget.drawerId, widget.me),
+              ),
               textAlign: TextAlign.center,
               style: AppTextStyles.display(fontSize: 20),
             ),
             const SizedBox(height: 4),
             Text(
-              'Get ready to guess',
+              strings.doodleOverlaysGetReadyToGuess,
               style: AppTextStyles.body(color: AppColors.textSecondary),
             ),
           ],
@@ -388,7 +399,7 @@ class _DoodleChoosingState extends ConsumerState<DoodleChoosing> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Pick a word to draw',
+              strings.doodleOverlaysPickAWordToDraw,
               style: AppTextStyles.display(fontSize: 24),
             ),
             const SizedBox(height: 14),
@@ -531,7 +542,9 @@ class DoodleReveal extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              nobody ? 'Nobody got it' : 'The word was',
+              nobody
+                  ? strings.doodleOverlaysNobodyGotIt
+                  : strings.doodleOverlaysTheWordWas,
               style: AppTextStyles.body(
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
@@ -540,7 +553,7 @@ class DoodleReveal extends ConsumerWidget {
             ),
             if (nobody)
               Text(
-                'The word was',
+                strings.doodleOverlaysTheWordWas,
                 style: AppTextStyles.body(
                   fontSize: 13,
                   color: AppColors.textSecondary,
@@ -693,7 +706,9 @@ class DoodleScores extends ConsumerWidget {
               size: 74,
             ),
             Text(
-              won ? 'You won!' : 'Final scores',
+              won
+                  ? strings.doodleOverlaysYouWon
+                  : strings.doodleOverlaysFinalScores,
               style: AppTextStyles.display(fontSize: 26),
             ),
             const SizedBox(height: 10),
@@ -721,21 +736,21 @@ class DoodleScores extends ConsumerWidget {
                 width: 240,
                 child: PrimaryButton(
                   label: players.length >= 2
-                      ? 'Play again'
-                      : 'Waiting for friends',
+                      ? strings.doodleOverlaysPlayAgain
+                      : strings.doodleOverlaysWaitingForFriends,
                   onPressed: players.length >= 2 ? onAgain : null,
                 ),
               )
             else
               Text(
-                'The host can start another game',
+                strings.doodleOverlaysTheHostCanStartAnother,
                 style: AppTextStyles.body(color: AppColors.textSecondary),
               ),
             const SizedBox(height: 6),
             TextButton(
               onPressed: onLeave,
               child: Text(
-                'Leave',
+                strings.doodleOverlaysLeave,
                 style: AppTextStyles.body(
                   fontWeight: FontWeight.w800,
                   color: AppColors.textSecondary,
@@ -911,7 +926,9 @@ class _NextInState extends State<_NextIn> {
     final left = widget.endsAt.difference(DateTime.now().add(widget.offset));
     final s = (left.inMilliseconds / 1000).ceil().clamp(0, 99);
     return Text(
-      s > 0 ? 'Next game in $s' : 'Next game starting',
+      s > 0
+          ? strings.doodleOverlaysNextGameIn(s)
+          : strings.doodleOverlaysNextGameStarting,
       style: AppTextStyles.display(
         fontSize: 18,
         color: AppColors.readable(AppColors.coinGold),
@@ -935,13 +952,16 @@ class DoodleEnded extends StatelessWidget {
           const CoinBuddy(mood: BuddyMood.sad, size: 96),
           const SizedBox(height: 6),
           Text(
-            'This game has ended',
+            strings.doodleOverlaysThisGameHasEnded,
             style: AppTextStyles.display(fontSize: 22),
           ),
           const SizedBox(height: 14),
           SizedBox(
             width: 220,
-            child: PrimaryButton(label: 'Back', onPressed: onBack),
+            child: PrimaryButton(
+              label: strings.doodleOverlaysBack,
+              onPressed: onBack,
+            ),
           ),
         ],
       ),
@@ -975,7 +995,7 @@ class _More extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Text(
-        'and $count more',
+        strings.doodleOverlaysAndMore(count),
         style: AppTextStyles.body(
           fontSize: 12,
           fontWeight: FontWeight.w700,

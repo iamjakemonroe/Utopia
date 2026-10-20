@@ -9,6 +9,7 @@ import '../../../core/theme/utopia_themes.dart';
 import '../../../core/theme/theme_controller.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import 'store_controller.dart';
+import '../../../l10n/strings.dart';
 
 /// Requests a trip to another world; [ThemeTeleportLayer] plays it.
 class ThemeTeleportController extends StateNotifier<UtopiaTheme?> {
@@ -209,7 +210,7 @@ class _ThemeTeleportLayerState extends ConsumerState<ThemeTeleportLayer>
                       child: Column(
                         children: [
                           Text(
-                            'Welcome to',
+                            strings.themeTeleportWelcomeTo,
                             textAlign: TextAlign.center,
                             style: AppTextStyles.body(
                               fontSize: 16,

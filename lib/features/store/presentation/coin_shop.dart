@@ -18,6 +18,7 @@ import '../../coins/presentation/providers/coin_balance_provider.dart';
 import '../domain/store_catalog.dart';
 import 'coin_pack_art.dart';
 import 'store_controller.dart';
+import '../../../l10n/strings.dart';
 
 /// Opens the coin shop. [needed] explains why it opened (a game the player
 /// can't afford yet).
@@ -119,7 +120,7 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              'Test build: packs are free so you can try them.',
+                              strings.coinShopTestBuildPacksAreFree,
                               style: AppTextStyles.body(
                                 fontSize: 12,
                                 color: const Color(0xFFFFB020),
@@ -151,8 +152,8 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                             Expanded(
                               child: Text(
                                 kIsWeb
-                                    ? 'Save your account to buy coins.'
-                                    : 'Save your account so your coins are never lost.',
+                                    ? strings.coinShopSaveYourAccountToBuy
+                                    : strings.coinShopSaveYourAccountSoYour,
                                 style: AppTextStyles.body(
                                   fontSize: 12,
                                   color: AppColors.textSecondary,
@@ -225,13 +226,13 @@ class _ComingSoon extends StatelessWidget {
             const CoinBuddy(mood: BuddyMood.excited, size: 84),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Coin top-ups are coming soon',
+              strings.coinShopCoinTopUpsAreComing,
               textAlign: TextAlign.center,
               style: AppTextStyles.display(fontSize: 20),
             ),
             const SizedBox(height: 6),
             Text(
-              'For now, earn them by playing: claim your daily reward every day, and win games with an entry.',
+              strings.coinShopForNowEarnThemBy,
               textAlign: TextAlign.center,
               style: AppTextStyles.body(color: AppColors.textSecondary),
             ),
@@ -268,7 +269,10 @@ class _Header extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Coins', style: AppTextStyles.display(fontSize: 26)),
+                Text(
+                  strings.coinShopCoins,
+                  style: AppTextStyles.display(fontSize: 26),
+                ),
                 const SizedBox(height: 2),
                 if (balance != null)
                   CoinAmount(
@@ -279,7 +283,7 @@ class _Header extends StatelessWidget {
                 if (short != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'You need ${formatCoins(short)} more for that game.',
+                    strings.coinShopYouNeedMoreForThat(formatCoins(short)),
                     style: AppTextStyles.body(
                       fontSize: 13,
                       color: AppColors.textSecondary,
@@ -482,7 +486,7 @@ class _BonusTag extends StatelessWidget {
         border: Border.all(color: AppColors.success.withValues(alpha: 0.6)),
       ),
       child: Text(
-        '+$percent% extra',
+        strings.coinShopExtra(percent),
         style: AppTextStyles.body(
           fontSize: 11,
           fontWeight: FontWeight.w900,

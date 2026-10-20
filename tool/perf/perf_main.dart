@@ -58,7 +58,7 @@ Future<void> main() async {
       level: BotLevel.normal,
       myColor: PieceColor.white,
     ),
-    'checkers' => const CheckersBotScreen(
+    'checkers' => CheckersBotScreen(
       opponent: kChessChip,
       level: BotLevel.normal,
       mySide: CheckersSide.dark,

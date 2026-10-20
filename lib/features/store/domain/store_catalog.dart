@@ -1,4 +1,5 @@
 import '../../../core/theme/utopia_themes.dart';
+import '../../../l10n/strings.dart';
 
 enum ItemKind {
   theme('theme'),
@@ -81,10 +82,10 @@ class StoreCatalog {
   /// About 10,000 coins per dollar, the rate the store's coin prices are set
   /// at (a premium world is 30,000 coins, about $3), with a bonus that
   /// grows with the pack.
-  static const coinPacks = [
+  static final coinPacks = [
     CoinPack(
       id: 'utopia.coins.pouch',
-      name: 'Pouch',
+      name: strings.storeCatalogPouch,
       coins: 10000,
       bonusPercent: 0,
       fallbackPrice: r'$0.99',
@@ -92,7 +93,7 @@ class StoreCatalog {
     ),
     CoinPack(
       id: 'utopia.coins.sack',
-      name: 'Sack',
+      name: strings.storeCatalogSack,
       coins: 55000,
       bonusPercent: 10,
       fallbackPrice: r'$4.99',
@@ -100,16 +101,16 @@ class StoreCatalog {
     ),
     CoinPack(
       id: 'utopia.coins.chest',
-      name: 'Chest',
+      name: strings.storeCatalogChest,
       coins: 120000,
       bonusPercent: 20,
       fallbackPrice: r'$9.99',
       art: 2,
-      badge: 'Popular',
+      badge: strings.storeCatalogPopular,
     ),
     CoinPack(
       id: 'utopia.coins.vault',
-      name: 'Vault',
+      name: strings.storeCatalogVault,
       coins: 260000,
       bonusPercent: 30,
       fallbackPrice: r'$19.99',
@@ -117,7 +118,7 @@ class StoreCatalog {
     ),
     CoinPack(
       id: 'utopia.coins.mountain',
-      name: 'Mountain',
+      name: strings.storeCatalogMountain,
       coins: 750000,
       bonusPercent: 50,
       fallbackPrice: r'$49.99',
@@ -126,25 +127,25 @@ class StoreCatalog {
     // The biggest pack: nothing above $99.99.
     CoinPack(
       id: 'utopia.coins.hoard',
-      name: "Dragon's Hoard",
+      name: strings.storeCatalogDragonSHoard,
       coins: 1600000,
       bonusPercent: 60,
       fallbackPrice: r'$99.99',
       art: 5,
-      badge: 'Best value',
+      badge: strings.storeCatalogBestValue,
     ),
   ];
 
   /// Double coins for the smallest price, once per player (the server
   /// says whether it's still on, see coin_shop_offers).
-  static const starterPack = CoinPack(
+  static final starterPack = CoinPack(
     id: 'utopia.coins.starter',
-    name: 'Starter pack',
+    name: strings.storeCatalogStarterPack,
     coins: 20000,
     bonusPercent: 100,
     fallbackPrice: r'$0.99',
     art: 1,
-    badge: 'Once only',
+    badge: strings.storeCatalogOnceOnly,
   );
 
   /// Every coin product id, for asking the store for local prices.
@@ -155,104 +156,104 @@ class StoreCatalog {
 
   // ── Ludo piece sets ──────────────────────────────────────────────────────
 
-  static const ludoPieceSets = [
+  static final ludoPieceSets = [
     StoreItem(
       id: 'classic',
       kind: ItemKind.ludoPieces,
-      name: 'Classic Gloss',
-      tagline: 'Shiny enamel pins, the timeless look.',
+      name: strings.storeCatalogClassicGloss,
+      tagline: strings.storeCatalogShinyEnamelPinsTheTimeless,
       free: true,
     ),
     StoreItem(
       id: 'bubble',
       kind: ItemKind.ludoPieces,
-      name: 'Bubble Pop',
-      tagline: 'Wobbly soap bubbles that shimmer as they hop.',
+      name: strings.storeCatalogBubblePop,
+      tagline: strings.storeCatalogWobblySoapBubblesThatShimmer,
       free: true,
     ),
     StoreItem(
       id: 'jelly',
       kind: ItemKind.ludoPieces,
-      name: 'Jelly Buddies',
-      tagline: 'Squishy jelly critters that blink and jiggle.',
+      name: strings.storeCatalogJellyBuddies,
+      tagline: strings.storeCatalogSquishyJellyCrittersThatBlink,
     ),
     StoreItem(
       id: 'crystal',
       kind: ItemKind.ludoPieces,
-      name: 'Crystal Shards',
-      tagline: 'Faceted gems that catch the light.',
+      name: strings.storeCatalogCrystalShards,
+      tagline: strings.storeCatalogFacetedGemsThatCatchThe,
     ),
     StoreItem(
       id: 'candy',
       kind: ItemKind.ludoPieces,
-      name: 'Candy Swirl',
-      tagline: 'Spinning lollipops, sweet and glossy.',
+      name: strings.storeCatalogCandySwirl,
+      tagline: strings.storeCatalogSpinningLollipopsSweetAndGlossy,
     ),
     StoreItem(
       id: 'cosmic',
       kind: ItemKind.ludoPieces,
-      name: 'Cosmic Orbs',
-      tagline: 'Tiny ringed planets with orbiting moons.',
+      name: strings.storeCatalogCosmicOrbs,
+      tagline: strings.storeCatalogTinyRingedPlanetsWithOrbiting,
     ),
     StoreItem(
       id: 'royal',
       kind: ItemKind.ludoPieces,
-      name: 'Royal Crowns',
-      tagline: 'Gold-crowned pieces with jewel hearts.',
+      name: strings.storeCatalogRoyalCrowns,
+      tagline: strings.storeCatalogGoldCrownedPiecesWithJewel,
     ),
   ];
 
   // ── Chess piece sets ─────────────────────────────────────────────────────
 
-  static const chessPieceSets = [
+  static final chessPieceSets = [
     StoreItem(
       id: 'classic',
       kind: ItemKind.chessPieces,
-      name: 'Classic',
-      tagline: 'Ivory and violet, clean and readable.',
+      name: strings.storeCatalogClassic,
+      tagline: strings.storeCatalogIvoryAndVioletCleanAnd,
       free: true,
     ),
     StoreItem(
       id: 'chess_buddies',
       kind: ItemKind.chessPieces,
-      name: 'Chess Buddies',
-      tagline: 'Pieces with faces: they blink, cheer, panic and faint.',
+      name: strings.storeCatalogChessBuddies,
+      tagline: strings.storeCatalogPiecesWithFacesTheyBlink,
     ),
     StoreItem(
       id: 'chess_monsters',
       kind: ItemKind.chessPieces,
-      name: 'Monster Mash',
-      tagline: 'Horns, fangs and one very big eye. They mean business.',
+      name: strings.storeCatalogMonsterMash,
+      tagline: strings.storeCatalogHornsFangsAndOneVery,
     ),
     StoreItem(
       id: 'chess_robots',
       kind: ItemKind.chessPieces,
-      name: 'Robo Knights',
-      tagline: 'Chrome pieces with LED faces that scan the board.',
+      name: strings.storeCatalogRoboKnights,
+      tagline: strings.storeCatalogChromePiecesWithLedFaces,
     ),
     StoreItem(
       id: 'chess_crystal',
       kind: ItemKind.chessPieces,
-      name: 'Crystal',
-      tagline: 'Ice-clear pieces with a frosted glow.',
+      name: strings.storeCatalogCrystal,
+      tagline: strings.storeCatalogIceClearPiecesWithA,
     ),
     StoreItem(
       id: 'chess_royal',
       kind: ItemKind.chessPieces,
-      name: 'Royal Gold',
-      tagline: 'Gold against obsidian, fit for a throne.',
+      name: strings.storeCatalogRoyalGold,
+      tagline: strings.storeCatalogGoldAgainstObsidianFitFor,
     ),
     StoreItem(
       id: 'chess_neon',
       kind: ItemKind.chessPieces,
-      name: 'Neon',
-      tagline: 'Pieces that glow like an arcade at night.',
+      name: strings.storeCatalogNeon,
+      tagline: strings.storeCatalogPiecesThatGlowLikeAn,
     ),
     StoreItem(
       id: 'chess_candy',
       kind: ItemKind.chessPieces,
-      name: 'Candy',
-      tagline: 'Bubblegum pink and mint, sweet as it gets.',
+      name: strings.storeCatalogCandy,
+      tagline: strings.storeCatalogBubblegumPinkAndMintSweet,
     ),
   ];
 
@@ -304,7 +305,7 @@ class StoreCatalog {
     for (final family in _colorFamilies)
       StoreProduct(
         id: 'utopia.themes.${family.$1}',
-        title: '${family.$2} Pack',
+        title: strings.storeCatalogPack(family.$2),
         itemIds: [
           for (final t in UtopiaThemes.colors)
             if (t.id.startsWith('${family.$1}_')) t.id,
@@ -312,7 +313,7 @@ class StoreCatalog {
       ),
     StoreProduct(
       id: 'utopia.themes.all',
-      title: 'Every World',
+      title: strings.storeCatalogEveryWorld,
       itemIds: [
         for (final t in UtopiaThemes.all)
           if (UtopiaThemes.sold(t.id)) t.id,
@@ -329,24 +330,24 @@ class StoreCatalog {
       if (!set.free)
         StoreProduct(
           id: 'utopia.chess.${set.id.replaceFirst('chess_', '')}',
-          title: '${set.name} Chess',
+          title: strings.storeCatalogChess(set.name),
           itemIds: [set.id],
         ),
   ];
 
-  static const _colorFamilies = [
-    ('ruby', 'Ruby'),
-    ('ember', 'Ember'),
-    ('sunbeam', 'Sunbeam'),
-    ('jade', 'Jade'),
-    ('lagoon', 'Lagoon'),
-    ('azure', 'Azure'),
-    ('sapphire', 'Sapphire'),
-    ('amethyst', 'Amethyst'),
-    ('blossom', 'Blossom'),
-    ('rosegold', 'Rose Gold'),
-    ('onyx', 'Onyx'),
-    ('pearl', 'Pearl'),
+  static final _colorFamilies = [
+    ('ruby', strings.storeCatalogRuby),
+    ('ember', strings.storeCatalogEmber),
+    ('sunbeam', strings.storeCatalogSunbeam),
+    ('jade', strings.storeCatalogJade),
+    ('lagoon', strings.storeCatalogLagoon),
+    ('azure', strings.storeCatalogAzure),
+    ('sapphire', strings.storeCatalogSapphire),
+    ('amethyst', strings.storeCatalogAmethyst),
+    ('blossom', strings.storeCatalogBlossom),
+    ('rosegold', strings.storeCatalogRoseGold),
+    ('onyx', strings.storeCatalogOnyx),
+    ('pearl', strings.storeCatalogPearl),
   ];
 
   // ── Worlds for coins ─────────────────────────────────────────────────────

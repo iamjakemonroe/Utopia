@@ -40,6 +40,7 @@ import '../widgets/ludo_seat_panel.dart';
 import '../../../chat/presentation/voice_notes.dart';
 import '../../../events/presentation/events_controller.dart';
 import '../../../../core/layout/game_stage.dart';
+import '../../../../l10n/strings.dart';
 
 class LudoMatchScreen extends ConsumerStatefulWidget {
   const LudoMatchScreen({super.key, required this.matchId});
@@ -167,8 +168,8 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
       showUtopiaToast(
         context,
         left == 1
-            ? 'Out of time! Miss one more turn and you leave the game.'
-            : 'Out of time! Your turn passed.',
+            ? strings.ludoMatchOutOfTimeMissOne
+            : strings.ludoMatchOutOfTimeYourTurn,
         kind: ToastKind.warning,
       );
     }
@@ -192,14 +193,19 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
     final ok = await confirmBouncy(
       context: context,
       audio: ref.read(gameAudioProvider),
-      title: 'Leave this game?',
+      title: strings.ludoMatchLeaveThisGame,
       message: state.isLocal
-          ? 'This game against the bots will end.'
+          ? strings.ludoMatchThisGameAgainstTheBots
           : state.stake > 0
-          ? "You'll lose your ${state.stake}-coin entry${others > 1 ? ' and the game will go on without you' : ''}."
-          : "You'll lose this game${others > 1 ? ' and it will go on without you' : ''}.",
-      confirmLabel: 'Leave game',
-      cancelLabel: 'Keep playing',
+          ? strings.ludoMatchYouLlLoseYourCoin(
+              state.stake,
+              others > 1 ? ' and the game will go on without you' : '',
+            )
+          : strings.ludoMatchYouLlLoseThisGame(
+              others > 1 ? ' and it will go on without you' : '',
+            ),
+      confirmLabel: strings.ludoMatchLeaveGame,
+      cancelLabel: strings.ludoMatchKeepPlaying,
       destructive: true,
       hero: const CoinBuddy(mood: BuddyMood.sad, size: 76),
     );
@@ -233,7 +239,7 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
               children: [
                 _MenuTile(
                   icon: Icons.music_note_rounded,
-                  label: 'Sound & music',
+                  label: strings.ludoMatchSoundMusic,
                   onTap: () {
                     Navigator.of(sheet).pop();
                     showSoundSettings(context);
@@ -241,7 +247,7 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
                 ),
                 _MenuTile(
                   icon: Icons.menu_book_rounded,
-                  label: 'How to play',
+                  label: strings.ludoMatchHowToPlay,
                   onTap: () {
                     Navigator.of(sheet).pop();
                     showLudoRules(context);
@@ -250,7 +256,7 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
                 if (!state.isLocal)
                   _MenuTile(
                     icon: Icons.chat_bubble_rounded,
-                    label: 'Chat',
+                    label: strings.ludoMatchChat,
                     onTap: () {
                       Navigator.of(sheet).pop();
                       showLudoChat(
@@ -263,7 +269,7 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
                 if (state.isActive && !state.iLeft)
                   _MenuTile(
                     icon: Icons.logout_rounded,
-                    label: 'Leave game',
+                    label: strings.ludoMatchLeaveGame,
                     danger: true,
                     onTap: () {
                       Navigator.of(sheet).pop();
@@ -294,14 +300,17 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
       return Scaffold(
         body: AppBackground(
           child: Center(
-            child: UtopiaLoader(size: 88, label: 'Setting up the board'),
+            child: UtopiaLoader(
+              size: 88,
+              label: strings.ludoMatchSettingUpTheBoard,
+            ),
           ),
         ),
       );
     }
     if (state.error != null && state.matchRow == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Ludo')),
+        appBar: AppBar(title: Text(strings.ludoMatchLudo)),
         body: AppBackground(
           child: Center(
             child: Text(
@@ -558,7 +567,7 @@ class _TopBar extends StatelessWidget {
         children: [
           _RoundButton(
             icon: Icons.menu_rounded,
-            label: 'Game menu',
+            label: strings.ludoMatchGameMenu,
             onTap: onMenu,
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -582,7 +591,7 @@ class _TopBar extends StatelessWidget {
                   ),
                 const SizedBox(width: 4),
                 Text(
-                  pot > 0 ? formatCoins(pot) : 'Free',
+                  pot > 0 ? formatCoins(pot) : strings.ludoMatchFree,
                   style: AppTextStyles.body(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -612,7 +621,7 @@ class _TopBar extends StatelessWidget {
               children: [
                 _RoundButton(
                   icon: Icons.chat_bubble_rounded,
-                  label: 'Chat',
+                  label: strings.ludoMatchChat,
                   onTap: onChat,
                 ),
                 if (unread > 0)
@@ -706,22 +715,24 @@ class _StatusLine extends StatelessWidget {
     if (!state.isActive) {
       text = '';
     } else if (state.iLeft) {
-      text = 'You left this game.';
+      text = strings.ludoMatchYouLeftThisGame;
     } else if (state.choosingReaction) {
       text = passing
-          ? '${ludoColorName(state.pendingReaction!.capture.by)} captured! Tap the piece to react, or roll on'
-          : 'Captured! Tap your piece to react, or roll on';
+          ? strings.ludoMatchCapturedTapThePieceTo(
+              ludoColorName(state.pendingReaction!.capture.by),
+            )
+          : strings.ludoMatchCapturedTapYourPieceTo;
     } else if (state.isMyTurn && state.movableTokens.isNotEmpty) {
       text = passing
-          ? '${ludoColorName(game.turn)}, tap a glowing piece'
-          : 'Tap a glowing piece to move';
+          ? strings.ludoMatchTapAGlowingPiece(ludoColorName(game.turn))
+          : strings.ludoMatchTapAGlowingPieceTo;
     } else if (state.isMyTurn) {
       // Passing the phone round: say whose hands it should be in.
       text = passing
-          ? "${ludoColorName(game.turn)}'s turn. Tap the die!"
-          : 'Your turn. Tap the die!';
+          ? strings.ludoMatchSTurnTapTheDie(ludoColorName(game.turn))
+          : strings.ludoMatchYourTurnTapTheDie;
     } else {
-      text = '${ludoColorName(game.turn)} is playing';
+      text = strings.ludoMatchIsPlaying(ludoColorName(game.turn));
     }
     if (text.isEmpty) return const SizedBox(height: 30);
     return AnimatedSwitcher(
@@ -866,15 +877,15 @@ class _GameOverPanel extends ConsumerWidget {
         ? null
         : standings.where((s) => s.color == state.myColor).firstOrNull?.place;
     final title = state.status == 'disputed'
-        ? 'Result under review'
+        ? strings.ludoMatchResultUnderReview
         : iWon
-        ? 'You won!'
+        ? strings.ludoMatchYouWon
         : myPlace != null
-        ? 'You came ${placeLabel(myPlace)}'
-        : 'Game over';
+        ? strings.ludoMatchYouCame(placeLabel(myPlace))
+        : strings.ludoMatchGameOver;
     final winnerId = state.winnerId;
     final winnerName = winnerId == null
-        ? 'Someone'
+        ? strings.ludoMatchSomeone
         : profileDisplayName(
             ref.watch(profileByIdProvider(winnerId)).valueOrNull,
             winnerId,
@@ -882,12 +893,16 @@ class _GameOverPanel extends ConsumerWidget {
     final subtitle = switch (result) {
       'win' =>
         iWon
-            ? 'All four pieces home!'
-            : '$winnerName got all four pieces home first.',
+            ? strings.ludoMatchAllFourPiecesHome
+            : strings.ludoMatchGotAllFourPiecesHome(winnerName),
       'resignation' =>
-        iWon ? 'Everyone else left. The win is yours.' : 'You left this game.',
+        iWon
+            ? strings.ludoMatchEveryoneElseLeftTheWin
+            : strings.ludoMatchYouLeftThisGame,
       'timeout' =>
-        iWon ? 'The others ran out of time. You win!' : 'You ran out of time.',
+        iWon
+            ? strings.ludoMatchTheOthersRanOutOf
+            : strings.ludoMatchYouRanOutOfTime,
       _ => '',
     };
     final commissionBps =
@@ -942,14 +957,14 @@ class _GameOverPanel extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: PrimaryButton(
-                          label: 'Home',
+                          label: strings.ludoMatchHome,
                           onPressed: () => context.go('/home'),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: PrimaryButton(
-                          label: 'Play again',
+                          label: strings.ludoMatchPlayAgain,
                           color: AppColors.success,
                           onPressed: () {
                             // Against the bots: same table, a fresh game.
@@ -1011,7 +1026,7 @@ class _StandingRow extends ConsumerWidget {
         ? null
         : ref.watch(profileByIdProvider(id)).valueOrNull;
     final name = isMe
-        ? 'You'
+        ? strings.ludoMatchYou
         : id == null
         ? ludoColorName(standing.color)
         : profileDisplayName(profile, id);
@@ -1101,7 +1116,9 @@ class _StandingRow extends ConsumerWidget {
                   ),
                   Text(
                     standing.left
-                        ? '${placeLabel(standing.place)} · Left the game'
+                        ? strings.ludoMatchLeftTheGame(
+                            placeLabel(standing.place),
+                          )
                         : placeLabel(standing.place),
                     style: AppTextStyles.body(
                       fontSize: 12,

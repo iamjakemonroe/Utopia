@@ -21,15 +21,20 @@ import '../../ludo/presentation/screens/ludo_lobby_screen.dart' show CodeTiles;
 import '../data/doodle_game_repository.dart';
 import '../../../core/layout/responsive.dart';
 import '../../../core/platform/keyboard.dart';
+import '../../../l10n/strings.dart';
 
 /// Server errors in words a player can use.
 String doodleErrorText(Object e) {
   final text = e.toString();
   if (text.contains('no game with that code')) {
-    return "We couldn't find that game. Check the code.";
+    return strings.guessDoodleLobbyWeCouldnTFindThat;
   }
-  if (text.contains('game is full')) return 'That game is full.';
-  if (text.contains('has ended')) return 'That game has ended.';
+  if (text.contains('game is full')) {
+    return strings.guessDoodleLobbyThatGameIsFull;
+  }
+  if (text.contains('has ended')) {
+    return strings.guessDoodleLobbyThatGameHasEnded;
+  }
   return friendlyError(e);
 }
 
@@ -44,7 +49,7 @@ class GuessDoodleLobbyScreen extends ConsumerWidget {
       final id = await runWithUtopiaLoader(
         context,
         () => ref.read(doodleGameRepositoryProvider).quickPlay(),
-        label: 'Finding a game',
+        label: strings.guessDoodleLobbyFindingAGame,
       );
       ref.read(gameAudioProvider).play(Sfx.reaction);
       if (context.mounted) context.push('/doodle-game/$id');
@@ -89,10 +94,10 @@ class GuessDoodleLobbyScreen extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           leading: const BackOrHomeButton(),
-          title: const Text('Guess My Doodle'),
+          title: Text(strings.guessDoodleLobbyGuessMyDoodle),
           actions: [
             IconButton(
-              tooltip: 'How to play',
+              tooltip: strings.guessDoodleLobbyHowToPlay,
               icon: const Icon(Icons.menu_book_rounded),
               onPressed: () => showDoodleRules(context),
             ),
@@ -117,25 +122,25 @@ class GuessDoodleLobbyScreen extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.lg),
                 CandyModeButton(
                   icon: Icons.public_rounded,
-                  label: 'Play online',
+                  label: strings.guessDoodleLobbyPlayOnline,
                   primary: true,
-                  subtitle: 'Jump into a game with players anywhere',
+                  subtitle: strings.guessDoodleLobbyJumpIntoAGameWith,
                   colors: const [Color(0xFF6BF0B0), Color(0xFF1FB877)],
                   onTap: () => _playOnline(context, ref),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 CandyModeButton(
                   icon: Icons.group_rounded,
-                  label: 'Play with friends',
-                  subtitle: 'Make a game or join one with a code',
+                  label: strings.guessDoodleLobbyPlayWithFriends,
+                  subtitle: strings.guessDoodleLobbyMakeAGameOrJoin,
                   colors: const [Color(0xFFB79BFF), Color(0xFF7B5CFF)],
                   onTap: () => _openFriends(context, ref),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 CandyModeButton(
                   icon: Icons.auto_awesome_rounded,
-                  label: 'Chip draws, you guess',
-                  subtitle: 'Guess his doodles on your own',
+                  label: strings.guessDoodleLobbyChipDrawsYouGuess,
+                  subtitle: strings.guessDoodleLobbyGuessHisDoodlesOnYour,
                   colors: const [Color(0xFFFFE082), Color(0xFFFFA726)],
                   onTap: () {
                     ref.read(gameAudioProvider).play(Sfx.tap);
@@ -177,14 +182,26 @@ class _FactsRow extends StatelessWidget {
     );
     return Row(
       children: [
-        fact(Icons.groups_rounded, AppColors.sky, '1 to 20\nplayers'),
-        fact(Icons.brush_rounded, const Color(0xFFFF5C9C), 'Draw &\nguess'),
+        fact(
+          Icons.groups_rounded,
+          AppColors.sky,
+          strings.guessDoodleLobby1To20Players,
+        ),
+        fact(
+          Icons.brush_rounded,
+          const Color(0xFFFF5C9C),
+          strings.guessDoodleLobbyDrawGuess,
+        ),
         fact(
           Icons.bolt_rounded,
           AppColors.coinGold,
-          'Faster guess,\nmore points',
+          strings.guessDoodleLobbyFasterGuessMorePoints,
         ),
-        fact(Icons.vpn_key_rounded, AppColors.mint, 'Private\ngames'),
+        fact(
+          Icons.vpn_key_rounded,
+          AppColors.mint,
+          strings.guessDoodleLobbyPrivateGames,
+        ),
       ],
     );
   }
@@ -275,7 +292,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      'Play with friends',
+                      strings.guessDoodleLobbyPlayWithFriends,
                       style: AppTextStyles.display(fontSize: 22),
                     ),
                   ],
@@ -344,7 +361,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                             ),
                             const SizedBox(height: AppSpacing.lg),
                             PrimaryButton(
-                              label: 'Join game',
+                              label: strings.guessDoodleLobbyJoinGame,
                               onPressed: code.length == 6
                                   ? () => Navigator.of(context).pop(_Join(code))
                                   : null,
@@ -355,7 +372,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             _Choice(
-                              label: 'Rounds',
+                              label: strings.guessDoodleLobbyRounds,
                               options: const [2, 3, 4, 5],
                               value: _rounds,
                               text: (n) => '$n',
@@ -363,7 +380,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                             ),
                             const SizedBox(height: AppSpacing.md),
                             _Choice(
-                              label: 'Time to draw',
+                              label: strings.guessDoodleLobbyTimeToDraw,
                               options: const [60, 80, 100, 120],
                               value: _seconds,
                               text: (n) => '${n}s',
@@ -371,7 +388,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                             ),
                             const SizedBox(height: AppSpacing.lg),
                             PrimaryButton(
-                              label: 'Create game',
+                              label: strings.guessDoodleLobbyCreateGame,
                               onPressed: () => Navigator.of(
                                 context,
                               ).pop(_Create(_rounds, _seconds)),
@@ -447,8 +464,8 @@ class _Tabs extends StatelessWidget {
       ),
       child: Row(
         children: [
-          tab(false, Icons.add_circle_rounded, 'Create'),
-          tab(true, Icons.vpn_key_rounded, 'Join'),
+          tab(false, Icons.add_circle_rounded, strings.guessDoodleLobbyCreate),
+          tab(true, Icons.vpn_key_rounded, strings.guessDoodleLobbyJoin),
         ],
       ),
     );
@@ -586,45 +603,43 @@ Future<void> showDoodleRules(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('How to play', style: AppTextStyles.display(fontSize: 24)),
+              Text(
+                strings.guessDoodleLobbyHowToPlay,
+                style: AppTextStyles.display(fontSize: 24),
+              ),
               const SizedBox(height: AppSpacing.lg),
               step(
                 Icons.brush_rounded,
                 const Color(0xFFFF5C9C),
-                'Take turns drawing',
-                'One player picks a word from three and draws it. No letters '
-                    'or numbers in the drawing.',
+                strings.guessDoodleLobbyTakeTurnsDrawing,
+                strings.guessDoodleLobbyOnePlayerPicksAWord,
               ),
               step(
                 Icons.chat_bubble_rounded,
                 AppColors.mint,
-                'Guess in the chat',
-                'Everyone else types guesses. A right guess is never shown to '
-                    'the others, and "so close" tells only you when you nearly '
-                    'have it.',
+                strings.guessDoodleLobbyGuessInTheChat,
+                strings.guessDoodleLobbyEveryoneElseTypesGuessesA,
               ),
               step(
                 Icons.bolt_rounded,
                 AppColors.coinGold,
-                'Be quick',
-                'The sooner you guess, the more points you get, with a bonus '
-                    'for the first. The drawer scores for everyone who gets it.',
+                strings.guessDoodleLobbyBeQuick,
+                strings.guessDoodleLobbyTheSoonerYouGuessThe,
               ),
               step(
                 Icons.lightbulb_rounded,
                 AppColors.sky,
-                'Hints',
-                'Letters of the word appear as the clock runs down.',
+                strings.guessDoodleLobbyHints,
+                strings.guessDoodleLobbyLettersOfTheWordAppear,
               ),
               step(
                 Icons.emoji_events_rounded,
                 const Color(0xFFFFC94D),
-                'Win',
-                'Everyone draws once each round. The most points after the '
-                    'last round wins.',
+                strings.guessDoodleLobbyWin,
+                strings.guessDoodleLobbyEveryoneDrawsOnceEachRound,
               ),
               PrimaryButton(
-                label: 'Got it',
+                label: strings.guessDoodleLobbyGotIt,
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],

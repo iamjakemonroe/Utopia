@@ -37,6 +37,7 @@ import '../../../home/data/offline_game.dart';
 import '../widgets/promotion_sheet.dart';
 import '../../../events/presentation/events_controller.dart';
 import '../../../../core/layout/game_stage.dart';
+import '../../../../l10n/strings.dart';
 
 /// Chess against the computer, all on this phone: no internet needed.
 /// Chip (or Robo) thinks off the main thread, reacts to the game with a
@@ -145,7 +146,7 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
   bool get _isChip => widget.opponent?.key == kChessChip.key;
 
   static String _sideName(PieceColor c) =>
-      c == PieceColor.white ? 'White' : 'Black';
+      c == PieceColor.white ? strings.chessBotWhite : strings.chessBotBlack;
 
   GameStatus get _status => _engine.status(_pos);
 
@@ -223,7 +224,7 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
       OfflineGame(
         kind: GameKind.chess,
         route: _route,
-        opponent: widget.opponent?.name ?? 'a friend',
+        opponent: widget.opponent?.name ?? strings.chessBotAFriend,
         data: {
           'moves': [for (final m in _moves) _code(m)],
           if (clock != null) ...{
@@ -316,34 +317,42 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
     });
   }
 
-  static const _chipLines = {
+  static final _chipLines = {
     _Moment.start: [
       "Let's play! Go easy on me.",
-      "Ready? I've been practising!",
-      'Good luck! Have fun!',
+      strings.chessBotReadyIVeBeenPractising,
+      strings.chessBotGoodLuckHaveFun,
     ],
-    _Moment.botCapture: ['Gotcha!', 'Mine now!', 'Yoink!'],
+    _Moment.botCapture: ['Gotcha!', strings.chessBotMineNow, 'Yoink!'],
     _Moment.playerCapture: [
       'Hey! I needed that.',
-      'Oof, nice one.',
-      'Nooo, my piece!',
+      strings.chessBotOofNiceOne,
+      strings.chessBotNoooMyPiece,
     ],
-    _Moment.botCheck: ['Check!', 'Watch your king!', 'Check! Your move.'],
-    _Moment.playerCheck: ['Eek! My king!', 'Whoa, check?', 'Okay, I see it.'],
+    _Moment.botCheck: [
+      'Check!',
+      strings.chessBotWatchYourKing,
+      'Check! Your move.',
+    ],
+    _Moment.playerCheck: [
+      'Eek! My king!',
+      strings.chessBotWhoaCheck,
+      'Okay, I see it.',
+    ],
     _Moment.botWin: ['Checkmate! Good game!', 'I won! Rematch?'],
     _Moment.playerWin: [
       'You got me! Well played.',
-      "Checkmate... you're good!",
+      strings.chessBotCheckmateYouReGood,
     ],
     _Moment.draw: ['A draw! Nobody loses.', 'Even match!'],
   };
 
-  static const _roboLines = {
+  static final _roboLines = {
     _Moment.start: ['BEEP. GAME START.', 'CHESS MODULE LOADED.'],
     _Moment.botCapture: ['TARGET ACQUIRED.', 'PIECE COLLECTED.'],
     _Moment.playerCapture: [
       'PIECE LOST. RECALCULATING.',
-      'ERROR: PIECE MISSING.',
+      strings.chessBotErrorPieceMissing,
     ],
     _Moment.botCheck: ['CHECK. BEEP BOOP.', 'KING IN RANGE.'],
     _Moment.playerCheck: ['WARNING: KING UNDER ATTACK.', 'ALERT. ALERT.'],
@@ -519,13 +528,12 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
       () => confirmBouncy(
         context: context,
         audio: ref.read(gameAudioProvider),
-        title: 'Leave this game?',
+        title: strings.chessBotLeaveThisGame,
         message: _twoPlayer
-            ? "This game ends here and won't be saved."
-            : 'Your game against ${widget.opponent!.name} ends here and '
-                  "won't be saved.",
-        confirmLabel: 'Leave',
-        cancelLabel: 'Keep playing',
+            ? strings.chessBotThisGameEndsHereAnd
+            : strings.chessBotYourGameAgainstEndsHere(widget.opponent!.name),
+        confirmLabel: strings.chessBotLeave,
+        cancelLabel: strings.chessBotKeepPlaying,
         destructive: true,
         hero: const CoinBuddy(mood: BuddyMood.sad, size: 76),
       ),
@@ -539,12 +547,12 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
       () => confirmBouncy(
         context: context,
         audio: ref.read(gameAudioProvider),
-        title: 'Resign this game?',
+        title: strings.chessBotResignThisGame,
         message: _twoPlayer
-            ? '${_sideName(_bot)} wins this one.'
-            : '${widget.opponent!.name} wins this one.',
-        confirmLabel: 'Resign',
-        cancelLabel: 'Keep playing',
+            ? strings.chessBotWinsThisOne(_sideName(_bot))
+            : strings.chessBotWinsThisOne(widget.opponent!.name),
+        confirmLabel: strings.chessBotResign,
+        cancelLabel: strings.chessBotKeepPlaying,
         destructive: true,
         hero: const CoinBuddy(mood: BuddyMood.sad, size: 76),
       ),
@@ -650,34 +658,38 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
     final winner = _winner;
     final iWon = _over && winner == _me;
     final levelName = switch (widget.level) {
-      BotLevel.easy => 'Easy',
-      BotLevel.normal => 'Normal',
-      BotLevel.hard => 'Hard',
+      BotLevel.easy => strings.chessBotEasy,
+      BotLevel.normal => strings.chessBotNormal,
+      BotLevel.hard => strings.chessBotHard,
     };
 
     final scaffold = Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
-          tooltip: _inProgress ? 'Leave game' : 'Close',
+          tooltip: _inProgress
+              ? strings.chessBotLeaveGame
+              : strings.chessBotClose,
           // maybePop goes through the PopScope below, which asks first.
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           [
-            _twoPlayer ? 'Chess · one phone' : 'vs ${widget.opponent!.name}',
+            _twoPlayer
+                ? strings.chessBotChessOnePhone
+                : 'vs ${widget.opponent!.name}',
             ?widget.clock?.label,
           ].join(' · '),
         ),
         actions: [
           const SoundQuickToggle(),
           IconButton(
-            tooltip: 'Take back',
+            tooltip: strings.chessBotTakeBack,
             icon: const Icon(Icons.undo_rounded),
             onPressed: _moves.isEmpty || _over ? null : _takeBack,
           ),
           IconButton(
-            tooltip: 'Resign',
+            tooltip: strings.chessBotResign,
             icon: const Icon(Icons.flag_rounded),
             onPressed: _over ? null : _confirmResign,
           ),
@@ -780,13 +792,15 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
                     active: !_over && _pos.sideToMove == PieceColor.white,
                     status: _over
                         ? (winner == null
-                              ? 'Draw'
+                              ? strings.chessBotDraw
                               : _flagged != null
-                              ? '${_sideName(_flagged!)} ran out of time'
+                              ? strings.chessBotRanOutOfTime(
+                                  _sideName(_flagged!),
+                                )
                               : '${_sideName(winner)} wins!')
                         : status == GameStatus.check
-                        ? '${_sideName(_pos.sideToMove)}: check!'
-                        : "${_sideName(_pos.sideToMove)}'s move",
+                        ? strings.chessBotCheck(_sideName(_pos.sideToMove))
+                        : strings.chessBotSMove(_sideName(_pos.sideToMove)),
                     onResult: _over && !_showResult
                         ? () => setState(() => _showResult = true)
                         : null,
@@ -803,7 +817,7 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
                     children: [
                       UserAvatar.fromProfile(
                         profile,
-                        fallbackInitial: 'You',
+                        fallbackInitial: strings.chessBotYou,
                         radius: 20,
                       ),
                       const SizedBox(width: 10),
@@ -811,17 +825,19 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
                         child: Text(
                           _over
                               ? (iWon
-                                    ? 'You won!'
+                                    ? strings.chessBotYouWon
                                     : winner == null
-                                    ? 'Draw'
+                                    ? strings.chessBotDraw
                                     : _flagged == _me
-                                    ? 'Out of time'
+                                    ? strings.chessBotOutOfTime
                                     : '${widget.opponent!.name} won')
                               : _thinking
-                              ? '${widget.opponent!.name} is thinking...'
+                              ? strings.chessBotIsThinking(
+                                  widget.opponent!.name,
+                                )
                               : status == GameStatus.check
-                              ? 'Check! Protect your king'
-                              : 'Your move',
+                              ? strings.chessBotCheckProtectYourKing
+                              : strings.chessBotYourMove,
                           style: AppTextStyles.body(
                             fontWeight: FontWeight.w800,
                             color: status == GameStatus.check && !_over
@@ -833,7 +849,7 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
                       if (_over && !_showResult)
                         TextButton(
                           onPressed: () => setState(() => _showResult = true),
-                          child: const Text('Result'),
+                          child: Text(strings.chessBotResult),
                         ),
                       if (_clock != null)
                         ClockPill(
@@ -871,9 +887,9 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
                   persona: widget.opponent,
                   title: _twoPlayer
                       ? (winner == null
-                            ? "It's a draw"
+                            ? strings.chessBotItSADraw
                             : _flagged != null
-                            ? '${_sideName(_flagged!)} ran out of time'
+                            ? strings.chessBotRanOutOfTime(_sideName(_flagged!))
                             : '${_sideName(winner)} wins!')
                       : null,
                   won: iWon,
@@ -978,7 +994,9 @@ class _BotBar extends StatelessWidget {
                           style: AppTextStyles.display(fontSize: 20),
                         ),
                         Text(
-                          thinking ? 'Thinking...' : '$level · offline',
+                          thinking
+                              ? strings.chessBotThinking
+                              : strings.chessBotOffline(level),
                           style: AppTextStyles.body(
                             fontSize: 13,
                             color: AppColors.textSecondary,
@@ -1029,15 +1047,15 @@ class _BotResult extends StatelessWidget {
     final heading =
         title ??
         (won && timedOut
-            ? 'Their time ran out!'
+            ? strings.chessBotTheirTimeRanOut
             : timedOut && !draw
-            ? 'Out of time'
+            ? strings.chessBotOutOfTime
             : won
-            ? 'You won!'
+            ? strings.chessBotYouWon
             : draw
-            ? "It's a draw"
+            ? strings.chessBotItSADraw
             : resigned
-            ? 'You resigned'
+            ? strings.chessBotYouResigned
             : '${p?.name} won');
     return ColoredBox(
       color: Colors.black.withValues(alpha: 0.45),
@@ -1083,7 +1101,7 @@ class _BotResult extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   PrimaryButton(
-                    label: 'Play again',
+                    label: strings.chessBotPlayAgain,
                     color: AppColors.success,
                     onPressed: onAgain,
                   ),
@@ -1093,13 +1111,13 @@ class _BotResult extends StatelessWidget {
                       Expanded(
                         child: TextButton(
                           onPressed: onReview,
-                          child: const Text('See the board'),
+                          child: Text(strings.chessBotSeeTheBoard),
                         ),
                       ),
                       Expanded(
                         child: TextButton(
                           onPressed: onDone,
-                          child: const Text('Done'),
+                          child: Text(strings.chessBotDone),
                         ),
                       ),
                     ],
@@ -1138,7 +1156,9 @@ class _SideStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = color == PieceColor.white ? 'White' : 'Black';
+    final name = color == PieceColor.white
+        ? strings.chessBotWhite
+        : strings.chessBotBlack;
     final strip = PopCard(
       borderRadius: 20,
       tint: active ? AppColors.accentSecondary : null,
@@ -1162,7 +1182,10 @@ class _SideStrip extends StatelessWidget {
             ),
           ),
           if (onResult != null)
-            TextButton(onPressed: onResult, child: const Text('Result')),
+            TextButton(
+              onPressed: onResult,
+              child: Text(strings.chessBotResult),
+            ),
           if (clock != null) ...[const SizedBox(width: 8), clock!],
         ],
       ),

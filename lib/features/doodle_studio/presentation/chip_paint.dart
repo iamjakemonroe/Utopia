@@ -11,18 +11,19 @@ import '../domain/art_doc.dart';
 import '../domain/regions.dart';
 import 'art_render.dart';
 import 'studio_toolbar.dart';
+import '../../../l10n/strings.dart';
 
 /// The ways Chip can color a picture at a tap (players can also describe
 /// their own).
-const kChipPaintStyles = [
+final kChipPaintStyles = [
   'Your pick',
-  'Black and white shading',
-  'Pastel',
-  'Sunset',
-  'Neon',
-  'Ocean',
-  'Autumn',
-  'Royal gold',
+  strings.chipPaintBlackAndWhiteShading,
+  strings.chipPaintPastel,
+  strings.chipPaintSunset,
+  strings.chipPaintNeon,
+  strings.chipPaintOcean,
+  strings.chipPaintAutumn,
+  strings.chipPaintRoyalGold,
 ];
 
 /// Asks Chip to color [page] in [style]: its shapes go to him numbered on
@@ -167,7 +168,7 @@ class _ChipPaintSheetState extends State<_ChipPaintSheet> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'How should I color it?',
+                      strings.chipPaintHowShouldIColorIt,
                       style: AppTextStyles.display(
                         fontSize: 21,
                         color: kStudioInk,
@@ -197,7 +198,7 @@ class _ChipPaintSheetState extends State<_ChipPaintSheet> {
                       style: AppTextStyles.body(color: kStudioInk),
                       decoration: InputDecoration(
                         counterText: '',
-                        hintText: 'Or describe it, like "only blues"',
+                        hintText: strings.chipPaintOrDescribeItLikeOnly,
                         hintStyle: AppTextStyles.body(
                           color: kStudioInk.withValues(alpha: 0.5),
                         ),
@@ -216,7 +217,7 @@ class _ChipPaintSheetState extends State<_ChipPaintSheet> {
                   ),
                   const SizedBox(width: 8),
                   StudioButton(
-                    tooltip: 'Color it',
+                    tooltip: strings.chipPaintColorIt,
                     icon: Icons.palette_rounded,
                     onTap: () => _pick(_own.text),
                   ),

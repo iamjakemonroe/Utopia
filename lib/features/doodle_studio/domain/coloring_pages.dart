@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'art_doc.dart';
 import 'svg_path.dart';
+import '../../../l10n/strings.dart';
 
 /// A picture to color in: bold outlines on the page ([kPageSize]), drawn
 /// as closed shapes so each one fills with a single tap.
@@ -64,15 +65,31 @@ class ColoringPage {
 
 List<Path> _noLines() => const [];
 
-const kColoringPages = [
-  ColoringPage(id: 'mandala', name: 'Mandala', draw: _mandala),
-  ColoringPage(id: 'chip', name: 'Chip', draw: _chip),
-  ColoringPage(id: 'island', name: 'Floating island', draw: _island),
-  ColoringPage(id: 'dragon', name: 'Little dragon', draw: _dragon),
-  ColoringPage(id: 'rocket', name: 'Rocket', draw: _rocket),
-  ColoringPage(id: 'castle', name: 'Castle', draw: _castle),
-  ColoringPage(id: 'ocean', name: 'Under the sea', draw: _ocean),
-  ColoringPage(id: 'garden', name: 'Garden', draw: _garden),
+final kColoringPages = [
+  ColoringPage(
+    id: 'mandala',
+    name: strings.coloringPagesMandala,
+    draw: _mandala,
+  ),
+  ColoringPage(id: 'chip', name: strings.coloringPagesChip, draw: _chip),
+  ColoringPage(
+    id: 'island',
+    name: strings.coloringPagesFloatingIsland,
+    draw: _island,
+  ),
+  ColoringPage(
+    id: 'dragon',
+    name: strings.coloringPagesLittleDragon,
+    draw: _dragon,
+  ),
+  ColoringPage(id: 'rocket', name: strings.coloringPagesRocket, draw: _rocket),
+  ColoringPage(id: 'castle', name: strings.coloringPagesCastle, draw: _castle),
+  ColoringPage(
+    id: 'ocean',
+    name: strings.coloringPagesUnderTheSea,
+    draw: _ocean,
+  ),
+  ColoringPage(id: 'garden', name: strings.coloringPagesGarden, draw: _garden),
 ];
 
 // ── shapes ─────────────────────────────────────────────────────────────────

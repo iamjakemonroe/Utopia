@@ -22,6 +22,7 @@ import '../../invites/domain/game_invite.dart';
 import '../../events/presentation/events_controller.dart';
 import '../../../core/analytics/analytics.dart';
 import '../../../core/layout/game_stage.dart';
+import '../../../l10n/strings.dart';
 
 /// Name colors, given out in drawing order.
 const _nameColors = [
@@ -123,9 +124,9 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
       showUtopiaToast(
         context,
         s.contains('slow down')
-            ? 'Slow down a little'
+            ? strings.guessDoodleSlowDownALittle
             : s.contains('not in this game')
-            ? "You're not in this game anymore"
+            ? strings.guessDoodleYouReNotInThis
             : friendlyError(e),
         kind: ToastKind.warning,
       );
@@ -171,21 +172,24 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
         backgroundColor: AppColors.surfaceElevated,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
-          'Leave the game?',
+          strings.guessDoodleLeaveTheGame,
           style: AppTextStyles.display(fontSize: 22),
         ),
         content: Text(
-          'The others will carry on without you.',
+          strings.guessDoodleTheOthersWillCarryOn,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Stay'),
+            child: Text(strings.guessDoodleStay),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Leave', style: TextStyle(color: AppColors.error)),
+            child: Text(
+              strings.guessDoodleLeave,
+              style: TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -198,7 +202,7 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
     _play(Sfx.tap);
     showUtopiaToast(
       context,
-      'Code copied',
+      strings.guessDoodleCodeCopied,
       icon: Icons.content_copy_rounded,
       kind: ToastKind.success,
     );
@@ -210,10 +214,11 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
     final box = context.findRenderObject() as RenderBox?;
     await shareInvite(
       context,
-      text:
-          'Come play Guess My Doodle with me in Utopia! Tap to join, or use '
-          'game code $code: ${GameInvite(InviteGame.doodle, code).link}',
-      subject: 'Guess My Doodle in Utopia',
+      text: strings.guessDoodleComePlayGuessMyDoodle(
+        code,
+        GameInvite(InviteGame.doodle, code).link,
+      ),
+      subject: strings.guessDoodleGuessMyDoodleInUtopia,
       origin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
     );
   }
@@ -226,21 +231,24 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
         backgroundColor: AppColors.surfaceElevated,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
-          'Clear the drawing?',
+          strings.guessDoodleClearTheDrawing,
           style: AppTextStyles.display(fontSize: 22),
         ),
         content: Text(
-          "You can't undo this.",
+          strings.guessDoodleYouCanTUndoThis,
           style: AppTextStyles.body(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Keep it'),
+            child: Text(strings.guessDoodleKeepIt),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Clear', style: TextStyle(color: AppColors.error)),
+            child: Text(
+              strings.guessDoodleClear,
+              style: TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -271,11 +279,12 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
     final typing = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     final hint = switch (game?.phase) {
-      DoodlePhase.drawing when guessed => 'Chat with players who got it',
-      DoodlePhase.drawing => 'Type your guess',
+      DoodlePhase.drawing when guessed =>
+        strings.guessDoodleChatWithPlayersWhoGot,
+      DoodlePhase.drawing => strings.guessDoodleTypeYourGuess,
       DoodlePhase.choosing when drawer =>
-        'Only players who guess will see this',
-      _ => 'Say something',
+        strings.guessDoodleOnlyPlayersWhoGuessWill,
+      _ => strings.guessDoodleSaySomething,
     };
 
     final totalFor = switch (game?.phase) {
@@ -536,7 +545,7 @@ class _TopBar extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            tooltip: 'Leave',
+            tooltip: strings.guessDoodleLeave,
             onPressed: onBack,
             icon: const Icon(Icons.arrow_back_rounded),
           ),
@@ -546,12 +555,12 @@ class _TopBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Guess My Doodle',
+                  strings.guessDoodleGuessMyDoodle,
                   style: AppTextStyles.display(fontSize: 18),
                 ),
                 if (playing && rounds > 0)
                   Text(
-                    'Round $round of $rounds',
+                    strings.guessDoodleRoundOf(round, rounds),
                     style: AppTextStyles.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -598,7 +607,7 @@ class _CorrectBurst extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'You got it!',
+              strings.guessDoodleYouGotIt,
               style:
                   AppTextStyles.display(
                     fontSize: 30,

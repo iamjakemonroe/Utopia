@@ -22,6 +22,7 @@ import '../../../store/domain/store_catalog.dart';
 import '../../domain/ludo_engine.dart';
 import '../controllers/ludo_match_controller.dart';
 import 'ludo_pieces.dart';
+import '../../../../l10n/strings.dart';
 
 /// A player's card, popped up from their avatar: who they are, how they
 /// play this game, and what you can do about it (add them, mute them,
@@ -70,7 +71,9 @@ Future<void> showChessPlayerCard({
       userId: userId,
       game: checkers ? GameKind.checkers : GameKind.chess,
       accent: white ? const Color(0xFFE9DFC2) : const Color(0xFF7B5CFF),
-      side: checkers ? (white ? 'Dark' : 'Light') : (white ? 'White' : 'Black'),
+      side: checkers
+          ? (white ? strings.ludoPlayerDark : strings.ludoPlayerLight)
+          : (white ? strings.ludoPlayerWhite : strings.ludoPlayerBlack),
       matchId: matchId,
       muted: muted,
       onToggleMute: onToggleMute,
@@ -127,17 +130,20 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
     final isMe = me?.id == widget.userId;
     final isGuest = ref.watch(isAnonymousProvider);
     final profile = ref.watch(profileByIdProvider(widget.userId)).valueOrNull;
-    final name = isMe ? 'You' : profileDisplayName(profile, widget.userId);
+    final name = isMe
+        ? strings.ludoPlayerYou
+        : profileDisplayName(profile, widget.userId);
     final username = profile?['username'] as String?;
     final seat = widget.accent;
     final pieces = switch (widget.game) {
       GameKind.ludo =>
-        StoreCatalog.ludoSet(pieceSetFor(profile))?.name ?? 'Classic Gloss',
+        StoreCatalog.ludoSet(pieceSetFor(profile))?.name ??
+            strings.ludoPlayerClassicGloss,
       GameKind.chess || GameKind.checkers || GameKind.doodle =>
         StoreCatalog.chessSet(
               profile?['equipped_chess_pieces'] as String? ?? 'classic',
             )?.name ??
-            'Classic',
+            strings.ludoPlayerClassic,
     };
     final stats = ref.watch(_statsProvider(widget.userId)).valueOrNull;
     // Their coins, if they show them.
@@ -222,7 +228,9 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
                   [
                     if (username != null) '@$username',
                     if (stats?['member_since'] != null)
-                      'Joined ${_joined(stats!['member_since'] as String?)}',
+                      strings.ludoPlayerJoined(
+                        _joined(stats!['member_since'] as String?),
+                      ),
                   ].join(' · '),
                   style: AppTextStyles.body(color: AppColors.textSecondary),
                 ),
@@ -263,19 +271,19 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
                     children: [
                       _Stat(
                         label: switch (widget.game) {
-                          GameKind.ludo => 'Ludo wins',
-                          GameKind.chess => 'Chess wins',
-                          GameKind.checkers => 'Checkers wins',
-                          GameKind.doodle => 'Doodle wins',
+                          GameKind.ludo => strings.ludoPlayerLudoWins,
+                          GameKind.chess => strings.ludoPlayerChessWins,
+                          GameKind.checkers => strings.ludoPlayerCheckersWins,
+                          GameKind.doodle => strings.ludoPlayerDoodleWins,
                         },
                         value: won == null ? '–' : '$won',
                       ),
                       _Stat(
-                        label: 'Played',
+                        label: strings.ludoPlayerPlayed,
                         value: played == null ? '–' : '$played',
                       ),
                       _Stat(
-                        label: 'Win rate',
+                        label: strings.ludoPlayerWinRate,
                         value: won == null || played == null || played == 0
                             ? '–'
                             : '${((won as num) / (played as num) * 100).round()}%',
@@ -303,7 +311,9 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
                                 icon: _muted
                                     ? Icons.volume_up_rounded
                                     : Icons.volume_off_rounded,
-                                label: _muted ? 'Unmute chat' : 'Mute chat',
+                                label: _muted
+                                    ? strings.ludoPlayerUnmuteChat
+                                    : strings.ludoPlayerMuteChat,
                                 onTap: () {
                                   widget.onToggleMute();
                                   setState(() => _muted = !_muted);
@@ -314,7 +324,7 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
                             Expanded(
                               child: _ActionButton(
                                 icon: Icons.flag_rounded,
-                                label: 'Report',
+                                label: strings.ludoPlayerReport,
                                 danger: true,
                                 onTap: () => _report(context),
                               ),
@@ -338,64 +348,64 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
     if (iso == null) return '–';
     final d = DateTime.tryParse(iso);
     if (d == null) return '–';
-    const months = [
+    final months = [
       'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      strings.ludoPlayerFeb,
+      strings.ludoPlayerMar,
+      strings.ludoPlayerApr,
+      strings.ludoPlayerMay,
+      strings.ludoPlayerJun,
+      strings.ludoPlayerJul,
+      strings.ludoPlayerAug,
+      strings.ludoPlayerSep,
+      strings.ludoPlayerOct,
+      strings.ludoPlayerNov,
+      strings.ludoPlayerDec,
     ];
     return "${months[d.month - 1]} '${d.year % 100}";
   }
 
   Widget _friendButton(bool isGuest) {
     if (isGuest) {
-      return const _ActionButton(
+      return _ActionButton(
         icon: Icons.person_add_disabled_rounded,
-        label: 'Save your account to add friends',
+        label: strings.ludoPlayerSaveYourAccountToAdd,
         onTap: null,
       );
     }
     final status = ref.watch(_friendshipProvider(widget.userId));
     return status.when(
-      loading: () => const _ActionButton(
+      loading: () => _ActionButton(
         icon: Icons.person_add_rounded,
-        label: 'Add friend',
+        label: strings.ludoPlayerAddFriend,
         onTap: null,
       ),
-      error: (_, _) => const _ActionButton(
+      error: (_, _) => _ActionButton(
         icon: Icons.person_add_rounded,
-        label: 'Add friend',
+        label: strings.ludoPlayerAddFriend,
         onTap: null,
       ),
       data: (s) => switch (s) {
-        FriendshipStatus.friends => const _ActionButton(
+        FriendshipStatus.friends => _ActionButton(
           icon: Icons.favorite_rounded,
-          label: 'Friends',
+          label: strings.ludoPlayerFriends,
           onTap: null,
           highlight: true,
         ),
-        FriendshipStatus.requested => const _ActionButton(
+        FriendshipStatus.requested => _ActionButton(
           icon: Icons.hourglass_top_rounded,
-          label: 'Request sent',
+          label: strings.ludoPlayerRequestSent,
           onTap: null,
         ),
         FriendshipStatus.incoming => _ActionButton(
           icon: Icons.how_to_reg_rounded,
-          label: 'Accept friend request',
+          label: strings.ludoPlayerAcceptFriendRequest,
           highlight: true,
           onTap: _sending ? null : _addFriend,
         ),
         _ => _ActionButton(
           icon: Icons.person_add_rounded,
-          label: 'Add friend',
+          label: strings.ludoPlayerAddFriend,
           highlight: true,
           onTap: _sending ? null : _addFriend,
         ),
@@ -414,7 +424,7 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
       if (mounted) {
         showUtopiaToast(
           context,
-          "Couldn't send the request. Try again.",
+          strings.ludoPlayerCouldnTSendTheRequest,
           kind: ToastKind.error,
         );
       }
@@ -439,28 +449,36 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Report this player',
+                  strings.ludoPlayerReportThisPlayer,
                   style: AppTextStyles.display(fontSize: 20),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                for (final (id, label, icon) in const [
+                for (final (id, label, icon) in [
                   (
                     'offensive_chat',
-                    'Offensive chat',
+                    strings.ludoPlayerOffensiveChat,
                     Icons.chat_bubble_outline_rounded,
                   ),
-                  ('cheating', 'Cheating', Icons.gpp_bad_outlined),
+                  (
+                    'cheating',
+                    strings.ludoPlayerCheating,
+                    Icons.gpp_bad_outlined,
+                  ),
                   (
                     'quitting',
-                    'Leaving games on purpose',
+                    strings.ludoPlayerLeavingGamesOnPurpose,
                     Icons.directions_run_rounded,
                   ),
                   (
                     'name_or_avatar',
-                    'Inappropriate name or picture',
+                    strings.ludoPlayerInappropriateNameOrPicture,
                     Icons.badge_outlined,
                   ),
-                  ('other', 'Something else', Icons.more_horiz_rounded),
+                  (
+                    'other',
+                    strings.ludoPlayerSomethingElse,
+                    Icons.more_horiz_rounded,
+                  ),
                 ])
                   ListTile(
                     leading: Icon(icon, color: AppColors.accentSecondary),
@@ -485,7 +503,7 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
       if (mounted) {
         showUtopiaToast(
           this.context,
-          'Thanks. Our team will take a look.',
+          strings.ludoPlayerThanksOurTeamWillTake,
           kind: ToastKind.success,
         );
       }
@@ -493,7 +511,7 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
       if (mounted) {
         showUtopiaToast(
           this.context,
-          "Couldn't send the report. Try again.",
+          strings.ludoPlayerCouldnTSendTheReport,
           kind: ToastKind.error,
         );
       }

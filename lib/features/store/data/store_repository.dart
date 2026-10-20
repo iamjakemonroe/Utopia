@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/store_catalog.dart';
+import '../../../l10n/strings.dart';
 
 /// What the player owns and has equipped, on the server (so other players
 /// see your pieces, and purchases follow you to a new phone).
@@ -143,13 +144,13 @@ class StoreRepository {
     } on FunctionException catch (e) {
       final why = e.details is Map ? (e.details as Map)['error'] : null;
       throw WebPayException(switch (why) {
-        'account' => 'Save your account to buy coins.',
-        'starter' => 'You already have the starter pack.',
-        'off' => 'Coin top-ups on the web are coming soon.',
-        _ => "Couldn't start the payment. Try again.",
+        'account' => strings.storeSaveYourAccountToBuy,
+        'starter' => strings.storeYouAlreadyHaveTheStarter,
+        'off' => strings.storeCoinTopUpsOnThe,
+        _ => strings.storeCouldnTStartThePayment,
       });
     } catch (_) {}
-    throw const WebPayException("Couldn't start the payment. Try again.");
+    throw WebPayException(strings.storeCouldnTStartThePayment);
   }
 
   /// Back from checkout: whether payment [ref] went through ('paid',
@@ -254,13 +255,13 @@ class WebPayException implements Exception {
 /// [amount] in [currency] the way people write it: '₦7,500', '\$4.99',
 /// 'GH₵15'.
 String formatMoney(double amount, String currency) {
-  const symbols = {
+  final symbols = {
     'USD': r'$',
     'NGN': '₦',
     'GBP': '£',
     'EUR': '€',
-    'GHS': 'GH₵',
-    'KES': 'KSh ',
+    'GHS': strings.storeGh,
+    'KES': strings.storeKsh,
     'ZAR': 'R',
   };
   final whole = amount == amount.roundToDouble();

@@ -8,6 +8,7 @@ import '../data/chat_repository.dart';
 import '../domain/chat_filter.dart';
 import '../domain/chat_message.dart';
 import '../domain/voice_note.dart';
+import '../../../l10n/strings.dart';
 
 class GameChatState {
   const GameChatState({
@@ -119,9 +120,9 @@ class GameChatController extends StateNotifier<GameChatState> {
       return null;
     } catch (e) {
       if (e.toString().contains('slow down')) {
-        return 'Whoa, slow down a little!';
+        return strings.gameChatWhoaSlowDownALittle;
       }
-      return "Couldn't send that message.";
+      return strings.gameChatCouldnTSendThatMessage;
     }
   }
 
@@ -148,9 +149,9 @@ class GameChatController extends StateNotifier<GameChatState> {
       return null;
     } catch (e) {
       if (e.toString().contains('slow down')) {
-        return 'Whoa, slow down a little!';
+        return strings.gameChatWhoaSlowDownALittle;
       }
-      return "Couldn't send your voice note.";
+      return strings.gameChatCouldnTSendYourVoice;
     }
   }
 

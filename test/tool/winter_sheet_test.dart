@@ -136,14 +136,7 @@ class _Frozen extends CustomPainter {
       size.width * 0.1,
       Paint()..color = const Color(0xFFE8F0FF),
     );
-    paintWinterScene(
-      canvas,
-      size,
-      t,
-      style,
-      moon: moon,
-      newYear: newYear,
-    );
+    paintWinterScene(canvas, size, t, style, moon: moon, newYear: newYear);
   }
 
   @override

@@ -156,8 +156,9 @@ final _board = Leaderboard(
 Future<void> _phone(
   WidgetTester tester,
   Widget child, {
-  UtopiaTheme world = UtopiaThemes.utopiaTwilight,
+  UtopiaTheme? world,
 }) async {
+  world ??= UtopiaThemes.utopiaTwilight;
   UtopiaThemes.active = world;
   addTearDown(() => UtopiaThemes.active = UtopiaThemes.utopiaTwilight);
   tester.view.physicalSize = const Size(1290, 2796);

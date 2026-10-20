@@ -17,6 +17,7 @@ import '../../../chat/presentation/chat_sticker.dart';
 import 'ludo_pieces.dart';
 import '../../../chat/presentation/voice_notes.dart';
 import '../../../../core/widgets/frame_island.dart';
+import '../../../../l10n/strings.dart';
 
 /// One player's corner of the table: their avatar framed in their color, a
 /// "tokens home" counter, the die when it's their turn, and their latest
@@ -76,8 +77,10 @@ class LudoSeatPanel extends ConsumerWidget {
         ? null
         : ref.watch(profileByIdProvider(userId!)).valueOrNull;
     final name = isMe
-        ? 'You'
-        : (userId == null ? 'Open seat' : profileDisplayName(profile, userId!));
+        ? strings.ludoSeatPanelYou
+        : (userId == null
+              ? strings.ludoSeatPanelOpenSeat
+              : profileDisplayName(profile, userId!));
     final seat = ludoColorPalette[color]!;
 
     final avatar = GestureDetector(
@@ -134,7 +137,7 @@ class LudoSeatPanel extends ConsumerWidget {
           children: [
             if (left)
               Text(
-                'Left',
+                strings.ludoSeatPanelLeft,
                 style: AppTextStyles.body(fontSize: 11, color: AppColors.error),
               )
             else ...[

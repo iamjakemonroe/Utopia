@@ -22,6 +22,7 @@ import '../data/aura_repository.dart';
 import '../domain/aura.dart';
 import 'mythic_badge.dart';
 import '../../../core/analytics/analytics.dart';
+import '../../../l10n/strings.dart';
 
 /// The aura up close: a big live preview on your own picture, how long to
 /// get it for, and the price.
@@ -68,7 +69,7 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
       setState(() => _celebrate++);
       showUtopiaToast(
         context,
-        '${widget.aura.name} is yours for ${_length.label}',
+        strings.auraIsYoursFor(widget.aura.name, _length.label),
         icon: Icons.auto_awesome_rounded,
         kind: ToastKind.success,
       );
@@ -76,7 +77,7 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
       if (mounted) {
         showUtopiaToast(
           context,
-          friendlyError(e, fallback: "Couldn't buy that aura. Try again."),
+          friendlyError(e, fallback: strings.auraCouldnTBuyThatAura),
           kind: ToastKind.error,
         );
       }
@@ -95,7 +96,7 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
       if (mounted) {
         showUtopiaToast(
           context,
-          friendlyError(e, fallback: "Couldn't change your aura."),
+          friendlyError(e, fallback: strings.auraCouldnTChangeYourAura),
           kind: ToastKind.error,
         );
       }
@@ -117,7 +118,7 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
     final profile = me == null
         ? null
         : ref.watch(profileByIdProvider(me)).valueOrNull;
-    final name = me == null ? 'You' : profileDisplayName(profile, me);
+    final name = me == null ? strings.auraYou : profileDisplayName(profile, me);
     final prices = ref.watch(auraPricesProvider).valueOrNull;
     final owned = ref.watch(myAurasProvider).valueOrNull?[aura.id];
     final active = owned != null && owned.isAfter(DateTime.now());
@@ -205,7 +206,7 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
                   if (aura.includedWith case final plan?) ...[
                     const SizedBox(height: AppSpacing.lg),
                     Text(
-                      "Comes with $plan. Yours to wear while you're a member.",
+                      strings.auraComesWithYoursToWear(plan),
                       style: AppTextStyles.body(
                         fontSize: 13,
                         color: AppColors.textSecondary,
@@ -214,7 +215,7 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
                   ] else if (aura.retired) ...[
                     const SizedBox(height: AppSpacing.lg),
                     Text(
-                      'No longer sold. Yours to wear until it runs out.',
+                      strings.auraNoLongerSoldYoursTo,
                       style: AppTextStyles.body(
                         fontSize: 13,
                         color: AppColors.textSecondary,
@@ -246,8 +247,8 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
                       busy: _busy,
                       child: PrimaryButton(
                         label: active
-                            ? 'Add ${_length.label} · ${formatCoins(price)}'
-                            : 'Buy for ${formatCoins(price)} coins',
+                            ? strings.auraAdd(_length.label, formatCoins(price))
+                            : strings.auraBuyForCoins(formatCoins(price)),
                         color: switch (aura.tier) {
                           AuraTier.mythic => const Color(0xFFFF1F3D),
                           AuraTier.legendary => const Color(0xFFFF8A3D),
@@ -267,7 +268,7 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'You have ',
+                              strings.auraYouHave,
                               style: AppTextStyles.body(
                                 fontSize: 13,
                                 color: AppColors.textSecondary,
@@ -336,7 +337,7 @@ class _OwnedRow extends StatelessWidget {
           const SizedBox(width: 6),
           Expanded(
             child: Text(
-              'Yours · ${auraTimeLeft(until)}',
+              strings.auraYours(auraTimeLeft(until)),
               style: AppTextStyles.body(fontWeight: FontWeight.w800),
             ),
           ),
@@ -349,7 +350,7 @@ class _OwnedRow extends StatelessWidget {
             ),
             onPressed: busy ? null : onToggle,
             child: Text(
-              wearing ? 'Take off' : 'Wear',
+              wearing ? strings.auraTakeOff : strings.auraWear,
               style: AppTextStyles.body(
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
@@ -455,7 +456,7 @@ class _LengthTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${formatCoins(perDay)} a day',
+                    strings.auraADay(formatCoins(perDay)),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.body(
@@ -484,7 +485,7 @@ class _LengthTile extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Best value',
+                      strings.auraBestValue,
                       style: AppTextStyles.body(
                         fontSize: 10,
                         fontWeight: FontWeight.w900,

@@ -9,11 +9,12 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../chat/domain/chat_filter.dart';
 import '../../domain/doodle_game.dart';
 import '../../../../core/platform/keyboard.dart';
+import '../../../../l10n/strings.dart';
 
 /// A player's name in the game: "You" for this player.
 String doodleName(WidgetRef ref, String? id, String? me) {
-  if (id == null) return 'Someone';
-  if (id == me) return 'You';
+  if (id == null) return strings.doodleChatSomeone;
+  if (id == me) return strings.doodleChatYou;
   return profileDisplayName(ref.watch(profileByIdProvider(id)).valueOrNull, id);
 }
 
@@ -184,25 +185,29 @@ class _Line extends ConsumerWidget {
         return _Pill(
           icon: Icons.check_circle_rounded,
           color: const Color(0xFF2FD98E),
-          text: mine ? 'You got it!' : '$name got it!',
+          text: mine
+              ? strings.doodleChatYouGotIt
+              : strings.doodleChatGotIt(name),
         );
       case DoodleMessageKind.close:
         final text = filter ? ChatFilter.filter(message.body) : message.body;
         return _Pill(
           icon: Icons.local_fire_department_rounded,
           color: const Color(0xFFFFB020),
-          text: '"$text" is so close!',
+          text: strings.doodleChatIsSoClose(text),
         );
       case DoodleMessageKind.reveal:
         return _Pill(
           icon: Icons.lightbulb_rounded,
           color: AppColors.coinGold,
-          text: 'The word was ${message.body}',
+          text: strings.doodleChatTheWordWas(message.body),
         );
       case DoodleMessageKind.drawing:
         return _Note(
           icon: Icons.brush_rounded,
-          text: mine ? 'Your turn to draw' : '$name is drawing',
+          text: mine
+              ? strings.doodleChatYourTurnToDraw
+              : strings.doodleChatIsDrawing(name),
           color: color,
         );
       case DoodleMessageKind.joined:

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/widgets/utopia_toast.dart';
 import 'controllers/chess_match_controller.dart';
+import '../../../l10n/strings.dart';
 
 /// When [invite] (a challenge) runs out, if it says.
 DateTime? challengeExpiresAt(Map<String, dynamic> invite) =>
@@ -47,7 +48,7 @@ Future<bool> cancelChallenge(
     if (context.mounted) {
       showUtopiaToast(
         context,
-        'Challenge to $name cancelled.',
+        strings.sentChallengesChallengeToCancelled(name),
         icon: Icons.undo_rounded,
       );
     }
@@ -56,7 +57,7 @@ Future<bool> cancelChallenge(
     if (context.mounted) {
       showUtopiaToast(
         context,
-        friendlyError(e, fallback: "Couldn't cancel it. Try again."),
+        friendlyError(e, fallback: strings.sentChallengesCouldnTCancelItTry),
         kind: ToastKind.error,
       );
     }

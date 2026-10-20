@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../domain/art_doc.dart';
+import '../../../l10n/strings.dart';
 
 /// The studio's ink and paper (the Doodle world's own).
 const kStudioInk = Color(0xFF1F1E1B);
@@ -39,13 +40,13 @@ const kBrushSizes = <double>[3, 6, 10, 16, 26];
 
 extension ArtToolLook on ArtTool {
   String get label => switch (this) {
-    ArtTool.pencil => 'Pencil',
-    ArtTool.pen => 'Ink pen',
-    ArtTool.marker => 'Marker',
-    ArtTool.soft => 'Soft brush',
-    ArtTool.highlighter => 'Highlighter',
-    ArtTool.eraser => 'Eraser',
-    ArtTool.bucket => 'Paint bucket',
+    ArtTool.pencil => strings.studioToolbarPencil,
+    ArtTool.pen => strings.studioToolbarInkPen,
+    ArtTool.marker => strings.studioToolbarMarker,
+    ArtTool.soft => strings.studioToolbarSoftBrush,
+    ArtTool.highlighter => strings.studioToolbarHighlighter,
+    ArtTool.eraser => strings.studioToolbarEraser,
+    ArtTool.bucket => strings.studioToolbarPaintBucket,
   };
 
   IconData? get icon => switch (this) {
@@ -320,7 +321,7 @@ class _Swatch extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: 'Color',
+      label: strings.studioToolbarColor,
       child: GestureDetector(
         onTap: () {
           HapticFeedback.selectionClick();
@@ -400,7 +401,7 @@ class SizePicker extends StatelessWidget {
               Semantics(
                 button: true,
                 selected: i == selected,
-                label: 'Brush size ${i + 1}',
+                label: strings.studioToolbarBrushSize(i + 1),
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {

@@ -23,6 +23,7 @@ import '../domain/coloring_pages.dart';
 import 'art_render.dart';
 import 'chip_paint.dart';
 import 'studio_toolbar.dart';
+import '../../../l10n/strings.dart';
 
 /// Wider than this, the tools sit down the sides (tablets, landscape).
 const _wideLayout = 720.0;
@@ -221,7 +222,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
         WidgetsBinding.instance.addPostFrameCallback((_) => _chipPaint(style));
       }
     } catch (_) {
-      if (mounted) setState(() => _error = "Couldn't open this one.");
+      if (mounted) setState(() => _error = strings.studioCouldnTOpenThisOne);
     }
   }
 
@@ -552,10 +553,10 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
     setState(() => _chipPainting = false);
     if (result.status != 'ready') {
       showUtopiaToast(context, switch (result.status) {
-        'limited' => "I've colored lots today. Ask me again tomorrow!",
-        'refused' => "I can't color that one.",
-        'off' => "My paintbrush isn't ready yet.",
-        _ => "I couldn't color it just now. Try again?",
+        'limited' => strings.studioIVeColoredLotsToday,
+        'refused' => strings.studioICanTColorThat,
+        'off' => strings.studioMyPaintbrushIsnTReady,
+        _ => strings.studioICouldnTColorIt,
       }, icon: Icons.palette_rounded);
       return;
     }
@@ -666,7 +667,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
           if (mounted) {
             showUtopiaToast(
               context,
-              'Allow Utopia to add to your photos in Settings, then try again.',
+              strings.studioAllowUtopiaToAddTo,
               kind: ToastKind.warning,
             );
           }
@@ -679,7 +680,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
       ref.read(gameAudioProvider).play(Sfx.reaction);
       showUtopiaToast(
         context,
-        'Saved to your photos',
+        strings.studioSavedToYourPhotos,
         icon: Icons.photo_library_rounded,
         kind: ToastKind.success,
       );
@@ -687,7 +688,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
       if (mounted) {
         showUtopiaToast(
           context,
-          "Couldn't save to your photos. Try again.",
+          strings.studioCouldnTSaveToYour,
           kind: ToastKind.error,
         );
       }
@@ -713,7 +714,10 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Keep it', style: TextStyle(color: kStudioInk)),
+            child: Text(
+              strings.studioKeepIt,
+              style: TextStyle(color: kStudioInk),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
@@ -735,9 +739,9 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
     final doc = _doc;
     if (doc == null || doc.isEmpty) return;
     if (!await _confirm(
-      'Start over?',
-      'Everything on this page will be cleared.',
-      'Clear it',
+      strings.studioStartOver,
+      strings.studioEverythingOnThisPageWill,
+      strings.studioClearIt,
     )) {
       return;
     }
@@ -750,9 +754,9 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
     final doc = _doc, store = _store;
     if (doc == null || store == null) return;
     if (!await _confirm(
-      'Delete this?',
-      "It'll be gone from your sketchbook for good.",
-      'Delete',
+      strings.studioDeleteThis,
+      strings.studioItLlBeGoneFrom,
+      strings.studioDelete,
     )) {
       return;
     }
@@ -778,9 +782,11 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
 
   String get _title {
     final doc = _doc;
-    if (doc == null) return 'Sketchbook';
-    if (doc.kind == ArtKind.coloring) return _pageName ?? 'Coloring';
-    return 'Sketch';
+    if (doc == null) return strings.studioSketchbook;
+    if (doc.kind == ArtKind.coloring) {
+      return _pageName ?? strings.studioColoring;
+    }
+    return strings.studioSketch;
   }
 
   @override
@@ -935,7 +941,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
       child: Row(
         children: [
           StudioButton(
-            tooltip: 'Back',
+            tooltip: strings.studioBack,
             icon: Icons.arrow_back_rounded,
             onTap: _leave,
           ),
@@ -958,12 +964,12 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
                   valueListenable: _save,
                   builder: (context, s, _) {
                     final line = s == _Save.failed
-                        ? "Couldn't save, will try again"
+                        ? strings.studioCouldnTSaveWillTry
                         : _stored
-                        ? 'Saved in Utopia'
+                        ? strings.studioSavedInUtopia
                         : _doc?.kind == ArtKind.coloring
-                        ? 'Tap a shape to fill it'
-                        : 'Draw anything';
+                        ? strings.studioTapAShapeToFill
+                        : strings.studioDrawAnything;
                     return AnimatedSwitcher(
                       duration: const Duration(milliseconds: 250),
                       child: Text(
@@ -982,7 +988,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
             ),
           ),
           StudioButton(
-            tooltip: 'Undo',
+            tooltip: strings.studioUndo,
             icon: Icons.undo_rounded,
             size: 42,
             enabled: doc?.canUndo ?? false,
@@ -990,7 +996,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
           ),
           const SizedBox(width: 6),
           StudioButton(
-            tooltip: 'Redo',
+            tooltip: strings.studioRedo,
             icon: Icons.redo_rounded,
             size: 42,
             enabled: doc?.canRedo ?? false,
@@ -998,7 +1004,9 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
           ),
           const SizedBox(width: 6),
           StudioButton(
-            tooltip: kIsWeb ? 'Save picture' : 'Save to Photos',
+            tooltip: kIsWeb
+                ? strings.studioSavePicture
+                : strings.studioSaveToPhotos,
             size: 42,
             enabled: doc != null && !doc.isEmpty,
             onTap: _saveToPhotos,
@@ -1014,7 +1022,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
           ),
           const SizedBox(width: 2),
           PopupMenuButton<String>(
-            tooltip: 'More',
+            tooltip: strings.studioMore,
             color: kStudioPaper,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
@@ -1027,9 +1035,15 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
               _ => null,
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'clear', child: Text('Start over')),
+              PopupMenuItem(
+                value: 'clear',
+                child: Text(strings.studioStartOver2),
+              ),
               if (_stored)
-                const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Text(strings.studioDelete),
+                ),
             ],
           ),
         ],
@@ -1042,13 +1056,13 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
       return _Message(
         mood: BuddyMood.sad,
         text: _error!,
-        action: ('Back', () => context.pop()),
+        action: (strings.studioBack, () => context.pop()),
       );
     }
     if (_render == null) {
-      return const _Message(
+      return _Message(
         mood: BuddyMood.thinking,
-        text: 'Getting your page ready…',
+        text: strings.studioGettingYourPageReady,
       );
     }
     return LayoutBuilder(
@@ -1138,21 +1152,21 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
       mainAxisSize: MainAxisSize.min,
       children: [
         StudioButton(
-          tooltip: 'Zoom in',
+          tooltip: strings.studioZoomIn,
           icon: Icons.add_rounded,
           size: 38,
           onTap: () => _glideTo(_scale * 1.6),
         ),
         const SizedBox(height: 6),
         StudioButton(
-          tooltip: 'Zoom out',
+          tooltip: strings.studioZoomOut,
           icon: Icons.remove_rounded,
           size: 38,
           onTap: () => _glideTo(_scale / 1.6),
         ),
         const SizedBox(height: 6),
         StudioButton(
-          tooltip: 'Fit the page',
+          tooltip: strings.studioFitThePage,
           icon: Icons.fit_screen_rounded,
           size: 38,
           onTap: () => _glideTo(_fit),
@@ -1244,7 +1258,7 @@ class _ChipPaintButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Color with Chip',
+      label: strings.studioColorWithChip,
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedOpacity(
@@ -1266,7 +1280,7 @@ class _ChipPaintButton extends StatelessWidget {
                 const CoinBuddy(mood: BuddyMood.happy, size: 34),
                 const SizedBox(width: 6),
                 Text(
-                  'Color with Chip',
+                  strings.studioColorWithChip,
                   style: AppTextStyles.body(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -1308,7 +1322,7 @@ class _ChipPainting extends StatelessWidget {
               const CoinBuddy(mood: BuddyMood.excited, size: 76),
               const SizedBox(height: 10),
               Text(
-                'Chip is coloring your picture…',
+                strings.studioChipIsColoringYourPicture,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.body(
                   fontWeight: FontWeight.w800,

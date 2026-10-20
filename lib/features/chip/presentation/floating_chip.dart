@@ -15,6 +15,7 @@ import '../../notifications/presentation/notification_actions.dart';
 import 'chip_chat_controller.dart';
 import 'chip_chat_sheet.dart';
 import '../../../core/widgets/frame_island.dart';
+import '../../../l10n/strings.dart';
 
 /// Chip in a little glass bubble, floating over the app's screens. Drag
 /// him anywhere (he settles against the nearest edge); tap to chat. He
@@ -162,7 +163,7 @@ class _FloatingChipState extends ConsumerState<FloatingChip>
                 }),
                 child: Semantics(
                   button: true,
-                  label: 'Chat with Chip',
+                  label: strings.floatingChipChatWithChip,
                   child: FrameIsland(
                     size: Size.square(_size),
                     child: AnimatedBuilder(

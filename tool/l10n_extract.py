@@ -323,7 +323,7 @@ REVERT_CODES = {
 def analyze(paths):
     subprocess.run(['flutter', 'gen-l10n'], check=True, capture_output=True)
     # All of lib: taking const off one file's catalog can matter elsewhere.
-    r = subprocess.run(['dart', 'analyze', '--format=machine', 'lib'], capture_output=True, text=True)
+    r = subprocess.run(['dart', 'analyze', '--format=machine', 'lib', 'test', 'tool'], capture_output=True, text=True)
     errors = []
     for line in (r.stdout + r.stderr).splitlines():
         f = line.split('|')
@@ -487,6 +487,8 @@ def main():
     subprocess.run(['flutter', 'gen-l10n'], check=True, capture_output=True)
     # A one-line if that now wraps wants braces; a file whose words all
     # went back doesn't need the import.
+    # Formatted first: the braces are wanted once a line wraps.
+    subprocess.run(['dart', 'format', *paths], capture_output=True)
     for p in paths:
         subprocess.run(['dart', 'fix', '--apply',
                         '--code=curly_braces_in_flow_control_structures',

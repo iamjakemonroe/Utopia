@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/platform/device_key.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../domain/chip_doodle.dart';
+import '../../../l10n/strings.dart';
 
 /// Chip couldn't deal a round: [message] says why, for the player.
 class ChipDoodleUnavailable implements Exception {
@@ -37,9 +38,7 @@ class ChipDoodleRepository {
         throw ChipDoodleUnavailable(details['error'] as String);
       }
     } catch (_) {}
-    throw const ChipDoodleUnavailable(
-      "Chip couldn't draw just now. Check your connection and try again.",
-    );
+    throw ChipDoodleUnavailable(strings.chipDoodleChipCouldnTDrawJust2);
   }
 }
 

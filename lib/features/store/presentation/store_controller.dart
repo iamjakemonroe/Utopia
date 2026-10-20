@@ -20,6 +20,7 @@ import '../../maestro/presentation/maestro_providers.dart';
 import '../data/store_repository.dart';
 import '../domain/store_catalog.dart';
 import '../../../core/analytics/analytics.dart';
+import '../../../l10n/strings.dart';
 
 final storeRepositoryProvider = Provider<StoreRepository>(
   (ref) => StoreRepository(ref.watch(supabaseClientProvider)),
@@ -249,8 +250,7 @@ class StoreController extends StateNotifier<StoreState> {
 
   /// Chip Maestro goes through the phone's store, so a browser points
   /// there (what was bought on the phone is here too, on the same account).
-  static const _onPhonesOnly =
-      'Chip Maestro is in the Utopia app on your phone.';
+  static final _onPhonesOnly = strings.storeChipMaestroIsInThe;
 
   /// Buys [product] with coins. [focus] is the item on screen when they
   /// tapped buy (one world of a pack), so the celebration can take them
@@ -302,7 +302,7 @@ class StoreController extends StateNotifier<StoreState> {
   /// back to the game after. Accounts only.
   Future<void> _buyOnWeb(CoinPack pack) async {
     if (_ref.read(isAnonymousProvider)) {
-      state = state.copyWith(message: 'Save your account to buy coins.');
+      state = state.copyWith(message: strings.storeSaveYourAccountToBuy);
       return;
     }
     state = state.copyWith(busyProduct: pack.id, clearMessage: true);
@@ -317,7 +317,7 @@ class StoreController extends StateNotifier<StoreState> {
       if (mounted) {
         state = state.copyWith(
           clearBusy: true,
-          message: "Couldn't open the payment page. Try again.",
+          message: strings.storeCouldnTOpenThePayment,
         );
       }
     }
@@ -329,12 +329,12 @@ class StoreController extends StateNotifier<StoreState> {
     if (state.busyProduct != null) return;
     if (kIsWeb) return _buyOnWeb(pack);
     if (!Env.realMoneyStore) {
-      state = state.copyWith(message: 'Coin top-ups are coming soon.');
+      state = state.copyWith(message: strings.storeCoinTopUpsAreComing);
       return;
     }
     final me = _ref.read(currentUserProvider)?.id;
     if (me == null) {
-      state = state.copyWith(message: 'Sign in to buy coins.');
+      state = state.copyWith(message: strings.storeSignInToBuyCoins);
       return;
     }
     final details = state.products[pack.id];
@@ -342,9 +342,7 @@ class StoreController extends StateNotifier<StoreState> {
       if (canTestUnlock) {
         await _demoCoins(pack);
       } else {
-        state = state.copyWith(
-          message: "The store isn't available right now. Try again soon.",
-        );
+        state = state.copyWith(message: strings.storeTheStoreIsnTAvailable);
       }
       return;
     }
@@ -364,7 +362,7 @@ class StoreController extends StateNotifier<StoreState> {
     } catch (_) {
       state = state.copyWith(
         clearBusy: true,
-        message: "Couldn't start the purchase.",
+        message: strings.storeCouldnTStartThePurchase,
       );
     }
   }
@@ -377,7 +375,7 @@ class StoreController extends StateNotifier<StoreState> {
   Future<void> buyMaestro() async {
     if (state.busyProduct != null) return;
     if (!Env.realMoneyStore) {
-      state = state.copyWith(message: 'Chip Maestro is coming soon.');
+      state = state.copyWith(message: strings.storeChipMaestroIsComingSoon);
       return;
     }
     if (kIsWeb) {
@@ -386,14 +384,12 @@ class StoreController extends StateNotifier<StoreState> {
     }
     final me = _ref.read(currentUserProvider)?.id;
     if (me == null) {
-      state = state.copyWith(message: 'Sign in to join Chip Maestro.');
+      state = state.copyWith(message: strings.storeSignInToJoinChip);
       return;
     }
     final details = state.products[kMaestroProductId];
     if (details == null) {
-      state = state.copyWith(
-        message: "The store isn't available right now. Try again soon.",
-      );
+      state = state.copyWith(message: strings.storeTheStoreIsnTAvailable);
       return;
     }
     state = state.copyWith(busyProduct: kMaestroProductId, clearMessage: true);
@@ -408,7 +404,7 @@ class StoreController extends StateNotifier<StoreState> {
     } catch (_) {
       state = state.copyWith(
         clearBusy: true,
-        message: "Couldn't start the purchase.",
+        message: strings.storeCouldnTStartThePurchase,
       );
     }
   }
@@ -417,19 +413,19 @@ class StoreController extends StateNotifier<StoreState> {
   /// reinstall (the store sends it again, and it's checked as usual).
   Future<void> restore() async {
     if (!Env.realMoneyStore) {
-      state = state.copyWith(message: 'Nothing to restore yet.');
+      state = state.copyWith(message: strings.storeNothingToRestoreYet);
       return;
     }
     if (kIsWeb) {
       state = state.copyWith(message: _onPhonesOnly);
       return;
     }
-    state = state.copyWith(message: 'Looking for your purchases…');
+    state = state.copyWith(message: strings.storeLookingForYourPurchases);
     try {
       await InAppPurchase.instance.restorePurchases();
     } catch (_) {
       if (mounted) {
-        state = state.copyWith(message: "Couldn't look for your purchases.");
+        state = state.copyWith(message: strings.storeCouldnTLookForYour);
       }
     }
   }
@@ -454,7 +450,7 @@ class StoreController extends StateNotifier<StoreState> {
     } catch (_) {
       state = state.copyWith(
         clearBusy: true,
-        message: "Test top-ups aren't available on this server.",
+        message: strings.storeTestTopUpsArenT,
       );
     }
   }
@@ -478,14 +474,14 @@ class StoreController extends StateNotifier<StoreState> {
           state = state.copyWith(
             clearBusy: true,
             message: maestro
-                ? 'Your payment is still going through. Chip Maestro starts as soon as it does.'
-                : 'Your payment is still going through. Your coins arrive as soon as it does.',
+                ? strings.storeYourPaymentIsStillGoing
+                : strings.storeYourPaymentIsStillGoing2,
           );
           continue;
         case PurchaseStatus.error:
           state = state.copyWith(
             clearBusy: true,
-            message: "The purchase didn't go through.",
+            message: strings.storeThePurchaseDidnTGo,
           );
         case PurchaseStatus.canceled:
           state = state.copyWith(clearBusy: true);
@@ -521,8 +517,8 @@ class StoreController extends StateNotifier<StoreState> {
           state = state.copyWith(
             clearBusy: true,
             message: fresh
-                ? 'Welcome to Chip Maestro!'
-                : 'Your Chip Maestro plan is back.',
+                ? strings.storeWelcomeToChipMaestro
+                : strings.storeYourChipMaestroPlanIs,
           );
           if (fresh) {
             _ref.read(gameAudioProvider).play(Sfx.purchase);
@@ -536,8 +532,7 @@ class StoreController extends StateNotifier<StoreState> {
         case 'other':
           state = state.copyWith(
             clearBusy: true,
-            message:
-                'That Chip Maestro plan belongs to another Utopia account.',
+            message: strings.storeThatChipMaestroPlanBelongs,
           );
           return true;
         case 'pending':
@@ -546,8 +541,7 @@ class StoreController extends StateNotifier<StoreState> {
         default:
           state = state.copyWith(
             clearBusy: true,
-            message:
-                'Payment received. Chip Maestro will start the next time you open Utopia.',
+            message: strings.storePaymentReceivedChipMaestroWill,
           );
           return false;
       }
@@ -591,28 +585,26 @@ class StoreController extends StateNotifier<StoreState> {
           } else {
             state = state.copyWith(
               clearBusy: true,
-              message: 'Those coins went to the account that bought them.',
+              message: strings.storeThoseCoinsWentToThe,
             );
           }
           return true;
         case CoinPurchasePending():
           state = state.copyWith(
             clearBusy: true,
-            message:
-                'Your payment is still going through. Your coins arrive as soon as it does.',
+            message: strings.storeYourPaymentIsStillGoing2,
           );
           return false;
         case CoinPurchaseVoid():
           state = state.copyWith(
             clearBusy: true,
-            message: 'That payment was cancelled, so no coins were added.',
+            message: strings.storeThatPaymentWasCancelledSo,
           );
           return true;
         case CoinPurchaseRetry():
           state = state.copyWith(
             clearBusy: true,
-            message:
-                'Payment received. Your coins will arrive the next time you open Utopia.',
+            message: strings.storePaymentReceivedYourCoinsWill,
           );
           return false;
       }
@@ -642,9 +634,9 @@ class StoreController extends StateNotifier<StoreState> {
         clearBusy: true,
         message: '$e'.contains('insufficient balance')
             ? (price == null
-                  ? 'Not enough coins yet.'
-                  : 'You need ${formatCoins(price)} coins for that.')
-            : "Couldn't unlock that. Check your connection and try again.",
+                  ? strings.storeNotEnoughCoinsYet
+                  : strings.storeYouNeedCoinsForThat(formatCoins(price)))
+            : strings.storeCouldnTUnlockThatCheck,
       );
     }
   }
@@ -655,7 +647,7 @@ class StoreController extends StateNotifier<StoreState> {
   /// Equips a piece set (themes go through the teleport, see
   /// theme_teleport.dart). Returns an error message, or null.
   Future<String?> equipPieces(StoreItem item) async {
-    if (!state.isOwned(item)) return 'Unlock it first.';
+    if (!state.isOwned(item)) return strings.storeUnlockItFirst;
     try {
       await _repo.equip(item.kind, item.id);
       final me = _ref.read(currentUserProvider)?.id;
@@ -663,7 +655,7 @@ class StoreController extends StateNotifier<StoreState> {
       _ref.read(gameAudioProvider).play(Sfx.reaction);
       return null;
     } catch (_) {
-      return "Couldn't equip that. Try again?";
+      return strings.storeCouldnTEquipThatTry;
     }
   }
 
@@ -688,11 +680,7 @@ class StoreController extends StateNotifier<StoreState> {
       }
       if (changed && mounted) {
         _ref.invalidate(profileByIdProvider(me));
-        state = state.copyWith(
-          message:
-              'Your welcome pass has ended: back to your own pieces. '
-              'Keep a favourite set from the store any time.',
-        );
+        state = state.copyWith(message: strings.storeYourWelcomePassHasEnded);
       }
     } catch (_) {
       // Offline: the server takes them off soon anyway.
@@ -729,10 +717,14 @@ class StoreController extends StateNotifier<StoreState> {
     final season = UtopiaThemes.seasonal[current.id];
     state = state.copyWith(
       message: current.id == UtopiaThemes.utopiaBirthday.id
-          ? 'Your birthday party is over. See you next year!'
+          ? strings.storeYourBirthdayPartyIsOver
           : season != null
-          ? '${_seasonName(season)} is over. ${current.name} comes back next ${_seasonName(season)}.'
-          : 'Your time in ${current.name} ran out. Rent it again any time.',
+          ? strings.storeIsOverComesBackNext(
+              _seasonName(season),
+              current.name,
+              _seasonName(season),
+            )
+          : strings.storeYourTimeInRanOut(current.name),
     );
   }
 
@@ -750,9 +742,9 @@ class StoreController extends StateNotifier<StoreState> {
       return null;
     } catch (e) {
       if (e.toString().contains('insufficient balance')) {
-        return 'You need more coins for that.';
+        return strings.storeYouNeedMoreCoinsFor;
       }
-      return "Couldn't rent that world. Try again.";
+      return strings.storeCouldnTRentThatWorld;
     }
   }
 

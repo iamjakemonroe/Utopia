@@ -36,6 +36,7 @@ import 'theme_teleport.dart';
 import '../../../core/widgets/ambient_tick.dart';
 import '../../events/presentation/event_widgets.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../l10n/strings.dart';
 
 /// The store: worlds (themes), Ludo piece sets and chess piece sets.
 class StoreScreen extends ConsumerStatefulWidget {
@@ -70,7 +71,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
       initialIndex: widget.initialTab,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Store'),
+          title: Text(strings.storeStore),
           bottom: TabBar(
             labelColor: AppColors.textPrimary,
             unselectedLabelColor: AppColors.textSecondary,
@@ -80,11 +81,17 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               fontWeight: FontWeight.w800,
               fontSize: 14,
             ),
-            tabs: const [
-              Tab(icon: Icon(Icons.public_rounded), text: 'Worlds'),
-              Tab(icon: Icon(Icons.auto_awesome_rounded), text: 'Auras'),
-              Tab(icon: Icon(Icons.casino_rounded), text: 'Ludo'),
-              Tab(icon: Icon(Icons.extension_rounded), text: 'Chess'),
+            tabs: [
+              Tab(icon: Icon(Icons.public_rounded), text: strings.storeWorlds),
+              Tab(
+                icon: Icon(Icons.auto_awesome_rounded),
+                text: strings.storeAuras,
+              ),
+              Tab(icon: Icon(Icons.casino_rounded), text: strings.storeLudo),
+              Tab(
+                icon: Icon(Icons.extension_rounded),
+                text: strings.storeChess,
+              ),
             ],
           ),
         ),
@@ -94,7 +101,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               if (isGuest)
                 _Banner(
                   icon: Icons.shield_rounded,
-                  text: 'Save your account so your purchases are never lost.',
+                  text: strings.storeSaveYourAccountSoYour,
                 ),
               const Expanded(
                 child: TabBarView(
@@ -144,7 +151,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 children: [
                   const CoinBuddy(mood: BuddyMood.happy, size: 110),
                   const SizedBox(height: AppSpacing.sm),
-                  Text('Unlocked!', style: AppTextStyles.display(fontSize: 28)),
+                  Text(
+                    strings.storeUnlocked,
+                    style: AppTextStyles.display(fontSize: 28),
+                  ),
                   Text(
                     product.title,
                     style: AppTextStyles.body(color: AppColors.textSecondary),
@@ -152,7 +162,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   const SizedBox(height: AppSpacing.lg),
                   if (pickOne) ...[
                     Text(
-                      'Where to first?',
+                      strings.storeWhereToFirst,
                       style: AppTextStyles.body(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -199,18 +209,18 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     PrimaryButton(
                       label: target != null
                           ? (target.id == here
-                                ? "You're already here"
-                                : 'Travel to ${target.name}')
+                                ? strings.storeYouReAlreadyHere
+                                : strings.storeTravelTo(target.name))
                           : worlds.isNotEmpty
-                          ? 'Pick a world'
-                          : 'Equip now',
+                          ? strings.storePickAWorld
+                          : strings.storeEquipNow,
                       onPressed: () => Navigator.of(
                         context,
                       ).pop(target?.id ?? (worlds.isNotEmpty ? null : 'equip')),
                     ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Later'),
+                    child: Text(strings.storeLater),
                   ),
                 ],
               ),
@@ -340,9 +350,12 @@ class _WorldsTab extends ConsumerWidget {
           ),
           sliver: SliverList.list(
             children: [
-              Text('Utopia worlds', style: AppTextStyles.display(fontSize: 20)),
               Text(
-                'Every world has its own living sky. Changing worlds sends Chip through a portal!',
+                strings.storeUtopiaWorlds,
+                style: AppTextStyles.display(fontSize: 20),
+              ),
+              Text(
+                strings.storeEveryWorldHasItsOwn,
                 style: AppTextStyles.body(
                   fontSize: 13,
                   color: AppColors.textSecondary,
@@ -394,11 +407,16 @@ class _WorldsTab extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Every World',
+                              strings.storeEveryWorld,
                               style: AppTextStyles.display(fontSize: 18),
                             ),
                             Text(
-                              'All ${UtopiaThemes.utopia.where((t) => UtopiaThemes.sold(t.id)).length} worlds and ${UtopiaThemes.colors.length} colors, now and forever.',
+                              strings.storeAllWorldsAndColorsNow(
+                                UtopiaThemes.utopia
+                                    .where((t) => UtopiaThemes.sold(t.id))
+                                    .length,
+                                UtopiaThemes.colors.length,
+                              ),
                               style: AppTextStyles.body(
                                 fontSize: 13,
                                 color: AppColors.textSecondary,
@@ -413,9 +431,12 @@ class _WorldsTab extends ConsumerWidget {
                 ),
               ],
               const SizedBox(height: AppSpacing.lg),
-              Text('Color worlds', style: AppTextStyles.display(fontSize: 20)),
               Text(
-                '12 colors, each at dawn, dusk and midnight.',
+                strings.storeColorWorlds,
+                style: AppTextStyles.display(fontSize: 20),
+              ),
+              Text(
+                strings.store12ColorsEachAtDawn,
                 style: AppTextStyles.body(
                   fontSize: 13,
                   color: AppColors.textSecondary,
@@ -470,7 +491,7 @@ class _FamilyRow extends ConsumerWidget {
             ),
             const Spacer(),
             if (ownsPack)
-              const _StatusPill(label: 'Owned', icon: Icons.check_rounded)
+              _StatusPill(label: strings.storeOwned, icon: Icons.check_rounded)
             else if (pack != null)
               _BuyButton(product: pack, compact: true),
           ],
@@ -561,15 +582,15 @@ class _WorldCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     if (current)
-                      const _StatusPill(
-                        label: 'Current',
+                      _StatusPill(
+                        label: strings.storeCurrent,
                         highlight: true,
                         icon: Icons.check_rounded,
                       )
                     else if (item.free)
-                      const _StatusPill(label: 'Free')
+                      _StatusPill(label: strings.storeFree)
                     else if (store.isOwnedForever(item))
-                      const _StatusPill(label: 'Owned')
+                      _StatusPill(label: strings.storeOwned)
                     else if (owned)
                       _StatusPill(
                         label:
@@ -583,8 +604,8 @@ class _WorldCard extends ConsumerWidget {
                         icon: Icons.lock_rounded,
                       )
                     else
-                      const _StatusPill(
-                        label: 'Locked',
+                      _StatusPill(
+                        label: strings.storeLocked,
                         icon: Icons.lock_rounded,
                       ),
                   ],
@@ -800,13 +821,13 @@ class _WorldPreview extends ConsumerWidget {
                         const SizedBox(height: AppSpacing.lg),
                         if (current)
                           PrimaryButton(
-                            label: "You're here",
+                            label: strings.storeYouReHere,
                             color: theme.accent,
                             onPressed: null,
                           )
                         else if (owned)
                           PrimaryButton(
-                            label: 'Travel to this world',
+                            label: strings.storeTravelToThisWorld,
                             color: theme.accent,
                             onPressed: () {
                               Navigator.of(context).pop();
@@ -882,7 +903,7 @@ class _RentWorldState extends ConsumerState<_RentWorld> {
     if (here) {
       showUtopiaToast(
         context,
-        'A week more in ${theme.name}',
+        strings.storeAWeekMoreIn(theme.name),
         kind: ToastKind.success,
         icon: Icons.timer_rounded,
       );
@@ -910,7 +931,7 @@ class _RentWorldState extends ConsumerState<_RentWorld> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 until == null
-                    ? 'or rent it for a week'
+                    ? strings.storeOrRentItForA
                     : '${store.onPass(theme.id, ref.watch(welcomeWeekProvider)?.until) ? 'Free on your welcome pass' : 'Rented'} · ${auraTimeLeft(until)}',
                 style: AppTextStyles.body(
                   fontSize: 12,
@@ -929,8 +950,8 @@ class _RentWorldState extends ConsumerState<_RentWorld> {
         const SizedBox(height: AppSpacing.sm),
         PrimaryButton(
           label: until == null
-              ? 'Rent for a week · ${formatCoins(price)}'
-              : 'Add a week · ${formatCoins(price)}',
+              ? strings.storeRentForAWeek(formatCoins(price))
+              : strings.storeAddAWeek(formatCoins(price)),
           color: AppColors.success,
           isLoading: _busy,
           onPressed: _busy ? null : _rent,
@@ -977,7 +998,7 @@ class _BuyButton extends ConsumerWidget {
             )
           : Text(
               compact
-                  ? 'Pack · ${store.priceOf(product)}'
+                  ? strings.storePack(store.priceOf(product))
                   : store.priceOf(product),
               style: AppTextStyles.body(
                 fontSize: compact ? 12 : 14,
@@ -1097,8 +1118,8 @@ class _PieceSetCardState extends ConsumerState<_PieceSetCard> {
     if (widget.equipped && lentUntil != null && product != null) {
       action = _BuyButton(product: product);
     } else if (widget.equipped) {
-      action = const _StatusPill(
-        label: 'Equipped',
+      action = _StatusPill(
+        label: strings.storeEquipped,
         highlight: true,
         icon: Icons.check_rounded,
       );
@@ -1124,7 +1145,7 @@ class _PieceSetCardState extends ConsumerState<_PieceSetCard> {
                 }
               },
         child: Text(
-          _equipping ? 'Equipping' : 'Equip',
+          _equipping ? strings.storeEquipping : strings.storeEquip,
           style: AppTextStyles.body(
             fontWeight: FontWeight.w800,
             fontSize: 13,
@@ -1172,19 +1193,19 @@ class _PieceSetCardState extends ConsumerState<_PieceSetCard> {
                       ),
                     ),
                   if (widget.item.free)
-                    const Positioned(
+                    Positioned(
                       top: 8,
                       left: 8,
-                      child: _StatusPill(label: 'Free'),
+                      child: _StatusPill(label: strings.storeFree),
                     )
                   else if (widget.item.kind == ItemKind.chessPieces &&
                       ChessPieceStyle.byId(widget.item.id).character !=
                           ChessCharacter.none)
-                    const Positioned(
+                    Positioned(
                       top: 8,
                       left: 8,
                       child: _StatusPill(
-                        label: 'Animated',
+                        label: strings.storeAnimated,
                         icon: Icons.auto_awesome_rounded,
                       ),
                     ),

@@ -4,6 +4,8 @@
 /// shows players works for bots without asking the server.
 library;
 
+import '../../l10n/strings.dart';
+
 const kBotPrefix = 'bot:';
 
 bool isBotId(String? id) => id != null && id.startsWith(kBotPrefix);
@@ -20,7 +22,7 @@ bool isOfflinePlayerId(String? id) => isBotId(id) || isFriendSeatId(id);
 
 /// The name a friend's seat goes by ("Player 2").
 String friendSeatName(String id) =>
-    'Player ${id.substring(kFriendSeatPrefix.length)}';
+    strings.botsPlayer(id.substring(kFriendSeatPrefix.length));
 
 /// A profile row for a friend's seat, shaped like a real player's.
 Map<String, dynamic> friendSeatProfile(String id) {
@@ -59,38 +61,38 @@ class BotPersona {
 }
 
 /// The Ludo table's computer players, in the order seats fill.
-const kLudoBots = [
+final kLudoBots = [
   BotPersona(
     key: 'pip',
-    name: 'Pip',
+    name: strings.botsPip,
     avatarKind: 'animal',
     avatarSeed: 2,
     ludoPieces: 'bubble',
   ),
   BotPersona(
     key: 'momo',
-    name: 'Momo',
+    name: strings.botsMomo,
     avatarKind: 'plant',
     avatarSeed: 5,
     ludoPieces: 'jelly',
   ),
   BotPersona(
     key: 'kiki',
-    name: 'Kiki',
+    name: strings.botsKiki,
     avatarKind: 'human',
     avatarSeed: 3,
     ludoPieces: 'candy',
   ),
   BotPersona(
     key: 'bolt',
-    name: 'Bolt',
+    name: strings.botsBolt,
     avatarKind: 'animal',
     avatarSeed: 6,
     ludoPieces: 'crystal',
   ),
   BotPersona(
     key: 'nova',
-    name: 'Nova',
+    name: strings.botsNova,
     avatarKind: 'human',
     avatarSeed: 7,
     ludoPieces: 'cosmic',
@@ -99,17 +101,17 @@ const kLudoBots = [
 
 /// Chess opponents. Chip plays with the Chess Buddies set (faces and all);
 /// the robot with Robo Knights.
-const kChessChip = BotPersona(
+final kChessChip = BotPersona(
   key: 'chip',
-  name: 'Chip',
+  name: strings.botsChip,
   avatarKind: 'chip',
   avatarSeed: 0,
   chessPieces: 'chess_buddies',
 );
 
-const kChessRobot = BotPersona(
+final kChessRobot = BotPersona(
   key: 'robo',
-  name: 'Robo',
+  name: strings.botsRobo,
   avatarKind: 'robot',
   avatarSeed: 0,
   chessPieces: 'chess_robots',

@@ -37,18 +37,19 @@ import '../widgets/ludo_setup_widgets.dart';
 import '../../../../core/widgets/ambient_tick.dart';
 import '../../../../core/layout/responsive.dart';
 import '../../../../core/platform/keyboard.dart';
+import '../../../../l10n/strings.dart';
 
 /// Turns backend errors into something a player can act on.
 String ludoErrorText(Object e) {
   final text = e.toString();
   if (text.contains('insufficient balance:')) {
-    return 'Someone in the room needs more coins for this game.';
+    return strings.ludoLobbySomeoneInTheRoomNeeds;
   }
   if (text.contains('no room with that code')) {
-    return "We couldn't find that room. Check the code.";
+    return strings.ludoLobbyWeCouldnTFindThat;
   }
   if (text.contains('need at least 2')) {
-    return 'You need at least 2 players to start.';
+    return strings.ludoLobbyYouNeedAtLeast2;
   }
   return friendlyError(e);
 }
@@ -243,10 +244,10 @@ class _LudoLobbyScreenState extends ConsumerState<LudoLobbyScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: const BackOrHomeButton(),
-          title: const Text('Ludo'),
+          title: Text(strings.ludoLobbyLudo),
           actions: [
             IconButton(
-              tooltip: 'How to play',
+              tooltip: strings.ludoLobbyHowToPlay,
               icon: const Icon(Icons.menu_book_rounded),
               onPressed: () => showLudoRules(context),
             ),
@@ -282,26 +283,25 @@ class _LudoLobbyScreenState extends ConsumerState<LudoLobbyScreen> {
                         const SizedBox(height: AppSpacing.lg),
                         CandyModeButton(
                           icon: Icons.public_rounded,
-                          label: 'Play online',
+                          label: strings.ludoLobbyPlayOnline,
                           primary: true,
-                          subtitle: 'Join a table of 2 or 4 players',
+                          subtitle: strings.ludoLobbyJoinATableOf2,
                           colors: const [Color(0xFF6BF0B0), Color(0xFF1FB877)],
                           onTap: _openOnline,
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         CandyModeButton(
                           icon: Icons.group_rounded,
-                          label: 'Play with friends',
-                          subtitle: 'Make a room or join one with a code',
+                          label: strings.ludoLobbyPlayWithFriends,
+                          subtitle: strings.ludoLobbyMakeARoomOrJoin,
                           colors: const [Color(0xFFB79BFF), Color(0xFF7B5CFF)],
                           onTap: _openFriends,
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         CandyModeButton(
                           icon: Icons.smart_toy_rounded,
-                          label: 'Play offline',
-                          subtitle:
-                              'Bots, or friends taking turns on this phone',
+                          label: strings.ludoLobbyPlayOffline,
+                          subtitle: strings.ludoLobbyBotsOrFriendsTakingTurns,
                           colors: const [Color(0xFF8FD8FF), Color(0xFF2E8FE0)],
                           onTap: _openBots,
                         ),
@@ -358,10 +358,22 @@ class _FactsRow extends StatelessWidget {
     );
     return Row(
       children: [
-        fact(Icons.groups_rounded, AppColors.sky, '2 to 6\nplayers'),
-        fact(Icons.timer_rounded, const Color(0xFFFF5C9C), 'Timed\nturns'),
-        fact(Icons.chat_bubble_rounded, AppColors.mint, 'Chat &\nreactions'),
-        fact(Icons.vpn_key_rounded, AppColors.coinGold, 'Private\nrooms'),
+        fact(Icons.groups_rounded, AppColors.sky, strings.ludoLobby2To6Players),
+        fact(
+          Icons.timer_rounded,
+          const Color(0xFFFF5C9C),
+          strings.ludoLobbyTimedTurns,
+        ),
+        fact(
+          Icons.chat_bubble_rounded,
+          AppColors.mint,
+          strings.ludoLobbyChatReactions,
+        ),
+        fact(
+          Icons.vpn_key_rounded,
+          AppColors.coinGold,
+          strings.ludoLobbyPrivateRooms,
+        ),
       ],
     );
   }
@@ -390,7 +402,7 @@ class _BotsSheetState extends State<_BotsSheet> {
     return _SheetShell(
       icon: Icons.smart_toy_rounded,
       color: const Color(0xFF2E8FE0),
-      title: 'Play offline',
+      title: strings.ludoLobbyPlayOffline,
       children: [
         PlayerCountPicker(
           options: const [2, 3, 4, 5, 6],
@@ -403,7 +415,7 @@ class _BotsSheetState extends State<_BotsSheet> {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          'Friends on this phone',
+          strings.ludoLobbyFriendsOnThisPhone,
           style: AppTextStyles.body(
             fontSize: 13,
             fontWeight: FontWeight.w700,
@@ -417,7 +429,7 @@ class _BotsSheetState extends State<_BotsSheet> {
               if (n > 0) const SizedBox(width: 8),
               Expanded(
                 child: _FriendCountPill(
-                  label: n == 0 ? 'None' : '$n',
+                  label: n == 0 ? strings.ludoLobbyNone : '$n',
                   selected: n == _friends,
                   onTap: () => setState(() => _friends = n),
                 ),
@@ -427,7 +439,7 @@ class _BotsSheetState extends State<_BotsSheet> {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          'Tap a seat to sit there',
+          strings.ludoLobbyTapASeatToSit,
           style: AppTextStyles.body(
             fontSize: 13,
             fontWeight: FontWeight.w700,
@@ -494,7 +506,9 @@ class _BotsSheetState extends State<_BotsSheet> {
                             ),
                           const SizedBox(width: 8),
                           Text(
-                            mine ? 'You' : bot?.name ?? friend ?? '',
+                            mine
+                                ? strings.ludoLobbyYou
+                                : bot?.name ?? friend ?? '',
                             style: AppTextStyles.body(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
@@ -510,7 +524,7 @@ class _BotsSheetState extends State<_BotsSheet> {
         ),
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: 'Start game',
+          label: strings.ludoLobbyStartGame,
           color: const Color(0xFF2E8FE0),
           onPressed: () =>
               Navigator.of(context).pop((_players, _mySeat, _friends)),
@@ -540,7 +554,7 @@ class _OnlineSheetState extends State<_OnlineSheet> {
     return _SheetShell(
       icon: Icons.public_rounded,
       color: const Color(0xFF1FB877),
-      title: 'Play online',
+      title: strings.ludoLobbyPlayOnline,
       children: [
         PlayerCountPicker(
           options: const [2, 4],
@@ -556,7 +570,7 @@ class _OnlineSheetState extends State<_OnlineSheet> {
         ),
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: 'Play',
+          label: strings.ludoLobbyPlay,
           color: const Color(0xFF1FB877),
           onPressed: () => Navigator.of(context).pop((_size, _entry)),
         ),
@@ -612,7 +626,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
       child: _SheetShell(
         icon: Icons.group_rounded,
         color: const Color(0xFF7B5CFF),
-        title: 'Play with friends',
+        title: strings.ludoLobbyPlayWithFriends,
         children: [
           _TabSwitch(
             joining: _joining,
@@ -676,7 +690,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       PrimaryButton(
-                        label: 'Join room',
+                        label: strings.ludoLobbyJoinRoom,
                         onPressed: code.length == 6
                             ? () => Navigator.of(context).pop(_JoinRoom(code))
                             : null,
@@ -703,7 +717,9 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            _players <= 4 ? 'Classic board' : 'Star board',
+                            _players <= 4
+                                ? strings.ludoLobbyClassicBoard
+                                : strings.ludoLobbyStarBoard,
                             style: AppTextStyles.body(
                               fontSize: 13,
                               color: AppColors.textSecondary,
@@ -720,7 +736,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       PrimaryButton(
-                        label: 'Create room',
+                        label: strings.ludoLobbyCreateRoom,
                         onPressed: () => Navigator.of(
                           context,
                         ).pop(_CreateRoom(_players, _entry)),
@@ -793,8 +809,8 @@ class _TabSwitch extends StatelessWidget {
       ),
       child: Row(
         children: [
-          tab(false, Icons.add_circle_rounded, 'Create'),
-          tab(true, Icons.vpn_key_rounded, 'Join'),
+          tab(false, Icons.add_circle_rounded, strings.ludoLobbyCreate),
+          tab(true, Icons.vpn_key_rounded, strings.ludoLobbyJoin),
         ],
       ),
     );
@@ -1021,7 +1037,9 @@ class _SearchingViewState extends State<_SearchingView>
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              widget.size == 2 ? 'Finding an opponent' : 'Gathering players',
+              widget.size == 2
+                  ? strings.ludoLobbyFindingAnOpponent
+                  : strings.ludoLobbyGatheringPlayers,
               style: AppTextStyles.display(fontSize: 22),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -1043,7 +1061,7 @@ class _SearchingViewState extends State<_SearchingView>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Free',
+                    strings.ludoLobbyFree,
                     style: AppTextStyles.body(fontWeight: FontWeight.w800),
                   ),
                 ] else
@@ -1061,12 +1079,15 @@ class _SearchingViewState extends State<_SearchingView>
                 );
               },
             ),
-            QuietLobbyOffer(label: 'Play with bots', onPlay: widget.onPlayBots),
+            QuietLobbyOffer(
+              label: strings.ludoLobbyPlayWithBots,
+              onPlay: widget.onPlayBots,
+            ),
             const SizedBox(height: AppSpacing.xl),
             TextButton.icon(
               onPressed: widget.onCancel,
               icon: const Icon(Icons.close_rounded),
-              label: const Text('Cancel'),
+              label: Text(strings.ludoLobbyCancel),
             ),
           ],
         ),

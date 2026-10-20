@@ -8,6 +8,7 @@ import '../../domain/chess_engine.dart';
 import '../../domain/chess_types.dart';
 import 'chess_piece_art.dart';
 import 'chess_piece_styles.dart';
+import '../../../../l10n/strings.dart';
 
 /// Bottom sheet for choosing a promotion piece. Presented modally and
 /// non-dismissible-by-tap-outside (a pending promotion is a real decision,
@@ -37,7 +38,7 @@ Future<PieceType?> showPromotionSheet(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Promote your pawn',
+                    strings.promotionPromoteYourPawn,
                     style: AppTextStyles.display(fontSize: 20),
                   ),
                   const SizedBox(height: AppSpacing.lg),

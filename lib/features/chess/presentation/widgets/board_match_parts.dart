@@ -25,6 +25,7 @@ import '../../../rankings/domain/ranking.dart';
 import '../../domain/time_control.dart';
 import '../../../../core/widgets/frosted.dart';
 import '../../../../core/widgets/frame_island.dart';
+import '../../../../l10n/strings.dart';
 
 /// The parts of a live board game's screen that chess and checkers share:
 /// the chat button, a player's chat bubble and clock, the strip of moves,
@@ -42,7 +43,7 @@ class MatchChatButton extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         IconButton(
-          tooltip: 'Chat',
+          tooltip: strings.boardMatchPartsChat,
           icon: const Icon(Icons.chat_bubble_rounded),
           onPressed: onTap,
         ),
@@ -315,7 +316,7 @@ class _MoveStripState extends State<MoveStrip> {
         children: [
           _StepButton(
             icon: Icons.chevron_left_rounded,
-            tooltip: 'Previous move',
+            tooltip: strings.boardMatchPartsPreviousMove,
             enabled: canBack,
             onTap: widget.onBack,
             onLongPress: () => widget.onJump(0),
@@ -324,7 +325,7 @@ class _MoveStripState extends State<MoveStrip> {
             child: history.isEmpty
                 ? Center(
                     child: Text(
-                      'Moves will show up here',
+                      strings.boardMatchPartsMovesWillShowUpHere,
                       style: AppTextStyles.body(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -338,7 +339,7 @@ class _MoveStripState extends State<MoveStrip> {
                     children: [
                       _MoveChip(
                         key: ply == 0 ? _current : null,
-                        label: 'Start',
+                        label: strings.boardMatchPartsStart,
                         selected: ply == 0,
                         onTap: () => widget.onJump(0),
                       ),
@@ -356,7 +357,7 @@ class _MoveStripState extends State<MoveStrip> {
           ),
           _StepButton(
             icon: Icons.chevron_right_rounded,
-            tooltip: 'Next move',
+            tooltip: strings.boardMatchPartsNextMove,
             enabled: canForward,
             onTap: widget.onForward,
             onLongPress: () => widget.onJump(history.length),
@@ -509,7 +510,9 @@ class AfterGameBar extends StatelessWidget {
       children: [
         Expanded(
           child: PrimaryButton(
-            label: won ? 'Your win' : 'Result',
+            label: won
+                ? strings.boardMatchPartsYourWin
+                : strings.boardMatchPartsResult,
             color: won ? AppColors.coinGold : AppColors.accent,
             onPressed: onResult,
           ),
@@ -517,7 +520,7 @@ class AfterGameBar extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: PrimaryButton(
-            label: 'Play again',
+            label: strings.boardMatchPartsPlayAgain,
             color: AppColors.success,
             onPressed: () => context.go(playAgainRoute),
           ),
@@ -606,28 +609,33 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
         : AppColors.sky;
 
     final title = disputed
-        ? 'Under review'
+        ? strings.boardMatchPartsUnderReview
         : aborted
-        ? 'Called off'
+        ? strings.boardMatchPartsCalledOff
         : iWon
-        ? 'Victory!'
+        ? strings.boardMatchPartsVictory
         : iLost
-        ? 'Defeat'
-        : 'Draw';
+        ? strings.boardMatchPartsDefeat
+        : strings.boardMatchPartsDraw;
     final subtitle = switch (widget.result) {
-      _ when disputed =>
-        "You and your opponent reported different results. We'll sort it out.",
+      _ when disputed => strings.boardMatchPartsYouAndYourOpponentReported,
       final r when widget.describe?.call(r, iWon) != null => widget.describe!(
         r,
         iWon,
       )!,
-      'resignation' => iWon ? 'Your opponent resigned.' : 'You resigned.',
-      'draw' => 'Nobody can win from here.',
-      'timeout' => iWon ? 'Their clock ran out.' : 'Your clock ran out.',
+      'resignation' =>
+        iWon
+            ? strings.boardMatchPartsYourOpponentResigned
+            : strings.boardMatchPartsYouResigned,
+      'draw' => strings.boardMatchPartsNobodyCanWinFromHere,
+      'timeout' =>
+        iWon
+            ? strings.boardMatchPartsTheirClockRanOut
+            : strings.boardMatchPartsYourClockRanOut,
       'aborted' =>
         stake > 0
-            ? "A first move didn't come in time. Your coins are back."
-            : "A first move didn't come in time.",
+            ? strings.boardMatchPartsAFirstMoveDidnT
+            : strings.boardMatchPartsAFirstMoveDidnT2,
       _ => '',
     };
     final prize = prizeFor(stake, 2);
@@ -722,7 +730,9 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
                           const UtopiaLoader(size: 22),
                           const SizedBox(width: 8),
                           Text(
-                            iWon ? 'Sending your prize' : 'Wrapping up',
+                            iWon
+                                ? strings.boardMatchPartsSendingYourPrize
+                                : strings.boardMatchPartsWrappingUp,
                             style: AppTextStyles.body(
                               fontWeight: FontWeight.w700,
                               color: AppColors.textSecondary,
@@ -772,14 +782,14 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
                     children: [
                       Expanded(
                         child: PrimaryButton(
-                          label: 'Home',
+                          label: strings.boardMatchPartsHome,
                           onPressed: () => context.go('/home'),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: PrimaryButton(
-                          label: 'Play again',
+                          label: strings.boardMatchPartsPlayAgain,
                           color: AppColors.success,
                           onPressed: () => context.go(widget.playAgainRoute),
                         ),
@@ -790,7 +800,7 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
                   TextButton.icon(
                     onPressed: widget.onReview,
                     icon: const Icon(Icons.history_rounded, size: 18),
-                    label: const Text('Review the game'),
+                    label: Text(strings.boardMatchPartsReviewTheGame),
                   ),
                 ],
               ),
@@ -834,7 +844,7 @@ class _RatingPill extends StatelessWidget {
               duration: const Duration(milliseconds: 1400),
               curve: Curves.easeOutCubic,
               builder: (context, v, _) => Text(
-                'Rating ${v.round()}',
+                strings.boardMatchPartsRating(v.round()),
                 style: AppTextStyles.body(fontWeight: FontWeight.w800),
               ),
             ),
@@ -875,9 +885,9 @@ class _Duel extends ConsumerWidget {
           ? null
           : ref.watch(profileByIdProvider(id)).valueOrNull;
       final name = me
-          ? 'You'
+          ? strings.boardMatchPartsYou
           : id == null
-          ? 'Opponent'
+          ? strings.boardMatchPartsOpponent
           : profileDisplayName(profile, id);
       final won = winnerId != null && winnerId == id;
       final lost = winnerId != null && !won;

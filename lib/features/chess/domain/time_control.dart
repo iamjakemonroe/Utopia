@@ -1,3 +1,5 @@
+import '../../../l10n/strings.dart';
+
 /// How fast a time control plays, by estimated game length (minutes × 60 +
 /// 40 × increment), using the usual online-chess thresholds.
 enum ChessSpeed { bullet, blitz, rapid, classical }
@@ -54,10 +56,10 @@ class TimeControl {
 
 extension ChessSpeedName on ChessSpeed {
   String get title => switch (this) {
-    ChessSpeed.bullet => 'Bullet',
-    ChessSpeed.blitz => 'Blitz',
-    ChessSpeed.rapid => 'Rapid',
-    ChessSpeed.classical => 'Classical',
+    ChessSpeed.bullet => strings.timeControlBullet,
+    ChessSpeed.blitz => strings.timeControlBlitz,
+    ChessSpeed.rapid => strings.timeControlRapid,
+    ChessSpeed.classical => strings.timeControlClassical,
   };
 }
 

@@ -3301,4 +3301,3375 @@ class L10nEn extends L10n {
 
   @override
   String get coinBalancePillCoinsTapToGetMore => 'Coins. Tap to get more.';
+
+  @override
+  String get utopiaThemesUtopiaTwilight => 'Utopia Twilight';
+
+  @override
+  String get utopiaThemesUtopia => 'Utopia';
+
+  @override
+  String get utopiaThemesTwilightIslandsFloatingOverA =>
+      'Twilight islands floating over a sea of clouds.';
+
+  @override
+  String get utopiaThemesNoir => 'Noir';
+
+  @override
+  String get utopiaThemesPureBlackPureWhiteNothing =>
+      'Pure black, pure white. Nothing in between.';
+
+  @override
+  String get utopiaThemesUtopiaCalm => 'Utopia Calm';
+
+  @override
+  String get utopiaThemesAGlassyOceanAtDusk =>
+      'A glassy ocean at dusk. Breathe in.';
+
+  @override
+  String get utopiaThemesUtopiaAdventure => 'Utopia Adventure';
+
+  @override
+  String get utopiaThemesPeaksFloatingRocksAndA =>
+      'Peaks, floating rocks and a balloon to chase.';
+
+  @override
+  String get utopiaThemesUtopiaWarm => 'Utopia Warm';
+
+  @override
+  String get utopiaThemesGoldenDunesAndASky =>
+      'Golden dunes and a sky full of lanterns.';
+
+  @override
+  String get utopiaThemesUtopiaAlien => 'Utopia Alien';
+
+  @override
+  String get utopiaThemesGlowingMushroomsTwoMoonsAnd =>
+      'Glowing mushrooms, two moons and something in the sky.';
+
+  @override
+  String get utopiaThemesUtopiaTech => 'Utopia Tech';
+
+  @override
+  String get utopiaThemesANeonCityThatNever =>
+      'A neon city that never sleeps, over a glowing grid.';
+
+  @override
+  String get utopiaThemesUtopiaAnime => 'Utopia Anime';
+
+  @override
+  String get utopiaThemesCherryBlossomsAQuietShrine =>
+      'Cherry blossoms, a quiet shrine and a mountain at dusk.';
+
+  @override
+  String get utopiaThemesUtopiaDojo => 'Utopia Dojo';
+
+  @override
+  String get utopiaThemesASamuraiCastleAtSunset =>
+      'A samurai castle at sunset, shadow fighters sparring and a dragon circling the sky.';
+
+  @override
+  String get utopiaThemesUtopiaZombie => 'Utopia Zombie';
+
+  @override
+  String get utopiaThemesAGraveyardUnderASick =>
+      'A graveyard under a sick green moon, where the dead never stay down for long.';
+
+  @override
+  String get utopiaThemesUtopiaHeaven => 'Utopia Heaven';
+
+  @override
+  String get utopiaThemesPearlyGatesAboveTheClouds =>
+      'Pearly gates above the clouds, where the light never sets.';
+
+  @override
+  String get utopiaThemesUtopiaHell => 'Utopia Hell';
+
+  @override
+  String get utopiaThemesASeaOfFireUnder =>
+      'A sea of fire under a blood moon. Something is watching.';
+
+  @override
+  String get utopiaThemesUtopiaMusic => 'Utopia Music';
+
+  @override
+  String get utopiaThemesTheShowNeverEndsLasers =>
+      'The show never ends. Lasers up, bass down, hands in the air.';
+
+  @override
+  String get utopiaThemesUtopiaHalloween => 'Utopia Halloween';
+
+  @override
+  String get utopiaThemesAllHallowsEveEveryNight =>
+      'All Hallows\' Eve, every night. Don\'t look at the tower window.';
+
+  @override
+  String get utopiaThemesUtopiaWinter => 'Utopia Winter';
+
+  @override
+  String get utopiaThemesSnowOnACabinBy =>
+      'Snow on a cabin by a frozen lake. Listen for sleigh bells.';
+
+  @override
+  String get utopiaThemesYourBirthday => 'Your Birthday';
+
+  @override
+  String get utopiaThemesAPartyInTheSky =>
+      'A party in the sky, just for you. Happy birthday!';
+
+  @override
+  String get utopiaThemesUtopiaDoodle => 'Utopia Doodle';
+
+  @override
+  String get utopiaThemesEverythingDrawnInInkOn =>
+      'Everything drawn in ink on paper, and still alive.';
+
+  @override
+  String get utopiaThemesUtopiaDeep => 'Utopia Deep';
+
+  @override
+  String get utopiaThemesDownUnderTheWavesWhere =>
+      'Down under the waves, where the light comes in shafts.';
+
+  @override
+  String get utopiaThemesRuby => 'Ruby';
+
+  @override
+  String get utopiaThemesMoltenRidges => 'Molten ridges';
+
+  @override
+  String get utopiaThemesEmber => 'Ember';
+
+  @override
+  String get utopiaThemesCopperDunes => 'Copper dunes';
+
+  @override
+  String get utopiaThemesSunbeam => 'Sunbeam';
+
+  @override
+  String get utopiaThemesHoneySkies => 'Honey skies';
+
+  @override
+  String get utopiaThemesJade => 'Jade';
+
+  @override
+  String get utopiaThemesEmeraldIsles => 'Emerald isles';
+
+  @override
+  String get utopiaThemesLagoon => 'Lagoon';
+
+  @override
+  String get utopiaThemesTealShallows => 'Teal shallows';
+
+  @override
+  String get utopiaThemesAzure => 'Azure';
+
+  @override
+  String get utopiaThemesOpenSea => 'Open sea';
+
+  @override
+  String get utopiaThemesSapphire => 'Sapphire';
+
+  @override
+  String get utopiaThemesDeepBlue => 'Deep blue';
+
+  @override
+  String get utopiaThemesAmethyst => 'Amethyst';
+
+  @override
+  String get utopiaThemesVioletIsles => 'Violet isles';
+
+  @override
+  String get utopiaThemesBlossom => 'Blossom';
+
+  @override
+  String get utopiaThemesCherryClouds => 'Cherry clouds';
+
+  @override
+  String get utopiaThemesRoseGold => 'Rose Gold';
+
+  @override
+  String get utopiaThemesRosySands => 'Rosy sands';
+
+  @override
+  String get utopiaThemesOnyx => 'Onyx';
+
+  @override
+  String get utopiaThemesObsidianPeaks => 'Obsidian peaks';
+
+  @override
+  String get utopiaThemesPearl => 'Pearl';
+
+  @override
+  String get utopiaThemesMoonlitSnow => 'Moonlit snow';
+
+  @override
+  String get auraCommon => 'Common';
+
+  @override
+  String get auraRare => 'Rare';
+
+  @override
+  String get auraLegendary => 'Legendary';
+
+  @override
+  String get auraMythic => 'Mythic';
+
+  @override
+  String get aura3Days => '3 days';
+
+  @override
+  String get aura1Week => '1 week';
+
+  @override
+  String get aura1Month => '1 month';
+
+  @override
+  String get auraDragonCoil => 'Dragon Coil';
+
+  @override
+  String get auraADragonWoundRoundYour =>
+      'A dragon wound round your picture, breathing fire. In the Dojo world, it flies free and Chip squares up to it.';
+
+  @override
+  String get auraCrimsonFury => 'Crimson Fury';
+
+  @override
+  String get auraRedLightningARoaringFire =>
+      'Red lightning, a roaring fire vortex and shockwaves. Pure fury.';
+
+  @override
+  String get auraSupernova => 'Supernova';
+
+  @override
+  String get auraAStarExplodingAroundYou =>
+      'A star exploding around you, over and over.';
+
+  @override
+  String get auraEventHorizon => 'Event Horizon';
+
+  @override
+  String get auraABlackHoleWithA =>
+      'A black hole with a blazing disk, pulling the light in.';
+
+  @override
+  String get auraFrostfire => 'Frostfire';
+
+  @override
+  String get auraIceAndFireChasingEach =>
+      'Ice and fire chasing each other round. Sparks where they meet.';
+
+  @override
+  String get auraRingOfFire => 'Ring of Fire';
+
+  @override
+  String get auraABlazingRingOfFire =>
+      'A blazing ring of fire, spinning all around you.';
+
+  @override
+  String get auraZombieBite => 'Zombie Bite';
+
+  @override
+  String get auraRottingHandsClawUpTo =>
+      'Rotting hands claw up to grab you. Something took a bite. In the Zombie world, Chip gets bitten too.';
+
+  @override
+  String get auraEncore => 'Encore';
+
+  @override
+  String get auraYourPictureOnASpinning =>
+      'Your picture on a spinning record, an equalizer jumping all around it on the beat. In the Music world, Chip takes the decks.';
+
+  @override
+  String get auraJackSLantern => 'Jack\'s Lantern';
+
+  @override
+  String get auraBlackBramblesRoundYourPicture =>
+      'Black brambles round your picture, grinning jack-o\'-lanterns on the rim, a spider on its web and bats circling. In the Halloween world, Chip gets carved.';
+
+  @override
+  String get auraSnowGlobe => 'Snow Globe';
+
+  @override
+  String get auraYourPictureSealedInA =>
+      'Your picture sealed in a snow globe on a polished stand, the snow swirling up round you every time it\'s shaken. In the Winter world, Chip wraps up warm.';
+
+  @override
+  String get auraInferno => 'Inferno';
+
+  @override
+  String get auraAFrameOfLavaRunning =>
+      'A frame of lava running down both sides, flames trying to catch, obsidian horns and tail. In the Hell world, Chip grows horns.';
+
+  @override
+  String get auraPhoenix => 'Phoenix';
+
+  @override
+  String get auraWingsOfFlameThatBeat => 'Wings of flame that beat behind you.';
+
+  @override
+  String get auraGalaxy => 'Galaxy';
+
+  @override
+  String get auraASpiralOfStarsTurning =>
+      'A spiral of stars turning around you.';
+
+  @override
+  String get auraShadowFlame => 'Shadow Flame';
+
+  @override
+  String get auraDarkFireWithAGlowing =>
+      'Dark fire with a glowing green heart.';
+
+  @override
+  String get auraVioletStorm => 'Violet Storm';
+
+  @override
+  String get auraPurpleLightningCracklingAllAround =>
+      'Purple lightning crackling all around you.';
+
+  @override
+  String get auraWhiteStorm => 'White Storm';
+
+  @override
+  String get auraWhiteLightningCracklingAllAround =>
+      'White lightning crackling all around you.';
+
+  @override
+  String get auraBlueStorm => 'Blue Storm';
+
+  @override
+  String get auraElectricBlueBoltsNeverStill =>
+      'Electric blue bolts, never still.';
+
+  @override
+  String get auraEmeraldStorm => 'Emerald Storm';
+
+  @override
+  String get auraGreenLightningWithAWild =>
+      'Green lightning with a wild streak.';
+
+  @override
+  String get auraGoldenStorm => 'Golden Storm';
+
+  @override
+  String get auraGoldBoltsLikeACrown => 'Gold bolts, like a crown of thunder.';
+
+  @override
+  String get auraPinkStorm => 'Pink Storm';
+
+  @override
+  String get auraHotPinkLightningThatNever =>
+      'Hot pink lightning that never calms down.';
+
+  @override
+  String get auraSunburst => 'Sunburst';
+
+  @override
+  String get auraGoldenRaysTurningSlowlyLike =>
+      'Golden rays turning slowly, like a sunrise.';
+
+  @override
+  String get auraPrism => 'Prism';
+
+  @override
+  String get auraARainbowRingThatNever =>
+      'A rainbow ring that never stops turning.';
+
+  @override
+  String get auraOrbit => 'Orbit';
+
+  @override
+  String get auraLittlePlanetsCirclingYourPicture =>
+      'Little planets circling your picture.';
+
+  @override
+  String get auraNeonPulse => 'Neon Pulse';
+
+  @override
+  String get auraTwoNeonRingsRacingOpposite =>
+      'Two neon rings racing opposite ways.';
+
+  @override
+  String get auraTidal => 'Tidal';
+
+  @override
+  String get auraWavesRollingAroundYouSplashing =>
+      'Waves rolling around you, splashing as they go.';
+
+  @override
+  String get auraAngelHalo => 'Angel Halo';
+
+  @override
+  String get auraAGoldenHaloAndFeathers =>
+      'A golden halo and feathers drifting down. In the Heaven world, Chip gets his wings.';
+
+  @override
+  String get auraBubbleRing => 'Bubble Ring';
+
+  @override
+  String get auraSoapBubblesDriftingUpAnd =>
+      'Soap bubbles drifting up and away.';
+
+  @override
+  String get auraSakura => 'Sakura';
+
+  @override
+  String get auraCherryPetalsDancingInA => 'Cherry petals dancing in a circle.';
+
+  @override
+  String get auraFrost => 'Frost';
+
+  @override
+  String get auraIceCrystalsAndACool => 'Ice crystals and a cool blue shimmer.';
+
+  @override
+  String get auraLovestruck => 'Lovestruck';
+
+  @override
+  String get auraHeartsCirclingYouBeatingAs =>
+      'Hearts circling you, beating as they go.';
+
+  @override
+  String get auraFireflies => 'Fireflies';
+
+  @override
+  String get auraLittleLightsWanderingAroundYou =>
+      'Little lights wandering around you at dusk.';
+
+  @override
+  String get auraStarlight => 'Starlight';
+
+  @override
+  String get auraStarsTwinklingAllAroundYour =>
+      'Stars twinkling all around your picture.';
+
+  @override
+  String get auraAutumnLeaves => 'Autumn Leaves';
+
+  @override
+  String get auraGoldenLeavesSwirlingOnThe =>
+      'Golden leaves swirling on the wind.';
+
+  @override
+  String get auraMaestro => 'Maestro';
+
+  @override
+  String get auraARingOfWetPaint =>
+      'A ring of wet paint, with a brush painting around you.';
+
+  @override
+  String get auraChipMaestro => 'Chip Maestro';
+
+  @override
+  String get auraBirthdayParty => 'Birthday Party';
+
+  @override
+  String get auraARibbonInEveryColor =>
+      'A ribbon in every color, a party hat, balloons and a little cake. Only on your birthday.';
+
+  @override
+  String get auraExpired => 'Expired';
+
+  @override
+  String auraDHLeft(Object inDays, Object value) {
+    return '${inDays}d ${value}h left';
+  }
+
+  @override
+  String auraHMLeft(Object inHours, Object value) {
+    return '${inHours}h ${value}m left';
+  }
+
+  @override
+  String auraMLeft(Object value) {
+    return '${value}m left';
+  }
+
+  @override
+  String get chipChatTurnMyPhotoIntoA => 'Turn my photo into a coloring page';
+
+  @override
+  String get chipChatTellMeAJoke => 'Tell me a joke';
+
+  @override
+  String get chipChatWhichWorldShouldITry => 'Which world should I try?';
+
+  @override
+  String get chipChatHowDoIPlayLudo => 'How do I play Ludo?';
+
+  @override
+  String get chipChatHelpMeWithMyHomework => 'Help me with my homework';
+
+  @override
+  String get chipChatCouldnTOpenThatPhoto => 'Couldn\'t open that photo.';
+
+  @override
+  String get chipChatThatPictureIsnTReady =>
+      'That picture isn\'t ready to color yet.';
+
+  @override
+  String get chipChatYourPhoto => 'your photo';
+
+  @override
+  String get chipChatYourFreeRealPortrait => 'Your free real portrait';
+
+  @override
+  String chipChatChipHasAPhotoQuality(Object who) {
+    return 'Chip has a photo-quality coloring page made that looks just like $who. Your first one is free; after that, real portraits come with Chip Maestro.';
+  }
+
+  @override
+  String get chipChatNotNow => 'Not now';
+
+  @override
+  String get chipChatDrawItFree => 'Draw it free';
+
+  @override
+  String get chipChatThatSThisMonthS =>
+      'That\'s this month\'s real portraits. More when your plan renews!';
+
+  @override
+  String get chipChatThatSAllTheReal =>
+      'That\'s all the real portraits for today. More tomorrow!';
+
+  @override
+  String get chipChatRealPortraitsAreComingSoon =>
+      'Real portraits are coming soon.';
+
+  @override
+  String get chipChatSendChipThePhotoAgain =>
+      'Send Chip the photo again first.';
+
+  @override
+  String get chipChatCouldnTStartThePortrait =>
+      'Couldn\'t start the portrait. Try again?';
+
+  @override
+  String get chipChatStartANewChat => 'Start a new chat?';
+
+  @override
+  String get chipChatChipWillForgetThisConversation =>
+      'Chip will forget this conversation.';
+
+  @override
+  String get chipChatKeepIt => 'Keep it';
+
+  @override
+  String get chipChatNewChat => 'New chat';
+
+  @override
+  String get chipChatOpenTheStore => 'Open the Store';
+
+  @override
+  String get chipChatSeeAuras => 'See auras';
+
+  @override
+  String get chipChatChangeWorld => 'Change world';
+
+  @override
+  String get chipChatGetCoins => 'Get coins';
+
+  @override
+  String get chipChatOpenFriends => 'Open Friends';
+
+  @override
+  String get chipChatNotifications => 'Notifications';
+
+  @override
+  String get chipChatSettings => 'Settings';
+
+  @override
+  String get chipChatYourProfile => 'Your profile';
+
+  @override
+  String get chipChatOpenTheSketchbook => 'Open the Sketchbook';
+
+  @override
+  String get chipChatHowToPlayChess => 'How to play chess';
+
+  @override
+  String get chipChatHowToPlayCheckers => 'How to play checkers';
+
+  @override
+  String get chipChatHowToPlayLudo => 'How to play Ludo';
+
+  @override
+  String get chipChatPlayChess => 'Play chess';
+
+  @override
+  String get chipChatPlayCheckers => 'Play checkers';
+
+  @override
+  String get chipChatPlayLudo => 'Play Ludo';
+
+  @override
+  String get chipChatPlayGuessMyDoodle => 'Play Guess My Doodle';
+
+  @override
+  String get chipChatSaveYourAccount => 'Save your account';
+
+  @override
+  String get chipChatReportABug => 'Report a bug';
+
+  @override
+  String get chipChatSuggestAFeature => 'Suggest a feature';
+
+  @override
+  String get chipChatChip => 'Chip';
+
+  @override
+  String get chipChatThinking => 'Thinking...';
+
+  @override
+  String get chipChatYourBuddyInUtopiaAsk =>
+      'Your buddy in Utopia. Ask me anything.';
+
+  @override
+  String get chipChatDrawItForRealFree => 'Draw it for real · Free';
+
+  @override
+  String chipChatDrawItForRealLeft(Object left) {
+    return 'Draw it for real · $left left';
+  }
+
+  @override
+  String get chipChatDrawItForRealWith => 'Draw it for real with Chip Maestro';
+
+  @override
+  String get chipChatColorItWithChip => 'Color it with Chip';
+
+  @override
+  String chipChatKeepChattingCoins(Object value) {
+    return 'Keep chatting · $value coins';
+  }
+
+  @override
+  String get chipChatTellChipAboutThePhoto => 'Tell Chip about the photo';
+
+  @override
+  String get chipChatSaySomethingToChip => 'Say something to Chip';
+
+  @override
+  String get chipChatHiIKnowEveryCorner =>
+      'Hi! I know every corner of Utopia, and plenty outside it. Ask me anything, have me draw you a picture to color, or just say hello.';
+
+  @override
+  String get chipChatFoundABugOrGot =>
+      'Found a bug, or got an idea? Pass it on and the team will see it.';
+
+  @override
+  String get chipChatSend => 'Send';
+
+  @override
+  String get chipChatSendChipAPhoto => 'Send Chip a photo';
+
+  @override
+  String get chipChatPhotoForChip => 'Photo for Chip';
+
+  @override
+  String get chipChatRemoveThePhoto => 'Remove the photo';
+
+  @override
+  String get chipChatColorIt => 'Color it';
+
+  @override
+  String get chipChatTravelToDoodleToColor => 'Travel to Doodle to color it';
+
+  @override
+  String get chipChatGetTheDoodleWorldTo => 'Get the Doodle world to color it';
+
+  @override
+  String chipChatDrawing(Object subject) {
+    return 'Drawing $subject...';
+  }
+
+  @override
+  String get chipChatICanTDrawThat =>
+      'I can\'t draw that one. Try something else?';
+
+  @override
+  String get chipChatIVeDrawnAllI =>
+      'I\'ve drawn all I can today. Ask me again tomorrow!';
+
+  @override
+  String get chipChatMyPencilIsnTReady => 'My pencil isn\'t ready yet.';
+
+  @override
+  String get chipChatThatDrawingDidnTWork =>
+      'That drawing didn\'t work out. Ask me again?';
+
+  @override
+  String get chessBotWhite => 'White';
+
+  @override
+  String get chessBotBlack => 'Black';
+
+  @override
+  String get chessBotAFriend => 'a friend';
+
+  @override
+  String get chessBotReadyIVeBeenPractising => 'Ready? I\'ve been practising!';
+
+  @override
+  String get chessBotGoodLuckHaveFun => 'Good luck! Have fun!';
+
+  @override
+  String get chessBotMineNow => 'Mine now!';
+
+  @override
+  String get chessBotOofNiceOne => 'Oof, nice one.';
+
+  @override
+  String get chessBotNoooMyPiece => 'Nooo, my piece!';
+
+  @override
+  String get chessBotWatchYourKing => 'Watch your king!';
+
+  @override
+  String get chessBotWhoaCheck => 'Whoa, check?';
+
+  @override
+  String get chessBotCheckmateYouReGood => 'Checkmate... you\'re good!';
+
+  @override
+  String get chessBotErrorPieceMissing => 'ERROR: PIECE MISSING.';
+
+  @override
+  String get chessBotLeaveThisGame => 'Leave this game?';
+
+  @override
+  String get chessBotThisGameEndsHereAnd =>
+      'This game ends here and won\'t be saved.';
+
+  @override
+  String chessBotYourGameAgainstEndsHere(Object value) {
+    return 'Your game against $value ends here and won\'t be saved.';
+  }
+
+  @override
+  String get chessBotLeave => 'Leave';
+
+  @override
+  String get chessBotKeepPlaying => 'Keep playing';
+
+  @override
+  String get chessBotResignThisGame => 'Resign this game?';
+
+  @override
+  String chessBotWinsThisOne(Object value) {
+    return '$value wins this one.';
+  }
+
+  @override
+  String get chessBotResign => 'Resign';
+
+  @override
+  String get chessBotEasy => 'Easy';
+
+  @override
+  String get chessBotNormal => 'Normal';
+
+  @override
+  String get chessBotHard => 'Hard';
+
+  @override
+  String get chessBotLeaveGame => 'Leave game';
+
+  @override
+  String get chessBotClose => 'Close';
+
+  @override
+  String get chessBotChessOnePhone => 'Chess · one phone';
+
+  @override
+  String get chessBotTakeBack => 'Take back';
+
+  @override
+  String get chessBotDraw => 'Draw';
+
+  @override
+  String chessBotRanOutOfTime(Object value) {
+    return '$value ran out of time';
+  }
+
+  @override
+  String chessBotCheck(Object value) {
+    return '$value: check!';
+  }
+
+  @override
+  String chessBotSMove(Object value) {
+    return '$value\'s move';
+  }
+
+  @override
+  String get chessBotYou => 'You';
+
+  @override
+  String get chessBotYouWon => 'You won!';
+
+  @override
+  String get chessBotOutOfTime => 'Out of time';
+
+  @override
+  String chessBotIsThinking(Object value) {
+    return '$value is thinking...';
+  }
+
+  @override
+  String get chessBotCheckProtectYourKing => 'Check! Protect your king';
+
+  @override
+  String get chessBotYourMove => 'Your move';
+
+  @override
+  String get chessBotResult => 'Result';
+
+  @override
+  String get chessBotItSADraw => 'It\'s a draw';
+
+  @override
+  String get chessBotThinking => 'Thinking...';
+
+  @override
+  String chessBotOffline(Object level) {
+    return '$level · offline';
+  }
+
+  @override
+  String get chessBotTheirTimeRanOut => 'Their time ran out!';
+
+  @override
+  String get chessBotYouResigned => 'You resigned';
+
+  @override
+  String get chessBotPlayAgain => 'Play again';
+
+  @override
+  String get chessBotSeeTheBoard => 'See the board';
+
+  @override
+  String get chessBotDone => 'Done';
+
+  @override
+  String get storeCatalogPouch => 'Pouch';
+
+  @override
+  String get storeCatalogSack => 'Sack';
+
+  @override
+  String get storeCatalogChest => 'Chest';
+
+  @override
+  String get storeCatalogPopular => 'Popular';
+
+  @override
+  String get storeCatalogVault => 'Vault';
+
+  @override
+  String get storeCatalogMountain => 'Mountain';
+
+  @override
+  String get storeCatalogDragonSHoard => 'Dragon\'s Hoard';
+
+  @override
+  String get storeCatalogBestValue => 'Best value';
+
+  @override
+  String get storeCatalogStarterPack => 'Starter pack';
+
+  @override
+  String get storeCatalogOnceOnly => 'Once only';
+
+  @override
+  String get storeCatalogClassicGloss => 'Classic Gloss';
+
+  @override
+  String get storeCatalogShinyEnamelPinsTheTimeless =>
+      'Shiny enamel pins, the timeless look.';
+
+  @override
+  String get storeCatalogBubblePop => 'Bubble Pop';
+
+  @override
+  String get storeCatalogWobblySoapBubblesThatShimmer =>
+      'Wobbly soap bubbles that shimmer as they hop.';
+
+  @override
+  String get storeCatalogJellyBuddies => 'Jelly Buddies';
+
+  @override
+  String get storeCatalogSquishyJellyCrittersThatBlink =>
+      'Squishy jelly critters that blink and jiggle.';
+
+  @override
+  String get storeCatalogCrystalShards => 'Crystal Shards';
+
+  @override
+  String get storeCatalogFacetedGemsThatCatchThe =>
+      'Faceted gems that catch the light.';
+
+  @override
+  String get storeCatalogCandySwirl => 'Candy Swirl';
+
+  @override
+  String get storeCatalogSpinningLollipopsSweetAndGlossy =>
+      'Spinning lollipops, sweet and glossy.';
+
+  @override
+  String get storeCatalogCosmicOrbs => 'Cosmic Orbs';
+
+  @override
+  String get storeCatalogTinyRingedPlanetsWithOrbiting =>
+      'Tiny ringed planets with orbiting moons.';
+
+  @override
+  String get storeCatalogRoyalCrowns => 'Royal Crowns';
+
+  @override
+  String get storeCatalogGoldCrownedPiecesWithJewel =>
+      'Gold-crowned pieces with jewel hearts.';
+
+  @override
+  String get storeCatalogClassic => 'Classic';
+
+  @override
+  String get storeCatalogIvoryAndVioletCleanAnd =>
+      'Ivory and violet, clean and readable.';
+
+  @override
+  String get storeCatalogChessBuddies => 'Chess Buddies';
+
+  @override
+  String get storeCatalogPiecesWithFacesTheyBlink =>
+      'Pieces with faces: they blink, cheer, panic and faint.';
+
+  @override
+  String get storeCatalogMonsterMash => 'Monster Mash';
+
+  @override
+  String get storeCatalogHornsFangsAndOneVery =>
+      'Horns, fangs and one very big eye. They mean business.';
+
+  @override
+  String get storeCatalogRoboKnights => 'Robo Knights';
+
+  @override
+  String get storeCatalogChromePiecesWithLedFaces =>
+      'Chrome pieces with LED faces that scan the board.';
+
+  @override
+  String get storeCatalogCrystal => 'Crystal';
+
+  @override
+  String get storeCatalogIceClearPiecesWithA =>
+      'Ice-clear pieces with a frosted glow.';
+
+  @override
+  String get storeCatalogRoyalGold => 'Royal Gold';
+
+  @override
+  String get storeCatalogGoldAgainstObsidianFitFor =>
+      'Gold against obsidian, fit for a throne.';
+
+  @override
+  String get storeCatalogNeon => 'Neon';
+
+  @override
+  String get storeCatalogPiecesThatGlowLikeAn =>
+      'Pieces that glow like an arcade at night.';
+
+  @override
+  String get storeCatalogCandy => 'Candy';
+
+  @override
+  String get storeCatalogBubblegumPinkAndMintSweet =>
+      'Bubblegum pink and mint, sweet as it gets.';
+
+  @override
+  String storeCatalogPack(Object value) {
+    return '$value Pack';
+  }
+
+  @override
+  String get storeCatalogEveryWorld => 'Every World';
+
+  @override
+  String storeCatalogChess(Object name) {
+    return '$name Chess';
+  }
+
+  @override
+  String get storeCatalogRuby => 'Ruby';
+
+  @override
+  String get storeCatalogEmber => 'Ember';
+
+  @override
+  String get storeCatalogSunbeam => 'Sunbeam';
+
+  @override
+  String get storeCatalogJade => 'Jade';
+
+  @override
+  String get storeCatalogLagoon => 'Lagoon';
+
+  @override
+  String get storeCatalogAzure => 'Azure';
+
+  @override
+  String get storeCatalogSapphire => 'Sapphire';
+
+  @override
+  String get storeCatalogAmethyst => 'Amethyst';
+
+  @override
+  String get storeCatalogBlossom => 'Blossom';
+
+  @override
+  String get storeCatalogRoseGold => 'Rose Gold';
+
+  @override
+  String get storeCatalogOnyx => 'Onyx';
+
+  @override
+  String get storeCatalogPearl => 'Pearl';
+
+  @override
+  String get checkersBotAFriend => 'a friend';
+
+  @override
+  String get checkersBotReadyIVeBeenPractising =>
+      'Ready? I\'ve been practising my jumps!';
+
+  @override
+  String get checkersBotGoodLuckHaveFun => 'Good luck! Have fun!';
+
+  @override
+  String get checkersBotMineNow => 'Mine now!';
+
+  @override
+  String get checkersBotOofNiceJump => 'Oof, nice jump.';
+
+  @override
+  String get checkersBotBoingBoing => 'Boing boing!';
+
+  @override
+  String get checkersBotWhoaADouble => 'Whoa, a double!';
+
+  @override
+  String get checkersBotThatSNotFairIt => 'That\'s not fair... it is fair.';
+
+  @override
+  String get checkersBotIMAKingNow => 'I\'m a king now!';
+
+  @override
+  String get checkersBotYourMajesty => 'Your Majesty...';
+
+  @override
+  String get checkersBotKingsGoBackwardsTooEek =>
+      'Kings go backwards too. Eek.';
+
+  @override
+  String get checkersBotErrorPieceMissing => 'ERROR: PIECE MISSING.';
+
+  @override
+  String get checkersBotVictoryProtocolComplete => 'VICTORY PROTOCOL COMPLETE.';
+
+  @override
+  String get checkersBotDark => 'Dark';
+
+  @override
+  String get checkersBotLight => 'Light';
+
+  @override
+  String get checkersBotEasy => 'Easy';
+
+  @override
+  String get checkersBotNormal => 'Normal';
+
+  @override
+  String get checkersBotHard => 'Hard';
+
+  @override
+  String get checkersBotDraw => 'Draw';
+
+  @override
+  String checkersBotRanOutOfTime(Object value) {
+    return '$value ran out of time';
+  }
+
+  @override
+  String get checkersBotOutOfTime => 'Out of time';
+
+  @override
+  String get checkersBotYouWon => 'You won!';
+
+  @override
+  String checkersBotIsThinking(Object value) {
+    return '$value is thinking...';
+  }
+
+  @override
+  String checkersBotYouMustTakeAPiece(Object value) {
+    return '$value: you must take a piece';
+  }
+
+  @override
+  String checkersBotSMove(Object value) {
+    return '$value\'s move';
+  }
+
+  @override
+  String get checkersBotYouMustTakeAPiece2 => 'You must take a piece';
+
+  @override
+  String get checkersBotYourMove => 'Your move';
+
+  @override
+  String get checkersBotClose => 'Close';
+
+  @override
+  String get checkersBotCheckersOnePhone => 'Checkers · one phone';
+
+  @override
+  String get checkersBotTakeBack => 'Take back';
+
+  @override
+  String get checkersBotResign => 'Resign';
+
+  @override
+  String get checkersBotYou => 'You';
+
+  @override
+  String get checkersBotResult => 'Result';
+
+  @override
+  String get checkersBotItSADraw => 'It\'s a draw';
+
+  @override
+  String get checkersBotYouResigned => 'You resigned';
+
+  @override
+  String checkersBotTook(Object taken) {
+    return 'Took $taken';
+  }
+
+  @override
+  String get checkersBotThinking => 'Thinking...';
+
+  @override
+  String checkersBotOffline(Object level) {
+    return '$level · offline';
+  }
+
+  @override
+  String get checkersBotPlayAgain => 'Play again';
+
+  @override
+  String get checkersBotSeeTheBoard => 'See the board';
+
+  @override
+  String get checkersBotDone => 'Done';
+
+  @override
+  String get ludoPlayerDark => 'Dark';
+
+  @override
+  String get ludoPlayerLight => 'Light';
+
+  @override
+  String get ludoPlayerWhite => 'White';
+
+  @override
+  String get ludoPlayerBlack => 'Black';
+
+  @override
+  String get ludoPlayerYou => 'You';
+
+  @override
+  String get ludoPlayerClassicGloss => 'Classic Gloss';
+
+  @override
+  String get ludoPlayerClassic => 'Classic';
+
+  @override
+  String ludoPlayerJoined(Object value) {
+    return 'Joined $value';
+  }
+
+  @override
+  String get ludoPlayerLudoWins => 'Ludo wins';
+
+  @override
+  String get ludoPlayerChessWins => 'Chess wins';
+
+  @override
+  String get ludoPlayerCheckersWins => 'Checkers wins';
+
+  @override
+  String get ludoPlayerDoodleWins => 'Doodle wins';
+
+  @override
+  String get ludoPlayerPlayed => 'Played';
+
+  @override
+  String get ludoPlayerWinRate => 'Win rate';
+
+  @override
+  String get ludoPlayerUnmuteChat => 'Unmute chat';
+
+  @override
+  String get ludoPlayerMuteChat => 'Mute chat';
+
+  @override
+  String get ludoPlayerReport => 'Report';
+
+  @override
+  String get ludoPlayerFeb => 'Feb';
+
+  @override
+  String get ludoPlayerMar => 'Mar';
+
+  @override
+  String get ludoPlayerApr => 'Apr';
+
+  @override
+  String get ludoPlayerMay => 'May';
+
+  @override
+  String get ludoPlayerJun => 'Jun';
+
+  @override
+  String get ludoPlayerJul => 'Jul';
+
+  @override
+  String get ludoPlayerAug => 'Aug';
+
+  @override
+  String get ludoPlayerSep => 'Sep';
+
+  @override
+  String get ludoPlayerOct => 'Oct';
+
+  @override
+  String get ludoPlayerNov => 'Nov';
+
+  @override
+  String get ludoPlayerDec => 'Dec';
+
+  @override
+  String get ludoPlayerSaveYourAccountToAdd =>
+      'Save your account to add friends';
+
+  @override
+  String get ludoPlayerAddFriend => 'Add friend';
+
+  @override
+  String get ludoPlayerFriends => 'Friends';
+
+  @override
+  String get ludoPlayerRequestSent => 'Request sent';
+
+  @override
+  String get ludoPlayerAcceptFriendRequest => 'Accept friend request';
+
+  @override
+  String get ludoPlayerCouldnTSendTheRequest =>
+      'Couldn\'t send the request. Try again.';
+
+  @override
+  String get ludoPlayerReportThisPlayer => 'Report this player';
+
+  @override
+  String get ludoPlayerOffensiveChat => 'Offensive chat';
+
+  @override
+  String get ludoPlayerCheating => 'Cheating';
+
+  @override
+  String get ludoPlayerLeavingGamesOnPurpose => 'Leaving games on purpose';
+
+  @override
+  String get ludoPlayerInappropriateNameOrPicture =>
+      'Inappropriate name or picture';
+
+  @override
+  String get ludoPlayerSomethingElse => 'Something else';
+
+  @override
+  String get ludoPlayerThanksOurTeamWillTake =>
+      'Thanks. Our team will take a look.';
+
+  @override
+  String get ludoPlayerCouldnTSendTheReport =>
+      'Couldn\'t send the report. Try again.';
+
+  @override
+  String get ludoMatchOutOfTimeMissOne =>
+      'Out of time! Miss one more turn and you leave the game.';
+
+  @override
+  String get ludoMatchOutOfTimeYourTurn => 'Out of time! Your turn passed.';
+
+  @override
+  String get ludoMatchLeaveThisGame => 'Leave this game?';
+
+  @override
+  String get ludoMatchThisGameAgainstTheBots =>
+      'This game against the bots will end.';
+
+  @override
+  String ludoMatchYouLlLoseYourCoin(Object stake, Object value) {
+    return 'You\'ll lose your $stake-coin entry$value.';
+  }
+
+  @override
+  String ludoMatchYouLlLoseThisGame(Object value) {
+    return 'You\'ll lose this game$value.';
+  }
+
+  @override
+  String get ludoMatchLeaveGame => 'Leave game';
+
+  @override
+  String get ludoMatchKeepPlaying => 'Keep playing';
+
+  @override
+  String get ludoMatchSoundMusic => 'Sound & music';
+
+  @override
+  String get ludoMatchHowToPlay => 'How to play';
+
+  @override
+  String get ludoMatchChat => 'Chat';
+
+  @override
+  String get ludoMatchSettingUpTheBoard => 'Setting up the board';
+
+  @override
+  String get ludoMatchLudo => 'Ludo';
+
+  @override
+  String get ludoMatchGameMenu => 'Game menu';
+
+  @override
+  String get ludoMatchFree => 'Free';
+
+  @override
+  String get ludoMatchYouLeftThisGame => 'You left this game.';
+
+  @override
+  String ludoMatchCapturedTapThePieceTo(Object value) {
+    return '$value captured! Tap the piece to react, or roll on';
+  }
+
+  @override
+  String get ludoMatchCapturedTapYourPieceTo =>
+      'Captured! Tap your piece to react, or roll on';
+
+  @override
+  String ludoMatchTapAGlowingPiece(Object value) {
+    return '$value, tap a glowing piece';
+  }
+
+  @override
+  String get ludoMatchTapAGlowingPieceTo => 'Tap a glowing piece to move';
+
+  @override
+  String ludoMatchSTurnTapTheDie(Object value) {
+    return '$value\'s turn. Tap the die!';
+  }
+
+  @override
+  String get ludoMatchYourTurnTapTheDie => 'Your turn. Tap the die!';
+
+  @override
+  String ludoMatchIsPlaying(Object value) {
+    return '$value is playing';
+  }
+
+  @override
+  String get ludoMatchResultUnderReview => 'Result under review';
+
+  @override
+  String get ludoMatchYouWon => 'You won!';
+
+  @override
+  String ludoMatchYouCame(Object value) {
+    return 'You came $value';
+  }
+
+  @override
+  String get ludoMatchGameOver => 'Game over';
+
+  @override
+  String get ludoMatchSomeone => 'Someone';
+
+  @override
+  String get ludoMatchAllFourPiecesHome => 'All four pieces home!';
+
+  @override
+  String ludoMatchGotAllFourPiecesHome(Object winnerName) {
+    return '$winnerName got all four pieces home first.';
+  }
+
+  @override
+  String get ludoMatchEveryoneElseLeftTheWin =>
+      'Everyone else left. The win is yours.';
+
+  @override
+  String get ludoMatchTheOthersRanOutOf =>
+      'The others ran out of time. You win!';
+
+  @override
+  String get ludoMatchYouRanOutOfTime => 'You ran out of time.';
+
+  @override
+  String get ludoMatchHome => 'Home';
+
+  @override
+  String get ludoMatchPlayAgain => 'Play again';
+
+  @override
+  String get ludoMatchYou => 'You';
+
+  @override
+  String ludoMatchLeftTheGame(Object value) {
+    return '$value · Left the game';
+  }
+
+  @override
+  String get storeChipMaestroIsInThe =>
+      'Chip Maestro is in the Utopia app on your phone.';
+
+  @override
+  String get storeSaveYourAccountToBuy => 'Save your account to buy coins.';
+
+  @override
+  String get storeCouldnTOpenThePayment =>
+      'Couldn\'t open the payment page. Try again.';
+
+  @override
+  String get storeCoinTopUpsAreComing => 'Coin top-ups are coming soon.';
+
+  @override
+  String get storeSignInToBuyCoins => 'Sign in to buy coins.';
+
+  @override
+  String get storeTheStoreIsnTAvailable =>
+      'The store isn\'t available right now. Try again soon.';
+
+  @override
+  String get storeCouldnTStartThePurchase => 'Couldn\'t start the purchase.';
+
+  @override
+  String get storeChipMaestroIsComingSoon => 'Chip Maestro is coming soon.';
+
+  @override
+  String get storeSignInToJoinChip => 'Sign in to join Chip Maestro.';
+
+  @override
+  String get storeNothingToRestoreYet => 'Nothing to restore yet.';
+
+  @override
+  String get storeLookingForYourPurchases => 'Looking for your purchases…';
+
+  @override
+  String get storeCouldnTLookForYour => 'Couldn\'t look for your purchases.';
+
+  @override
+  String get storeTestTopUpsArenT =>
+      'Test top-ups aren\'t available on this server.';
+
+  @override
+  String get storeYourPaymentIsStillGoing =>
+      'Your payment is still going through. Chip Maestro starts as soon as it does.';
+
+  @override
+  String get storeYourPaymentIsStillGoing2 =>
+      'Your payment is still going through. Your coins arrive as soon as it does.';
+
+  @override
+  String get storeThePurchaseDidnTGo => 'The purchase didn\'t go through.';
+
+  @override
+  String get storeWelcomeToChipMaestro => 'Welcome to Chip Maestro!';
+
+  @override
+  String get storeYourChipMaestroPlanIs => 'Your Chip Maestro plan is back.';
+
+  @override
+  String get storeThatChipMaestroPlanBelongs =>
+      'That Chip Maestro plan belongs to another Utopia account.';
+
+  @override
+  String get storePaymentReceivedChipMaestroWill =>
+      'Payment received. Chip Maestro will start the next time you open Utopia.';
+
+  @override
+  String get storeThoseCoinsWentToThe =>
+      'Those coins went to the account that bought them.';
+
+  @override
+  String get storeThatPaymentWasCancelledSo =>
+      'That payment was cancelled, so no coins were added.';
+
+  @override
+  String get storePaymentReceivedYourCoinsWill =>
+      'Payment received. Your coins will arrive the next time you open Utopia.';
+
+  @override
+  String get storeNotEnoughCoinsYet => 'Not enough coins yet.';
+
+  @override
+  String storeYouNeedCoinsForThat(Object value) {
+    return 'You need $value coins for that.';
+  }
+
+  @override
+  String get storeCouldnTUnlockThatCheck =>
+      'Couldn\'t unlock that. Check your connection and try again.';
+
+  @override
+  String get storeUnlockItFirst => 'Unlock it first.';
+
+  @override
+  String get storeCouldnTEquipThatTry => 'Couldn\'t equip that. Try again?';
+
+  @override
+  String get storeYourWelcomePassHasEnded =>
+      'Your welcome pass has ended: back to your own pieces. Keep a favourite set from the store any time.';
+
+  @override
+  String get storeYourBirthdayPartyIsOver =>
+      'Your birthday party is over. See you next year!';
+
+  @override
+  String storeIsOverComesBackNext(Object value, Object name, Object value2) {
+    return '$value is over. $name comes back next $value2.';
+  }
+
+  @override
+  String storeYourTimeInRanOut(Object name) {
+    return 'Your time in $name ran out. Rent it again any time.';
+  }
+
+  @override
+  String get storeYouNeedMoreCoinsFor => 'You need more coins for that.';
+
+  @override
+  String get storeCouldnTRentThatWorld =>
+      'Couldn\'t rent that world. Try again.';
+
+  @override
+  String get ludoLobbySomeoneInTheRoomNeeds =>
+      'Someone in the room needs more coins for this game.';
+
+  @override
+  String get ludoLobbyWeCouldnTFindThat =>
+      'We couldn\'t find that room. Check the code.';
+
+  @override
+  String get ludoLobbyYouNeedAtLeast2 =>
+      'You need at least 2 players to start.';
+
+  @override
+  String get ludoLobbyLudo => 'Ludo';
+
+  @override
+  String get ludoLobbyHowToPlay => 'How to play';
+
+  @override
+  String get ludoLobbyPlayOnline => 'Play online';
+
+  @override
+  String get ludoLobbyJoinATableOf2 => 'Join a table of 2 or 4 players';
+
+  @override
+  String get ludoLobbyPlayWithFriends => 'Play with friends';
+
+  @override
+  String get ludoLobbyMakeARoomOrJoin => 'Make a room or join one with a code';
+
+  @override
+  String get ludoLobbyPlayOffline => 'Play offline';
+
+  @override
+  String get ludoLobbyBotsOrFriendsTakingTurns =>
+      'Bots, or friends taking turns on this phone';
+
+  @override
+  String get ludoLobby2To6Players => '2 to 6\nplayers';
+
+  @override
+  String get ludoLobbyTimedTurns => 'Timed\nturns';
+
+  @override
+  String get ludoLobbyChatReactions => 'Chat &\nreactions';
+
+  @override
+  String get ludoLobbyPrivateRooms => 'Private\nrooms';
+
+  @override
+  String get ludoLobbyFriendsOnThisPhone => 'Friends on this phone';
+
+  @override
+  String get ludoLobbyNone => 'None';
+
+  @override
+  String get ludoLobbyTapASeatToSit => 'Tap a seat to sit there';
+
+  @override
+  String get ludoLobbyYou => 'You';
+
+  @override
+  String get ludoLobbyStartGame => 'Start game';
+
+  @override
+  String get ludoLobbyPlay => 'Play';
+
+  @override
+  String get ludoLobbyJoinRoom => 'Join room';
+
+  @override
+  String get ludoLobbyClassicBoard => 'Classic board';
+
+  @override
+  String get ludoLobbyStarBoard => 'Star board';
+
+  @override
+  String get ludoLobbyCreateRoom => 'Create room';
+
+  @override
+  String get ludoLobbyCreate => 'Create';
+
+  @override
+  String get ludoLobbyJoin => 'Join';
+
+  @override
+  String get ludoLobbyFindingAnOpponent => 'Finding an opponent';
+
+  @override
+  String get ludoLobbyGatheringPlayers => 'Gathering players';
+
+  @override
+  String get ludoLobbyFree => 'Free';
+
+  @override
+  String get ludoLobbyPlayWithBots => 'Play with bots';
+
+  @override
+  String get ludoLobbyCancel => 'Cancel';
+
+  @override
+  String get guessDoodleLobbyWeCouldnTFindThat =>
+      'We couldn\'t find that game. Check the code.';
+
+  @override
+  String get guessDoodleLobbyThatGameIsFull => 'That game is full.';
+
+  @override
+  String get guessDoodleLobbyThatGameHasEnded => 'That game has ended.';
+
+  @override
+  String get guessDoodleLobbyFindingAGame => 'Finding a game';
+
+  @override
+  String get guessDoodleLobbyGuessMyDoodle => 'Guess My Doodle';
+
+  @override
+  String get guessDoodleLobbyHowToPlay => 'How to play';
+
+  @override
+  String get guessDoodleLobbyPlayOnline => 'Play online';
+
+  @override
+  String get guessDoodleLobbyJumpIntoAGameWith =>
+      'Jump into a game with players anywhere';
+
+  @override
+  String get guessDoodleLobbyPlayWithFriends => 'Play with friends';
+
+  @override
+  String get guessDoodleLobbyMakeAGameOrJoin =>
+      'Make a game or join one with a code';
+
+  @override
+  String get guessDoodleLobbyChipDrawsYouGuess => 'Chip draws, you guess';
+
+  @override
+  String get guessDoodleLobbyGuessHisDoodlesOnYour =>
+      'Guess his doodles on your own';
+
+  @override
+  String get guessDoodleLobby1To20Players => '1 to 20\nplayers';
+
+  @override
+  String get guessDoodleLobbyDrawGuess => 'Draw &\nguess';
+
+  @override
+  String get guessDoodleLobbyFasterGuessMorePoints =>
+      'Faster guess,\nmore points';
+
+  @override
+  String get guessDoodleLobbyPrivateGames => 'Private\ngames';
+
+  @override
+  String get guessDoodleLobbyJoinGame => 'Join game';
+
+  @override
+  String get guessDoodleLobbyRounds => 'Rounds';
+
+  @override
+  String get guessDoodleLobbyTimeToDraw => 'Time to draw';
+
+  @override
+  String get guessDoodleLobbyCreateGame => 'Create game';
+
+  @override
+  String get guessDoodleLobbyCreate => 'Create';
+
+  @override
+  String get guessDoodleLobbyJoin => 'Join';
+
+  @override
+  String get guessDoodleLobbyTakeTurnsDrawing => 'Take turns drawing';
+
+  @override
+  String get guessDoodleLobbyOnePlayerPicksAWord =>
+      'One player picks a word from three and draws it. No letters or numbers in the drawing.';
+
+  @override
+  String get guessDoodleLobbyGuessInTheChat => 'Guess in the chat';
+
+  @override
+  String get guessDoodleLobbyEveryoneElseTypesGuessesA =>
+      'Everyone else types guesses. A right guess is never shown to the others, and \"so close\" tells only you when you nearly have it.';
+
+  @override
+  String get guessDoodleLobbyBeQuick => 'Be quick';
+
+  @override
+  String get guessDoodleLobbyTheSoonerYouGuessThe =>
+      'The sooner you guess, the more points you get, with a bonus for the first. The drawer scores for everyone who gets it.';
+
+  @override
+  String get guessDoodleLobbyHints => 'Hints';
+
+  @override
+  String get guessDoodleLobbyLettersOfTheWordAppear =>
+      'Letters of the word appear as the clock runs down.';
+
+  @override
+  String get guessDoodleLobbyWin => 'Win';
+
+  @override
+  String get guessDoodleLobbyEveryoneDrawsOnceEachRound =>
+      'Everyone draws once each round. The most points after the last round wins.';
+
+  @override
+  String get guessDoodleLobbyGotIt => 'Got it';
+
+  @override
+  String get studioCouldnTOpenThisOne => 'Couldn\'t open this one.';
+
+  @override
+  String get studioIVeColoredLotsToday =>
+      'I\'ve colored lots today. Ask me again tomorrow!';
+
+  @override
+  String get studioICanTColorThat => 'I can\'t color that one.';
+
+  @override
+  String get studioMyPaintbrushIsnTReady => 'My paintbrush isn\'t ready yet.';
+
+  @override
+  String get studioICouldnTColorIt =>
+      'I couldn\'t color it just now. Try again?';
+
+  @override
+  String get studioAllowUtopiaToAddTo =>
+      'Allow Utopia to add to your photos in Settings, then try again.';
+
+  @override
+  String get studioSavedToYourPhotos => 'Saved to your photos';
+
+  @override
+  String get studioCouldnTSaveToYour =>
+      'Couldn\'t save to your photos. Try again.';
+
+  @override
+  String get studioKeepIt => 'Keep it';
+
+  @override
+  String get studioStartOver => 'Start over?';
+
+  @override
+  String get studioEverythingOnThisPageWill =>
+      'Everything on this page will be cleared.';
+
+  @override
+  String get studioClearIt => 'Clear it';
+
+  @override
+  String get studioDeleteThis => 'Delete this?';
+
+  @override
+  String get studioItLlBeGoneFrom =>
+      'It\'ll be gone from your sketchbook for good.';
+
+  @override
+  String get studioDelete => 'Delete';
+
+  @override
+  String get studioSketchbook => 'Sketchbook';
+
+  @override
+  String get studioColoring => 'Coloring';
+
+  @override
+  String get studioSketch => 'Sketch';
+
+  @override
+  String get studioBack => 'Back';
+
+  @override
+  String get studioCouldnTSaveWillTry => 'Couldn\'t save, will try again';
+
+  @override
+  String get studioSavedInUtopia => 'Saved in Utopia';
+
+  @override
+  String get studioTapAShapeToFill => 'Tap a shape to fill it';
+
+  @override
+  String get studioDrawAnything => 'Draw anything';
+
+  @override
+  String get studioUndo => 'Undo';
+
+  @override
+  String get studioRedo => 'Redo';
+
+  @override
+  String get studioSavePicture => 'Save picture';
+
+  @override
+  String get studioSaveToPhotos => 'Save to Photos';
+
+  @override
+  String get studioMore => 'More';
+
+  @override
+  String get studioStartOver2 => 'Start over';
+
+  @override
+  String get studioGettingYourPageReady => 'Getting your page ready…';
+
+  @override
+  String get studioZoomIn => 'Zoom in';
+
+  @override
+  String get studioZoomOut => 'Zoom out';
+
+  @override
+  String get studioFitThePage => 'Fit the page';
+
+  @override
+  String get studioColorWithChip => 'Color with Chip';
+
+  @override
+  String get studioChipIsColoringYourPicture =>
+      'Chip is coloring your picture…';
+
+  @override
+  String get storeStore => 'Store';
+
+  @override
+  String get storeWorlds => 'Worlds';
+
+  @override
+  String get storeAuras => 'Auras';
+
+  @override
+  String get storeLudo => 'Ludo';
+
+  @override
+  String get storeChess => 'Chess';
+
+  @override
+  String get storeSaveYourAccountSoYour =>
+      'Save your account so your purchases are never lost.';
+
+  @override
+  String get storeUnlocked => 'Unlocked!';
+
+  @override
+  String get storeWhereToFirst => 'Where to first?';
+
+  @override
+  String get storeYouReAlreadyHere => 'You\'re already here';
+
+  @override
+  String storeTravelTo(Object name) {
+    return 'Travel to $name';
+  }
+
+  @override
+  String get storePickAWorld => 'Pick a world';
+
+  @override
+  String get storeEquipNow => 'Equip now';
+
+  @override
+  String get storeLater => 'Later';
+
+  @override
+  String get storeUtopiaWorlds => 'Utopia worlds';
+
+  @override
+  String get storeEveryWorldHasItsOwn =>
+      'Every world has its own living sky. Changing worlds sends Chip through a portal!';
+
+  @override
+  String get storeEveryWorld => 'Every World';
+
+  @override
+  String storeAllWorldsAndColorsNow(Object value, Object length) {
+    return 'All $value worlds and $length colors, now and forever.';
+  }
+
+  @override
+  String get storeColorWorlds => 'Color worlds';
+
+  @override
+  String get store12ColorsEachAtDawn =>
+      '12 colors, each at dawn, dusk and midnight.';
+
+  @override
+  String get storeOwned => 'Owned';
+
+  @override
+  String get storeCurrent => 'Current';
+
+  @override
+  String get storeFree => 'Free';
+
+  @override
+  String get storeLocked => 'Locked';
+
+  @override
+  String get storeYouReHere => 'You\'re here';
+
+  @override
+  String get storeTravelToThisWorld => 'Travel to this world';
+
+  @override
+  String storeAWeekMoreIn(Object name) {
+    return 'A week more in $name';
+  }
+
+  @override
+  String get storeOrRentItForA => 'or rent it for a week';
+
+  @override
+  String storeRentForAWeek(Object value) {
+    return 'Rent for a week · $value';
+  }
+
+  @override
+  String storeAddAWeek(Object value) {
+    return 'Add a week · $value';
+  }
+
+  @override
+  String storePack(Object value) {
+    return 'Pack · $value';
+  }
+
+  @override
+  String get storeEquipped => 'Equipped';
+
+  @override
+  String get storeEquipping => 'Equipping';
+
+  @override
+  String get storeEquip => 'Equip';
+
+  @override
+  String get storeAnimated => 'Animated';
+
+  @override
+  String get chessLobbySaveYourAccountSoFriends =>
+      'Save your account so friends can find you.';
+
+  @override
+  String get chessLobbyCheckers => 'Checkers';
+
+  @override
+  String get chessLobbyChess => 'Chess';
+
+  @override
+  String get chessLobbyClock => 'Clock';
+
+  @override
+  String get chessLobbyEntry => 'Entry';
+
+  @override
+  String get chessLobbyPlayOnline => 'Play online';
+
+  @override
+  String get chessLobbyGetMatchedWithAPlayer => 'Get matched with a player now';
+
+  @override
+  String get chessLobbyPlayAFriend => 'Play a friend';
+
+  @override
+  String get chessLobbySendAChallengeToSomeone =>
+      'Send a challenge to someone you know';
+
+  @override
+  String get chessLobbyPlayOffline => 'Play offline';
+
+  @override
+  String get chessLobbyChipRoboOrAFriend =>
+      'Chip, Robo or a friend on this phone';
+
+  @override
+  String get chessLobbyOpponent => 'Opponent';
+
+  @override
+  String get chessLobbyChip => 'Chip';
+
+  @override
+  String get chessLobbyRobo => 'Robo';
+
+  @override
+  String get chessLobbyAFriend => 'A friend';
+
+  @override
+  String get chessLobbyTwoPlayersOnThisPhone =>
+      'Two players on this phone, taking turns.';
+
+  @override
+  String get chessLobbyLevel => 'Level';
+
+  @override
+  String get chessLobbyEasy => 'Easy';
+
+  @override
+  String get chessLobbyNormal => 'Normal';
+
+  @override
+  String get chessLobbyHard => 'Hard';
+
+  @override
+  String get chessLobbyYouPlay => 'You play';
+
+  @override
+  String get chessLobbyDark => 'Dark';
+
+  @override
+  String get chessLobbyWhite => 'White';
+
+  @override
+  String get chessLobbyRandom => 'Random';
+
+  @override
+  String get chessLobbyLight => 'Light';
+
+  @override
+  String get chessLobbyBlack => 'Black';
+
+  @override
+  String get chessLobbyDarkMovesFirst => 'Dark moves first.';
+
+  @override
+  String get chessLobbyNoClock => 'No clock';
+
+  @override
+  String get chessLobbyStartGame => 'Start game';
+
+  @override
+  String get chessLobbyFindingAnOpponent => 'Finding an opponent';
+
+  @override
+  String get chessLobbyFree => 'Free';
+
+  @override
+  String get chessLobbyPlayChip => 'Play Chip';
+
+  @override
+  String get chessLobbyCancel => 'Cancel';
+
+  @override
+  String get ludoRoomSomeoneNeedsMoreCoinsFor =>
+      'Someone needs more coins for this game.';
+
+  @override
+  String get ludoRoomWaitForAtLeastOne =>
+      'Wait for at least one friend to join.';
+
+  @override
+  String get ludoRoomCouldnTStartTheGame =>
+      'Couldn\'t start the game. Try again.';
+
+  @override
+  String get ludoRoomSomeoneJustTookThatSeat => 'Someone just took that seat.';
+
+  @override
+  String get ludoRoomCouldnTChangeSeatsTry =>
+      'Couldn\'t change seats. Try again.';
+
+  @override
+  String get ludoRoomCodeCopied => 'Code copied';
+
+  @override
+  String ludoRoomComePlayLudoWithMe(Object code, Object value) {
+    return 'Come play Ludo with me in Utopia! Tap to join, or use room code $code: $value';
+  }
+
+  @override
+  String get ludoRoomLudoInUtopia => 'Ludo in Utopia';
+
+  @override
+  String get ludoRoomOpeningTheRoom => 'Opening the room';
+
+  @override
+  String get ludoRoomPrivateRoom => 'Private room';
+
+  @override
+  String get ludoRoomShareCode => 'Share code';
+
+  @override
+  String get ludoRoomPlayers => 'Players';
+
+  @override
+  String get ludoRoomStartGame => 'Start game';
+
+  @override
+  String get ludoRoomWaitingForFriends => 'Waiting for friends';
+
+  @override
+  String get ludoRoomTheHostWillStartThe => 'The host will start the game';
+
+  @override
+  String get ludoRoomCloseRoom => 'Close room';
+
+  @override
+  String get ludoRoomLeaveRoom => 'Leave room';
+
+  @override
+  String get ludoRoomRoomCode => 'ROOM CODE';
+
+  @override
+  String get ludoRoomCopy => 'Copy';
+
+  @override
+  String get ludoRoomShare => 'Share';
+
+  @override
+  String get ludoRoomClassic => 'Classic';
+
+  @override
+  String get ludoRoomStarBoard => 'Star board';
+
+  @override
+  String get ludoRoomFree => 'Free';
+
+  @override
+  String get ludoRoom40sTurns => '40s turns';
+
+  @override
+  String get ludoRoomSeat => 'Seat';
+
+  @override
+  String get ludoRoomYou => 'You';
+
+  @override
+  String get ludoRoomTakeThisSeat => 'Take this seat';
+
+  @override
+  String ludoRoomPlayAs(Object name) {
+    return 'Play as $name';
+  }
+
+  @override
+  String get ludoRoomShareInvite => 'Share invite';
+
+  @override
+  String get ludoRoomSendTheRoomCodeTo => 'Send the room code to a friend';
+
+  @override
+  String get sketchbookBack => 'Back';
+
+  @override
+  String get sketchbookSketchbook => 'Sketchbook';
+
+  @override
+  String get sketchbookDrawAnythingOrColorA =>
+      'Draw anything, or color a picture. Everything saves as you go.';
+
+  @override
+  String get sketchbookNewSketch => 'New sketch';
+
+  @override
+  String get sketchbookABlankPage => 'A blank page';
+
+  @override
+  String get sketchbookColorAPicture => 'Color a picture';
+
+  @override
+  String get sketchbookOrSearchAnyPicture => 'Or search any picture';
+
+  @override
+  String get sketchbookMyArt => 'My art';
+
+  @override
+  String get sketchbookNothingHereYetWhatYou =>
+      'Nothing here yet. What you draw and color shows up here.';
+
+  @override
+  String get sketchbookDeleteThis => 'Delete this?';
+
+  @override
+  String get sketchbookItLlBeGoneFrom =>
+      'It\'ll be gone from your sketchbook for good.';
+
+  @override
+  String get sketchbookKeepIt => 'Keep it';
+
+  @override
+  String get sketchbookDelete => 'Delete';
+
+  @override
+  String get sketchbookCouldnTOpenThatOne =>
+      'Couldn\'t open that one. Try again?';
+
+  @override
+  String get sketchbookChipSDrawingItIt =>
+      'Chip\'s drawing it. It\'ll be in Yours in about a minute.';
+
+  @override
+  String get sketchbookChipCanTDrawThat =>
+      'Chip can\'t draw that one. Try something else?';
+
+  @override
+  String get sketchbookChipHasDrawnAllHe =>
+      'Chip has drawn all he can today. Ask again tomorrow!';
+
+  @override
+  String get sketchbookChipSPencilIsnT =>
+      'Chip\'s pencil isn\'t ready yet. Try again later.';
+
+  @override
+  String get sketchbookCouldnTReachChipCheck =>
+      'Couldn\'t reach Chip. Check your connection and try again.';
+
+  @override
+  String get sketchbookPickAPictureToColor => 'Pick a picture to color';
+
+  @override
+  String get sketchbookYours => 'Yours';
+
+  @override
+  String get sketchbookUtopiaSPictures => 'Utopia\'s pictures';
+
+  @override
+  String get sketchbookDrawnForPlayers => 'Drawn for players';
+
+  @override
+  String get sketchbookFromTheLibrary => 'From the library';
+
+  @override
+  String get sketchbookSearchAnyPictureALion =>
+      'Search any picture: a lion, a castle...';
+
+  @override
+  String get sketchbookDidnTWorkOut => 'Didn\'t work out';
+
+  @override
+  String get sketchbookChipIsDrawing => 'Chip is drawing...';
+
+  @override
+  String get sketchbookNewPicture => 'New picture';
+
+  @override
+  String get sketchbookNobodyHasAskedForThat =>
+      'Nobody has asked for that yet.';
+
+  @override
+  String get sketchbookAskingChip => 'Asking Chip...';
+
+  @override
+  String sketchbookAskChipToDraw(Object subject) {
+    return 'Ask Chip to draw \"$subject\"';
+  }
+
+  @override
+  String sketchbookNotQuiteAskChipTo(Object subject) {
+    return 'Not quite? Ask Chip to draw \"$subject\"';
+  }
+
+  @override
+  String get doodleOverlaysStartingSoon => 'Starting soon';
+
+  @override
+  String get doodleOverlaysFindingPlayers => 'Finding players';
+
+  @override
+  String get doodleOverlaysTheGameStartsWhenSomeone =>
+      'The game starts when someone else joins.';
+
+  @override
+  String get doodleOverlaysInviteFriends => 'Invite friends';
+
+  @override
+  String get doodleOverlaysCopy => 'Copy';
+
+  @override
+  String get doodleOverlaysShare => 'Share';
+
+  @override
+  String doodleOverlaysOfPlayers(Object length, Object maxPlayers) {
+    return '$length of $maxPlayers players';
+  }
+
+  @override
+  String get doodleOverlaysStartGame => 'Start game';
+
+  @override
+  String get doodleOverlaysWaitingForFriends => 'Waiting for friends';
+
+  @override
+  String doodleOverlaysWaitingForToStart(Object value) {
+    return 'Waiting for $value to start';
+  }
+
+  @override
+  String doodleOverlaysStartingIn(Object s) {
+    return 'Starting in $s';
+  }
+
+  @override
+  String get doodleOverlaysHereWeGo => 'Here we go';
+
+  @override
+  String doodleOverlaysIsPickingAWord(Object value) {
+    return '$value is picking a word';
+  }
+
+  @override
+  String get doodleOverlaysGetReadyToGuess => 'Get ready to guess';
+
+  @override
+  String get doodleOverlaysPickAWordToDraw => 'Pick a word to draw';
+
+  @override
+  String get doodleOverlaysNobodyGotIt => 'Nobody got it';
+
+  @override
+  String get doodleOverlaysTheWordWas => 'The word was';
+
+  @override
+  String get doodleOverlaysYouWon => 'You won!';
+
+  @override
+  String get doodleOverlaysFinalScores => 'Final scores';
+
+  @override
+  String get doodleOverlaysPlayAgain => 'Play again';
+
+  @override
+  String get doodleOverlaysTheHostCanStartAnother =>
+      'The host can start another game';
+
+  @override
+  String get doodleOverlaysLeave => 'Leave';
+
+  @override
+  String doodleOverlaysNextGameIn(Object s) {
+    return 'Next game in $s';
+  }
+
+  @override
+  String get doodleOverlaysNextGameStarting => 'Next game starting';
+
+  @override
+  String get doodleOverlaysThisGameHasEnded => 'This game has ended';
+
+  @override
+  String get doodleOverlaysBack => 'Back';
+
+  @override
+  String doodleOverlaysAndMore(Object count) {
+    return 'and $count more';
+  }
+
+  @override
+  String get boardMatchPartsChat => 'Chat';
+
+  @override
+  String get boardMatchPartsPreviousMove => 'Previous move';
+
+  @override
+  String get boardMatchPartsMovesWillShowUpHere => 'Moves will show up here';
+
+  @override
+  String get boardMatchPartsStart => 'Start';
+
+  @override
+  String get boardMatchPartsNextMove => 'Next move';
+
+  @override
+  String get boardMatchPartsYourWin => 'Your win';
+
+  @override
+  String get boardMatchPartsResult => 'Result';
+
+  @override
+  String get boardMatchPartsPlayAgain => 'Play again';
+
+  @override
+  String get boardMatchPartsUnderReview => 'Under review';
+
+  @override
+  String get boardMatchPartsCalledOff => 'Called off';
+
+  @override
+  String get boardMatchPartsVictory => 'Victory!';
+
+  @override
+  String get boardMatchPartsDefeat => 'Defeat';
+
+  @override
+  String get boardMatchPartsDraw => 'Draw';
+
+  @override
+  String get boardMatchPartsYouAndYourOpponentReported =>
+      'You and your opponent reported different results. We\'ll sort it out.';
+
+  @override
+  String get boardMatchPartsYourOpponentResigned => 'Your opponent resigned.';
+
+  @override
+  String get boardMatchPartsYouResigned => 'You resigned.';
+
+  @override
+  String get boardMatchPartsNobodyCanWinFromHere => 'Nobody can win from here.';
+
+  @override
+  String get boardMatchPartsTheirClockRanOut => 'Their clock ran out.';
+
+  @override
+  String get boardMatchPartsYourClockRanOut => 'Your clock ran out.';
+
+  @override
+  String get boardMatchPartsAFirstMoveDidnT =>
+      'A first move didn\'t come in time. Your coins are back.';
+
+  @override
+  String get boardMatchPartsAFirstMoveDidnT2 =>
+      'A first move didn\'t come in time.';
+
+  @override
+  String get boardMatchPartsSendingYourPrize => 'Sending your prize';
+
+  @override
+  String get boardMatchPartsWrappingUp => 'Wrapping up';
+
+  @override
+  String get boardMatchPartsHome => 'Home';
+
+  @override
+  String get boardMatchPartsReviewTheGame => 'Review the game';
+
+  @override
+  String boardMatchPartsRating(Object round) {
+    return 'Rating $round';
+  }
+
+  @override
+  String get boardMatchPartsYou => 'You';
+
+  @override
+  String get boardMatchPartsOpponent => 'Opponent';
+
+  @override
+  String get chipDoodleHmmWhatShallIDraw => 'Hmm, what shall I draw?';
+
+  @override
+  String get chipDoodleOopsMyPencilBroke => 'Oops, my pencil broke!';
+
+  @override
+  String chipDoodleYouGotIt(Object lastPoints) {
+    return 'You got it! +$lastPoints';
+  }
+
+  @override
+  String chipDoodleItWas(Object value) {
+    return 'It was $value!';
+  }
+
+  @override
+  String get chipDoodleWhatAGame => 'What a game!';
+
+  @override
+  String get chipDoodleSoCloseKeepGoing => 'So close! Keep going.';
+
+  @override
+  String get chipDoodleQuickTimeIsNearlyUp => 'Quick, time is nearly up!';
+
+  @override
+  String get chipDoodleHereSALittleHint => 'Here\'s a little hint!';
+
+  @override
+  String get chipDoodleNopeLookAgain => 'Nope! Look again.';
+
+  @override
+  String get chipDoodleWatchClosely => 'Watch closely...';
+
+  @override
+  String get chipDoodleWhatDoYouThinkIt => 'What do you think it is?';
+
+  @override
+  String get chipDoodleChipDraws => 'Chip draws';
+
+  @override
+  String get chipDoodleChipCouldnTDrawJust => 'Chip couldn\'t draw just now.';
+
+  @override
+  String get chipDoodleTryAgain => 'Try again';
+
+  @override
+  String get chipDoodleSeeYourScore => 'See your score';
+
+  @override
+  String get chipDoodleNextDoodle => 'Next doodle';
+
+  @override
+  String get chipDoodleNewBestScore => 'New best score!';
+
+  @override
+  String get chipDoodleGreatGuessing => 'Great guessing!';
+
+  @override
+  String chipDoodleYouGuessedOf(Object guessedCount, Object rounds) {
+    return 'You guessed $guessedCount of $rounds';
+  }
+
+  @override
+  String chipDoodleYourBest(Object best) {
+    return 'Your best: $best';
+  }
+
+  @override
+  String get chipDoodlePlayAgain => 'Play again';
+
+  @override
+  String get chipDoodleDone => 'Done';
+
+  @override
+  String chipDoodleSoClose(Object text) {
+    return '$text · so close!';
+  }
+
+  @override
+  String get chipDoodleTypeYourGuess => 'Type your guess';
+
+  @override
+  String get chipDoodleGetReady => 'Get ready...';
+
+  @override
+  String get chipDoodleGuess => 'Guess';
+
+  @override
+  String get chipDoodleSkipThisOne => 'Skip this one';
+
+  @override
+  String get chessMatchSettingUpTheBoard => 'Setting up the board';
+
+  @override
+  String get chessMatchWeCouldnTFindThis => 'We couldn\'t find this game.';
+
+  @override
+  String get chessMatchLeaveGame => 'Leave game';
+
+  @override
+  String get chessMatchClose => 'Close';
+
+  @override
+  String get chessMatchResign => 'Resign';
+
+  @override
+  String get chessMatchCheckmateBeautifullyPlayed =>
+      'Checkmate. Beautifully played.';
+
+  @override
+  String get chessMatchCheckmated => 'Checkmated.';
+
+  @override
+  String get chessMatchStalemateNoLegalMovesLeft =>
+      'Stalemate: no legal moves left.';
+
+  @override
+  String get chessMatchResignThisGame => 'Resign this game?';
+
+  @override
+  String get chessMatchYourOpponentWinsTheGame =>
+      'Your opponent wins the game and the prize.';
+
+  @override
+  String get chessMatchYourOpponentWinsTheGame2 =>
+      'Your opponent wins the game.';
+
+  @override
+  String get chessMatchKeepPlaying => 'Keep playing';
+
+  @override
+  String get chessMatchChess => 'Chess';
+
+  @override
+  String get chessMatchYou => 'You';
+
+  @override
+  String get chessMatchOpponent => 'Opponent';
+
+  @override
+  String get chessMatchStartingPosition => 'Starting position';
+
+  @override
+  String chessMatchMoveOf(Object displayPly, Object length) {
+    return 'Move $displayPly of $length';
+  }
+
+  @override
+  String get chessMatchBackToLive => 'Back to live';
+
+  @override
+  String get chessMatchYouReInCheck => 'You\'re in check';
+
+  @override
+  String get chessMatchCheck => 'Check!';
+
+  @override
+  String chessMatchYourMoveSToStart(Object value) {
+    return 'Your move · ${value}s to start';
+  }
+
+  @override
+  String get chessMatchYourMove => 'Your move';
+
+  @override
+  String chessMatchWaitingForTheFirstMove(Object value) {
+    return 'Waiting for the first move · ${value}s';
+  }
+
+  @override
+  String get chessMatchTheirMove => 'Their move';
+
+  @override
+  String get checkersMatchSettingUpTheBoard => 'Setting up the board';
+
+  @override
+  String get checkersMatchWeCouldnTFindThis => 'We couldn\'t find this game.';
+
+  @override
+  String get checkersMatchLeaveGame => 'Leave game';
+
+  @override
+  String get checkersMatchClose => 'Close';
+
+  @override
+  String get checkersMatchResign => 'Resign';
+
+  @override
+  String get checkersMatchNoMovesLeftForThem =>
+      'No moves left for them. Well played.';
+
+  @override
+  String get checkersMatchYouRanOutOfMoves => 'You ran out of moves.';
+
+  @override
+  String get checkersMatchFortyMovesEachWithNo =>
+      'Forty moves each with no progress.';
+
+  @override
+  String get checkersMatchResignThisGame => 'Resign this game?';
+
+  @override
+  String get checkersMatchYourOpponentWinsTheGame =>
+      'Your opponent wins the game and the prize.';
+
+  @override
+  String get checkersMatchYourOpponentWinsTheGame2 =>
+      'Your opponent wins the game.';
+
+  @override
+  String get checkersMatchKeepPlaying => 'Keep playing';
+
+  @override
+  String get checkersMatchCheckers => 'Checkers';
+
+  @override
+  String get checkersMatchYou => 'You';
+
+  @override
+  String get checkersMatchOpponent => 'Opponent';
+
+  @override
+  String checkersMatchTook(Object count) {
+    return 'Took $count';
+  }
+
+  @override
+  String get checkersMatch1King => '1 king';
+
+  @override
+  String get checkersMatchStartingPosition => 'Starting position';
+
+  @override
+  String checkersMatchMoveOf(Object displayPly, Object length) {
+    return 'Move $displayPly of $length';
+  }
+
+  @override
+  String get checkersMatchBackToLive => 'Back to live';
+
+  @override
+  String get checkersMatchYouMustTakeAPiece => 'You must take a piece';
+
+  @override
+  String checkersMatchYourMoveSToStart(Object value) {
+    return 'Your move · ${value}s to start';
+  }
+
+  @override
+  String get checkersMatchYourMove => 'Your move';
+
+  @override
+  String checkersMatchWaitingForTheFirstMove(Object value) {
+    return 'Waiting for the first move · ${value}s';
+  }
+
+  @override
+  String get checkersMatchTheirMove => 'Their move';
+
+  @override
+  String get guessDoodleSlowDownALittle => 'Slow down a little';
+
+  @override
+  String get guessDoodleYouReNotInThis => 'You\'re not in this game anymore';
+
+  @override
+  String get guessDoodleLeaveTheGame => 'Leave the game?';
+
+  @override
+  String get guessDoodleTheOthersWillCarryOn =>
+      'The others will carry on without you.';
+
+  @override
+  String get guessDoodleStay => 'Stay';
+
+  @override
+  String get guessDoodleLeave => 'Leave';
+
+  @override
+  String get guessDoodleCodeCopied => 'Code copied';
+
+  @override
+  String guessDoodleComePlayGuessMyDoodle(Object code, Object value) {
+    return 'Come play Guess My Doodle with me in Utopia! Tap to join, or use game code $code: $value';
+  }
+
+  @override
+  String get guessDoodleGuessMyDoodleInUtopia => 'Guess My Doodle in Utopia';
+
+  @override
+  String get guessDoodleClearTheDrawing => 'Clear the drawing?';
+
+  @override
+  String get guessDoodleYouCanTUndoThis => 'You can\'t undo this.';
+
+  @override
+  String get guessDoodleKeepIt => 'Keep it';
+
+  @override
+  String get guessDoodleClear => 'Clear';
+
+  @override
+  String get guessDoodleChatWithPlayersWhoGot => 'Chat with players who got it';
+
+  @override
+  String get guessDoodleTypeYourGuess => 'Type your guess';
+
+  @override
+  String get guessDoodleOnlyPlayersWhoGuessWill =>
+      'Only players who guess will see this';
+
+  @override
+  String get guessDoodleSaySomething => 'Say something';
+
+  @override
+  String get guessDoodleGuessMyDoodle => 'Guess My Doodle';
+
+  @override
+  String guessDoodleRoundOf(Object round, Object rounds) {
+    return 'Round $round of $rounds';
+  }
+
+  @override
+  String get guessDoodleYouGotIt => 'You got it!';
+
+  @override
+  String get ludoRulesHowToPlayLudo => 'How to play Ludo';
+
+  @override
+  String get ludoRulesRollA6ToStart => 'Roll a 6 to start';
+
+  @override
+  String get ludoRulesEachPieceWaitsInYour =>
+      'Each piece waits in your yard until you roll a 6. Then it hops out onto your start square.';
+
+  @override
+  String get ludoRulesRaceAroundTheBoard => 'Race around the board';
+
+  @override
+  String get ludoRulesPiecesMoveByTheNumber =>
+      'Pieces move by the number you roll. Tap a glowing piece to move it. If only one move is possible, it moves on its own.';
+
+  @override
+  String get ludoRulesTimedTurns => 'Timed turns';
+
+  @override
+  String get ludoRulesTheRingAroundYourPicture =>
+      'The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn passes. Miss three turns in a row and you leave the game.';
+
+  @override
+  String get ludoRulesCaptureToSendThemHome => 'Capture to send them home';
+
+  @override
+  String get ludoRulesLandExactlyOnAnOpponent =>
+      'Land exactly on an opponent to send their piece back to its yard. Stars and start squares are safe.';
+
+  @override
+  String get ludoRulesWarOrPeace => 'War or peace';
+
+  @override
+  String get ludoRulesAfterACapturePickA =>
+      'After a capture, pick a reaction before the bubble runs out: an evil cackle or a peaceful hug. Everyone sees it.';
+
+  @override
+  String get ludoRulesBonusRolls => 'Bonus rolls';
+
+  @override
+  String get ludoRulesRollingA6CapturingOr =>
+      'Rolling a 6, capturing, or getting a piece home earns another roll. Three 6s in a row and you lose the turn.';
+
+  @override
+  String get ludoRulesGetAllFourHome => 'Get all four home';
+
+  @override
+  String get ludoRulesGoUpYourOwnColored =>
+      'Go up your own colored path into the center. You need the exact number to finish. The first player with all four pieces home wins.';
+
+  @override
+  String get ludoRulesLeavingEndsYourGame => 'Leaving ends your game';
+
+  @override
+  String get ludoRulesIfYouLeaveYouLose =>
+      'If you leave, you lose this game and your entry stays in the prize. With more than two players, the game carries on.';
+
+  @override
+  String auraIsYoursFor(Object name, Object label) {
+    return '$name is yours for $label';
+  }
+
+  @override
+  String get auraCouldnTBuyThatAura => 'Couldn\'t buy that aura. Try again.';
+
+  @override
+  String get auraCouldnTChangeYourAura => 'Couldn\'t change your aura.';
+
+  @override
+  String get auraYou => 'You';
+
+  @override
+  String auraComesWithYoursToWear(Object plan) {
+    return 'Comes with $plan. Yours to wear while you\'re a member.';
+  }
+
+  @override
+  String get auraNoLongerSoldYoursTo =>
+      'No longer sold. Yours to wear until it runs out.';
+
+  @override
+  String auraAdd(Object label, Object value) {
+    return 'Add $label · $value';
+  }
+
+  @override
+  String auraBuyForCoins(Object value) {
+    return 'Buy for $value coins';
+  }
+
+  @override
+  String get auraYouHave => 'You have ';
+
+  @override
+  String auraYours(Object value) {
+    return 'Yours · $value';
+  }
+
+  @override
+  String get auraTakeOff => 'Take off';
+
+  @override
+  String get auraWear => 'Wear';
+
+  @override
+  String auraADay(Object value) {
+    return '$value a day';
+  }
+
+  @override
+  String get auraBestValue => 'Best value';
+
+  @override
+  String get ludoMatchConnectionLostReconnecting =>
+      'Connection lost. Reconnecting.';
+
+  @override
+  String get ludoMatchMatchNotFound => 'Match not found';
+
+  @override
+  String get ludoMatchWhoaSlowDownALittle => 'Whoa, slow down a little!';
+
+  @override
+  String get ludoMatchCouldnTSendThatMessage => 'Couldn\'t send that message.';
+
+  @override
+  String get ludoMatchCouldnTSendYourVoice => 'Couldn\'t send your voice note.';
+
+  @override
+  String get ludoMatchCouldnTSendYourRoll =>
+      'Couldn\'t send your roll. Reconnecting.';
+
+  @override
+  String get ludoMatchThatMoveDidnTGo =>
+      'That move didn\'t go through. Reconnecting.';
+
+  @override
+  String get chipPaintBlackAndWhiteShading => 'Black and white shading';
+
+  @override
+  String get chipPaintPastel => 'Pastel';
+
+  @override
+  String get chipPaintSunset => 'Sunset';
+
+  @override
+  String get chipPaintNeon => 'Neon';
+
+  @override
+  String get chipPaintOcean => 'Ocean';
+
+  @override
+  String get chipPaintAutumn => 'Autumn';
+
+  @override
+  String get chipPaintRoyalGold => 'Royal gold';
+
+  @override
+  String get chipPaintHowShouldIColorIt => 'How should I color it?';
+
+  @override
+  String get chipPaintOrDescribeItLikeOnly =>
+      'Or describe it, like \"only blues\"';
+
+  @override
+  String get chipPaintColorIt => 'Color it';
+
+  @override
+  String get studioToolbarPencil => 'Pencil';
+
+  @override
+  String get studioToolbarInkPen => 'Ink pen';
+
+  @override
+  String get studioToolbarMarker => 'Marker';
+
+  @override
+  String get studioToolbarSoftBrush => 'Soft brush';
+
+  @override
+  String get studioToolbarHighlighter => 'Highlighter';
+
+  @override
+  String get studioToolbarEraser => 'Eraser';
+
+  @override
+  String get studioToolbarPaintBucket => 'Paint bucket';
+
+  @override
+  String get studioToolbarColor => 'Color';
+
+  @override
+  String studioToolbarBrushSize(Object value) {
+    return 'Brush size $value';
+  }
+
+  @override
+  String get coinShopTestBuildPacksAreFree =>
+      'Test build: packs are free so you can try them.';
+
+  @override
+  String get coinShopSaveYourAccountToBuy => 'Save your account to buy coins.';
+
+  @override
+  String get coinShopSaveYourAccountSoYour =>
+      'Save your account so your coins are never lost.';
+
+  @override
+  String get coinShopCoinTopUpsAreComing => 'Coin top-ups are coming soon';
+
+  @override
+  String get coinShopForNowEarnThemBy =>
+      'For now, earn them by playing: claim your daily reward every day, and win games with an entry.';
+
+  @override
+  String get coinShopCoins => 'Coins';
+
+  @override
+  String coinShopYouNeedMoreForThat(Object value) {
+    return 'You need $value more for that game.';
+  }
+
+  @override
+  String coinShopExtra(Object percent) {
+    return '+$percent% extra';
+  }
+
+  @override
+  String get storeYouAlreadyHaveTheStarter =>
+      'You already have the starter pack.';
+
+  @override
+  String get storeCoinTopUpsOnThe => 'Coin top-ups on the web are coming soon.';
+
+  @override
+  String get storeCouldnTStartThePayment =>
+      'Couldn\'t start the payment. Try again.';
+
+  @override
+  String get storeGh => 'GH₵';
+
+  @override
+  String get storeKsh => 'KSh ';
+
+  @override
+  String get doodleChatSomeone => 'Someone';
+
+  @override
+  String get doodleChatYou => 'You';
+
+  @override
+  String get doodleChatYouGotIt => 'You got it!';
+
+  @override
+  String doodleChatGotIt(Object name) {
+    return '$name got it!';
+  }
+
+  @override
+  String doodleChatIsSoClose(Object text) {
+    return '\"$text\" is so close!';
+  }
+
+  @override
+  String doodleChatTheWordWas(Object body) {
+    return 'The word was $body';
+  }
+
+  @override
+  String get doodleChatYourTurnToDraw => 'Your turn to draw';
+
+  @override
+  String doodleChatIsDrawing(Object name) {
+    return '$name is drawing';
+  }
+
+  @override
+  String get coloringPagesMandala => 'Mandala';
+
+  @override
+  String get coloringPagesChip => 'Chip';
+
+  @override
+  String get coloringPagesFloatingIsland => 'Floating island';
+
+  @override
+  String get coloringPagesLittleDragon => 'Little dragon';
+
+  @override
+  String get coloringPagesRocket => 'Rocket';
+
+  @override
+  String get coloringPagesCastle => 'Castle';
+
+  @override
+  String get coloringPagesUnderTheSea => 'Under the sea';
+
+  @override
+  String get coloringPagesGarden => 'Garden';
+
+  @override
+  String get gameChatSomeWordsWereHiddenKeep =>
+      'Some words were hidden. Keep it friendly.';
+
+  @override
+  String get gameChatChat => 'Chat';
+
+  @override
+  String get gameChatFriendsChat => 'Friends chat';
+
+  @override
+  String get gameChatFriendlyChat => 'Friendly chat';
+
+  @override
+  String get gameChatSayHi => 'Say hi';
+
+  @override
+  String get gameChatMessageYourFriends => 'Message your friends';
+
+  @override
+  String get gameChatSaySomethingNice => 'Say something nice';
+
+  @override
+  String get gameChatYou => 'You';
+
+  @override
+  String botsPlayer(Object value) {
+    return 'Player $value';
+  }
+
+  @override
+  String get botsPip => 'Pip';
+
+  @override
+  String get botsMomo => 'Momo';
+
+  @override
+  String get botsKiki => 'Kiki';
+
+  @override
+  String get botsBolt => 'Bolt';
+
+  @override
+  String get botsNova => 'Nova';
+
+  @override
+  String get botsChip => 'Chip';
+
+  @override
+  String get botsRobo => 'Robo';
+
+  @override
+  String get chatFilterNiceMove => 'Nice move!';
+
+  @override
+  String get chatFilterWellPlayed => 'Well played!';
+
+  @override
+  String get chatFilterSoClose => 'So close!';
+
+  @override
+  String get chatFilterLetSGo => 'Let\'s go!';
+
+  @override
+  String get chatFilterYourTurn => 'Your turn';
+
+  @override
+  String get chatFilterOops => 'Oops!';
+
+  @override
+  String get chatFilterGoodGame => 'Good game!';
+
+  @override
+  String get gameChatWhoaSlowDownALittle => 'Whoa, slow down a little!';
+
+  @override
+  String get gameChatCouldnTSendThatMessage => 'Couldn\'t send that message.';
+
+  @override
+  String get gameChatCouldnTSendYourVoice => 'Couldn\'t send your voice note.';
+
+  @override
+  String get aurasTabYou => 'You';
+
+  @override
+  String get aurasTabNoAuraYet => 'No aura yet';
+
+  @override
+  String get aurasTabWearOneAndEveryoneSees =>
+      'Wear one and everyone sees it around your picture, in every game.';
+
+  @override
+  String aurasTabWearingNow(Object value) {
+    return 'Wearing now · $value';
+  }
+
+  @override
+  String get aurasTabWearing => 'Wearing';
+
+  @override
+  String get aurasTabOwned => 'Owned';
+
+  @override
+  String get voiceNotesAllowMicrophoneAccessInSettings =>
+      'Allow microphone access in Settings to send voice notes.';
+
+  @override
+  String get voiceNotesCouldnTStartRecording => 'Couldn\'t start recording.';
+
+  @override
+  String get voiceNotesRecordAVoiceNote => 'Record a voice note';
+
+  @override
+  String get voiceNotesDelete => 'Delete';
+
+  @override
+  String get voiceNotesSend => 'Send';
+
+  @override
+  String get webPaymentReturnThePaymentDidnTGo =>
+      'The payment didn\'t go through, so nothing was charged.';
+
+  @override
+  String webPaymentReturnPaymentReceivedCoinsAdded(Object value) {
+    return 'Payment received: $value coins added!';
+  }
+
+  @override
+  String get webPaymentReturnYourPaymentIsBeingConfirmed =>
+      'Your payment is being confirmed. Your coins will arrive in a moment.';
+
+  @override
+  String get webPaymentReturnWeCouldnTConfirmThat =>
+      'We couldn\'t confirm that payment yet. If you were charged, your coins will arrive shortly.';
+
+  @override
+  String get timeControlBullet => 'Bullet';
+
+  @override
+  String get timeControlBlitz => 'Blitz';
+
+  @override
+  String get timeControlRapid => 'Rapid';
+
+  @override
+  String get timeControlClassical => 'Classical';
+
+  @override
+  String get ludoSeatPanelYou => 'You';
+
+  @override
+  String get ludoSeatPanelOpenSeat => 'Open seat';
+
+  @override
+  String get ludoSeatPanelLeft => 'Left';
+
+  @override
+  String get ludoChatSomeone => 'Someone';
+
+  @override
+  String ludoChatChoseWar(Object who) {
+    return '$who chose war!';
+  }
+
+  @override
+  String ludoChatMadePeace(Object who) {
+    return '$who made peace.';
+  }
+
+  @override
+  String get ludoCaptureBubbleReact => 'React';
+
+  @override
+  String get ludoCaptureBubbleWar => 'War';
+
+  @override
+  String get ludoCaptureBubblePeace => 'Peace';
+
+  @override
+  String get doodleToolsEraser => 'Eraser';
+
+  @override
+  String get doodleToolsUndo => 'Undo';
+
+  @override
+  String get doodleToolsClear => 'Clear';
+
+  @override
+  String get ludoDiceRollTheDie => 'Roll the die';
+
+  @override
+  String ludoDiceDieShowing(Object value) {
+    return 'Die showing $value';
+  }
+
+  @override
+  String timeControlStyleMinEach(Object minutes) {
+    return '  ·  $minutes min each';
+  }
+
+  @override
+  String timeControlStyleMinSAMove(Object minutes, Object increment) {
+    return '  ·  $minutes min  +${increment}s a move';
+  }
+
+  @override
+  String sentChallengesChallengeToCancelled(Object name) {
+    return 'Challenge to $name cancelled.';
+  }
+
+  @override
+  String get sentChallengesCouldnTCancelItTry =>
+      'Couldn\'t cancel it. Try again.';
+
+  @override
+  String get chessMatchMatchNotFound => 'Match not found';
+
+  @override
+  String get chessMatchThatMoveDidnTGo =>
+      'That move didn\'t go through. Reconnecting.';
+
+  @override
+  String get checkersMatchMatchNotFound => 'Match not found';
+
+  @override
+  String get checkersMatchThatMoveDidnTGo =>
+      'That move didn\'t go through. Reconnecting.';
+
+  @override
+  String get themeTeleportWelcomeTo => 'Welcome to';
+
+  @override
+  String get doodleHeaderDraw => 'Draw';
+
+  @override
+  String get chipDoodleChipCouldnTDrawJust2 =>
+      'Chip couldn\'t draw just now. Check your connection and try again.';
+
+  @override
+  String get doodleWorldGateColoringHappensInTheDoodle =>
+      'Coloring happens in the Doodle world.';
+
+  @override
+  String get floatingChipChatWithChip => 'Chat with Chip';
+
+  @override
+  String get promotionPromoteYourPawn => 'Promote your pawn';
 }
