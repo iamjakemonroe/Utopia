@@ -78,7 +78,10 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
           _last = Duration.zero;
           if (!_ticker.isActive) _ticker.start();
           _audio.play(Sfx.drawer);
-          _focus.requestFocus();
+          // Once the frame's built: the field's in place to take it.
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => mounted ? _focus.requestFocus() : null,
+          );
         case ChipDoodlePhase.reveal:
           _ticker.stop();
           _endsAt = null;
@@ -540,7 +543,10 @@ class _GuessField extends StatelessWidget {
           child: TextField(
             controller: controller,
             focusNode: focus,
-            enabled: enabled,
+            // Always open to the keyboard, even before Chip starts: a tap
+            // on a closed field brought nothing up, and the round's own
+            // call for the keyboard came while it was still closed. What's
+            // sent before the round starts is simply not taken.
             textInputAction: TextInputAction.send,
             textCapitalization: TextCapitalization.none,
             autocorrect: false,

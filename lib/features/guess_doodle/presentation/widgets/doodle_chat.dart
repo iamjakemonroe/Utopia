@@ -323,10 +323,14 @@ class DoodleGuessField extends StatefulWidget {
 class _DoodleGuessFieldState extends State<DoodleGuessField> {
   final _text = TextEditingController();
   bool _sending = false;
+  FocusNode? _ownFocus;
+
+  FocusNode get _focus => widget.focusNode ?? (_ownFocus ??= FocusNode());
 
   @override
   void dispose() {
     _text.dispose();
+    _ownFocus?.dispose();
     super.dispose();
   }
 
@@ -344,6 +348,19 @@ class _DoodleGuessFieldState extends State<DoodleGuessField> {
   @override
   Widget build(BuildContext context) {
     final glow = widget.glow;
+    // The whole pill brings the keyboard up, not just the line of text in
+    // its middle: a quick tap near its edge (it's a timed game) missed the
+    // field, counted as a tap outside it, and put the keyboard away.
+    return TextFieldTapRegion(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _focus.requestFocus,
+        child: _pill(glow),
+      ),
+    );
+  }
+
+  Widget _pill(Color? glow) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.fromLTRB(16, 2, 4, 2),
@@ -363,7 +380,7 @@ class _DoodleGuessFieldState extends State<DoodleGuessField> {
           Expanded(
             child: TextField(
               controller: _text,
-              focusNode: widget.focusNode,
+              focusNode: _focus,
               maxLength: 100,
               textInputAction: TextInputAction.send,
               textCapitalization: TextCapitalization.none,
@@ -387,48 +404,44 @@ class _DoodleGuessFieldState extends State<DoodleGuessField> {
               ),
               onSubmitted: (_) {
                 _send();
-                widget.focusNode?.requestFocus();
+                _focus.requestFocus();
               },
               // A tap anywhere else (the drawing, the chat, the players)
               // puts the keyboard away: iPhone keyboards have no close key.
-              onTapOutside: (_) =>
-                  (widget.focusNode ?? FocusManager.instance.primaryFocus)
-                      ?.unfocus(),
+              onTapOutside: (_) => _focus.unfocus(),
             ),
           ),
-          // Part of the field as far as taps go, so sending keeps the
-          // keyboard up for the next guess.
-          TextFieldTapRegion(
-            child: ValueListenableBuilder<TextEditingValue>(
-              valueListenable: _text,
-              builder: (context, value, _) {
-                final ready = value.text.trim().isNotEmpty;
-                return AnimatedScale(
-                  scale: ready ? 1 : 0.85,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutBack,
-                  child: GestureDetector(
-                    onTap: ready ? _send : null,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: ready
-                            ? AppColors.accent
-                            : Colors.white.withValues(alpha: 0.12),
-                      ),
-                      child: const Icon(
-                        Icons.send_rounded,
-                        size: 20,
-                        color: Colors.white,
-                      ),
+          // Part of the field as far as taps go (the pill's one tap
+          // region), so sending keeps the keyboard up for the next guess.
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: _text,
+            builder: (context, value, _) {
+              final ready = value.text.trim().isNotEmpty;
+              return AnimatedScale(
+                scale: ready ? 1 : 0.85,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutBack,
+                child: GestureDetector(
+                  onTap: ready ? _send : null,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: ready
+                          ? AppColors.accent
+                          : Colors.white.withValues(alpha: 0.12),
+                    ),
+                    child: const Icon(
+                      Icons.send_rounded,
+                      size: 20,
+                      color: Colors.white,
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),
