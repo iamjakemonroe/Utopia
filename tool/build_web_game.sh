@@ -21,3 +21,17 @@ printf '{"build":"%s"}\n' "$BUILD" > build/web/build.json
 rm -rf "$SITE/public/game"
 cp -R build/web "$SITE/public/game"
 du -sh "$SITE/public/game"
+
+# A trial copy of the same build at /game-test/: Safari (and Firefox) are
+# allowed the WebAssembly renderer, which Flutter's loader keeps to Chrome
+# and Edge, and the page is served isolated with require-corp (the site's
+# _headers), which Safari needs before it can draw on a background thread.
+# /game/ is untouched. Remove once iPhones have been tried on it.
+TEST="$SITE/public/game-test"
+rm -rf "$TEST"
+cp -R build/web "$TEST"
+grep -q '<base href="/game/">' "$TEST/index.html"
+sed -i '' 's#<base href="/game/">#<base href="/game-test/">#' "$TEST/index.html"
+grep -q "config: useJs ? { renderer: 'canvaskit' } : {}," "$TEST/flutter_bootstrap.js"
+sed -i '' "s#config: useJs ? { renderer: 'canvaskit' } : {},#config: useJs ? { renderer: 'canvaskit' } : { wasmAllowList: { blink: true, gecko: true, webkit: true } },#" "$TEST/flutter_bootstrap.js"
+echo "trial copy at /game-test/"
