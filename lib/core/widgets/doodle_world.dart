@@ -42,6 +42,10 @@ class _Puff {
 
   late final Path shape = _build();
 
+  /// [shape]'s bounds, worked out once: a browser builds a path again
+  /// each frame it's used, and this one is a union of every lobe.
+  late final Rect bounds = shape.getBounds();
+
   /// Points round the silhouette, for redrawing it by hand each boil.
   late final List<List<Offset>> outline = [
     for (final m in shape.computeMetrics())
@@ -470,7 +474,7 @@ class DoodleScenePainter extends CustomPainter {
       _still(
         canvas,
         ('cloud', i, w),
-        puff.shape.getBounds().inflate(weight * 3 + 4),
+        puff.bounds.inflate(weight * 3 + 4),
         at: Offset(x, size.height * y + math.sin(_t * 0.3 + i) * 3),
         (canvas) =>
             _drawPuff(canvas, puff, weight: weight, alpha: alpha, salt: 40 + i),
@@ -491,7 +495,7 @@ class DoodleScenePainter extends CustomPainter {
     canvas.drawPath(puff.shape, body);
     // All the ink goes on one layer, faded together, so crossing strokes
     // don't darken where they meet.
-    final box = puff.shape.getBounds().inflate(weight * 3);
+    final box = puff.bounds.inflate(weight * 3);
     canvas.saveLayer(box, Paint()..color = Color.fromRGBO(0, 0, 0, alpha));
     canvas.save();
     canvas.clipPath(puff.shape);
@@ -520,7 +524,7 @@ class DoodleScenePainter extends CustomPainter {
     // at the bottom.
     final base = puff.base;
     if (base != null) {
-      final b = puff.shape.getBounds();
+      final b = puff.bounds;
       for (var k = 0; k < 4; k++) {
         final y =
             base - 2.5 - k * 3.4 + (_rand(_boil + salt + k, 67) - 0.5) * 0.5;
@@ -866,10 +870,7 @@ class DoodleScenePainter extends CustomPainter {
           size * 0.13 + 6,
           6,
         ).expandToInclude(
-          crown.shape
-              .getBounds()
-              .shift(Offset(0, -size * 0.82))
-              .inflate(2 * 3 + 4),
+          crown.bounds.shift(Offset(0, -size * 0.82)).inflate(2 * 3 + 4),
         );
     _still(
       canvas,
