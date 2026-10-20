@@ -295,12 +295,12 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     _Moment.playerCapture: [
       'Hey! I needed that.',
       strings.checkersBotOofNiceJump,
-      'Nooo!',
+      strings.checkersBotNooo,
     ],
     _Moment.botDouble: [
       'Double jump!',
       strings.checkersBotBoingBoing,
-      'Two for one!',
+      strings.checkersBotTwoForOne,
     ],
     _Moment.playerDouble: [
       'Two at once?!',
@@ -310,7 +310,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     _Moment.botKing: [
       'Crown me!',
       strings.checkersBotIMAKingNow,
-      'All hail me!',
+      strings.checkersBotAllHailMe,
     ],
     _Moment.playerKing: [
       'Oh no, you got a king.',

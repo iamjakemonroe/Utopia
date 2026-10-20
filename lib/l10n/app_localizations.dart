@@ -11797,6 +11797,192 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Promote your pawn'**
   String get promotionPromoteYourPawn;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Nooo!'**
+  String get checkersBotNooo;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Two for one!'**
+  String get checkersBotTwoForOne;
+
+  /// features/checkers/presentation/screens/checkers_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'All hail me!'**
+  String get checkersBotAllHailMe;
+
+  /// features/maestro/presentation/maestro_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'App Store'**
+  String get maestroAppStore;
+
+  /// features/maestro/presentation/maestro_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Google Play'**
+  String get maestroGooglePlay;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **' and the game will go on without you'**
+  String get ludoMatchAndTheGameWillGo;
+
+  /// features/ludo/presentation/screens/ludo_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **' and it will go on without you'**
+  String get ludoMatchAndItWillGoOn;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Check! Your move.'**
+  String get chessBotCheckYourMove;
+
+  /// features/chess/presentation/screens/chess_bot_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Okay, I see it.'**
+  String get chessBotOkayISeeIt;
+
+  /// features/welcome/presentation/welcome_week.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get welcomeWeekSun;
+
+  /// features/rankings/presentation/hologram/rank_hologram.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Top {top}% of {ranked} ranked players'**
+  String rankHologramTopOfRankedPlayers(Object top, Object ranked);
+
+  /// features/rankings/presentation/hologram/rank_hologram.dart
+  ///
+  /// In en, this message translates to:
+  /// **'#{place} on the board'**
+  String rankHologramPlaceOnTheBoard(Object place);
+
+  /// features/chess/presentation/screens/chess_match_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your move · they played {move}'**
+  String chessMatchYourMoveTheyPlayed(Object move);
+
+  /// features/birthday/presentation/birthday_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip will throw you a party on {day}.'**
+  String birthdayChipWillThrowYouAParty(Object day);
+
+  /// features/rankings/domain/ranking.dart: a rank tier
+  ///
+  /// In en, this message translates to:
+  /// **'Bronze'**
+  String get rankTierBronze;
+
+  /// features/rankings/domain/ranking.dart: a rank tier
+  ///
+  /// In en, this message translates to:
+  /// **'Silver'**
+  String get rankTierSilver;
+
+  /// features/rankings/domain/ranking.dart: a rank tier
+  ///
+  /// In en, this message translates to:
+  /// **'Gold'**
+  String get rankTierGold;
+
+  /// features/rankings/domain/ranking.dart: a rank tier
+  ///
+  /// In en, this message translates to:
+  /// **'Diamond'**
+  String get rankTierDiamond;
+
+  /// features/rankings/domain/ranking.dart: a rank tier
+  ///
+  /// In en, this message translates to:
+  /// **'Legend'**
+  String get rankTierLegend;
+
+  /// core/theme/utopia_themes.dart: a color world at dawn
+  ///
+  /// In en, this message translates to:
+  /// **'Dawn'**
+  String get utopiaThemesShadeDawn;
+
+  /// core/theme/utopia_themes.dart: a color world at dusk
+  ///
+  /// In en, this message translates to:
+  /// **'Dusk'**
+  String get utopiaThemesShadeDusk;
+
+  /// core/theme/utopia_themes.dart: a color world at midnight
+  ///
+  /// In en, this message translates to:
+  /// **'Midnight'**
+  String get utopiaThemesShadeMidnight;
+
+  /// core/theme/utopia_themes.dart: the feel of a color world at dawn
+  ///
+  /// In en, this message translates to:
+  /// **'first light'**
+  String get utopiaThemesShadeDawnMood;
+
+  /// core/theme/utopia_themes.dart: the feel of a color world at dusk
+  ///
+  /// In en, this message translates to:
+  /// **'golden hour'**
+  String get utopiaThemesShadeDuskMood;
+
+  /// core/theme/utopia_themes.dart: the feel of a color world at midnight
+  ///
+  /// In en, this message translates to:
+  /// **'starlit'**
+  String get utopiaThemesShadeMidnightMood;
+
+  /// features/invites/domain/game_invite.dart: a game an invite link is for
+  ///
+  /// In en, this message translates to:
+  /// **'Ludo'**
+  String get gameInviteLudo;
+
+  /// features/invites/domain/game_invite.dart: a game an invite link is for
+  ///
+  /// In en, this message translates to:
+  /// **'Guess My Doodle'**
+  String get gameInviteGuessMyDoodle;
+
+  /// features/notifications/presentation/answer_buttons.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get answerButtonsAccept;
+
+  /// features/auras/presentation/mythic_badge.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Mythic'**
+  String get mythicBadgeMythic;
+
+  /// core/widgets/bouncy_dialog.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get bouncyDialogCancel;
+
+  /// core/widgets/utopia_toast.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Try again.'**
+  String get utopiaToastSomethingWentWrong;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

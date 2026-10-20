@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/ambient_tick.dart';
+import '../../../l10n/strings.dart';
 
 /// Mythic's red (and the Legend rank's).
 const kMythicRed = Color(0xFFFF1F3D);
@@ -16,12 +17,14 @@ class MythicLightning extends StatefulWidget {
   const MythicLightning({
     super.key,
     this.fontSize = 18,
-    this.label = 'Mythic',
+    this.label,
     this.chip = false,
   });
 
   final double fontSize;
-  final String label;
+
+  /// "Mythic" unless it says.
+  final String? label;
   final bool chip;
 
   @override
@@ -69,7 +72,7 @@ class _MythicLightningState extends State<MythicLightning>
             ],
           ).createShader(rect),
           child: Text(
-            widget.label,
+            widget.label ?? strings.mythicBadgeMythic,
             style: AppTextStyles.display(fontSize: size, color: Colors.white)
                 .copyWith(
                   shadows: [

@@ -101,7 +101,7 @@ final _weekdays = [
   strings.welcomeWeekThu,
   strings.welcomeWeekFri,
   strings.welcomeWeekSat,
-  'Sun',
+  strings.welcomeWeekSun,
 ];
 final _months = [
   'Jan',

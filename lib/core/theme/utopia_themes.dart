@@ -1453,12 +1453,19 @@ class _Family {
 }
 
 enum _Shade {
-  dawn('Dawn', 'first light'),
-  dusk('Dusk', 'golden hour'),
-  midnight('Midnight', 'starlit');
+  dawn,
+  dusk,
+  midnight;
 
-  const _Shade(this.label, this.mood);
+  String get label => switch (this) {
+    _Shade.dawn => strings.utopiaThemesShadeDawn,
+    _Shade.dusk => strings.utopiaThemesShadeDusk,
+    _Shade.midnight => strings.utopiaThemesShadeMidnight,
+  };
 
-  final String label;
-  final String mood;
+  String get mood => switch (this) {
+    _Shade.dawn => strings.utopiaThemesShadeDawnMood,
+    _Shade.dusk => strings.utopiaThemesShadeDuskMood,
+    _Shade.midnight => strings.utopiaThemesShadeMidnightMood,
+  };
 }

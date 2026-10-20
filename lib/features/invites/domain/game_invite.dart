@@ -1,3 +1,4 @@
+import '../../../l10n/strings.dart';
 
 /// Where game invite links live: the Utopia site, which opens the app when
 /// it's installed (see utopia-landingpage/public/.well-known) and shows the
@@ -6,14 +7,18 @@ const kInviteHost = 'utopia.kaivon.app';
 
 /// The games a link can invite someone to.
 enum InviteGame {
-  ludo('ludo', 'Ludo'),
-  doodle('doodle', 'Guess My Doodle');
+  ludo('ludo'),
+  doodle('doodle');
 
-  const InviteGame(this.key, this.title);
+  const InviteGame(this.key);
 
   /// The link's `game=` value.
   final String key;
-  final String title;
+
+  String get title => switch (this) {
+    InviteGame.ludo => strings.gameInviteLudo,
+    InviteGame.doodle => strings.gameInviteGuessMyDoodle,
+  };
 }
 
 /// An invite to a friend's room: https://utopia.kaivon.app/join?game=ludo&code=ABC234.

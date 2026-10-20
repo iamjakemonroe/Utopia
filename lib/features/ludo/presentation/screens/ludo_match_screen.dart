@@ -199,10 +199,10 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
           : state.stake > 0
           ? strings.ludoMatchYouLlLoseYourCoin(
               state.stake,
-              others > 1 ? ' and the game will go on without you' : '',
+              others > 1 ? strings.ludoMatchAndTheGameWillGo : '',
             )
           : strings.ludoMatchYouLlLoseThisGame(
-              others > 1 ? ' and it will go on without you' : '',
+              others > 1 ? strings.ludoMatchAndItWillGoOn : '',
             ),
       confirmLabel: strings.ludoMatchLeaveGame,
       cancelLabel: strings.ludoMatchKeepPlaying,

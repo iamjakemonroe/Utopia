@@ -208,7 +208,9 @@ class _MaestroSheet extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   strings.maestroRenewsEveryMonthUntilYou(
-                    !kIsWeb && Platform.isIOS ? 'App Store' : 'Google Play',
+                    !kIsWeb && Platform.isIOS
+                        ? strings.maestroAppStore
+                        : strings.maestroGooglePlay,
                   ),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(

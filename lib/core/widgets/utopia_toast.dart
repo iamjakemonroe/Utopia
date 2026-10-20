@@ -57,10 +57,7 @@ void showUtopiaToast(
 }
 
 /// Server and network errors in words a player can use.
-String friendlyError(
-  Object error, {
-  String fallback = 'Something went wrong. Try again.',
-}) {
+String friendlyError(Object error, {String? fallback}) {
   final text = error.toString().toLowerCase();
   if (text.contains('insufficient balance') ||
       text.contains('enough balance')) {
@@ -99,7 +96,7 @@ String friendlyError(
   if (text.contains('duplicate key') && text.contains('username')) {
     return strings.utopiaToastThatNameIsTakenTry;
   }
-  return fallback;
+  return fallback ?? strings.utopiaToastSomethingWentWrong;
 }
 
 class _Toast extends StatefulWidget {

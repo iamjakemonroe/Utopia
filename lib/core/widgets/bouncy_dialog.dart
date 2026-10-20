@@ -47,7 +47,7 @@ Future<bool> confirmBouncy({
   required String title,
   required String message,
   required String confirmLabel,
-  String cancelLabel = 'Cancel',
+  String? cancelLabel,
   bool destructive = false,
   Widget? hero,
   GameAudio? audio,
@@ -92,7 +92,7 @@ Future<bool> confirmBouncy({
                 const SizedBox(height: AppSpacing.xs),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: Text(cancelLabel),
+                  child: Text(cancelLabel ?? strings.bouncyDialogCancel),
                 ),
               ],
             ),

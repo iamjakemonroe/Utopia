@@ -12,7 +12,7 @@ class AnswerButtons extends StatelessWidget {
     super.key,
     required this.onDecline,
     required this.onAccept,
-    this.acceptLabel = 'Accept',
+    this.acceptLabel,
     this.busy = false,
     this.compact = false,
   });
@@ -21,7 +21,9 @@ class AnswerButtons extends StatelessWidget {
 
   /// Null keeps Accept off (a challenge whose sender stepped away).
   final VoidCallback? onAccept;
-  final String acceptLabel;
+
+  /// "Accept" unless it says.
+  final String? acceptLabel;
   final bool busy;
   final bool compact;
 
@@ -43,7 +45,7 @@ class AnswerButtons extends StatelessWidget {
       onTap: busy ? null : onDecline,
     );
     final accept = _AnswerButton(
-      label: acceptLabel,
+      label: acceptLabel ?? strings.answerButtonsAccept,
 
       height: height,
       compact: compact,

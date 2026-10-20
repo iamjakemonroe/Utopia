@@ -198,7 +198,9 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                     const SizedBox(height: 6),
                     Text(
                       _saved
-                          ? 'Chip will throw you a party on ${choice?.label}.'
+                          ? strings.birthdayChipWillThrowYouAParty(
+                              '${choice?.label}',
+                            )
                           : strings.birthdayChipThrowsYouAParty,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body(

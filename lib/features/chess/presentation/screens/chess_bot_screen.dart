@@ -332,12 +332,12 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
     _Moment.botCheck: [
       'Check!',
       strings.chessBotWatchYourKing,
-      'Check! Your move.',
+      strings.chessBotCheckYourMove,
     ],
     _Moment.playerCheck: [
       'Eek! My king!',
       strings.chessBotWhoaCheck,
-      'Okay, I see it.',
+      strings.chessBotOkayISeeIt,
     ],
     _Moment.botWin: ['Checkmate! Good game!', 'I won! Rematch?'],
     _Moment.playerWin: [

@@ -21,15 +21,21 @@ String rankedGameRoute(String game) =>
 
 /// Where a rating sits, from Bronze (everyone starts at 1000) to Legend.
 enum RankTier {
-  bronze('Bronze', 0, Color(0xFFD9935A)),
-  silver('Silver', 1100, Color(0xFFCAD5E6)),
-  gold('Gold', 1300, Color(0xFFFFC94D)),
-  diamond('Diamond', 1500, Color(0xFF6FE3FF)),
-  legend('Legend', 1700, Color(0xFFFF1F3D));
+  bronze(0, Color(0xFFD9935A)),
+  silver(1100, Color(0xFFCAD5E6)),
+  gold(1300, Color(0xFFFFC94D)),
+  diamond(1500, Color(0xFF6FE3FF)),
+  legend(1700, Color(0xFFFF1F3D));
 
-  const RankTier(this.label, this.from, this.color);
+  const RankTier(this.from, this.color);
 
-  final String label;
+  String get label => switch (this) {
+    RankTier.bronze => strings.rankTierBronze,
+    RankTier.silver => strings.rankTierSilver,
+    RankTier.gold => strings.rankTierGold,
+    RankTier.diamond => strings.rankTierDiamond,
+    RankTier.legend => strings.rankTierLegend,
+  };
 
   /// The lowest rating in this tier.
   final int from;

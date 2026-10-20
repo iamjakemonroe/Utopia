@@ -525,8 +525,8 @@ class _Header extends StatelessWidget {
     final games = i?.games ?? 0;
     final where = [
       if (i?.topPercent case final top?)
-        'Top $top% of ${i!.ranked} ranked players',
-      if (place != null) '#$place on the board',
+        strings.rankHologramTopOfRankedPlayers(top, '${i!.ranked}'),
+      if (place != null) strings.rankHologramPlaceOnTheBoard('$place'),
       if (i != null && games < kGamesToRank)
         strings.rankHologramMoreRatedGameToBe(
           kGamesToRank - games,

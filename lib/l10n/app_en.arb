@@ -8903,5 +8903,152 @@
   "promotionPromoteYourPawn": "Promote your pawn",
   "@promotionPromoteYourPawn": {
     "description": "features/chess/presentation/widgets/promotion_sheet.dart"
+  },
+  "checkersBotNooo": "Nooo!",
+  "@checkersBotNooo": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotTwoForOne": "Two for one!",
+  "@checkersBotTwoForOne": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "checkersBotAllHailMe": "All hail me!",
+  "@checkersBotAllHailMe": {
+    "description": "features/checkers/presentation/screens/checkers_bot_screen.dart"
+  },
+  "maestroAppStore": "App Store",
+  "@maestroAppStore": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "maestroGooglePlay": "Google Play",
+  "@maestroGooglePlay": {
+    "description": "features/maestro/presentation/maestro_sheet.dart"
+  },
+  "ludoMatchAndTheGameWillGo": " and the game will go on without you",
+  "@ludoMatchAndTheGameWillGo": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "ludoMatchAndItWillGoOn": " and it will go on without you",
+  "@ludoMatchAndItWillGoOn": {
+    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
+  },
+  "chessBotCheckYourMove": "Check! Your move.",
+  "@chessBotCheckYourMove": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "chessBotOkayISeeIt": "Okay, I see it.",
+  "@chessBotOkayISeeIt": {
+    "description": "features/chess/presentation/screens/chess_bot_screen.dart"
+  },
+  "welcomeWeekSun": "Sun",
+  "@welcomeWeekSun": {
+    "description": "features/welcome/presentation/welcome_week.dart"
+  },
+  "rankHologramTopOfRankedPlayers": "Top {top}% of {ranked} ranked players",
+  "@rankHologramTopOfRankedPlayers": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "top": {
+        "type": "Object"
+      },
+      "ranked": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankHologramPlaceOnTheBoard": "#{place} on the board",
+  "@rankHologramPlaceOnTheBoard": {
+    "description": "features/rankings/presentation/hologram/rank_hologram.dart",
+    "placeholders": {
+      "place": {
+        "type": "Object"
+      }
+    }
+  },
+  "chessMatchYourMoveTheyPlayed": "Your move · they played {move}",
+  "@chessMatchYourMoveTheyPlayed": {
+    "description": "features/chess/presentation/screens/chess_match_screen.dart",
+    "placeholders": {
+      "move": {
+        "type": "Object"
+      }
+    }
+  },
+  "birthdayChipWillThrowYouAParty": "Chip will throw you a party on {day}.",
+  "@birthdayChipWillThrowYouAParty": {
+    "description": "features/birthday/presentation/birthday_screen.dart",
+    "placeholders": {
+      "day": {
+        "type": "Object"
+      }
+    }
+  },
+  "rankTierBronze": "Bronze",
+  "@rankTierBronze": {
+    "description": "features/rankings/domain/ranking.dart: a rank tier"
+  },
+  "rankTierSilver": "Silver",
+  "@rankTierSilver": {
+    "description": "features/rankings/domain/ranking.dart: a rank tier"
+  },
+  "rankTierGold": "Gold",
+  "@rankTierGold": {
+    "description": "features/rankings/domain/ranking.dart: a rank tier"
+  },
+  "rankTierDiamond": "Diamond",
+  "@rankTierDiamond": {
+    "description": "features/rankings/domain/ranking.dart: a rank tier"
+  },
+  "rankTierLegend": "Legend",
+  "@rankTierLegend": {
+    "description": "features/rankings/domain/ranking.dart: a rank tier"
+  },
+  "utopiaThemesShadeDawn": "Dawn",
+  "@utopiaThemesShadeDawn": {
+    "description": "core/theme/utopia_themes.dart: a color world at dawn"
+  },
+  "utopiaThemesShadeDusk": "Dusk",
+  "@utopiaThemesShadeDusk": {
+    "description": "core/theme/utopia_themes.dart: a color world at dusk"
+  },
+  "utopiaThemesShadeMidnight": "Midnight",
+  "@utopiaThemesShadeMidnight": {
+    "description": "core/theme/utopia_themes.dart: a color world at midnight"
+  },
+  "utopiaThemesShadeDawnMood": "first light",
+  "@utopiaThemesShadeDawnMood": {
+    "description": "core/theme/utopia_themes.dart: the feel of a color world at dawn"
+  },
+  "utopiaThemesShadeDuskMood": "golden hour",
+  "@utopiaThemesShadeDuskMood": {
+    "description": "core/theme/utopia_themes.dart: the feel of a color world at dusk"
+  },
+  "utopiaThemesShadeMidnightMood": "starlit",
+  "@utopiaThemesShadeMidnightMood": {
+    "description": "core/theme/utopia_themes.dart: the feel of a color world at midnight"
+  },
+  "gameInviteLudo": "Ludo",
+  "@gameInviteLudo": {
+    "description": "features/invites/domain/game_invite.dart: a game an invite link is for"
+  },
+  "gameInviteGuessMyDoodle": "Guess My Doodle",
+  "@gameInviteGuessMyDoodle": {
+    "description": "features/invites/domain/game_invite.dart: a game an invite link is for"
+  },
+  "answerButtonsAccept": "Accept",
+  "@answerButtonsAccept": {
+    "description": "features/notifications/presentation/answer_buttons.dart"
+  },
+  "mythicBadgeMythic": "Mythic",
+  "@mythicBadgeMythic": {
+    "description": "features/auras/presentation/mythic_badge.dart"
+  },
+  "bouncyDialogCancel": "Cancel",
+  "@bouncyDialogCancel": {
+    "description": "core/widgets/bouncy_dialog.dart"
+  },
+  "utopiaToastSomethingWentWrong": "Something went wrong. Try again.",
+  "@utopiaToastSomethingWentWrong": {
+    "description": "core/widgets/utopia_toast.dart"
   }
 }

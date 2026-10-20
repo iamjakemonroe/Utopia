@@ -866,7 +866,7 @@ class _StatusLineState extends State<_StatusLine>
             firstMove != null
                 ? strings.chessMatchYourMoveSToStart((firstMove / 1000).ceil())
                 : lastWasTheirs && state.lastSan != null
-                ? 'Your move · they played ${state.lastSan}'
+                ? strings.chessMatchYourMoveTheyPlayed('${state.lastSan}')
                 : strings.chessMatchYourMove,
             AppColors.accentSecondary,
           )

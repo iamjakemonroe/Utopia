@@ -6672,4 +6672,107 @@ class L10nEn extends L10n {
 
   @override
   String get promotionPromoteYourPawn => 'Promote your pawn';
+
+  @override
+  String get checkersBotNooo => 'Nooo!';
+
+  @override
+  String get checkersBotTwoForOne => 'Two for one!';
+
+  @override
+  String get checkersBotAllHailMe => 'All hail me!';
+
+  @override
+  String get maestroAppStore => 'App Store';
+
+  @override
+  String get maestroGooglePlay => 'Google Play';
+
+  @override
+  String get ludoMatchAndTheGameWillGo =>
+      ' and the game will go on without you';
+
+  @override
+  String get ludoMatchAndItWillGoOn => ' and it will go on without you';
+
+  @override
+  String get chessBotCheckYourMove => 'Check! Your move.';
+
+  @override
+  String get chessBotOkayISeeIt => 'Okay, I see it.';
+
+  @override
+  String get welcomeWeekSun => 'Sun';
+
+  @override
+  String rankHologramTopOfRankedPlayers(Object top, Object ranked) {
+    return 'Top $top% of $ranked ranked players';
+  }
+
+  @override
+  String rankHologramPlaceOnTheBoard(Object place) {
+    return '#$place on the board';
+  }
+
+  @override
+  String chessMatchYourMoveTheyPlayed(Object move) {
+    return 'Your move · they played $move';
+  }
+
+  @override
+  String birthdayChipWillThrowYouAParty(Object day) {
+    return 'Chip will throw you a party on $day.';
+  }
+
+  @override
+  String get rankTierBronze => 'Bronze';
+
+  @override
+  String get rankTierSilver => 'Silver';
+
+  @override
+  String get rankTierGold => 'Gold';
+
+  @override
+  String get rankTierDiamond => 'Diamond';
+
+  @override
+  String get rankTierLegend => 'Legend';
+
+  @override
+  String get utopiaThemesShadeDawn => 'Dawn';
+
+  @override
+  String get utopiaThemesShadeDusk => 'Dusk';
+
+  @override
+  String get utopiaThemesShadeMidnight => 'Midnight';
+
+  @override
+  String get utopiaThemesShadeDawnMood => 'first light';
+
+  @override
+  String get utopiaThemesShadeDuskMood => 'golden hour';
+
+  @override
+  String get utopiaThemesShadeMidnightMood => 'starlit';
+
+  @override
+  String get gameInviteLudo => 'Ludo';
+
+  @override
+  String get gameInviteGuessMyDoodle => 'Guess My Doodle';
+
+  @override
+  String get answerButtonsAccept => 'Accept';
+
+  @override
+  String get mythicBadgeMythic => 'Mythic';
+
+  @override
+  String get bouncyDialogCancel => 'Cancel';
+
+  @override
+  String get utopiaToastSomethingWentWrong =>
+      'Something went wrong. Try again.';
 }
