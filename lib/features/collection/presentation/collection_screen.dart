@@ -332,7 +332,11 @@ class _WorldCard extends ConsumerWidget {
         Icons.cake_rounded,
       ),
       _Hold.special => (
-        '${UtopiaThemes.seasonal[theme.id] == 'halloween' ? 'Halloween' : 'Event'} · ${auraTimeLeft(until!).replaceAll(' left', '')}',
+        '${switch (UtopiaThemes.seasonal[theme.id]) {
+          'halloween' => 'Halloween',
+          'winter' => 'Winter',
+          _ => 'Event',
+        }} · ${auraTimeLeft(until!).replaceAll(' left', '')}',
         Icons.celebration_rounded,
       ),
       _Hold.owned => ('Owned', Icons.verified_rounded),

@@ -125,6 +125,19 @@ class UtopiaApp extends ConsumerWidget {
         icon: Icons.nightlight_round,
       );
     });
+    // The Snow Globe in the Winter world wraps Chip up warm.
+    ref.watch(winterSetProvider);
+    ref.listen(winterSetProvider, (previous, next) {
+      if (previous != false || next != true) return;
+      final ctx = appNavigatorContext(ref);
+      if (ctx == null || !ctx.mounted) return;
+      showUtopiaToast(
+        ctx,
+        'Winter set complete. Chip wrapped up warm.',
+        kind: ToastKind.success,
+        icon: Icons.ac_unit_rounded,
+      );
+    });
     // Zombie Bite worn in the Zombie world gets Chip bitten.
     ref.watch(zombieSetProvider);
     ref.listen(zombieSetProvider, (previous, next) {

@@ -6,6 +6,8 @@ away, a ghost's moan for the quiet moments, and the scream as the wraith
 rushes out.
 
 Run from the repo root:  python3 tool/recorded_sfx.py
+(`python3 tool/recorded_sfx.py wn_sleigh` writes only assets/sfx/wn_sleigh.wav:
+Santa's sleigh bells as he crosses the Winter world's sky.)
 Writes assets/sfx/hw_cackle.wav (her evil laugh, echoing off the hills,
 sweeping left to right as she flies and fading off into the distance as
 she leaves), hw_moan_left.wav and hw_moan_right.wav (a ghost moaning, from
@@ -199,6 +201,40 @@ def coins_out():
     return out, sr
 
 
+# Santa's sleigh crossing the sky (WinterTimeline): how long it takes, and
+# where it is across the screen (0 left edge, 1 right) [s] seconds in.
+SLEIGH_CROSSING = 7.5
+
+
+def sleigh_across(s):
+    return -0.45 + 1.75 * s / SLEIGH_CROSSING
+
+
+def sleigh_bells():
+    """Santa's sleigh bells, high in the sky, as long as the sleigh takes
+    to cross: swelling in as it comes into view, following it from left to
+    right, and dying away as it flies off. A stretch of a steady recording
+    of sleigh bells, thinned (they're far up) and panned as it moves."""
+    sr = 44100
+    bells = decode_hi("sleigh_bells_soundstack_255104.mp3", sr)
+    a = int(16.0 * sr)
+    seg = biquad(array.array("d", bells[a:a + int(SLEIGH_CROSSING * sr)]), "hp", 900, sr=sr)
+
+    def smooth(k):
+        k = min(1.0, max(0.0, k))
+        return k * k * (3 - 2 * k)
+
+    left = array.array("d", bytes(8 * len(seg)))
+    right = array.array("d", bytes(8 * len(seg)))
+    for i, v in enumerate(seg):
+        s = i / sr
+        loud = smooth((s - 0.3) / 2.3) * (1 - smooth((s - 5.2) / 2.3))
+        pan = min(1.0, max(0.0, sleigh_across(s)))
+        left[i] = v * loud * math.cos(pan * math.pi / 2)
+        right[i] = v * loud * math.sin(pan * math.pi / 2)
+    return left, right, sr
+
+
 def main():
     laugh = take(decode("witch_laugh_mvvoiceacting_223851.mp3"), LAUGH_AT)
     left, right = cackle(laugh)
@@ -211,6 +247,10 @@ def main():
 
 
 if __name__ == "__main__":
+    if sys.argv[1:] == ["wn_sleigh"]:
+        left, right, sr = sleigh_bells()
+        save_stereo("wn_sleigh", left, right, peak=0.7, fade_out=0.3, sr=sr)
+        sys.exit(0)
     if sys.argv[1:] == ["coins_out"]:
         from synth_audio import normalize, fade_edges, write, OUT_SFX
         x, sr = coins_out()

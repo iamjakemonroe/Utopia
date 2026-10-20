@@ -54,6 +54,10 @@ abstract final class WorldSets {
   /// jack-o'-lantern in a witch's hat, and the night turns.
   static final halloween = SetBonus();
 
+  /// The Snow Globe in the Winter world: Chip wraps up in a Santa hat and
+  /// scarf, and it's Christmas Eve.
+  static final winter = SetBonus();
+
   /// Not a set: the player's own music is playing, so the Music world
   /// dances harder.
   static final musicLive = SetBonus();

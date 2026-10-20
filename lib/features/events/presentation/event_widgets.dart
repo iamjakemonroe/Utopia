@@ -25,6 +25,7 @@ import 'events_controller.dart';
 /// Each season's color.
 Color seasonColor(String season) => switch (season) {
   'halloween' => const Color(0xFFF2761A),
+  'winter' => const Color(0xFF4FC3FF),
   'weekly' => AppColors.coinGold,
   _ => AppColors.accent,
 };

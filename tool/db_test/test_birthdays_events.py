@@ -107,7 +107,8 @@ check("29 Feb not on the 28th in 2028",
       admin("select pg_temp.feb('2028-02-27 12:00+00') is null")[0][0])
 
 # ── Events (Halloween 2026 is on: 15 Oct to 2 Nov) ──
-admin("update events set starts_at = now() - interval '3 days', ends_at = now() + interval '10 days'")
+# Halloween on now (Winter stays in December).
+admin("update events set starts_at = now() - interval '3 days', ends_at = now() + interval '10 days' where season <> 'winter'")
 check("Halloween world left the store",
       admin("select count(*) from store_coin_prices where product_id = 'utopia.theme.utopia_halloween'")[0][0] == 0)
 check("not in the every-world pack",
@@ -185,7 +186,7 @@ check("bob can't wear Halloween", raises("select equip_item('theme', 'utopia_hal
 # The season ends: items stop working, and come back next year.
 admin("update world_rentals set expires_at = now() - interval '1 minute' where world_id = 'utopia_halloween'")
 admin("update user_auras set expires_at = now() - interval '1 minute' where aura_id = 'jack'")
-admin("update events set starts_at = now() - interval '20 days', ends_at = now() - interval '1 day'")
+admin("update events set starts_at = now() - interval '20 days', ends_at = now() - interval '1 day' where season <> 'winter'")
 harness.as_user(db, alice)
 check("out of season: can't wear the world", raises("select equip_item('theme', 'utopia_halloween')") is not None)
 s = q("select event_visit()")[0][0]

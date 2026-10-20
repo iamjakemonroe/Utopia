@@ -25,6 +25,7 @@ void main() {
     ('fighter', WorldSets.dragon),
     ('maestro', WorldSets.maestro),
     ('party', WorldSets.birthday),
+    ('winter', WorldSets.winter),
   ]) {
     testWidgets('chip $name', (tester) async {
       tester.view.physicalSize = const Size(1500, 640);
@@ -37,6 +38,7 @@ void main() {
         WorldSets.dragon,
         WorldSets.maestro,
         WorldSets.birthday,
+        WorldSets.winter,
       ]) {
         other.on.value = other == set;
         other.settle();

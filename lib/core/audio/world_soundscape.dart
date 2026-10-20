@@ -7,6 +7,7 @@ import '../theme/theme_controller.dart';
 import '../theme/utopia_themes.dart';
 import '../widgets/halloween_world.dart';
 import '../widgets/utopia_world.dart' show worldSeconds;
+import '../widgets/winter_world.dart';
 import '../widgets/world_sets.dart';
 import 'game_audio.dart';
 
@@ -31,6 +32,12 @@ import 'game_audio.dart';
 /// Reads the same clock and timings as the scene ([worldSeconds],
 /// [HalloweenTimeline]), so nothing is heard before or after it's seen.
 ///
+/// Winter's: "Silent Night" on a music box ([MusicTrack.winter]), Santa's
+/// sleigh bells ringing across the sky as he crosses it (following him
+/// from left to right), a gust of wind now and then as one blows the snow
+/// about, and on New Year's Eve, each firework's burst a moment after it's
+/// seen (they're far off). From [WinterTimeline], like the scene.
+///
 /// The Birthday world has music of its own too: a birthday song in place
 /// of the menu's ([MusicTrack.birthday]).
 class WorldSoundscape {
@@ -39,13 +46,16 @@ class WorldSoundscape {
   final GameAudio _audio;
   final _rng = math.Random();
   Timer? _tick;
-  bool _on = false;
+
+  /// The world whose sounds are playing (Halloween or Winter), if any.
+  WorldBiome? _scene;
   double _last = 0;
   double _nextPhrase = 0;
   double _nextOwl = 0;
   double _ghostsQuietUntil = 0;
   double _whispersQuietUntil = 0;
   double _moanQuietUntil = 0;
+  double _gustQuietUntil = 0;
 
   /// When something last broke the quiet.
   double _lastEvent = 0;
@@ -68,21 +78,39 @@ class WorldSoundscape {
   /// Sounds waiting for their moment that play as sound effects (louder).
   final List<(double, Sfx, double)> _loud = [];
 
-  /// Plays [biome]'s music and sounds (Halloween has both, Birthday its
-  /// song; other worlds keep the menu music).
+  /// Plays [biome]'s music and sounds (Halloween and Winter have both,
+  /// Birthday its song; other worlds keep the menu music).
   void update(WorldBiome biome) {
     _audio.setWorldTrack(switch (biome) {
       WorldBiome.halloween => MusicTrack.halloween,
+      WorldBiome.winter => MusicTrack.winter,
       WorldBiome.birthday => MusicTrack.birthday,
       _ => null,
     });
-    final on = biome == WorldBiome.halloween;
-    if (on == _on) return;
-    _on = on;
+    final scene = biome == WorldBiome.halloween || biome == WorldBiome.winter
+        ? biome
+        : null;
+    if (scene == _scene) return;
+    _scene = scene;
     _tick?.cancel();
     _due.clear();
-    if (!on) return;
+    _loud.clear();
+    if (scene == null) return;
     _last = worldSeconds;
+    if (scene == WorldBiome.winter) {
+      _audio.warm(const [
+        Sfx.wnSleigh,
+        Sfx.wnGust1,
+        Sfx.wnGust2,
+        Sfx.wnFirework1,
+        Sfx.wnFirework2,
+      ]);
+      _tick = Timer.periodic(
+        const Duration(milliseconds: 100),
+        (_) => _winter(),
+      );
+      return;
+    }
     _nextPhrase = _last + 3 + _rng.nextDouble() * 4;
     _nextOwl = _last + 20 + _rng.nextDouble() * 20;
     _tick = Timer.periodic(
@@ -274,6 +302,53 @@ class WorldSoundscape {
     _loud.removeWhere((d) {
       if (d.$1 > now) return false;
       _sound(d.$2, d.$3, now, loud: true);
+      return true;
+    });
+  }
+
+  void _winter() {
+    final now = worldSeconds;
+    final prev = _last;
+    _last = now;
+    // Back from the background (or a long stall), in a game, or giving way
+    // to the player's own music: nothing to catch up on.
+    if (now - prev > 1 || !_audio.worldShowing(MusicTrack.winter)) {
+      _due.clear();
+      return;
+    }
+    final cheer = WorldSets.winter.amount;
+    // Sleigh bells as Santa sets off across the sky: the sound swells as
+    // he comes into view and follows him over (its pan is in the sound).
+    if (crossed(prev, now, WinterTimeline.sleighPeriod(cheer), 0)) {
+      _sound(Sfx.wnSleigh, 0.55 + 0.2 * cheer, now);
+    }
+    // A gust of wind as one blows the snow about (not every one).
+    if (now >= _gustQuietUntil &&
+        WinterTimeline.gust(prev) < 0.8 &&
+        WinterTimeline.gust(now) >= 0.8) {
+      _sound(_chance(0.5) ? Sfx.wnGust1 : Sfx.wnGust2, 0.3, now);
+      _gustQuietUntil = now + 14;
+    }
+    // New Year's Eve: each firework's burst, heard a moment after it's
+    // seen (they're far off, over the mountains).
+    if (WinterTimeline.newYear(DateTime.now())) {
+      for (var i = 0; i < WinterTimeline.fireworks; i++) {
+        final period = WinterTimeline.fireworkPeriod(i);
+        final burst =
+            WinterTimeline.fireworkClimb * period -
+            WinterTimeline.fireworkShift(i);
+        if (crossed(prev, now, period, burst)) {
+          _due.add((
+            now + 0.35,
+            i.isEven ? Sfx.wnFirework1 : Sfx.wnFirework2,
+            0.35,
+          ));
+        }
+      }
+    }
+    _due.removeWhere((d) {
+      if (d.$1 > now) return false;
+      _audio.playWithMusic(d.$2, volume: d.$3);
       return true;
     });
   }

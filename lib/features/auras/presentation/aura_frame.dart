@@ -210,6 +210,8 @@ class AuraPainter extends CustomPainter {
         _music(canvas, c, r, t);
       case 'jack':
         _hallows(canvas, c, r, t);
+      case 'snow_globe':
+        _snowGlobe(canvas, c, r, t);
       case 'birthday':
         _birthday(canvas, c, r, t);
     }
@@ -447,6 +449,245 @@ class AuraPainter extends CustomPainter {
         ..quadraticBezierTo(p.dx, p.dy, p.dx, p.dy - s)
         ..close();
       canvas.drawPath(star, Paint()..color = const Color(0xFFFFF4E0));
+    }
+  }
+
+  /// Snow Globe: the picture sealed in a glass globe on a polished wooden
+  /// stand, a snowy hill with little pines inside behind it. Every few
+  /// seconds the globe's shaken: the snow swirls up round the picture and
+  /// slowly settles again. A glint slides across the glass.
+  void _snowGlobe(Canvas canvas, Offset c, double r, double t) {
+    final big = r * 1.32;
+    final globe = Rect.fromCircle(center: c, radius: big);
+    // Each shake, the swirl starts fast and slows as the snow settles.
+    const shakeEvery = 7.0;
+    final since = t % shakeEvery;
+    final spin = (1 - math.exp(-since * 0.9)) * 5.5;
+    final settle = Curves.easeInOut.transform(
+      ((since - 2.5) / (shakeEvery - 2.5)).clamp(0.0, 1.0),
+    );
+    final flakes = _lite ? 10 : 26;
+
+    Offset flake(int i) {
+      final a = _rand(i, 60) * 2 * math.pi + spin * (0.6 + 0.6 * _rand(i, 61));
+      final d = r * 1.05 + (big * 0.93 - r * 1.05) * _rand(i, 62);
+      final swirling = c + _dir(a) * d;
+      // Settling, it sinks to the bottom of the globe.
+      final floor =
+          c.dy +
+          math.sqrt(
+            math.max(0, big * big * 0.8 - math.pow(swirling.dx - c.dx, 2)),
+          );
+      return Offset(
+        swirling.dx,
+        swirling.dy +
+            (math.max(swirling.dy, floor - r * 0.08 * _rand(i, 63)) -
+                    swirling.dy) *
+                settle,
+      );
+    }
+
+    if (!front) {
+      _glowRing(
+        canvas,
+        c,
+        r,
+        const Color(0xFF9FD8FF).withValues(alpha: 0.35),
+        width: 0.22,
+        blur: 0.3,
+        scale: 1.36,
+      );
+      // Inside the glass: a winter night, a snowy hill, two little pines.
+      canvas.drawCircle(
+        c,
+        big,
+        Paint()
+          ..shader = RadialGradient(
+            colors: const [Color(0xCC1A2A5A), Color(0xCC2E4478)],
+          ).createShader(globe),
+      );
+      canvas.save();
+      canvas.clipPath(Path()..addOval(globe));
+      canvas.drawPath(
+        Path()
+          ..moveTo(c.dx - big, c.dy + big * 0.62)
+          ..quadraticBezierTo(
+            c.dx - big * 0.4,
+            c.dy + big * 0.42,
+            c.dx,
+            c.dy + big * 0.6,
+          )
+          ..quadraticBezierTo(
+            c.dx + big * 0.5,
+            c.dy + big * 0.78,
+            c.dx + big,
+            c.dy + big * 0.5,
+          )
+          ..lineTo(c.dx + big, c.dy + big)
+          ..lineTo(c.dx - big, c.dy + big)
+          ..close(),
+        Paint()..color = const Color(0xFFE6EEFF),
+      );
+      for (final (x, y, s) in const [
+        (-0.9, 0.6, 0.5),
+        (-0.76, 0.66, 0.34),
+        (0.86, 0.58, 0.46),
+      ]) {
+        final base = c + Offset(big * x, big * y);
+        final tall = r * s;
+        for (var k = 0; k < 3; k++) {
+          final bottom = base.dy - tall * k * 0.28;
+          final half = tall * 0.32 * (1 - k * 0.25);
+          canvas.drawPath(
+            Path()
+              ..moveTo(base.dx - half, bottom)
+              ..lineTo(base.dx, bottom - tall * 0.42)
+              ..lineTo(base.dx + half, bottom)
+              ..close(),
+            Paint()..color = const Color(0xFF1E5E46),
+          );
+          canvas.drawPath(
+            Path()
+              ..moveTo(base.dx - half * 0.4, bottom - tall * 0.24)
+              ..lineTo(base.dx, bottom - tall * 0.42)
+              ..lineTo(base.dx + half * 0.5, bottom - tall * 0.2)
+              ..close(),
+            Paint()..color = Colors.white.withValues(alpha: 0.9),
+          );
+        }
+      }
+      canvas.restore();
+      final snow = Paint()..color = Colors.white.withValues(alpha: 0.85);
+      for (var i = 0; i < flakes; i++) {
+        canvas.drawCircle(flake(i), r * (0.025 + 0.025 * _rand(i, 64)), snow);
+      }
+      return;
+    }
+
+    // A few flakes drifting over the picture too, faint (it's all inside
+    // the glass).
+    final faint = Paint()..color = Colors.white.withValues(alpha: 0.5);
+    for (var i = 0; i < (_lite ? 0 : 7); i++) {
+      final a = _rand(i, 65) * 2 * math.pi + spin * 0.8;
+      final p = c + _dir(a) * r * (0.35 + 0.55 * _rand(i, 66));
+      canvas.drawCircle(
+        p.translate(0, settle * r * 0.3 * _rand(i, 67)),
+        r * 0.022,
+        faint,
+      );
+    }
+    // The glass: a thin bright rim, a curved highlight up one side, and a
+    // glint sliding across now and then.
+    canvas.drawCircle(
+      c,
+      big,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = math.max(1, r * 0.035)
+        ..color = Colors.white.withValues(alpha: 0.45),
+    );
+    canvas.drawArc(
+      globe.deflate(r * 0.07),
+      math.pi * 1.08,
+      math.pi * 0.36,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.07
+        ..strokeCap = StrokeCap.round
+        ..color = Colors.white.withValues(alpha: 0.5),
+    );
+    canvas.drawCircle(
+      c + _dir(math.pi * 1.52) * big * 0.88,
+      r * 0.04,
+      Paint()..color = Colors.white.withValues(alpha: 0.7),
+    );
+    final sweep = (t % 5.0) / 1.2;
+    if (sweep < 1) {
+      canvas.save();
+      canvas.clipPath(Path()..addOval(globe));
+      final x = c.dx - big * 1.4 + big * 2.8 * sweep;
+      canvas.drawPath(
+        Path()
+          ..moveTo(x, c.dy - big)
+          ..lineTo(x + big * 0.25, c.dy - big)
+          ..lineTo(x - big * 0.35, c.dy + big)
+          ..lineTo(x - big * 0.6, c.dy + big)
+          ..close(),
+        Paint()
+          ..color = Colors.white.withValues(
+            alpha: 0.12 * math.sin(sweep * math.pi),
+          ),
+      );
+      canvas.restore();
+    }
+
+    // The stand: polished wood flaring out at the foot, a gold band and a
+    // little brass plate with a snowflake on it.
+    final top = c.dy + big * 0.84;
+    final stand = Path()
+      ..moveTo(c.dx - big * 0.62, top)
+      ..lineTo(c.dx + big * 0.62, top)
+      ..quadraticBezierTo(
+        c.dx + big * 0.66,
+        top + big * 0.22,
+        c.dx + big * 0.8,
+        top + big * 0.34,
+      )
+      ..lineTo(c.dx - big * 0.8, top + big * 0.34)
+      ..quadraticBezierTo(
+        c.dx - big * 0.66,
+        top + big * 0.22,
+        c.dx - big * 0.62,
+        top,
+      )
+      ..close();
+    canvas.drawPath(
+      stand,
+      Paint()
+        ..shader =
+            LinearGradient(
+              colors: const [
+                Color(0xFF3A160E),
+                Color(0xFF8A3E22),
+                Color(0xFF5A2414),
+                Color(0xFF2A0E08),
+              ],
+              stops: const [0, 0.35, 0.7, 1],
+            ).createShader(
+              Rect.fromLTRB(
+                c.dx - big * 0.8,
+                top,
+                c.dx + big * 0.8,
+                top + big * 0.34,
+              ),
+            ),
+    );
+    canvas.drawRect(
+      Rect.fromLTRB(
+        c.dx - big * 0.63,
+        top,
+        c.dx + big * 0.63,
+        top + big * 0.05,
+      ),
+      Paint()..color = const Color(0xFFFFD447),
+    );
+    final plate = Rect.fromCenter(
+      center: Offset(c.dx, top + big * 0.19),
+      width: big * 0.36,
+      height: big * 0.12,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(plate, Radius.circular(big * 0.03)),
+      Paint()..color = const Color(0xFFE8C060),
+    );
+    final etch = Paint()
+      ..strokeWidth = math.max(0.6, r * 0.012)
+      ..color = const Color(0xFF8A6420);
+    for (var i = 0; i < 3; i++) {
+      final a = i * math.pi / 3;
+      final d = _dir(a) * plate.height * 0.32;
+      canvas.drawLine(plate.center - d, plate.center + d, etch);
     }
   }
 

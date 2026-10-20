@@ -71,3 +71,13 @@ final halloweenSetProvider = Provider<bool?>((ref) {
   if (complete != null) WorldSets.halloween.on.value = complete;
   return complete;
 });
+
+/// The Snow Globe worn in the Winter world completes the set: Chip wraps
+/// up in a Santa hat, scarf and mittens, and it's Christmas Eve (the
+/// sleigh comes round more often, the tree's lights chase, big snowflakes
+/// drift past, the snowman waves). Watched at the app's root.
+final winterSetProvider = Provider<bool?>((ref) {
+  final complete = _wearing(ref, 'snow_globe', WorldBiome.winter);
+  if (complete != null) WorldSets.winter.on.value = complete;
+  return complete;
+});

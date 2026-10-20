@@ -24,6 +24,7 @@ class _SetsPreviewState extends State<SetsPreview> {
     (UtopiaThemes.utopiaHell, WorldSets.hell),
     (UtopiaThemes.utopiaMusic, WorldSets.music),
     (UtopiaThemes.utopiaHalloween, WorldSets.halloween),
+    (UtopiaThemes.utopiaWinter, WorldSets.winter),
   ];
   int _at = 0;
   Timer? _timer;

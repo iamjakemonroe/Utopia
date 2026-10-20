@@ -55,6 +55,12 @@ enum WorldBiome {
   /// patch of jack-o'-lanterns.
   halloween,
 
+  /// A snowy night by a frozen lake: the northern lights over the
+  /// mountains, a log cabin with smoke curling from its chimney, a
+  /// Christmas tree, a snowman, a skater on the ice, and Santa's sleigh
+  /// crossing the moon.
+  winter,
+
   /// A birthday party at dusk: bunting spelling HAPPY BIRTHDAY, fireworks,
   /// balloons drifting up, and a floating island with a cake and presents.
   /// Only ever seen on the player's own birthday.
@@ -221,7 +227,10 @@ class UtopiaThemes {
 
   /// Event worlds and their season: earned by playing in their event, and
   /// only usable while it's on (never sold or rented).
-  static const seasonal = {'utopia_halloween': 'halloween'};
+  static const seasonal = {
+    'utopia_halloween': 'halloween',
+    'utopia_winter': 'winter',
+  };
 
   /// Whether [id] can be bought or rented in the store.
   static bool sold(String id) =>
@@ -244,6 +253,7 @@ class UtopiaThemes {
     utopiaHell,
     utopiaMusic,
     utopiaHalloween,
+    utopiaWinter,
   ];
 
   static final List<UtopiaTheme> colors = [
@@ -978,6 +988,59 @@ class UtopiaThemes {
       sparkles: [Color(0xFFFFA53D), Color(0xFF8BFF4A), Color(0xFFB98CFF)],
       haze: Color(0xFF2A1A3A),
       starDensity: 0.45,
+    ),
+  );
+
+  static const utopiaWinter = UtopiaTheme(
+    id: 'utopia_winter',
+    name: 'Utopia Winter',
+    family: 'Utopia',
+    tagline: 'Snow on a cabin by a frozen lake. Listen for sleigh bells.',
+    background: Color(0xFF0A1230),
+    surface: Color(0xFF121D42),
+    surfaceElevated: Color(0xFF1B2A56),
+    accent: Color(0xFF4FC3FF),
+    trim: Color(0xFFBFE6FF),
+    trimBright: Color(0xFFE8F6FF),
+    glowRing: Color(0xFF5CFFB0),
+    textSecondary: Color(0xFFB8C8E8),
+    cardOutline: Color(0xFF050A1C),
+    world: WorldStyle(
+      biome: WorldBiome.winter,
+      // Deep navy overhead down to a cold blue glow over the mountains.
+      sky: [
+        Color(0xFF060B22),
+        Color(0xFF0A1230),
+        Color(0xFF101C44),
+        Color(0xFF1A2A5A),
+        Color(0xFF2A3E74),
+        Color(0xFF4A6098),
+      ],
+      horizonGlow: Color(0x557FA8FF),
+      // The northern lights, strong: green over violet.
+      aurora: [Color(0x665CFFB0), Color(0x558A6BFF)],
+      celestial: CelestialKind.moon,
+      celestialColors: [
+        Color(0xFFFFFFFF),
+        Color(0xFFE8F0FF),
+        Color(0xFFB8C8E8),
+        Color(0xFF8A9CC8),
+      ],
+      ringColors: [Color(0xFFBFE6FF), Color(0xFF4A6098)],
+      cloudLight: Color(0xFF3A4A78),
+      cloudShade: Color(0xFF141E40),
+      layers: [
+        (Color(0xFF2A3866), Color(0xFF1A2448)),
+        (Color(0xFF1C2850), Color(0xFF121A36)),
+        (Color(0xFF7084B8), Color(0xFF4A5C90)),
+      ],
+      land: [Color(0xFFC6D3F0), Color(0xFF7084B8), Color(0xFF3A4C80)],
+      rock: [Color(0xFF5A5468), Color(0xFF3A3448), Color(0xFF1E1A2A)],
+      foliage: [Color(0xFF1E5E46), Color(0xFF17463A), Color(0xFF0B2620)],
+      glow: Color(0xFFFFC66A),
+      sparkles: [Color(0xFFF2F6FF), Color(0xFF9FD8FF), Color(0xFF5CFFB0)],
+      haze: Color(0xFF1A2A5A),
+      starDensity: 0.85,
     ),
   );
 

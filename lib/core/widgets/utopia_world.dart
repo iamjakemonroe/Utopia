@@ -14,6 +14,7 @@ import 'heaven_world.dart';
 import 'hell_world.dart';
 import 'music_world.dart';
 import 'halloween_world.dart';
+import 'winter_world.dart';
 import 'birthday_world.dart';
 import 'zombie_world.dart';
 import 'ambient_tick.dart';
@@ -191,6 +192,7 @@ Offset _celestialAnchor(WorldStyle style, Size size) {
     WorldBiome.music => Offset(w * 0.74, h * 0.15),
     // A huge harvest moon over the hollow.
     WorldBiome.halloween => Offset(w * 0.32, h * 0.2),
+    WorldBiome.winter => Offset(w * WinterTimeline.moonAcross, h * 0.15),
     // A low, warm sun setting behind the party island.
     WorldBiome.birthday => Offset(w * 0.5, h * 0.66),
   };
@@ -244,7 +246,15 @@ class _SkyPainter extends CustomPainter {
         // harvest moon, both drawn with the scene.
         if (style.biome != WorldBiome.music &&
             style.biome != WorldBiome.halloween) {
-          _paintMoon(canvas, anchor, w * 0.075);
+          // Winter's is bigger (Santa's sleigh crosses it), but not
+          // huge on a wide screen.
+          _paintMoon(
+            canvas,
+            anchor,
+            style.biome == WorldBiome.winter
+                ? math.min(w * 0.1, size.height * 0.075)
+                : w * 0.075,
+          );
         }
     }
   }
@@ -484,6 +494,15 @@ class _ScenePainter extends CustomPainter {
         );
       case WorldBiome.halloween:
         paintHalloweenScene(
+          canvas,
+          size,
+          t,
+          style,
+          moon: _celestialAnchor(style, size),
+          dpr: dpr,
+        );
+      case WorldBiome.winter:
+        paintWinterScene(
           canvas,
           size,
           t,

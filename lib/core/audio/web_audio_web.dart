@@ -80,6 +80,10 @@ class WebAudio {
         }
       });
 
+  /// Fetches and decodes [asset] now, so it plays the moment it's asked
+  /// for (one that isn't preloaded for everyone).
+  void warm(String asset) => unawaited(buffer(asset));
+
   /// Runs [action] on every touch or key (from the browser's own event,
   /// where it may turn sound on), until [offTouch].
   void onTouch(void Function() action) {

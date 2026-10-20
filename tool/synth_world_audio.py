@@ -1,9 +1,11 @@
 """Generates the worlds' own music: Halloween's calm, spooky soundscape (it
 replaces the menu music there; lib/core/audio/world_soundscape.dart plays
-it in step with the scene), and the Birthday world's birthday song.
+it in step with the scene), the Birthday world's birthday song, and
+Winter's carol and weather.
 
-Run from the repo root:  python3 tool/synth_world_audio.py [halloween|birthday]
-(both when neither is named; halloween-fx for just the thunder, the dread
+Run from the repo root:
+  python3 tool/synth_world_audio.py [halloween|birthday|winter]
+(all three when none is named; halloween-fx for just the thunder, the dread
 and the whispers). The witch's laughs and the scream are recordings:
 tool/recorded_sfx.py.
 
@@ -13,6 +15,13 @@ first, then a whistle with the music box in harmony, an interlude lifts it
 a step for a big last verse, and a turnaround brings it home to the start.
 Bass, marimba oom-pah-pah, a soft kick and shaker, glockenspiel sparkles;
 every note a hair off the grid, so it plays like people, not a machine.
+
+Winter: assets/music/winter.m4a, "Silent Night" (public domain) twice
+round, nearly two minutes, looping: a music box over a soft
+string pad, then again with a glockenspiel an octave up, the music box in
+harmony, a bass and little bells. assets/sfx/wn_gust_*.wav, gusts of cold
+wind blowing past; wn_firework_*.wav, New Year's Eve fireworks bursting far
+off. (The sleigh bells are a recording: tool/recorded_sfx.py.)
 
 Halloween:
 Writes assets/music/halloween.m4a (a slow, dark pad that drifts over a
@@ -306,7 +315,7 @@ _VOWELS = {
 }
 
 
-def save_stereo(name, left, right, peak=0.7, fade_out=0.4):
+def save_stereo(name, left, right, peak=0.7, fade_out=0.4, sr=SR):
     """Like save, for a sound that sits somewhere left or right."""
     import wave
 
@@ -314,10 +323,10 @@ def save_stereo(name, left, right, peak=0.7, fade_out=0.4):
     g = peak / m
     # Cut the tail where it's faded below hearing.
     n = len(left)
-    while n > SR and max(abs(left[n - 1]), abs(right[n - 1])) * g < 0.004:
+    while n > sr and max(abs(left[n - 1]), abs(right[n - 1])) * g < 0.004:
         n -= 1
-    n = min(len(left), n + int(0.05 * SR))
-    k = int(fade_out * SR)
+    n = min(len(left), n + int(0.05 * sr))
+    k = int(fade_out * sr)
     data = array.array("h")
     for i in range(n):
         fade = min(1.0, i / 40, (n - 1 - i) / k if k else 1.0)
@@ -327,9 +336,9 @@ def save_stereo(name, left, right, peak=0.7, fade_out=0.4):
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
-        w.setframerate(SR)
+        w.setframerate(sr)
         w.writeframes(data.tobytes())
-    print(f"wrote {path} ({n / SR:.2f}s, stereo)")
+    print(f"wrote {path} ({n / sr:.2f}s, stereo)")
 
 
 # ── the scare ──────────────────────────────────────────────────────────────
@@ -682,8 +691,197 @@ def birthday_track():
     return array.array("d", x[n: 2 * n])
 
 
+# ── winter ─────────────────────────────────────────────────────────────────
+
+
+# "Silent Night" (Franz Xaver Gruber, 1818; public domain) in C, 3/4:
+# (MIDI note, beats) for each bar. The last bar rests.
+SILENT = [
+    [(67, 1.5), (69, 0.5), (67, 1)], [(64, 3)],
+    [(67, 1.5), (69, 0.5), (67, 1)], [(64, 3)],
+    [(74, 2), (74, 1)], [(71, 3)],
+    [(72, 2), (72, 1)], [(67, 3)],
+    [(69, 2), (69, 1)], [(72, 1.5), (71, 0.5), (69, 1)],
+    [(67, 1.5), (69, 0.5), (67, 1)], [(64, 3)],
+    [(69, 2), (69, 1)], [(72, 1.5), (71, 0.5), (69, 1)],
+    [(67, 1.5), (69, 0.5), (67, 1)], [(64, 3)],
+    [(74, 2), (74, 1)], [(77, 1.5), (74, 0.5), (71, 1)],
+    [(72, 3)], [(76, 3)],
+    [(72, 1.5), (67, 0.5), (64, 1)], [(67, 1.5), (65, 0.5), (62, 1)],
+    [(60, 3)], [],
+]
+SILENT_CHORDS = [
+    "C", "C", "C", "C", "G7", "G7", "C", "C",
+    "F", "F", "C", "C", "F", "F", "C", "C",
+    "G7", "G7", "C", "C", "C", "G7", "C", "C",
+]
+
+
+def pad(chord, seconds):
+    """A soft, warm string pad holding [chord] for [seconds]: each note two
+    sines a hair apart, swelling in and easing out."""
+    def make():
+        n = int((seconds + 0.9) * SR)
+        out = array.array("d", bytes(8 * n))
+        root, voicing = CHORDS[chord]
+        for m in voicing + [root + 12]:
+            f = midi(m)
+            for detune in (0.9985, 1.0015):
+                w = 2 * math.pi * f * detune / SR
+                for i in range(n):
+                    t = i / SR
+                    env = min(1.0, t / 0.45) * (1.0 if t < seconds else max(0.0, 1 - (t - seconds) / 0.9))
+                    out[i] += env * (math.sin(w * i) + 0.15 * math.sin(2 * w * i))
+        return biquad(out, "lp", 1600, sr=SR)
+    return cached(("pad", chord, round(seconds, 3)), make)
+
+
+def jingle(seed):
+    """One shake of a little bell: a bright, inharmonic ring."""
+    def make():
+        rng = random.Random(seed)
+        out = buf(0.35, SR)
+        for _ in range(3):
+            f = rng.uniform(2300, 3600)
+            ring = partials(f, 0.3, [(1.0, 1.0, 0.09), (1.47, 0.5, 0.06), (2.09, 0.3, 0.04)], attack=0.001)
+            add(out, ring, rng.uniform(0, 0.012), 0.6, SR)
+        return out
+    return cached(("jingle", seed), make)
+
+
+def winter_song(bpm=80):
+    """"Silent Night" twice, as (start seconds, sound, gain) events, and its
+    length: two bars' intro, then a music box sings it over a soft string
+    pad; then again, a glockenspiel doubling it an octave up, the music box
+    in harmony below, a bass, and little bells shaken on the off beats."""
+    rng = random.Random(1225)
+    beat = 60.0 / bpm
+    events = []
+
+    def at(beats, sound, gain, loose=True):
+        t = beats * beat + (rng.uniform(-0.008, 0.008) if loose else 0)
+        events.append((t, sound, gain * rng.uniform(0.92, 1.06)))
+
+    def sparkle(start, chord, up=True):
+        _, v = CHORDS[chord]
+        tones = [m + 24 for m in v] + [v[0] + 36]
+        for k, m in enumerate(tones if up else tones[::-1]):
+            at(start + k * 0.33, glock(m), 0.07)
+
+    def verse(start, second):
+        b = start
+        for k, notes in enumerate(SILENT):
+            chord = SILENT_CHORDS[k]
+            root, voicing = CHORDS[chord]
+            at(start + 3 * k, pad(chord, 3 * beat), 0.045, loose=False)
+            at(start + 3 * k, bass(root), 0.3 if second else 0.22)
+            if second:
+                at(start + 3 * k + 2, bass(root + 7), 0.16)
+                for off in (1, 2):
+                    at(start + 3 * k + off, jingle(k * 3 + off), 0.05)
+                    at(start + 3 * k + off + 0.5, jingle(k * 3 + off + 100), 0.025)
+            for m, length in notes:
+                at(b, box(m + 12), 0.36 if second else 0.42)
+                if second:
+                    at(b, glock(m + 24), 0.07)
+                    pcs = {x % 12 for x in voicing}
+                    h = next(x for x in range(m + 12 - 3, m + 12 - 10, -1) if x % 12 in pcs)
+                    at(b, box(h), 0.13)
+                b += length
+            b = start + 3 * (k + 1)
+            if k % 4 == 3:
+                sparkle(start + 3 * k + 1, chord, up=k % 8 == 3)
+
+    at(0, pad("C", 6 * beat), 0.045, loose=False)
+    sparkle(0, "C")
+    for k in range(6):
+        at(1 + k, jingle(500 + k), 0.03)
+    first = 6
+    verse(first, second=False)
+    verse(first + 3 * len(SILENT), second=True)
+    return events, (first + 6 * len(SILENT)) * beat
+
+
+def winter_track():
+    events, length = winter_song()
+    # Two passes, keeping the second, so ringing notes and the reverb's tail
+    # carry over the loop's join (see birthday_track).
+    x = buf(length * 2 + 3, SR)
+    for t, sound, gain in events:
+        for start in (0.0, length):
+            add(x, sound, start + max(0.0, t), gain, SR)
+    x = delay_reverb(x, sr=SR, taps=((0.083, 0.34), (0.131, 0.27), (0.197, 0.21), (0.281, 0.15)),
+                     feedback=0.36)
+    n = int(length * SR)
+    return array.array("d", x[n: 2 * n])
+
+
+def gust(seed):
+    """A gust of cold wind: noise swelling through a band that rises and
+    falls with it, a thin howl riding on top, blowing past left to right."""
+    rng = random.Random(seed)
+    secs = 5.0
+    peak = rng.uniform(1.8, 2.4)
+
+    def swell(t):
+        return math.sin(math.pi * min(1.0, t / peak) / 2) ** 2 if t < peak else math.exp(-(t - peak) / 1.1)
+
+    x = array.array("d", (rng.random() * 2 - 1 for _ in range(int(secs * SR))))
+    body = biquad(x, "bp", lambda t: 380 + 520 * swell(t), q=0.9, sr=SR)
+    howl = biquad(x, "bp", lambda t: 620 + 380 * swell(t) + 40 * math.sin(t * 5), q=14, sr=SR)
+    mono = array.array("d", ((b + 0.5 * h) * swell(i / SR) for i, (b, h) in enumerate(zip(body, howl))))
+    left = array.array("d", bytes(8 * len(mono)))
+    right = array.array("d", bytes(8 * len(mono)))
+    for i, v in enumerate(mono):
+        pan = min(1.0, i / SR / secs * 1.3)
+        left[i] = v * math.cos(pan * math.pi / 2)
+        right[i] = v * math.sin(pan * math.pi / 2)
+    return left, right
+
+
+def firework(seed):
+    """A firework bursting over the mountains: a soft, far-off thump and a
+    crackle of sparks fizzing out."""
+    rng = random.Random(seed)
+    out = buf(2.6, SR)
+    n = int(0.6 * SR)
+    thump = array.array("d", bytes(8 * n))
+    ph = 0.0
+    for i in range(n):
+        t = i / SR
+        ph += 2 * math.pi * (70 * math.exp(-t * 6) + 45) / SR
+        thump[i] = math.sin(ph) * math.exp(-t / 0.16) * min(1, i / 60)
+    add(out, thump, 0, 0.9, SR)
+    pop = biquad(shape(white(0.25), lambda t: math.exp(-t / 0.05)), "lp", 900, sr=SR)
+    add(out, pop, 0, 0.6, SR)
+    click = biquad(shape(white(0.012), lambda t: math.exp(-t / 0.003)), "hp", 2500, sr=SR)
+    for _ in range(70):
+        t = 0.25 + rng.random() ** 1.6 * 1.8
+        add(out, click, t, rng.uniform(0.05, 0.22) * max(0.1, 1 - (t - 0.25) / 1.9), SR)
+    return reverb(out, size=1.3, feedback=0.3)
+
+
+def winter():
+    for old in os.listdir(OUT_SFX):
+        if old.startswith("wn_") and old != "wn_sleigh.wav":
+            os.remove(os.path.join(OUT_SFX, old))
+    wav = f"{OUT_MUSIC}/winter.wav"
+    write(wav, normalize(winter_track(), 0.6), sr=SR)
+    subprocess.run(
+        ["afconvert", "-f", "m4af", "-d", "aac", "-b", "64000", wav, f"{OUT_MUSIC}/winter.m4a"],
+        check=True,
+    )
+    os.remove(wav)
+    print(f"wrote {OUT_MUSIC}/winter.m4a")
+    for k, seed in enumerate((31, 47), start=1):
+        left, right = gust(seed)
+        save_stereo(f"wn_gust_{k}", left, right, peak=0.6, fade_out=0.8)
+    save("wn_firework_1", firework(3), peak=0.7, fade_out=0.6)
+    save("wn_firework_2", firework(8), peak=0.7, fade_out=0.6)
+
+
 def main():
-    which = sys.argv[1:] or ["halloween", "birthday"]
+    which = sys.argv[1:] or ["halloween", "birthday", "winter"]
     # Just the thunder, the dread and the whispers.
     if which == ["halloween-fx"]:
         halloween_fx()
@@ -701,6 +899,8 @@ def main():
         )
         os.remove(wav)
         print(f"wrote {OUT_MUSIC}/birthday.m4a")
+    if "winter" in which:
+        winter()
 
 
 def halloween():

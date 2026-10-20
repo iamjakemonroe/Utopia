@@ -167,6 +167,7 @@ class _CoinBuddyState extends State<CoinBuddy>
           final fighter = WorldSets.dragon.amount;
           final dj = WorldSets.music.amount;
           final pumpkin = WorldSets.halloween.amount;
+          final winter = WorldSets.winter.amount;
           final party = switch (widget.party) {
             true => 1.0,
             false => 0.0,
@@ -222,7 +223,7 @@ class _CoinBuddyState extends State<CoinBuddy>
                   ),
                 ),
               for (final side in const [-1.0, 1.0])
-                _hand(side, pose, center, body, s, zombie),
+                _hand(side, pose, center, body, s, zombie, winter),
               Positioned(
                 left: center.dx - body / 2,
                 top: center.dy - body / 2,
@@ -254,6 +255,7 @@ class _CoinBuddyState extends State<CoinBuddy>
                       artist: artist,
                       dj: dj,
                       pumpkin: pumpkin,
+                      winter: winter,
                       party: party,
                     ),
                   ),
@@ -283,6 +285,7 @@ class _CoinBuddyState extends State<CoinBuddy>
     double body,
     double s,
     double zombie,
+    double winter,
   ) {
     final r = s * 0.1;
     final wave = side > 0 ? pose.rightHand : pose.leftHand;
@@ -303,19 +306,19 @@ class _CoinBuddyState extends State<CoinBuddy>
           shape: BoxShape.circle,
           gradient: RadialGradient(
             center: const Alignment(-0.35, -0.4),
-            // Grey-green and rotting once he's turned.
+            // Grey-green and rotting once he's turned; red mittens in
+            // the Winter world's set.
             colors: [
-              Color.lerp(Colors.white, const Color(0xFFC9D4B6), zombie)!,
-              Color.lerp(
-                const Color(0xFFEDE6FF),
-                const Color(0xFF9DAE88),
-                zombie,
-              )!,
-              Color.lerp(
-                const Color(0xFFBFB0E8),
-                const Color(0xFF66784F),
-                zombie,
-              )!,
+              for (final (plain, dead, mitten) in const [
+                (Colors.white, Color(0xFFC9D4B6), Color(0xFFFF7A84)),
+                (Color(0xFFEDE6FF), Color(0xFF9DAE88), Color(0xFFD7263D)),
+                (Color(0xFFBFB0E8), Color(0xFF66784F), Color(0xFF8A1424)),
+              ])
+                Color.lerp(
+                  Color.lerp(plain, dead, zombie),
+                  mitten,
+                  winter.clamp(0.0, 1.0),
+                )!,
             ],
             stops: const [0.0, 0.55, 1.0],
           ),
@@ -854,6 +857,7 @@ class _FacePainter extends CustomPainter {
     this.artist = 0,
     this.dj = 0,
     this.pumpkin = 0,
+    this.winter = 0,
     this.party = 0,
   });
 
@@ -882,6 +886,10 @@ class _FacePainter extends CustomPainter {
   /// Jack-o'-lantern Chip (the Halloween world's set): carved and lit from
   /// inside, in a witch's hat, 0 to 1.
   final double pumpkin;
+
+  /// Wrapped up for winter (the Winter world's set): a Santa hat, a knitted
+  /// scarf, mittens, and his breath puffing in the cold, 0 to 1.
+  final double winter;
 
   /// The player's birthday: a party hat (in place of his beret), 0 to 1.
   final double party;
@@ -1000,6 +1008,7 @@ class _FacePainter extends CustomPainter {
       if (mood == BuddyMood.watching && flavor == ChipFlavor.study) {
         _glasses(canvas, c, r);
       }
+      if (winter > 0) _breath(canvas, c, r);
     }
     if (dj > 0 && !_dead) _shades(canvas, c, r);
     if (mood == BuddyMood.vibing || mood == BuddyMood.listening) {
@@ -1041,11 +1050,193 @@ class _FacePainter extends CustomPainter {
       );
       canvas.restore();
     }
+    if (winter > 0 && !_dead) _scarf(canvas, c, r);
     if (fighter > 0) _headband(canvas, c, r);
-    if (artist > 0 && party < 0.5) _beret(canvas, c, r);
+    if (artist > 0 && party < 0.5 && winter < 0.5) _beret(canvas, c, r);
     if (angel > 0) _halo(canvas, c, r);
     if (pumpkin > 0) _witchHat(canvas, c, r);
+    if (winter > 0 && party < 0.5) _santaHat(canvas, c, r);
     if (party > 0 && pumpkin < 0.5) _partyHat(canvas, c, r);
+  }
+
+  static const _santaRed = Color(0xFFD7263D);
+  static const _fur = Color(0xFFF7F8FF);
+
+  /// The Winter world's set: a red Santa hat with a white fur brim, its tip
+  /// flopping over to one side with a pom-pom bouncing on the end.
+  void _santaHat(Canvas canvas, Offset c, double r) {
+    final a = winter.clamp(0.0, 1.0);
+    final sway = math.sin(t * 1.4) * 0.05;
+    canvas.save();
+    canvas.translate(c.dx + r * 0.05, c.dy - r * 0.74);
+    canvas.rotate(0.14 + sway);
+    final tip = Offset(r * (0.95 + sway), -r * (0.42 - sway * 2));
+    final hat = Path()
+      ..moveTo(-r * 0.74, 0)
+      ..quadraticBezierTo(-r * 0.62, -r * 0.88, r * 0.1, -r * 0.98)
+      ..quadraticBezierTo(r * 0.78, -r * 1.02, tip.dx, tip.dy)
+      ..quadraticBezierTo(r * 0.62, -r * 0.64, r * 0.48, -r * 0.6)
+      ..quadraticBezierTo(r * 0.62, -r * 0.3, r * 0.74, 0)
+      ..close();
+    canvas.drawPath(
+      hat,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFFF5A68).withValues(alpha: a),
+            _santaRed.withValues(alpha: a),
+            const Color(0xFF8A1424).withValues(alpha: a),
+          ],
+          stops: const [0, 0.45, 1],
+        ).createShader(Rect.fromLTWH(-r, -r * 1.1, r * 2, r * 1.2)),
+    );
+    // A soft fold of light down its front.
+    canvas.drawPath(
+      Path()
+        ..moveTo(-r * 0.5, -r * 0.05)
+        ..quadraticBezierTo(-r * 0.42, -r * 0.7, r * 0.05, -r * 0.9)
+        ..quadraticBezierTo(-r * 0.25, -r * 0.6, -r * 0.28, -r * 0.05)
+        ..close(),
+      Paint()..color = Colors.white.withValues(alpha: 0.16 * a),
+    );
+    // The fur brim: a fat white band, fluffed along its edges.
+    final fur = Paint()..color = _fur.withValues(alpha: a);
+    final shade = Paint()..color = const Color(0xFFC9D2EE).withValues(alpha: a);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(0, r * 0.02),
+          width: r * 1.7,
+          height: r * 0.34,
+        ),
+        Radius.circular(r * 0.17),
+      ),
+      shade,
+    );
+    for (var i = 0; i < 9; i++) {
+      final x = -r * 0.72 + r * 1.44 * i / 8;
+      canvas.drawCircle(Offset(x, -r * 0.04), r * 0.13, fur);
+      canvas.drawCircle(
+        Offset(x + r * 0.08, r * 0.07),
+        r * 0.1,
+        i.isEven ? fur : shade,
+      );
+    }
+    // The pom-pom.
+    final bob = tip.translate(r * 0.02, r * (0.08 + 0.04 * math.sin(t * 3)));
+    canvas.drawCircle(bob, r * 0.19, shade);
+    for (var k = 0; k < 6; k++) {
+      final ang = k / 6 * math.pi * 2;
+      canvas.drawCircle(
+        bob + Offset(math.cos(ang), math.sin(ang)) * r * 0.07,
+        r * 0.12,
+        fur,
+      );
+    }
+    canvas.restore();
+  }
+
+  /// The Winter world's set: a striped knitted scarf wrapped round the
+  /// bottom of him, knotted at one side, its ends blowing in the wind.
+  void _scarf(Canvas canvas, Offset c, double r) {
+    final a = winter.clamp(0.0, 1.0);
+    final red = _santaRed.withValues(alpha: a);
+    final ring = Rect.fromCircle(center: c, radius: r * 0.92);
+    canvas.drawArc(
+      ring,
+      math.pi * 0.16,
+      math.pi * 0.7,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.26
+        ..color = red,
+    );
+    // Its knit: stripes across it, and a darker edge.
+    final stripe = Paint()
+      ..strokeWidth = r * 0.07
+      ..color = _fur.withValues(alpha: 0.95 * a);
+    for (var i = 0; i < 6; i++) {
+      final ang = math.pi * (0.27 + i * 0.11);
+      final dir = Offset(math.cos(ang), math.sin(ang));
+      canvas.drawLine(c + dir * r * 0.8, c + dir * r * 1.04, stripe);
+    }
+    canvas.drawArc(
+      Rect.fromCircle(center: c, radius: r * 1.04),
+      math.pi * 0.16,
+      math.pi * 0.7,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * 0.03
+        ..color = const Color(0xFF8A1424).withValues(alpha: a),
+    );
+    // The knot at his side, and the two ends hanging from it, blowing.
+    final knot =
+        c + Offset(math.cos(math.pi * 0.2), math.sin(math.pi * 0.2)) * r * 0.92;
+    for (final (lean, long) in const [(0.1, 0.62), (0.42, 0.5)]) {
+      final blow = math.sin(t * 2.6 + lean * 9) * r * 0.06;
+      final end = knot + Offset(r * lean + blow, r * long);
+      canvas.drawLine(
+        knot,
+        end,
+        Paint()
+          ..strokeWidth = r * 0.17
+          ..strokeCap = StrokeCap.butt
+          ..color = red,
+      );
+      final along = end - knot;
+      for (final k in const [0.45, 0.75]) {
+        final p = knot + along * k;
+        final side = Offset(-along.dy, along.dx) / along.distance * r * 0.085;
+        canvas.drawLine(p - side, p + side, stripe);
+      }
+      // The fringe.
+      final side = Offset(-along.dy, along.dx) / along.distance;
+      for (var f = -1; f <= 1; f++) {
+        final from = end + side * (f * r * 0.06);
+        canvas.drawLine(
+          from,
+          from + along / along.distance * r * 0.09,
+          Paint()
+            ..strokeWidth = r * 0.025
+            ..strokeCap = StrokeCap.round
+            ..color = _fur.withValues(alpha: a),
+        );
+      }
+    }
+    canvas.drawCircle(knot, r * 0.13, Paint()..color = red);
+    canvas.drawCircle(
+      knot.translate(-r * 0.03, -r * 0.04),
+      r * 0.05,
+      Paint()..color = Colors.white.withValues(alpha: 0.25 * a),
+    );
+  }
+
+  /// His breath puffing out in the cold now and then, drifting up and
+  /// away.
+  void _breath(Canvas canvas, Offset c, double r) {
+    final mouth = c.translate(r * 0.05, r * 0.36);
+    for (var i = 0; i < 2; i++) {
+      final k = ((t + i * 0.35) % 3.4) / 1.4;
+      if (k > 1) continue;
+      final p = mouth.translate(r * (0.15 + k * 0.7), -r * k * 0.35);
+      final puff = Rect.fromCircle(center: p, radius: r * (0.07 + 0.16 * k));
+      canvas.drawOval(
+        puff,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [
+              Colors.white.withValues(
+                alpha: 0.55 * (1 - k) * winter.clamp(0.0, 1.0),
+              ),
+              Colors.white.withValues(alpha: 0),
+            ],
+          ).createShader(puff),
+      );
+    }
   }
 
   /// His birthday party hat: a striped cone tipped to one side with a fluffy

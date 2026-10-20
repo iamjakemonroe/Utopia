@@ -89,7 +89,17 @@ enum Sfx {
   hwWhisperLeft('hw_whisper_left'),
   hwWhisperRight('hw_whisper_right'),
   hwMoanLeft('hw_moan_left'),
-  hwMoanRight('hw_moan_right');
+  hwMoanRight('hw_moan_right'),
+
+  // The Winter world's, in step with its scene (WorldSoundscape): Santa's
+  // sleigh bells as he crosses the sky (tool/recorded_sfx.py), gusts of
+  // wind and New Year's Eve fireworks (tool/synth_world_audio.py). Loaded
+  // in a browser only once the Winter world shows ([GameAudio.warm]).
+  wnSleigh('wn_sleigh'),
+  wnGust1('wn_gust_1'),
+  wnGust2('wn_gust_2'),
+  wnFirework1('wn_firework_1'),
+  wnFirework2('wn_firework_2');
 
   const Sfx(this.file);
 
@@ -116,7 +126,11 @@ enum MusicTrack {
   halloween('music/halloween.m4a'),
 
   /// The Birthday world's: "Happy Birthday to You" as a party waltz.
-  birthday('music/birthday.m4a');
+  birthday('music/birthday.m4a'),
+
+  /// The Winter world's: "Silent Night" on a music box, with the world's
+  /// sounds over it (see WorldSoundscape).
+  winter('music/winter.m4a');
 
   const MusicTrack(this.asset);
 
@@ -206,7 +220,8 @@ class GameAudio {
     if (kIsWeb) {
       WebAudio.instance.preloadOnUnlock([
         for (final sfx in Sfx.values)
-          if (!sfx.file.startsWith('holo_amb')) _effectAsset(sfx),
+          if (!sfx.file.startsWith('holo_amb') && !sfx.file.startsWith('wn_'))
+            _effectAsset(sfx),
       ]);
     }
   }
@@ -291,6 +306,16 @@ class GameAudio {
     if (_worldTrack == track) return;
     _worldTrack = track;
     _syncMusic();
+  }
+
+  /// Gets [effects] ready to play the moment they're wanted: in a browser,
+  /// fetched and decoded now (those only some players hear, like the
+  /// Winter world's, aren't fetched for everyone).
+  void warm(Iterable<Sfx> effects) {
+    if (!kIsWeb) return;
+    for (final sfx in effects) {
+      WebAudio.instance.warm(_effectAsset(sfx));
+    }
   }
 
   /// Whether [track] is playing out loud right now.

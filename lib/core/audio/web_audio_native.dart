@@ -13,6 +13,8 @@ class WebAudio {
 
   void preloadOnUnlock(Iterable<String> assets) {}
 
+  void warm(String asset) {}
+
   void onTouch(void Function() action) {}
 
   void offTouch(void Function() action) {}

@@ -200,6 +200,16 @@ class Aura {
       season: 'halloween',
     ),
     Aura(
+      id: 'snow_globe',
+      name: 'Snow Globe',
+      tagline:
+          'Your picture sealed in a snow globe on a polished stand, the snow swirling up round you every time it\'s shaken. In the Winter world, Chip wraps up warm.',
+      tier: AuraTier.legendary,
+      color: Color(0xFF9FD8FF),
+      prices: _legendary,
+      season: 'winter',
+    ),
+    Aura(
       id: 'demon',
       name: 'Inferno',
       tagline:

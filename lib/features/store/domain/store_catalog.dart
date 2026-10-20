@@ -364,6 +364,7 @@ class StoreCatalog {
     'utopia_hell',
     'utopia_music',
     'utopia_halloween',
+    'utopia_winter',
   };
 
   /// What renting a world for [days] costs in coins, or null if it can't
