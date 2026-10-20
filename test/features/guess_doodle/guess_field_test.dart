@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:utopia/features/guess_doodle/presentation/widgets/doodle_chat.dart';
 
@@ -44,6 +45,15 @@ void main() {
       await tester.pump();
       expect(focus.hasFocus, isTrue, reason: 'tapped $where');
     }
+
+    // Focused, but the keyboard put away (Android's back key): a tap on
+    // the pill's edge brings it back.
+    await SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+    expect(tester.testTextInput.isVisible, isFalse);
+    await tester.tapAt(Offset(pill.left + 6, pill.center.dy));
+    await tester.pump();
+    expect(focus.hasFocus, isTrue);
+    expect(tester.testTextInput.isVisible, isTrue, reason: 'shown again');
 
     // Sending keeps it up for the next guess.
     await tester.enterText(find.byType(TextField), 'cat');

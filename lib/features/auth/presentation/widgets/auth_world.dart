@@ -8,6 +8,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/utopia_icons.dart';
 import '../../../../core/widgets/frosted.dart';
+import '../../../../core/platform/keyboard.dart';
 
 /// The Utopia gateway floating in a halo of turning light, with Chip
 /// hovering beside it.
@@ -322,7 +323,7 @@ class _CodeTilesInputState extends State<CodeTilesInput> {
     super.initState();
     _focus.addListener(() => setState(() {}));
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _focus.requestFocus();
+      if (mounted) focusIfAllowed(_focus);
     });
   }
 
@@ -332,16 +333,7 @@ class _CodeTilesInputState extends State<CodeTilesInput> {
     super.dispose();
   }
 
-  /// Brings the keyboard up. If the field still has focus but the keyboard
-  /// was put away (the back button, a swipe down), asking for focus does
-  /// nothing, so ask the system to show the keyboard again instead.
-  void _openKeyboard() {
-    if (_focus.hasFocus) {
-      SystemChannels.textInput.invokeMethod<void>('TextInput.show');
-    } else {
-      _focus.requestFocus();
-    }
-  }
+  void _openKeyboard() => openKeyboard(_focus);
 
   @override
   Widget build(BuildContext context) {

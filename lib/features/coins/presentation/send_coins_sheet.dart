@@ -15,6 +15,7 @@ import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../data/coin_gift_repository.dart';
+import '../../../core/platform/keyboard.dart';
 
 /// Who a gift goes to.
 typedef GiftFriend = ({
@@ -361,7 +362,8 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
           const SizedBox(height: AppSpacing.sm),
           TextField(
             controller: _custom,
-            autofocus: true,
+            // (Not in a browser: the tap on Other can't open its keyboard.)
+            autofocus: canFocusWithoutTap,
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../chat/domain/chat_filter.dart';
 import '../../domain/doodle_game.dart';
+import '../../../../core/platform/keyboard.dart';
 
 /// A player's name in the game: "You" for this player.
 String doodleName(WidgetRef ref, String? id, String? me) {
@@ -354,7 +355,7 @@ class _DoodleGuessFieldState extends State<DoodleGuessField> {
     return TextFieldTapRegion(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: _focus.requestFocus,
+        onTap: () => openKeyboard(_focus),
         child: _pill(glow),
       ),
     );

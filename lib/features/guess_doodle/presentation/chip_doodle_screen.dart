@@ -21,6 +21,7 @@ import 'chip_doodle_game.dart';
 import 'widgets/doodle_canvas_view.dart';
 import 'widgets/doodle_header.dart';
 import '../../../core/layout/game_stage.dart';
+import '../../../core/platform/keyboard.dart';
 
 /// "Chip draws, you guess": Chip doodles a word stroke by stroke and the
 /// player races to guess it, five times. Faster guesses score more; letters
@@ -80,7 +81,7 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
           _audio.play(Sfx.drawer);
           // Once the frame's built: the field's in place to take it.
           WidgetsBinding.instance.addPostFrameCallback(
-            (_) => mounted ? _focus.requestFocus() : null,
+            (_) => mounted ? focusIfAllowed(_focus) : null,
           );
         case ChipDoodlePhase.reveal:
           _ticker.stop();

@@ -36,6 +36,7 @@ import '../widgets/ludo_rules_sheet.dart';
 import '../widgets/ludo_setup_widgets.dart';
 import '../../../../core/widgets/ambient_tick.dart';
 import '../../../../core/layout/responsive.dart';
+import '../../../../core/platform/keyboard.dart';
 
 /// Turns backend errors into something a player can act on.
 String ludoErrorText(Object e) {
@@ -618,7 +619,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
             onChanged: (j) {
               setState(() => _joining = j);
               if (j) {
-                _focus.requestFocus();
+                focusIfAllowed(_focus);
               } else {
                 _focus.unfocus();
               }
@@ -632,7 +633,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                 ? Column(
                     children: [
                       GestureDetector(
-                        onTap: () => _focus.requestFocus(),
+                        onTap: () => openKeyboard(_focus),
                         child: Stack(
                           alignment: Alignment.center,
                           children: [

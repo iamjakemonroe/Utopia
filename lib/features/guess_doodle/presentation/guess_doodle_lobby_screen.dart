@@ -20,6 +20,7 @@ import '../../../core/widgets/utopia_toast.dart';
 import '../../ludo/presentation/screens/ludo_lobby_screen.dart' show CodeTiles;
 import '../data/doodle_game_repository.dart';
 import '../../../core/layout/responsive.dart';
+import '../../../core/platform/keyboard.dart';
 
 /// Server errors in words a player can use.
 String doodleErrorText(Object e) {
@@ -285,7 +286,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                   onChanged: (j) {
                     setState(() => _joining = j);
                     if (j) {
-                      _focus.requestFocus();
+                      focusIfAllowed(_focus);
                     } else {
                       _focus.unfocus();
                     }
@@ -299,7 +300,7 @@ class _FriendsSheetState extends State<_FriendsSheet> {
                       ? Column(
                           children: [
                             GestureDetector(
-                              onTap: () => _focus.requestFocus(),
+                              onTap: () => openKeyboard(_focus),
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
