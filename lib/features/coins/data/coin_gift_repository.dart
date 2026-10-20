@@ -7,6 +7,9 @@ import '../../../core/supabase/supabase_providers.dart';
 
 /// What the player can send as gifts right now (the server's
 /// coin_gift_allowance; it checks everything again on sending).
+/// The longest note a gift can carry (the server's limit too).
+const kGiftNoteLength = 140;
+
 class GiftAllowance {
   const GiftAllowance({
     required this.ok,
@@ -122,16 +125,25 @@ class CoinGiftRepository {
   /// Sends [coins] to friend [to], with the gift [pin]. [key] is made once
   /// per gift ([newGiftKey]): sending again with it (after a dropped
   /// connection) never sends twice.
+  /// Sends [coins] to [to], with an optional [note] for them (up to
+  /// [kGiftNoteLength] characters; the server tidies it).
   Future<GiftResult> send({
     required String to,
     required int coins,
     required String key,
     required String pin,
+    String? note,
   }) async => GiftResult.fromJson(
     _map(
       await _client.rpc(
         'send_coin_gift',
-        params: {'p_to': to, 'p_coins': coins, 'p_key': key, 'p_pin': pin},
+        params: {
+          'p_to': to,
+          'p_coins': coins,
+          'p_key': key,
+          'p_pin': pin,
+          if (note != null && note.trim().isNotEmpty) 'p_note': note.trim(),
+        },
       ),
     ),
   );

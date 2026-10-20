@@ -40,6 +40,7 @@ Future<void> _sheet(
   GiftAllowance allowance,
   String name, {
   bool send = false,
+  String? note,
 }) async {
   tester.view.physicalSize = const Size(1290, 2796);
   tester.view.devicePixelRatio = 3;
@@ -92,6 +93,10 @@ Future<void> _sheet(
   for (var i = 0; i < 10; i++) {
     await tester.pump(const Duration(milliseconds: 100));
   }
+  if (note != null) {
+    await tester.enterText(find.byType(TextField).last, note);
+    await tester.pump(const Duration(milliseconds: 100));
+  }
   if (send) {
     await tester.tap(find.text('500'));
     await tester.pump(const Duration(milliseconds: 100));
@@ -121,6 +126,25 @@ void main() {
 
   testWidgets('the gift PIN', (tester) async {
     await _sheet(tester, _allowance(), 'pin', send: true);
+  });
+
+  testWidgets('with a note', (tester) async {
+    await _sheet(
+      tester,
+      _allowance(),
+      'note',
+      note: 'For the rematch. Bring it!',
+    );
+  });
+
+  testWidgets('the gift PIN, with a note', (tester) async {
+    await _sheet(
+      tester,
+      _allowance(),
+      'pin_note',
+      send: true,
+      note: 'Happy birthday Kofi! Get yourself a new frame.',
+    );
   });
 
   testWidgets('choosing a PIN, the first time', (tester) async {

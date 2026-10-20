@@ -30,6 +30,7 @@ import '../../../core/bots/bots.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../../core/layout/responsive.dart';
 import '../../../l10n/strings.dart';
+import '../../coins/presentation/gift_note.dart';
 
 /// The people in the notifications, [ids] joined by commas, fetched at
 /// once: each row asking for its own went to the server once a row, and
@@ -364,6 +365,10 @@ class _RowState extends ConsumerState<_Row> {
                             color: AppColors.textSecondary,
                           ),
                         ),
+                        if (look.quote != null) ...[
+                          const SizedBox(height: 6),
+                          GiftNote(look.quote!),
+                        ],
                       ],
                     ),
                   ),

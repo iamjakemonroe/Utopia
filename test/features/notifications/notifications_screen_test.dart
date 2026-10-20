@@ -38,12 +38,20 @@ class _Profiles extends ProfileRepository {
   }
 }
 
-AppNotification _n(int id, String kind, String? actor) => AppNotification(
+AppNotification _n(
+  int id,
+  String kind,
+  String? actor, {
+  Map<String, dynamic> data = const {
+    'status': 'fixed',
+    'note': 'Fixed, thanks!',
+  },
+}) => AppNotification(
   id: id,
   kind: kind,
   actorId: actor,
   refId: 'ref-$id',
-  data: const {'status': 'fixed', 'note': 'Fixed, thanks!'},
+  data: data,
   readAt: null,
   createdAt: DateTime.now().subtract(Duration(minutes: id)),
 );
@@ -76,6 +84,12 @@ void main() {
               _n(2, 'friend_accepted', _bo),
               _n(3, 'game_invite', _ada),
               _n(4, 'report_update', null),
+              _n(
+                5,
+                'coin_gift',
+                _bo,
+                data: const {'coins': 500, 'note': 'Happy birthday, Ada!'},
+              ),
             ]),
           ),
         ],
@@ -99,6 +113,8 @@ void main() {
 
     expect(find.textContaining('Ada'), findsWidgets);
     expect(find.textContaining('Bo '), findsWidgets);
+    // A gift's note, in their own words.
+    expect(find.text('Happy birthday, Ada!'), findsOneWidget);
     expect(profiles.batches, [
       [_ada, _bo],
     ]);

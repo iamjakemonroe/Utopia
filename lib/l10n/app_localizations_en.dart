@@ -6775,4 +6775,25 @@ class L10nEn extends L10n {
   @override
   String get utopiaToastSomethingWentWrong =>
       'Something went wrong. Try again.';
+
+  @override
+  String get sendCoinsAddANote => 'Add a note (optional)';
+
+  @override
+  String get sendCoinsNoteTooLong => 'Keep your note to 140 characters.';
+
+  @override
+  String sendCoinsToName(Object name) {
+    return 'to $name';
+  }
+
+  @override
+  String giftNoteQuoted(Object note) {
+    return '“$note”';
+  }
+
+  @override
+  String giftNoteTheirNote(Object note) {
+    return 'Note: $note';
+  }
 }

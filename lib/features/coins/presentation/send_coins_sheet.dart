@@ -14,6 +14,7 @@ import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../data/coin_gift_repository.dart';
+import 'gift_note.dart';
 import 'gift_pin.dart';
 import '../../../core/platform/keyboard.dart';
 import '../../../l10n/strings.dart';
@@ -60,6 +61,9 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
   /// twice.
   final _key = newGiftKey();
   final _custom = TextEditingController();
+
+  /// A note for them, if they write one.
+  final _note = TextEditingController();
   int _coins = 100;
   _Step _step = _Step.amount;
 
@@ -77,7 +81,14 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
   @override
   void dispose() {
     _custom.dispose();
+    _note.dispose();
     super.dispose();
+  }
+
+  /// The note as it'll go: tidied, or null when there's none.
+  String? get _noteText {
+    final text = _note.text.trim().replaceAll(RegExp(r'\s+'), ' ');
+    return text.isEmpty ? null : text;
   }
 
   String get _name => widget.friend.name;
@@ -109,7 +120,13 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
     try {
       final result = await ref
           .read(coinGiftRepositoryProvider)
-          .send(to: widget.friend.id, coins: coins, key: _key, pin: pin);
+          .send(
+            to: widget.friend.id,
+            coins: coins,
+            key: _key,
+            pin: pin,
+            note: _noteText,
+          );
       if (!mounted) return;
       if (result.ok) {
         HapticFeedback.mediumImpact();
@@ -162,6 +179,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
     'held' => strings.sendCoinsCoinsBoughtInTheLast,
     'guest' => strings.sendCoinsSaveYourAccountToSend,
     'off' => strings.sendCoinsSendingCoinsIsPausedRight,
+    'note_long' => strings.sendCoinsNoteTooLong,
     _ => strings.sendCoinsCouldnTSendThemTry2,
   };
 
@@ -226,7 +244,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
                               style: AppTextStyles.display(fontSize: 22),
                             ),
                             Text(
-                              'to $_name',
+                              strings.sendCoinsToName(_name),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.body(
@@ -265,23 +283,25 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
 
   Widget _stepBody(GiftAllowance allow) => switch (_step) {
     _Step.amount => _picker(allow),
-    _Step.pin => GiftPinPad(
-      key: const ValueKey('pin'),
-      title: strings.sendCoinsEnterYourGiftPin,
-      subtitle: strings.sendCoinsGetsThemStraightAwayA(_name),
-      busy: _sending,
-      enabled: _lockedUntil == null || _lockedUntil!.isBefore(DateTime.now()),
-      error: _pinError,
-      errorCount: _pinErrors,
-      onDone: _sendWith,
-      extra: TextButton(
-        onPressed: _sending
-            ? null
-            : () => setState(() {
-                _pinError = null;
-                _step = _Step.resetPin;
-              }),
-        child: Text(strings.sendCoinsForgotPin),
+    _Step.pin => _withNote(
+      GiftPinPad(
+        key: const ValueKey('pin'),
+        title: strings.sendCoinsEnterYourGiftPin,
+        subtitle: strings.sendCoinsGetsThemStraightAwayA(_name),
+        busy: _sending,
+        enabled: _lockedUntil == null || _lockedUntil!.isBefore(DateTime.now()),
+        error: _pinError,
+        errorCount: _pinErrors,
+        onDone: _sendWith,
+        extra: TextButton(
+          onPressed: _sending
+              ? null
+              : () => setState(() {
+                  _pinError = null;
+                  _step = _Step.resetPin;
+                }),
+          child: Text(strings.sendCoinsForgotPin),
+        ),
       ),
     ),
     _Step.choosePin => GiftPinFlow(
@@ -297,6 +317,23 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
       onDone: _sendWith,
     ),
   };
+
+  /// [pad] with the note that's going, if there is one, above it.
+  Widget _withNote(Widget pad) {
+    final note = _noteText;
+    if (note == null) return pad;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: GiftNote(note, maxLines: 3),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        pad,
+      ],
+    );
+  }
 
   /// They can't send: why, and what to do.
   Widget _cant(GiftAllowance allow) {
@@ -453,6 +490,53 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
               ),
             ),
           ),
+        const SizedBox(height: AppSpacing.md),
+        // A note for them: optional, one line that wraps, no new lines.
+        TextField(
+          controller: _note,
+          minLines: 1,
+          maxLines: 3,
+          maxLength: kGiftNoteLength,
+          maxLengthEnforcement: MaxLengthEnforcement.enforced,
+          textCapitalization: TextCapitalization.sentences,
+          textInputAction: TextInputAction.done,
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(RegExp(r'[\n\r]')),
+          ],
+          style: AppTextStyles.body(fontWeight: FontWeight.w700),
+          buildCounter:
+              (
+                context, {
+                required currentLength,
+                required isFocused,
+                maxLength,
+              }) => currentLength > kGiftNoteLength - 40
+              ? Text(
+                  '$currentLength/$maxLength',
+                  style: AppTextStyles.body(
+                    fontSize: 11.5,
+                    color: AppColors.textSecondary,
+                  ),
+                )
+              : null,
+          onChanged: (_) => setState(() {
+            if (_error == strings.sendCoinsNoteTooLong) _error = null;
+          }),
+          decoration: InputDecoration(
+            hintText: strings.sendCoinsAddANote,
+            prefixIcon: Icon(
+              Icons.edit_note_rounded,
+              color: AppColors.textSecondary,
+            ),
+            filled: true,
+            fillColor: Colors.black.withValues(alpha: 0.2),
+            isDense: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
         if (_error != null) ...[
           const SizedBox(height: AppSpacing.sm),
           Text(

@@ -9050,5 +9050,40 @@
   "utopiaToastSomethingWentWrong": "Something went wrong. Try again.",
   "@utopiaToastSomethingWentWrong": {
     "description": "core/widgets/utopia_toast.dart"
+  },
+  "sendCoinsAddANote": "Add a note (optional)",
+  "@sendCoinsAddANote": {
+    "description": "features/coins/presentation/send_coins_sheet.dart: the hint in the gift note field"
+  },
+  "sendCoinsNoteTooLong": "Keep your note to 140 characters.",
+  "@sendCoinsNoteTooLong": {
+    "description": "features/coins/presentation/send_coins_sheet.dart"
+  },
+  "sendCoinsToName": "to {name}",
+  "@sendCoinsToName": {
+    "description": "features/coins/presentation/send_coins_sheet.dart: under \"Send coins\", who to",
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftNoteQuoted": "“{note}”",
+  "@giftNoteQuoted": {
+    "description": "A gift note, quoted (in a phone notification)",
+    "placeholders": {
+      "note": {
+        "type": "Object"
+      }
+    }
+  },
+  "giftNoteTheirNote": "Note: {note}",
+  "@giftNoteTheirNote": {
+    "description": "features/coins/presentation/gift_note.dart: read aloud by screen readers",
+    "placeholders": {
+      "note": {
+        "type": "Object"
+      }
+    }
   }
 }

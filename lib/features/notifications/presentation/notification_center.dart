@@ -22,14 +22,24 @@ import '../data/notification_repository.dart';
 import 'answer_buttons.dart';
 import 'notification_actions.dart';
 import '../../../l10n/strings.dart';
+import '../../coins/presentation/gift_note.dart';
 
 /// How a notification reads: a line about who did what, a second line,
 /// and its icon and color.
 class NotificationLook {
-  const NotificationLook(this.title, this.subtitle, this.icon, this.color);
+  const NotificationLook(
+    this.title,
+    this.subtitle,
+    this.icon,
+    this.color, {
+    this.quote,
+  });
 
   final String title;
   final String subtitle;
+
+  /// What they wrote, if they did (a gift's note): shown as their words.
+  final String? quote;
   final IconData icon;
   final Color color;
 
@@ -77,11 +87,13 @@ class NotificationLook {
         );
       case 'coin_gift':
         final coins = (n.data['coins'] as num?)?.toInt() ?? 0;
+        final note = (n.data['note'] as String?)?.trim();
         return NotificationLook(
           strings.notificationCenterSentYouCoins(name, formatCoins(coins)),
           strings.notificationCenterAGiftTheyReIn,
           Icons.redeem_rounded,
           AppColors.coinGold,
+          quote: note == null || note.isEmpty ? null : note,
         );
       case 'report_update':
         final fixed = n.data['status'] == 'fixed';
@@ -244,7 +256,10 @@ class _NotificationCenterState extends ConsumerState<NotificationCenter>
     LocalNotifications.instance.show(
       id: n.id % 100000,
       title: look.title,
-      body: look.subtitle,
+      // Their own words, when they wrote some.
+      body: look.quote != null
+          ? strings.giftNoteQuoted(look.quote!)
+          : look.subtitle,
       route: '/notifications',
     );
   }
@@ -481,15 +496,19 @@ class _BannerState extends ConsumerState<_Banner> {
                               fontWeight: FontWeight.w900,
                             ),
                           ),
-                          Text(
-                            look.subtitle,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.body(
-                              fontSize: 12.5,
-                              color: AppColors.textSecondary,
+                          if (look.quote != null) ...[
+                            const SizedBox(height: 4),
+                            GiftNote(look.quote!, maxLines: 2),
+                          ] else
+                            Text(
+                              look.subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.body(
+                                fontSize: 12.5,
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),

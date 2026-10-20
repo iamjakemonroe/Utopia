@@ -11983,6 +11983,36 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Something went wrong. Try again.'**
   String get utopiaToastSomethingWentWrong;
+
+  /// features/coins/presentation/send_coins_sheet.dart: the hint in the gift note field
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note (optional)'**
+  String get sendCoinsAddANote;
+
+  /// features/coins/presentation/send_coins_sheet.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your note to 140 characters.'**
+  String get sendCoinsNoteTooLong;
+
+  /// features/coins/presentation/send_coins_sheet.dart: under "Send coins", who to
+  ///
+  /// In en, this message translates to:
+  /// **'to {name}'**
+  String sendCoinsToName(Object name);
+
+  /// A gift note, quoted (in a phone notification)
+  ///
+  /// In en, this message translates to:
+  /// **'“{note}”'**
+  String giftNoteQuoted(Object note);
+
+  /// features/coins/presentation/gift_note.dart: read aloud by screen readers
+  ///
+  /// In en, this message translates to:
+  /// **'Note: {note}'**
+  String giftNoteTheirNote(Object note);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
