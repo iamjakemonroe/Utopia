@@ -20,6 +20,7 @@ import '../../features/chess/presentation/screens/chess_lobby_screen.dart';
 import '../bots/bots.dart';
 import '../../features/chess/presentation/screens/chess_match_screen.dart';
 import '../../features/birthday/presentation/birthday_screen.dart';
+import '../../features/profile/presentation/screens/names_screen.dart';
 import '../../features/collection/presentation/collection_screen.dart';
 import '../../features/help/presentation/how_to_play_screen.dart';
 import '../../features/invites/domain/game_invite.dart';
@@ -82,6 +83,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/link',
         builder: (context, state) => const EmailLinkScreen(),
+      ),
+      // Their nickname and username: a step of signing up (?onboarding=1),
+      // before the birthday.
+      GoRoute(
+        path: '/names',
+        builder: (context, state) => NamesScreen(
+          onboarding: state.uri.queryParameters['onboarding'] == '1',
+        ),
       ),
       // The player's birthday: the last step of signing up
       // (?onboarding=1), or from Settings.

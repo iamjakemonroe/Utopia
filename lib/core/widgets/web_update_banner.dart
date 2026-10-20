@@ -87,6 +87,7 @@ class _WebUpdateBannerState extends ConsumerState<WebUpdateBanner> {
       '/sketchbook/',
       '/report-bug',
       '/auth',
+      '/names',
       '/birthday',
     ];
     return busy.any(path.startsWith);

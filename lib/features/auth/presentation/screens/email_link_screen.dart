@@ -8,8 +8,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/router/app_router.dart';
-import '../../../../core/theme/theme_controller.dart';
-import '../../../store/presentation/theme_teleport.dart';
 import '../../../../core/widgets/confetti_burst.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -19,8 +17,8 @@ import '../../../../core/widgets/app_background.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/utopia_icons.dart';
-import '../../../birthday/data/birthday_repository.dart';
 import '../guest_transfer.dart';
+import '../sign_up_steps.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_world.dart';
 import '../../../../core/analytics/analytics.dart';
@@ -162,28 +160,21 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
         _step = _Step.done;
         _isLoading = false;
       });
-      // A moment to enjoy it, then (if we don't know it yet) their
-      // birthday, or straight home: Chip carries them through the portal,
-      // the same trip as changing worlds, and home appears under the flash.
+      // A moment to enjoy it, then what's left of signing up (their names,
+      // their birthday), or straight home: Chip carries them through the
+      // portal, the same trip as changing worlds.
       final router = GoRouter.of(context);
-      final knowsBirthday = _knowsBirthday();
+      final next = SignUpSteps.afterSignIn(ref);
       Future.delayed(const Duration(milliseconds: 1300), () async {
         if (!mounted) return;
-        if (!await knowsBirthday) {
+        final step = await next;
+        if (!mounted) return;
+        if (step != null) {
           SignInTrip.holding = false;
-          if (mounted) router.go('/birthday?onboarding=1');
+          router.go(step);
           return;
         }
-        if (!mounted) return;
-        void home() {
-          SignInTrip.holding = false;
-          router.go('/home');
-        }
-
-        final teleporting = ref
-            .read(themeTeleportProvider.notifier)
-            .welcome(ref.read(themeControllerProvider), atFlash: home);
-        if (!teleporting) home();
+        SignUpSteps.home(ref, router, before: () => SignInTrip.holding = false);
       });
     } catch (e) {
       SignInTrip.holding = false;
@@ -193,25 +184,6 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
           _isLoading = false;
         });
       }
-    }
-  }
-
-  /// Whether the player has given their birthday already. A new account
-  /// hasn't, so it's always asked; if it can't be checked, it's asked too
-  /// (the page has "Skip for now").
-  Future<bool> _knowsBirthday() async {
-    // Straight from the auth client: it has the new session the moment the
-    // code is verified, before the app's own user state catches up.
-    final me = ref.read(authRepositoryProvider).currentUser?.id;
-    if (me == null) return false;
-    try {
-      final saved = await ref
-          .read(birthdayRepositoryProvider)
-          .fetch(me)
-          .timeout(const Duration(seconds: 4));
-      return saved != null;
-    } catch (_) {
-      return false;
     }
   }
 

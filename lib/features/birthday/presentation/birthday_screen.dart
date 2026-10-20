@@ -7,15 +7,14 @@ import '../../../core/audio/game_audio.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/theme/theme_controller.dart';
 import '../../../core/widgets/app_background.dart';
 import '../../../core/widgets/bubble_toggle.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/confetti_burst.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/utopia_toast.dart';
+import '../../auth/presentation/sign_up_steps.dart';
 import '../../auth/presentation/widgets/auth_world.dart';
-import '../../store/presentation/theme_teleport.dart';
 import '../data/birthday_repository.dart';
 import '../domain/birthday.dart';
 import 'birthday_providers.dart';
@@ -139,16 +138,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
 
   /// The last step of signing up: Chip carries them home through the
   /// portal, the same trip as before.
-  void _home() {
-    final router = GoRouter.of(context);
-    final teleporting = ref
-        .read(themeTeleportProvider.notifier)
-        .welcome(
-          ref.read(themeControllerProvider),
-          atFlash: () => router.go('/home'),
-        );
-    if (!teleporting) router.go('/home');
-  }
+  void _home() => SignUpSteps.home(ref, GoRouter.of(context));
 
   @override
   Widget build(BuildContext context) {
