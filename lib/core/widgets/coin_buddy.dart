@@ -110,6 +110,10 @@ class CoinBuddy extends StatefulWidget {
   /// moods.
   final ChipFlavor flavor;
 
+  /// Tests set this so every Chip blinks and wanders the same way each run.
+  @visibleForTesting
+  static double? debugSeed;
+
   @override
   State<CoinBuddy> createState() => _CoinBuddyState();
 }
@@ -126,7 +130,8 @@ class _CoinBuddyState extends State<CoinBuddy>
 
   /// Random-ish but stable per instance, so several Chips on screen don't
   /// blink in unison.
-  late final double _seed = math.Random().nextDouble() * 10;
+  late final double _seed =
+      CoinBuddy.debugSeed ?? math.Random().nextDouble() * 10;
 
   @override
   void initState() {

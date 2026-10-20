@@ -25,7 +25,12 @@ import 'soft_band.dart';
 /// agree on where the clouds, islands and stars are.
 final Stopwatch _worldClock = Stopwatch()..start();
 
-double get worldSeconds => _worldClock.elapsedMicroseconds / 1e6;
+/// Tests set this to hold every world at one moment.
+@visibleForTesting
+double? debugWorldSeconds;
+
+double get worldSeconds =>
+    debugWorldSeconds ?? _worldClock.elapsedMicroseconds / 1e6;
 
 /// Utopia's living world, painted behind every screen in the active theme's
 /// style (see [WorldStyle]). Every biome shares the sky: stars, a shooting
