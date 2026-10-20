@@ -1404,7 +1404,7 @@ class _GamesGrid extends StatelessWidget {
               color: const Color(0xFFFF5C9C),
               facts: const [
                 (Icons.brush_rounded, 'Draw & guess'),
-                (Icons.groups_rounded, '2 to 8 players'),
+                (Icons.groups_rounded, '2 to 20 players'),
               ],
               onTap: () => context.push('/guess-my-doodle'),
             ),

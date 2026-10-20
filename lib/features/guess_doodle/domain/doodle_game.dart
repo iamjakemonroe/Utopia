@@ -78,7 +78,7 @@ class DoodleGame {
     phase: DoodlePhase.parse(row['status'] as String?),
     rounds: (row['rounds'] as num?)?.toInt() ?? 3,
     drawSeconds: (row['draw_seconds'] as num?)?.toInt() ?? 80,
-    maxPlayers: (row['max_players'] as num?)?.toInt() ?? 8,
+    maxPlayers: (row['max_players'] as num?)?.toInt() ?? 20,
     round: (row['round'] as num?)?.toInt() ?? 0,
     turn: (row['turn'] as num?)?.toInt() ?? 0,
     drawerId: row['drawer_id'] as String?,

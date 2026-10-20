@@ -144,13 +144,19 @@ class DoodleWaitingRoom extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 8),
+            // A big room (up to 20): smaller seats, more to a row.
             Wrap(
-              spacing: 10,
-              runSpacing: 8,
+              spacing: players.length > 8 ? 6 : 10,
+              runSpacing: players.length > 8 ? 6 : 8,
               alignment: WrapAlignment.center,
               children: [
                 for (final p in players)
-                  _Seat(userId: p.userId, me: me, host: game.hostId),
+                  _Seat(
+                    userId: p.userId,
+                    me: me,
+                    host: game.hostId,
+                    compact: players.length > 8,
+                  ),
               ],
             ),
             if (!game.isPublic) ...[
@@ -181,17 +187,23 @@ class DoodleWaitingRoom extends ConsumerWidget {
 }
 
 class _Seat extends ConsumerWidget {
-  const _Seat({required this.userId, required this.me, required this.host});
+  const _Seat({
+    required this.userId,
+    required this.me,
+    required this.host,
+    this.compact = false,
+  });
 
   final String userId;
   final String? me;
   final String host;
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final name = doodleName(ref, userId, me);
     return SizedBox(
-      width: 64,
+      width: compact ? 46 : 64,
       child: Column(
         children: [
           Stack(
@@ -200,7 +212,7 @@ class _Seat extends ConsumerWidget {
               UserAvatar.fromProfile(
                 ref.watch(profileByIdProvider(userId)).valueOrNull,
                 fallbackInitial: name.isEmpty ? '?' : name[0],
-                radius: 22,
+                radius: compact ? 16 : 22,
               ),
               if (userId == host)
                 const Positioned(
@@ -220,11 +232,11 @@ class _Seat extends ConsumerWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.body(
-              fontSize: 12,
+              fontSize: compact ? 10 : 12,
               fontWeight: FontWeight.w800,
             ),
           ),
-          PlayerCoins(userId: userId, size: 10),
+          if (!compact) PlayerCoins(userId: userId, size: 10),
         ],
       ),
     );
@@ -510,6 +522,7 @@ class DoodleReveal extends ConsumerWidget {
     final ranked = [...players]
       ..sort((a, b) => b.turnPoints.compareTo(a.turnPoints));
     final nobody = ranked.every((p) => p.turnPoints == 0);
+    final (shown, more) = _top(ranked, me, 8);
     return _Veil(
       strength: 0.8,
       child: SizedBox(
@@ -549,7 +562,7 @@ class DoodleReveal extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 12),
-            for (var i = 0; i < ranked.length; i++)
+            for (var i = 0; i < shown.length; i++)
               TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0, end: 1),
                 duration: Duration(milliseconds: 300 + i * 90),
@@ -562,12 +575,13 @@ class DoodleReveal extends ConsumerWidget {
                   ),
                 ),
                 child: _ScoreRow(
-                  userId: ranked[i].userId,
+                  userId: shown[i].userId,
                   me: me,
-                  points: ranked[i].turnPoints,
-                  drew: ranked[i].userId == drawerId,
+                  points: shown[i].turnPoints,
+                  drew: shown[i].userId == drawerId,
                 ),
               ),
+            _More(more),
           ],
         ),
       ),
@@ -658,6 +672,7 @@ class DoodleScores extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ranked = [...players]..sort((a, b) => b.score.compareTo(a.score));
     final podium = ranked.take(3).toList();
+    final (rest, more) = _top(ranked.skip(3).toList(), me, 7);
     final won = game.winnerIds.contains(me);
     final host = game.hostId == me;
     // Podium order: 2nd, 1st, 3rd.
@@ -692,8 +707,9 @@ class DoodleScores extends ConsumerWidget {
             ),
             if (ranked.length > 3) ...[
               const SizedBox(height: 8),
-              for (final p in ranked.skip(3))
+              for (final p in rest)
                 _ScoreLine(userId: p.userId, me: me, score: p.score),
+              _More(more),
             ],
             const SizedBox(height: 14),
             if (game.isPublic)
@@ -928,6 +944,43 @@ class DoodleEnded extends StatelessWidget {
             child: PrimaryButton(label: 'Back', onPressed: onBack),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The first [count] of [ranked], and [me] if they're further down (a
+/// room of 20 doesn't fit the board), and how many are left out.
+(List<DoodlePlayer>, int) _top(
+  List<DoodlePlayer> ranked,
+  String? me,
+  int count,
+) {
+  if (ranked.length <= count) return (ranked, 0);
+  final shown = ranked.take(count).toList();
+  final mine = ranked.skip(count).where((p) => p.userId == me).firstOrNull;
+  if (mine != null) shown.add(mine);
+  return (shown, ranked.length - shown.length);
+}
+
+/// "and 9 more", under a list cut short.
+class _More extends StatelessWidget {
+  const _More(this.count);
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    if (count <= 0) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Text(
+        'and $count more',
+        style: AppTextStyles.body(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textSecondary,
+        ),
       ),
     );
   }

@@ -177,7 +177,7 @@ class _FactsRow extends StatelessWidget {
     );
     return Row(
       children: [
-        fact(Icons.groups_rounded, AppColors.sky, '1 to 8\nplayers'),
+        fact(Icons.groups_rounded, AppColors.sky, '1 to 20\nplayers'),
         fact(Icons.brush_rounded, const Color(0xFFFF5C9C), 'Draw &\nguess'),
         fact(
           Icons.bolt_rounded,
