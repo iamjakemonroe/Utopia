@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../friends/data/presence.dart';
 
 /// Thin wrapper around Supabase auth calls used by this app.
 ///
@@ -77,7 +78,9 @@ class AuthRepository {
     return result is Map && result['moved'] == true;
   }
 
-  Future<void> signOut() {
-    return _client.auth.signOut();
+  /// Friends see them go at once (while still signed in to say so).
+  Future<void> signOut() async {
+    await goOffline(_client);
+    await _client.auth.signOut();
   }
 }
