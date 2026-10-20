@@ -56,6 +56,11 @@ final webScaleProvider = StateNotifierProvider<WebScaleController, double>((
 
 /// Draws [child] at [scale]: laid out on a screen 1/[scale] the size, then
 /// scaled to fill this one (touches land where they look).
+///
+/// Scaled by a plain transform from the top left, which never needs its own
+/// size: a FittedBox did, and the focus system (sorting what can take focus
+/// by where it is on screen) asked for it before the first layout, an error
+/// on every visit.
 class WebScale extends StatelessWidget {
   const WebScale({super.key, required this.scale, required this.child});
 
@@ -68,12 +73,14 @@ class WebScale extends StatelessWidget {
     final media = MediaQuery.of(context);
     final size = media.size / scale;
     return ClipRect(
-      child: FittedBox(
-        fit: BoxFit.fill,
+      child: OverflowBox(
         alignment: Alignment.topLeft,
-        child: SizedBox(
-          width: size.width,
-          height: size.height,
+        minWidth: size.width,
+        maxWidth: size.width,
+        minHeight: size.height,
+        maxHeight: size.height,
+        child: Transform(
+          transform: Matrix4.diagonal3Values(scale, scale, 1),
           child: MediaQuery(
             data: media.copyWith(
               size: size,
