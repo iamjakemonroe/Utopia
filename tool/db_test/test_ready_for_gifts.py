@@ -69,6 +69,10 @@ check("…friends with the one named",
       one("select count(*) from friendships where user_low = %s and user_high = %s", low, high) == 1)
 check("…their request answered",
       one("select status::text from friend_requests where from_user = %s and to_user = %s", pal, me) == "accepted")
+harness.as_user(db, me)
+full = one("select coin_gift_allowance(%s)", pal)
+check("…as an account past a month, and an old friend (no new-friend cap)",
+      full["young"] is False and full["friend_left"] is None and full["daily_cap"] == 100000, full)
 gift = send(me, pal, 500)
 check("…and a gift goes through", gift["ok"] and gift["coins"] == 500, gift)
 

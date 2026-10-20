@@ -1,12 +1,14 @@
 -- Gets one player ready to test sending coins (Send coins on a friend's
 -- card), as an older account would be:
---   * their account is dated back past the new-account wait (7 days,
---     gift_settings.account_days), so it counts as an old one;
+--   * their account is dated back past the new-account waits (a week to
+--     send at all, a month for the full 100,000 a day: gift_settings
+--     account_days and young_days), so it counts as an old one;
 --   * v_coins coins are added (0 adds none). They're an admin grant, not
 --     a purchase, so they can be sent at once (coins bought in the last
 --     14 days stay put);
 --   * with v_friend set, the two are made friends (gifts only go to
---     friends), and any request between them is marked accepted.
+--     friends) as if long ago (new friends can only get 5,000 a day), and
+--     any request between them is marked accepted.
 -- Everything else about them stays as it is.
 --
 -- A guest can't be made ready: gifts are for accounts only (guests are
@@ -32,7 +34,7 @@ declare
   v_joined timestamptz;
   v_allow jsonb;
 begin
-  select account_days into v_days from public.gift_settings;
+  select greatest(account_days, young_days, new_friend_days) into v_days from public.gift_settings;
 
   v_who := trim(v_who);
   if v_who ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
@@ -82,16 +84,17 @@ begin
   end if;
 
   if v_to is not null then
-    insert into public.friendships (user_low, user_high)
-      values (least(v_user, v_to), greatest(v_user, v_to))
-      on conflict do nothing;
+    insert into public.friendships (user_low, user_high, created_at)
+      values (least(v_user, v_to), greatest(v_user, v_to), now() - make_interval(days => v_days + 1))
+      on conflict (user_low, user_high) do update
+        set created_at = least(public.friendships.created_at, excluded.created_at);
     update public.friend_requests
        set status = 'accepted', responded_at = now()
      where status = 'pending'
        and ((from_user = v_user and to_user = v_to) or (from_user = v_to and to_user = v_user));
   end if;
 
-  v_allow := public._gift_allowance(v_user);
+  v_allow := public._gift_allowance(v_user, v_to);
   raise notice '% (%): % to send now (balance %, % held from recent purchases), % a gift, % left today%. Joined date was %.',
     coalesce((select '@' || username from public.profiles where id = v_user), 'Player with no username'),
     v_user,

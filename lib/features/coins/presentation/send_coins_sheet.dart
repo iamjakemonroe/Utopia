@@ -48,7 +48,7 @@ class _SendCoinsSheet extends ConsumerStatefulWidget {
 }
 
 class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
-  static const _quick = [50, 100, 250, 500, 1000];
+  static const _quick = [100, 500, 1000, 5000, 10000, 50000];
 
   /// This gift's key: a retry after a dropped connection sends nothing
   /// twice.
@@ -95,7 +95,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
           _sending = false;
           _error = _why(result.why, allow);
         });
-        ref.invalidate(giftAllowanceProvider);
+        ref.invalidate(giftAllowanceProvider(widget.friend.id));
         return;
       }
       HapticFeedback.mediumImpact();
@@ -119,6 +119,21 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
     }
   }
 
+  /// What sets today's most, when it's one of the safety rules.
+  String? _limitNote(GiftAllowance allow) => switch (allow.limitedBy) {
+    'friend' =>
+      "You and $_name are new friends: up to "
+          '${formatCoins(allow.friendLimit ?? 0)} a day for their first '
+          'few days.',
+    'share' =>
+      'Up to ${allow.share == 50 ? 'half' : '${allow.share}%'} of your coins '
+          'a day, so they can never all go at once.',
+    'young' =>
+      'Up to ${formatCoins(allow.dailyCap ?? 0)} a day until your account '
+          'is a month old.',
+    _ => null,
+  };
+
   /// Why a gift couldn't go, in plain words.
   String _why(String? why, GiftAllowance allow) => switch (why) {
     'self' ||
@@ -127,7 +142,17 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
     'house' => "House players can't take gifts.",
     'amount' =>
       'A gift is ${formatCoins(allow.min)} to ${formatCoins(allow.max)} coins.',
-    'daily_send' => "That's more than you can send today.",
+    'daily_send' =>
+      allow.young
+          ? 'Up to ${formatCoins(allow.dailyCap ?? 0)} a day until your '
+                'account is a month old.'
+          : "That's more than you can send today.",
+    'share' =>
+      'You can send up to ${allow.share == 50 ? 'half' : '${allow.share}%'} '
+          'of your coins a day.',
+    'new_friend' =>
+      "You're new friends: up to ${formatCoins(allow.friendLimit ?? 0)} a "
+          'day for now.',
     'balance' => "You don't have that many coins.",
     'held' =>
       'Coins bought in the last ${allow.holdDays} days can’t be sent yet.',
@@ -140,7 +165,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final allowance = ref.watch(giftAllowanceProvider);
+    final allowance = ref.watch(giftAllowanceProvider(widget.friend.id));
     final f = widget.friend;
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
@@ -207,7 +232,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
                     action: (
                       'Try again',
                       () {
-                        ref.invalidate(giftAllowanceProvider);
+                        ref.invalidate(giftAllowanceProvider(widget.friend.id));
                       },
                     ),
                   ),
@@ -372,6 +397,18 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
             color: AppColors.textSecondary,
           ),
         ),
+        if (_limitNote(allow) case final note?)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              note,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
         if (allow.held > 0)
           Padding(
             padding: const EdgeInsets.only(top: 4),

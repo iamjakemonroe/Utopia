@@ -30,9 +30,12 @@ GiftAllowance _allowance({bool ok = true, String? why, int held = 0}) =>
       held: held,
       holdDays: 14,
       min: 10,
-      max: 1000,
-      leftToday: 1750,
-      giftsLeft: 9,
+      max: 50000,
+      leftToday: 2410,
+      giftsLeft: 19,
+      capLeft: 100000,
+      dailyCap: 100000,
+      shareLeft: 2410,
     );
 
 Future<void> _sheet(
@@ -53,7 +56,7 @@ Future<void> _sheet(
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        giftAllowanceProvider.overrideWith((ref) async => allowance),
+        giftAllowanceProvider.overrideWith((ref, _) async => allowance),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -20,6 +20,15 @@ class GiftAllowance {
     required this.max,
     required this.leftToday,
     required this.giftsLeft,
+    this.capLeft,
+    this.dailyCap,
+    this.young = false,
+    this.grownAt,
+    this.shareLeft,
+    this.share = 50,
+    this.friendLeft,
+    this.friendLimit,
+    this.friendReadyAt,
   });
 
   factory GiftAllowance.fromJson(Map<String, dynamic> json) {
@@ -36,6 +45,17 @@ class GiftAllowance {
       max: n('max'),
       leftToday: n('left_today'),
       giftsLeft: n('gifts_left'),
+      capLeft: (json['cap_left'] as num?)?.toInt(),
+      dailyCap: (json['daily_cap'] as num?)?.toInt(),
+      young: json['young'] == true,
+      grownAt: DateTime.tryParse(json['grown_at'] as String? ?? '')?.toLocal(),
+      shareLeft: (json['share_left'] as num?)?.toInt(),
+      share: (json['share'] as num?)?.toInt() ?? 50,
+      friendLeft: (json['friend_left'] as num?)?.toInt(),
+      friendLimit: (json['friend_limit'] as num?)?.toInt(),
+      friendReadyAt: DateTime.tryParse(
+        json['friend_ready_at'] as String? ?? '',
+      )?.toLocal(),
     );
   }
 
@@ -57,13 +77,45 @@ class GiftAllowance {
   final int min;
   final int max;
 
-  /// What's left of today's limits.
+  /// What's left of today's limits ([leftToday] is the closest of them).
   final int leftToday;
   final int giftsLeft;
 
+  /// The day's limit for an account their age ([dailyCap]: less while
+  /// it's [young], until [grownAt]), and what's left of it.
+  final int? capLeft;
+  final int? dailyCap;
+  final bool young;
+  final DateTime? grownAt;
+
+  /// What's left of the most they can send a day: [share]% of the coins
+  /// they had today.
+  final int? shareLeft;
+  final int share;
+
+  /// To a new friend (until [friendReadyAt]), what's left of the
+  /// [friendLimit] a day they can take from them; null for an old friend.
+  final int? friendLeft;
+  final int? friendLimit;
+  final DateTime? friendReadyAt;
+
   /// The most one gift can be right now.
-  int get most =>
-      giftsLeft <= 0 ? 0 : [max, giftable, leftToday].reduce(math.min);
+  int get most => giftsLeft <= 0
+      ? 0
+      : [max, giftable, leftToday, ?friendLeft].reduce(math.min);
+
+  /// Which rule stops them sending more: 'friend' (a new friend), 'share'
+  /// (half the day's coins), 'young' (an account under a month old) or
+  /// null (anything else: one gift's most, what they have).
+  String? get limitedBy {
+    final most = this.most;
+    if (friendLeft != null && friendLeft == most) return 'friend';
+    if (shareLeft != null && shareLeft == most && shareLeft! < max) {
+      return 'share';
+    }
+    if (young && capLeft == most) return 'young';
+    return null;
+  }
 }
 
 /// How a gift went: [ok], or the rule that said no ([why]).
@@ -86,8 +138,11 @@ class CoinGiftRepository {
 
   final SupabaseClient _client;
 
-  Future<GiftAllowance> allowance() async => GiftAllowance.fromJson(
-    Map<String, dynamic>.from(await _client.rpc('coin_gift_allowance') as Map),
+  /// What they can send now, to friend [to].
+  Future<GiftAllowance> allowance(String to) async => GiftAllowance.fromJson(
+    Map<String, dynamic>.from(
+      await _client.rpc('coin_gift_allowance', params: {'p_to': to}) as Map,
+    ),
   );
 
   /// Sends [coins] to friend [to]. [key] is made once per gift
@@ -112,10 +167,12 @@ final coinGiftRepositoryProvider = Provider<CoinGiftRepository>(
   (ref) => CoinGiftRepository(ref.watch(supabaseClientProvider)),
 );
 
-/// What the player can send now, asked each time the send sheet opens.
-final giftAllowanceProvider = FutureProvider.autoDispose<GiftAllowance>(
-  (ref) => ref.watch(coinGiftRepositoryProvider).allowance(),
-);
+/// What the player can send to a friend now, asked each time the send
+/// sheet opens.
+final giftAllowanceProvider = FutureProvider.autoDispose
+    .family<GiftAllowance, String>(
+      (ref, to) => ref.watch(coinGiftRepositoryProvider).allowance(to),
+    );
 
 /// A fresh random id for one gift (a version 4 UUID).
 String newGiftKey() {
