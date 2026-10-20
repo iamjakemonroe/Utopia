@@ -8,6 +8,7 @@ import 'utopia_loader.dart';
 import 'utopia_world.dart' show worldSeconds;
 import 'world_sets.dart';
 import 'ambient_tick.dart';
+import 'frame_island.dart';
 
 enum BuddyMood {
   idle,
@@ -149,129 +150,128 @@ class _CoinBuddyState extends State<CoinBuddy>
   @override
   Widget build(BuildContext context) {
     final s = widget.size;
-    // His own layer: he moves every frame, and without it whatever he's on
-    // (a whole screen, often) would be drawn again with him.
-    return SizedBox.square(
-      dimension: s,
-      child: RepaintBoundary(
-        child: ValueListenableBuilder<double>(
-          valueListenable: _time,
-          builder: (context, t, _) {
-            // What the sets dress him as, each 0 (not at all) to 1: bitten
-            // in the Zombie world, winged in Heaven, horned in Hell, in a
-            // headband facing the Dojo's dragon.
-            final zombie = WorldSets.zombie.amount;
-            final angel = WorldSets.heaven.amount;
-            final devil = WorldSets.hell.amount;
-            final fighter = WorldSets.dragon.amount;
-            final dj = WorldSets.music.amount;
-            final pumpkin = WorldSets.halloween.amount;
-            final party = switch (widget.party) {
-              true => 1.0,
-              false => 0.0,
-              null => WorldSets.birthday.amount,
-            };
-            final artist = switch (widget.beret) {
-              true => 1.0,
-              false => 0.0,
-              null => WorldSets.maestro.amount,
-            };
-            final pose = _ChipPose.compute(
-              mood: widget.mood,
-              flavor: widget.flavor,
-              t: t + _seed,
-              sinceMood: t - _moodSince,
-              lookAt: widget.lookAt,
-              zombie: zombie,
-              fighter: fighter,
-              angel: angel,
-              dj: dj,
-            );
-            final body = s * 0.72;
-            final center = Offset(s / 2, s * 0.5 - pose.lift * s);
+    // His own layer and layout (see FrameIsland): he's built again every
+    // frame, and without them whatever he's on (a whole screen, often)
+    // would be laid out and drawn again with him.
+    return FrameIsland(
+      size: Size.square(s),
+      child: ValueListenableBuilder<double>(
+        valueListenable: _time,
+        builder: (context, t, _) {
+          // What the sets dress him as, each 0 (not at all) to 1: bitten
+          // in the Zombie world, winged in Heaven, horned in Hell, in a
+          // headband facing the Dojo's dragon.
+          final zombie = WorldSets.zombie.amount;
+          final angel = WorldSets.heaven.amount;
+          final devil = WorldSets.hell.amount;
+          final fighter = WorldSets.dragon.amount;
+          final dj = WorldSets.music.amount;
+          final pumpkin = WorldSets.halloween.amount;
+          final party = switch (widget.party) {
+            true => 1.0,
+            false => 0.0,
+            null => WorldSets.birthday.amount,
+          };
+          final artist = switch (widget.beret) {
+            true => 1.0,
+            false => 0.0,
+            null => WorldSets.maestro.amount,
+          };
+          final pose = _ChipPose.compute(
+            mood: widget.mood,
+            flavor: widget.flavor,
+            t: t + _seed,
+            sinceMood: t - _moodSince,
+            lookAt: widget.lookAt,
+            zombie: zombie,
+            fighter: fighter,
+            angel: angel,
+            dj: dj,
+          );
+          final body = s * 0.72;
+          final center = Offset(s / 2, s * 0.5 - pose.lift * s);
 
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _AuraPainter(
+                    mood: widget.mood,
+                    flavor: widget.flavor,
+                    t: t,
+                    center: center,
+                    radius: body / 2,
+                    lift: pose.lift,
+                    sinceMood: t - _moodSince,
+                  ),
+                ),
+              ),
+              if (angel > 0 || devil > 0 || dj > 0 || pumpkin > 0)
                 Positioned.fill(
                   child: CustomPaint(
-                    painter: _AuraPainter(
-                      mood: widget.mood,
-                      flavor: widget.flavor,
+                    painter: _CostumeBackPainter(
                       t: t,
                       center: center,
                       radius: body / 2,
-                      lift: pose.lift,
+                      angel: angel,
+                      devil: devil,
+                      dj: dj,
+                      pumpkin: pumpkin,
+                    ),
+                  ),
+                ),
+              for (final side in const [-1.0, 1.0])
+                _hand(side, pose, center, body, s, zombie),
+              Positioned(
+                left: center.dx - body / 2,
+                top: center.dy - body / 2,
+                width: body,
+                height: body,
+                child: Transform(
+                  alignment: Alignment.bottomCenter,
+                  transform: Matrix4.diagonal3Values(
+                    pose.scaleX,
+                    pose.scaleY,
+                    1,
+                  )..rotateZ(pose.roll),
+                  child: _ChipBody(
+                    size: body,
+                    yaw: pose.yaw,
+                    pitch: pose.pitch,
+                    zombie: zombie,
+                    face: _FacePainter(
+                      mood: widget.mood,
+                      flavor: widget.flavor,
+                      blink: pose.blink,
+                      look: pose.look,
+                      t: t,
                       sinceMood: t - _moodSince,
-                    ),
-                  ),
-                ),
-                if (angel > 0 || devil > 0 || dj > 0 || pumpkin > 0)
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: _CostumeBackPainter(
-                        t: t,
-                        center: center,
-                        radius: body / 2,
-                        angel: angel,
-                        devil: devil,
-                        dj: dj,
-                        pumpkin: pumpkin,
-                      ),
-                    ),
-                  ),
-                for (final side in const [-1.0, 1.0])
-                  _hand(side, pose, center, body, s, zombie),
-                Positioned(
-                  left: center.dx - body / 2,
-                  top: center.dy - body / 2,
-                  width: body,
-                  height: body,
-                  child: Transform(
-                    alignment: Alignment.bottomCenter,
-                    transform: Matrix4.diagonal3Values(
-                      pose.scaleX,
-                      pose.scaleY,
-                      1,
-                    )..rotateZ(pose.roll),
-                    child: _ChipBody(
-                      size: body,
-                      yaw: pose.yaw,
-                      pitch: pose.pitch,
                       zombie: zombie,
-                      face: _FacePainter(
-                        mood: widget.mood,
-                        flavor: widget.flavor,
-                        blink: pose.blink,
-                        look: pose.look,
-                        t: t,
-                        sinceMood: t - _moodSince,
-                        zombie: zombie,
-                        angel: angel,
-                        devil: devil,
-                        fighter: fighter,
-                        artist: artist,
-                        dj: dj,
-                        pumpkin: pumpkin,
-                        party: party,
-                      ),
+                      angel: angel,
+                      devil: devil,
+                      fighter: fighter,
+                      artist: artist,
+                      dj: dj,
+                      pumpkin: pumpkin,
+                      party: party,
                     ),
                   ),
                 ),
-                if (widget.mood == BuddyMood.thinking)
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: _ThoughtDotsPainter(
-                        t: t,
-                        origin: center.translate(body * 0.45, -body * 0.5),
-                        scale: s,
-                      ),
+              ),
+              if (widget.mood == BuddyMood.thinking)
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: _ThoughtDotsPainter(
+                      t: t,
+                      origin: center.translate(body * 0.45, -body * 0.5),
+                      scale: s,
                     ),
                   ),
-              ],
-            );
-          },
-        ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }

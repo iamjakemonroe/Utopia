@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'live_transform.dart';
 
 /// Wraps [child] in a real 3D perspective transform that tilts toward
 /// wherever the user is pressing, and springs back to flat on release —
@@ -129,21 +130,17 @@ class _AmbientTilt3DState extends State<AmbientTilt3D>
   @override
   Widget build(BuildContext context) {
     // Its own layer, and what it tilts in another: turning every frame,
-    // only the turn is drawn again, not what it's on or what it holds.
+    // only the turn is drawn again, not what it's on or what it holds. And
+    // turned without being built again (see LiveTransform).
     return RepaintBoundary(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
+      child: LiveTransform(
+        listenable: _controller,
+        transform: () {
           final t = _controller.value * 2 * math.pi;
-          final matrix = Matrix4.identity()
+          return Matrix4.identity()
             ..setEntry(3, 2, 0.0014)
             ..rotateX(math.sin(t) * widget.amount * 0.5)
             ..rotateY(math.sin(t * 0.7) * widget.amount);
-          return Transform(
-            alignment: Alignment.center,
-            transform: matrix,
-            child: child,
-          );
         },
         child: RepaintBoundary(child: widget.child),
       ),

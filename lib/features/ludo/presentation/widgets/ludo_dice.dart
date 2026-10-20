@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/frame_island.dart';
 
 /// The least time the die tumbles, so it reads as a real roll.
 const kDiceTumbleMin = Duration(milliseconds: 300);
@@ -204,70 +205,73 @@ class _LudoDiceState extends ConsumerState<LudoDice>
           : 'Die showing ${widget.value ?? ''}',
       child: GestureDetector(
         onTap: _handleTap,
-        child: AnimatedBuilder(
-          animation: Listenable.merge([_tumble, _idle]),
-          builder: (context, child) {
-            final (rotX, rotY) = _tumbling ? _tumbleAngles() : (_rotX, _rotY);
-            final ready = widget.enabled && !_tumbling;
-            final bob = ready
-                ? math.sin(_idle.value * 2 * math.pi) * s * 0.06
-                : 0.0;
-            final hop = _tumbling
-                ? (math.sin(_tumble.value * 2 * math.pi * 2)).abs() * s * 0.18
-                : 0.0;
-            final glow = widget.glow ?? AppColors.accentSecondary;
-            final pulse = 0.5 + 0.5 * math.sin(_idle.value * 2 * math.pi);
-            return SizedBox(
-              width: s * 1.6,
-              height: s * 1.6,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  if (ready)
-                    Container(
-                      width: s * (1.3 + 0.12 * pulse),
-                      height: s * (1.3 + 0.12 * pulse),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            glow.withValues(alpha: 0.8),
-                            glow.withValues(alpha: 0),
-                          ],
-                        ),
-                      ),
-                    ),
-                  if (ready)
-                    // A ring breathing out from the die: "tap me".
-                    Container(
-                      width: s * (1.05 + 0.4 * _idle.value),
-                      height: s * (1.05 + 0.4 * _idle.value),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white.withValues(
-                            alpha: 0.8 * (1 - _idle.value),
+        child: FrameIsland(
+          size: Size.square(s * 1.6),
+          child: AnimatedBuilder(
+            animation: Listenable.merge([_tumble, _idle]),
+            builder: (context, child) {
+              final (rotX, rotY) = _tumbling ? _tumbleAngles() : (_rotX, _rotY);
+              final ready = widget.enabled && !_tumbling;
+              final bob = ready
+                  ? math.sin(_idle.value * 2 * math.pi) * s * 0.06
+                  : 0.0;
+              final hop = _tumbling
+                  ? (math.sin(_tumble.value * 2 * math.pi * 2)).abs() * s * 0.18
+                  : 0.0;
+              final glow = widget.glow ?? AppColors.accentSecondary;
+              final pulse = 0.5 + 0.5 * math.sin(_idle.value * 2 * math.pi);
+              return SizedBox(
+                width: s * 1.6,
+                height: s * 1.6,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (ready)
+                      Container(
+                        width: s * (1.3 + 0.12 * pulse),
+                        height: s * (1.3 + 0.12 * pulse),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              glow.withValues(alpha: 0.8),
+                              glow.withValues(alpha: 0),
+                            ],
                           ),
-                          width: 2.5,
+                        ),
+                      ),
+                    if (ready)
+                      // A ring breathing out from the die: "tap me".
+                      Container(
+                        width: s * (1.05 + 0.4 * _idle.value),
+                        height: s * (1.05 + 0.4 * _idle.value),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withValues(
+                              alpha: 0.8 * (1 - _idle.value),
+                            ),
+                            width: 2.5,
+                          ),
+                        ),
+                      ),
+                    Transform.translate(
+                      offset: Offset(0, -bob - hop),
+                      child: Transform.scale(
+                        scale: ready ? 1 + 0.06 * pulse : 1,
+                        child: _Die3D(
+                          size: s,
+                          rotX: rotX,
+                          rotY: rotY,
+                          dimmed: !widget.active && !_tumbling,
                         ),
                       ),
                     ),
-                  Transform.translate(
-                    offset: Offset(0, -bob - hop),
-                    child: Transform.scale(
-                      scale: ready ? 1 + 0.06 * pulse : 1,
-                      child: _Die3D(
-                        size: s,
-                        rotX: rotX,
-                        rotY: rotY,
-                        dimmed: !widget.active && !_tumbling,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

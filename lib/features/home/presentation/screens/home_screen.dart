@@ -62,6 +62,7 @@ import '../../../../core/analytics/analytics.dart';
 import '../../../../core/layout/responsive.dart';
 import '../../../../core/layout/tile_grid.dart';
 import '../../../../core/widgets/frosted.dart';
+import '../../../../core/widgets/frame_island.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -958,7 +959,8 @@ class _GreetingBubbleState extends State<_GreetingBubble>
         Positioned(
           right: 6,
           top: -6,
-          child: RepaintBoundary(
+          child: FrameIsland(
+            size: const Size.square(18),
             child: AnimatedBuilder(
               animation: _twinkle,
               builder: (context, _) {
@@ -1701,7 +1703,9 @@ class _PlayBubbleState extends State<_PlayBubble>
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
+    // It pulses forever: by itself, or home is laid out each frame.
+    return FrameIsland(
+      size: Size.square(widget.size),
       child: AnimatedBuilder(
         animation: _c,
         builder: (context, child) {

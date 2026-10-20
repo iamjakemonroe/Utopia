@@ -24,6 +24,7 @@ import '../../../rankings/data/rankings_repository.dart';
 import '../../../rankings/domain/ranking.dart';
 import '../../domain/time_control.dart';
 import '../../../../core/widgets/frosted.dart';
+import '../../../../core/widgets/frame_island.dart';
 
 /// The parts of a live board game's screen that chess and checkers share:
 /// the chat button, a player's chat bubble and clock, the strip of moves,
@@ -679,14 +680,17 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        AnimatedBuilder(
-                          animation: _spin,
-                          builder: (context, _) => CustomPaint(
-                            size: const Size(200, 150),
-                            painter: _RaysPainter(
-                              turn: _spin.value,
-                              color: glow,
-                              bright: iWon,
+                        FrameIsland(
+                          size: const Size(200, 150),
+                          child: AnimatedBuilder(
+                            animation: _spin,
+                            builder: (context, _) => CustomPaint(
+                              size: const Size(200, 150),
+                              painter: _RaysPainter(
+                                turn: _spin.value,
+                                color: glow,
+                                bright: iWon,
+                              ),
                             ),
                           ),
                         ),

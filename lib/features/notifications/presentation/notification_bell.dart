@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../data/notification_repository.dart';
+import '../../../core/widgets/frame_island.dart';
 
 /// The bell in the home app bar: opens notifications, shows how many are
 /// unread, and gives a little ring now and then while there are some.
@@ -45,24 +46,27 @@ class _NotificationBellButtonState extends ConsumerState<NotificationBellButton>
         IconButton(
           tooltip: 'Notifications',
           onPressed: () => context.push('/notifications'),
-          icon: AnimatedBuilder(
-            animation: _ring,
-            builder: (context, child) {
-              // A quick swing at the start of each cycle.
-              final t = _ring.value;
-              final swing = unread == 0 || t > 0.25
-                  ? 0.0
-                  : math.sin(t / 0.25 * math.pi * 4) * (1 - t / 0.25) * 0.45;
-              return Transform.rotate(
-                angle: swing,
-                alignment: Alignment.topCenter,
-                child: child,
-              );
-            },
-            child: Icon(
-              unread > 0
-                  ? Icons.notifications_active_rounded
-                  : Icons.notifications_none_rounded,
+          icon: FrameIsland(
+            size: const Size.square(24),
+            child: AnimatedBuilder(
+              animation: _ring,
+              builder: (context, child) {
+                // A quick swing at the start of each cycle.
+                final t = _ring.value;
+                final swing = unread == 0 || t > 0.25
+                    ? 0.0
+                    : math.sin(t / 0.25 * math.pi * 4) * (1 - t / 0.25) * 0.45;
+                return Transform.rotate(
+                  angle: swing,
+                  alignment: Alignment.topCenter,
+                  child: child,
+                );
+              },
+              child: Icon(
+                unread > 0
+                    ? Icons.notifications_active_rounded
+                    : Icons.notifications_none_rounded,
+              ),
             ),
           ),
         ),

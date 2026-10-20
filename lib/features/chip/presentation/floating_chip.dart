@@ -14,6 +14,7 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../notifications/presentation/notification_actions.dart';
 import 'chip_chat_controller.dart';
 import 'chip_chat_sheet.dart';
+import '../../../core/widgets/frame_island.dart';
 
 /// Chip in a little glass bubble, floating over the app's screens. Drag
 /// him anywhere (he settles against the nearest edge); tap to chat. He
@@ -162,48 +163,53 @@ class _FloatingChipState extends ConsumerState<FloatingChip>
                 child: Semantics(
                   button: true,
                   label: 'Chat with Chip',
-                  child: AnimatedBuilder(
-                    animation: _float,
-                    builder: (context, child) {
-                      final bob = math.sin(_float.value * 2 * math.pi);
-                      return SizedBox.square(
-                        dimension: _size,
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          alignment: Alignment.center,
-                          children: [
-                            // His shadow, tighter as he dips toward it.
-                            Positioned(
-                              bottom: -2,
-                              child: Container(
-                                width: _size * (0.5 - 0.05 * bob),
-                                height: _size * 0.1,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(_size),
-                                  color: Colors.black.withValues(
-                                    alpha: 0.22 + 0.06 * bob,
-                                  ),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color(0x33000000),
-                                      blurRadius: 6,
+                  child: FrameIsland(
+                    size: Size.square(_size),
+                    child: AnimatedBuilder(
+                      animation: _float,
+                      builder: (context, child) {
+                        final bob = math.sin(_float.value * 2 * math.pi);
+                        return SizedBox.square(
+                          dimension: _size,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: [
+                              // His shadow, tighter as he dips toward it.
+                              Positioned(
+                                bottom: -2,
+                                child: Container(
+                                  width: _size * (0.5 - 0.05 * bob),
+                                  height: _size * 0.1,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(_size),
+                                    color: Colors.black.withValues(
+                                      alpha: 0.22 + 0.06 * bob,
                                     ),
-                                  ],
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Color(0x33000000),
+                                        blurRadius: 6,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Transform.translate(
-                              offset: Offset(0, -4 - bob * 4),
-                              child: child,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    child: CoinBuddy(
-                      mood: mood,
-                      flavor: vibing ? music.chipLine.flavor : ChipFlavor.none,
-                      size: _size,
+                              Transform.translate(
+                                offset: Offset(0, -4 - bob * 4),
+                                child: child,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: CoinBuddy(
+                        mood: mood,
+                        flavor: vibing
+                            ? music.chipLine.flavor
+                            : ChipFlavor.none,
+                        size: _size,
+                      ),
                     ),
                   ),
                 ),

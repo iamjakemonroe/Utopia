@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/app_background.dart';
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/ludo_engine.dart';
@@ -282,14 +283,19 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
                     ),
                   ),
                 ),
+                // Built again with each tick of their clock: in a
+                // LayoutIsland, so that lays out and draws the tokens, not
+                // the board's hub or the screen around it.
                 Positioned.fill(
-                  child: ValueListenableBuilder<double>(
-                    valueListenable: _now,
-                    builder: (context, now, _) => _tokens(
-                      now: now,
-                      cellPx: cellPx,
-                      toScreen: toScreen,
-                      audio: audio,
+                  child: LayoutIsland(
+                    child: ValueListenableBuilder<double>(
+                      valueListenable: _now,
+                      builder: (context, now, _) => _tokens(
+                        now: now,
+                        cellPx: cellPx,
+                        toScreen: toScreen,
+                        audio: audio,
+                      ),
                     ),
                   ),
                 ),

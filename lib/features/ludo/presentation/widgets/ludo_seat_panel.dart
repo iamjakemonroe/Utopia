@@ -16,6 +16,7 @@ import '../../../chat/domain/voice_note.dart';
 import '../../../chat/presentation/chat_sticker.dart';
 import 'ludo_pieces.dart';
 import '../../../chat/presentation/voice_notes.dart';
+import '../../../../core/widgets/frame_island.dart';
 
 /// One player's corner of the table: their avatar framed in their color, a
 /// "tokens home" counter, the die when it's their turn, and their latest
@@ -228,7 +229,29 @@ class _AvatarFrameState extends State<_AvatarFrame>
   late final AnimationController _spin = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 3),
-  )..repeat();
+  );
+
+  /// The light chasing round the frame and its pulse only show on the
+  /// seat whose turn it is: the others hold still, and ask for no frames.
+  void _spinWhileActive() {
+    if (widget.active && !_spin.isAnimating) {
+      _spin.repeat();
+    } else if (!widget.active && _spin.isAnimating) {
+      _spin.stop();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _spinWhileActive();
+  }
+
+  @override
+  void didUpdateWidget(covariant _AvatarFrame oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _spinWhileActive();
+  }
 
   @override
   void dispose() {
@@ -238,78 +261,83 @@ class _AvatarFrameState extends State<_AvatarFrame>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _spin,
-      builder: (context, child) {
-        final pulse = widget.active
-            ? 0.5 + 0.5 * math.sin(_spin.value * 2 * math.pi * 2)
-            : 0.0;
-        final timed = widget.active && widget.msLeft != null;
-        final frame = Container(
-          width: 56,
-          height: 56,
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            // A light chasing around the frame while it's their turn
-            // (or, with a turn timer, the timer itself is the border).
-            gradient: widget.active && !timed
-                ? SweepGradient(
-                    colors: [
-                      widget.color,
-                      Colors.white,
-                      widget.color,
-                      widget.color,
-                    ],
-                    stops: const [0.0, 0.12, 0.3, 1.0],
-                    transform: GradientRotation(_spin.value * 2 * math.pi),
-                  )
-                : null,
-            color: timed
-                ? widget.color.withValues(alpha: 0.35)
-                : widget.active
-                ? null
-                : widget.color.withValues(alpha: 0.85),
-            boxShadow: [
-              BoxShadow(
-                color: widget.color.withValues(alpha: 0.25 + 0.45 * pulse),
-                blurRadius: 6 + 10 * pulse,
-              ),
-            ],
-          ),
-          child: Container(
+    // Built again every frame on the seat whose turn it is (see
+    // FrameIsland).
+    return FrameIsland(
+      size: const Size.square(56),
+      child: AnimatedBuilder(
+        animation: _spin,
+        builder: (context, child) {
+          final pulse = widget.active
+              ? 0.5 + 0.5 * math.sin(_spin.value * 2 * math.pi * 2)
+              : 0.0;
+          final timed = widget.active && widget.msLeft != null;
+          final frame = Container(
+            width: 56,
+            height: 56,
+            padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: AppColors.surface,
-            ),
-            alignment: Alignment.center,
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                child!,
-                if (widget.winner)
-                  const Positioned(top: -18, child: CrownIcon(size: 22)),
+              borderRadius: BorderRadius.circular(18),
+              // A light chasing around the frame while it's their turn
+              // (or, with a turn timer, the timer itself is the border).
+              gradient: widget.active && !timed
+                  ? SweepGradient(
+                      colors: [
+                        widget.color,
+                        Colors.white,
+                        widget.color,
+                        widget.color,
+                      ],
+                      stops: const [0.0, 0.12, 0.3, 1.0],
+                      transform: GradientRotation(_spin.value * 2 * math.pi),
+                    )
+                  : null,
+              color: timed
+                  ? widget.color.withValues(alpha: 0.35)
+                  : widget.active
+                  ? null
+                  : widget.color.withValues(alpha: 0.85),
+              boxShadow: [
+                BoxShadow(
+                  color: widget.color.withValues(alpha: 0.25 + 0.45 * pulse),
+                  blurRadius: 6 + 10 * pulse,
+                ),
               ],
             ),
-          ),
-        );
-        return Opacity(
-          opacity: widget.dim ? 0.45 : 1,
-          child: timed
-              ? CountdownBorder(
-                  msLeft: widget.msLeft!,
-                  totalMs: widget.totalMs,
-                  color: Color.lerp(widget.color, Colors.white, 0.2)!,
-                  borderRadius: 18,
-                  strokeWidth: 4,
-                  onWarnSecond: widget.onWarnSecond,
-                  child: frame,
-                )
-              : frame,
-        );
-      },
-      child: widget.child,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: AppColors.surface,
+              ),
+              alignment: Alignment.center,
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  child!,
+                  if (widget.winner)
+                    const Positioned(top: -18, child: CrownIcon(size: 22)),
+                ],
+              ),
+            ),
+          );
+          return Opacity(
+            opacity: widget.dim ? 0.45 : 1,
+            child: timed
+                ? CountdownBorder(
+                    msLeft: widget.msLeft!,
+                    totalMs: widget.totalMs,
+                    color: Color.lerp(widget.color, Colors.white, 0.2)!,
+                    borderRadius: 18,
+                    strokeWidth: 4,
+                    onWarnSecond: widget.onWarnSecond,
+                    child: frame,
+                  )
+                : frame,
+          );
+        },
+        child: widget.child,
+      ),
     );
   }
 }

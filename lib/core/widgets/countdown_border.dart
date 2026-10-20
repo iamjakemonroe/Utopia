@@ -1,8 +1,10 @@
 import 'dart:math' as math;
 import 'dart:ui' show PathMetric;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'live_transform.dart';
 
 const _amber = Color(0xFFFFB020);
 const _red = Color(0xFFFF4D5E);
@@ -49,6 +51,13 @@ class _CountdownBorderState extends State<CountdownBorder>
     with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
 
+  /// Time left, as of this frame, and the heartbeat's size. The border and
+  /// the beat follow them without the widget being built again: built
+  /// every frame, it laid out and drew the whole game screen each frame
+  /// (see FrameIsland).
+  final _ms = ValueNotifier<int?>(null);
+  final _scale = ValueNotifier<double>(1);
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +66,6 @@ class _CountdownBorderState extends State<CountdownBorder>
     _ticker = createTicker((_) => _tick())..start();
   }
 
-  int? _ms;
   int? _lastWarnSecond;
 
   void _tick() {
@@ -71,66 +79,84 @@ class _CountdownBorderState extends State<CountdownBorder>
     } else if (ms == null || ms > widget.warnMs) {
       _lastWarnSecond = null;
     }
-    if (ms != _ms) setState(() => _ms = ms);
+    final was = _ms.value;
+    if (ms == was) return;
+    _ms.value = ms;
+    _scale.value = 1 + 0.05 * _beat(ms, widget.warnMs);
+    // Only coming on or off the clock changes what's built.
+    if ((was == null) != (ms == null)) setState(() {});
   }
 
   @override
   void dispose() {
     _ticker.dispose();
+    _ms.dispose();
+    _scale.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final ms = _ms;
-    if (ms == null) return widget.child;
-
-    final fraction = (ms / widget.totalMs).clamp(0.0, 1.0);
-    final low = ms <= widget.warnMs;
-    // 1 at each whole second, easing to 0 in between: a heartbeat.
-    final beat = low ? math.pow(1 - (ms % 1000) / 1000, 3).toDouble() : 0.0;
-    final color = low
-        ? Color.lerp(_red, Colors.white, 0.25 * beat)!
-        : fraction > 0.5
-        ? widget.color
-        : Color.lerp(widget.color, _amber, (0.5 - fraction) / 0.5 * 0.9)!;
-
-    return Transform.scale(
-      scale: 1 + 0.05 * beat,
-      child: CustomPaint(
-        foregroundPainter: _CountdownPainter(
-          fraction: fraction,
-          color: color,
-          glow: low ? 0.5 + 0.5 * beat : 0.35,
-          radius: widget.borderRadius,
-          circle: widget.circle,
-          strokeWidth: widget.strokeWidth,
+    if (_ms.value == null) return widget.child;
+    return RepaintBoundary(
+      child: LiveTransform(
+        listenable: _scale,
+        transform: () => Matrix4.diagonal3Values(_scale.value, _scale.value, 1),
+        child: CustomPaint(
+          foregroundPainter: _CountdownPainter(
+            ms: _ms,
+            totalMs: widget.totalMs,
+            warnMs: widget.warnMs,
+            baseColor: widget.color,
+            radius: widget.borderRadius,
+            circle: widget.circle,
+            strokeWidth: widget.strokeWidth,
+          ),
+          child: RepaintBoundary(child: widget.child),
         ),
-        child: widget.child,
       ),
     );
   }
 }
 
+/// 1 at each whole second of the warning, easing to 0 in between: a
+/// heartbeat. 0 before the warning.
+double _beat(int? ms, int warnMs) => ms != null && ms <= warnMs
+    ? math.pow(1 - (ms % 1000) / 1000, 3).toDouble()
+    : 0.0;
+
 class _CountdownPainter extends CustomPainter {
   _CountdownPainter({
-    required this.fraction,
-    required this.color,
-    required this.glow,
+    required this.ms,
+    required this.totalMs,
+    required this.warnMs,
+    required this.baseColor,
     required this.radius,
     required this.circle,
     required this.strokeWidth,
-  });
+  }) : super(repaint: ms);
 
-  final double fraction;
-  final Color color;
-  final double glow;
+  final ValueListenable<int?> ms;
+  final int totalMs;
+  final int warnMs;
+  final Color baseColor;
   final double radius;
   final bool circle;
   final double strokeWidth;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final left = ms.value;
+    if (left == null) return;
+    final fraction = (left / totalMs).clamp(0.0, 1.0);
+    final low = left <= warnMs;
+    final beat = _beat(left, warnMs);
+    final color = low
+        ? Color.lerp(_red, Colors.white, 0.25 * beat)!
+        : fraction > 0.5
+        ? baseColor
+        : Color.lerp(baseColor, _amber, (0.5 - fraction) / 0.5 * 0.9)!;
+    final glow = low ? 0.5 + 0.5 * beat : 0.35;
     final rect = (Offset.zero & size).deflate(strokeWidth / 2);
     // Start at the top middle and run clockwise.
     final Path border;
@@ -212,5 +238,11 @@ class _CountdownPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _CountdownPainter old) =>
-      old.fraction != fraction || old.color != color || old.glow != glow;
+      old.ms != ms ||
+      old.totalMs != totalMs ||
+      old.warnMs != warnMs ||
+      old.baseColor != baseColor ||
+      old.radius != radius ||
+      old.circle != circle ||
+      old.strokeWidth != strokeWidth;
 }
