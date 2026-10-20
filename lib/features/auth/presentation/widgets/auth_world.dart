@@ -9,6 +9,7 @@ import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/utopia_icons.dart';
 import '../../../../core/widgets/frosted.dart';
 import '../../../../core/platform/keyboard.dart';
+import '../../../../core/widgets/arrive.dart';
 
 /// The Utopia gateway floating in a halo of turning light, with Chip
 /// hovering beside it.
@@ -438,21 +439,11 @@ class RiseIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final total = 700 + (delay * 1000).round();
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
+    return Arrive(
       duration: Duration(milliseconds: total),
-      builder: (context, v, child) {
-        final start = delay * 1000 / total;
-        final p = ((v - start) / (1 - start)).clamp(0.0, 1.0);
-        final e = Curves.easeOutBack.transform(p);
-        return Opacity(
-          opacity: p,
-          child: Transform.translate(
-            offset: Offset(0, 30 * (1 - e)),
-            child: child,
-          ),
-        );
-      },
+      start: delay * 1000 / total,
+      distance: 30,
+      rise: Curves.easeOutBack,
       child: child,
     );
   }

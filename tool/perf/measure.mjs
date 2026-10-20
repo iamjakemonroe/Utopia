@@ -72,6 +72,32 @@ for (const scene of scenes) {
     return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : 'none';
   });
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: slow });
+  if (process.env.PUSH) {
+    // The frames just after window.__push() (a screen opening over this one).
+    const gaps = await page.evaluate(
+      () =>
+        new Promise((done) => {
+          const out = [];
+          let last = performance.now();
+          const end = last + 2500;
+          const step = (t) => {
+            out.push(t - last);
+            last = t;
+            if (t < end) requestAnimationFrame(step);
+            else done(out);
+          };
+          window.__push();
+          requestAnimationFrame(step);
+        }),
+    );
+    const sorted = [...gaps].sort((a, b) => b - a);
+    const long = gaps.filter((g) => g > 50).length;
+    console.log(`\n=== ${scene}: opening it, cpu x${slow}`);
+    console.log(`frames ${gaps.length} in 2.5 s, longest ${sorted.slice(0, 4).map((g) => g.toFixed(0)).join(', ')} ms, ${long} over 50 ms`);
+    await page.screenshot({ path: `perf_${scene}_${world}_pushed.png` });
+    await context.close();
+    continue;
+  }
   await cdp.send('Profiler.enable');
   await cdp.send('Profiler.setSamplingInterval', { interval: 200 });
   await cdp.send('Profiler.start');

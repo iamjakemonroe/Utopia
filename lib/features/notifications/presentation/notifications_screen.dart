@@ -10,6 +10,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_background.dart';
+import '../../../core/widgets/arrive.dart';
 import '../../../core/widgets/back_to_home.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/pop_card.dart';
@@ -25,8 +26,21 @@ import 'notification_actions.dart';
 import 'notification_center.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../core/audio/game_audio.dart';
+import '../../../core/bots/bots.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../../core/layout/responsive.dart';
+
+/// The people in the notifications, [ids] joined by commas, fetched at
+/// once: each row asking for its own went to the server once a row, and
+/// each answer laid the list out again as the screen opened.
+final _actorsProvider = FutureProvider.autoDispose
+    .family<Map<String, Map<String, dynamic>>, String>((ref, ids) async {
+      if (ids.isEmpty) return const {};
+      final rows = await ref
+          .watch(profileRepositoryProvider)
+          .fetchByIds(ids.split(','));
+      return {for (final r in rows) r['id'] as String: r};
+    });
 
 /// Everything that's happened: friend requests (answer them right here),
 /// requests accepted, and challenges. Opening it marks everything read.
@@ -79,6 +93,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     };
 
     final list = notifications.valueOrNull ?? const <AppNotification>[];
+    final actorIds = {
+      for (final n in list)
+        if (n.actorId != null &&
+            n.kind != 'report_update' &&
+            !isBotId(n.actorId))
+          n.actorId!,
+    }.toList()..sort();
+    final actors = ref.watch(_actorsProvider(actorIds.join(','))).valueOrNull;
     final now = DateTime.now();
     final today = [
       for (final n in list)
@@ -121,6 +143,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                             notification: n,
                             index: i,
                             open: _isOpen(n, pendingRequests, pendingInvites),
+                            actor: actors?[n.actorId],
                           ),
                       ],
                       if (earlier.isNotEmpty) ...[
@@ -130,6 +153,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                             notification: n,
                             index: today.length + i,
                             open: _isOpen(n, pendingRequests, pendingInvites),
+                            actor: actors?[n.actorId],
                           ),
                       ],
                     ],
@@ -174,11 +198,15 @@ class _Row extends ConsumerStatefulWidget {
     required this.notification,
     required this.index,
     required this.open,
+    this.actor,
   });
 
   final AppNotification notification;
   final int index;
   final bool open;
+
+  /// Who it's from, once everyone's been fetched.
+  final Map<String, dynamic>? actor;
 
   @override
   ConsumerState<_Row> createState() => _RowState();
@@ -248,6 +276,14 @@ class _RowState extends ConsumerState<_Row> {
     });
   }
 
+  /// A profile already loaded (a friend's, a computer player's), without
+  /// asking the server for it: everyone's fetched together.
+  Map<String, dynamic>? _known(String id) {
+    final provider = profileByIdProvider(id);
+    if (!isBotId(id) && !ref.exists(provider)) return null;
+    return ref.watch(provider).valueOrNull;
+  }
+
   @override
   Widget build(BuildContext context) {
     final n = widget.notification;
@@ -257,7 +293,7 @@ class _RowState extends ConsumerState<_Row> {
         ? NotificationLook.utopia
         : actor == null
         ? null
-        : ref.watch(profileByIdProvider(actor)).valueOrNull;
+        : widget.actor ?? _known(actor);
     final name = fromUtopia
         ? 'Utopia'
         : actor == null
@@ -266,17 +302,9 @@ class _RowState extends ConsumerState<_Row> {
     final look = NotificationLook.of(n, name);
     final open = widget.open && _answered == null;
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
+    return Arrive(
       duration: Duration(milliseconds: 350 + widget.index.clamp(0, 8) * 70),
-      curve: Curves.easeOutCubic,
-      builder: (context, v, child) => Opacity(
-        opacity: v,
-        child: Transform.translate(
-          offset: Offset(0, 16 * (1 - v)),
-          child: child,
-        ),
-      ),
+      fade: Curves.easeOutCubic,
       child: Padding(
         padding: const EdgeInsets.only(bottom: AppSpacing.sm),
         child: PopCard(

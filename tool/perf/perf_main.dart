@@ -4,8 +4,13 @@
 //
 //   flutter build web --profile -t tool/perf/perf_main.dart \
 //     --dart-define-from-file=env/local.json -o build/perf
-//   then open /?scene=world|cards|chess|checkers&world=<theme id>[&pieces=<set>]
+//   then open /?scene=world|cards|chess|checkers|notifications&world=<theme id>
+//   [&pieces=<set>]. "notifications" is home's cards with
+//   window.__push() opening the notifications (20 of every kind) over them.
 //   (tool/perf/measure.mjs measures it in a throttled browser)
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +20,7 @@ import 'package:utopia/app.dart';
 import 'package:utopia/core/bots/bots.dart';
 import 'package:utopia/core/config/env.dart';
 import 'package:utopia/core/router/app_router.dart';
+import 'package:utopia/core/theme/app_text_styles.dart';
 import 'package:utopia/core/theme/theme_controller.dart';
 import 'package:utopia/core/widgets/app_background.dart';
 import 'package:utopia/core/widgets/coin_buddy.dart';
@@ -24,12 +30,15 @@ import 'package:utopia/features/checkers/domain/checkers_engine.dart';
 import 'package:utopia/features/chess/domain/chess_bot.dart';
 import 'package:utopia/features/chess/domain/chess_types.dart';
 import 'package:utopia/features/chess/presentation/screens/chess_bot_screen.dart';
+import 'package:utopia/features/notifications/data/notification_repository.dart';
+import 'package:utopia/features/notifications/presentation/notifications_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final query = Uri.base.queryParameters;
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString('utopia.theme', query['world'] ?? 'utopia');
+  AppTextStyles.preloadFonts();
   await Supabase.initialize(
     url: Env.supabaseUrl,
     publishableKey: Env.supabasePublishableKey,
@@ -54,17 +63,30 @@ Future<void> main() async {
       level: BotLevel.normal,
       mySide: CheckersSide.dark,
     ),
-    'cards' => const _Cards(),
+    'cards' || 'notifications' => const _Cards(),
     _ => const AppBackground(child: SizedBox.expand()),
   };
   runApp(
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        goRouterProvider.overrideWith(
-          (ref) => GoRouter(
-            routes: [GoRoute(path: '/', builder: (_, _) => scene)],
-          ),
+        goRouterProvider.overrideWith((ref) {
+          final router = GoRouter(
+            routes: [
+              GoRoute(path: '/', builder: (_, _) => scene),
+              GoRoute(
+                path: '/notifications',
+                builder: (_, _) => const NotificationsScreen(),
+              ),
+            ],
+          );
+          globalContext['__push'] = (() {
+            router.push('/notifications');
+          }).toJS;
+          return router;
+        }),
+        notificationsProvider.overrideWith(
+          (ref) => Stream.value(_fakeNotifications()),
         ),
       ],
       child: const UtopiaApp(),
@@ -109,4 +131,36 @@ class _Cards extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Twenty notifications of every kind, some unread, from twenty people.
+List<AppNotification> _fakeNotifications() {
+  const kinds = [
+    'friend_request',
+    'game_invite',
+    'friend_accepted',
+    'report_update',
+    'coin_gift',
+    'friend_birthday',
+    'birthday_wish',
+  ];
+  final now = DateTime.now();
+  return [
+    for (var i = 0; i < 20; i++)
+      AppNotification(
+        id: 1000 - i,
+        kind: kinds[i % kinds.length],
+        actorId: '00000000-0000-4000-8000-${i.toString().padLeft(12, '0')}',
+        refId: '10000000-0000-4000-8000-${i.toString().padLeft(12, '0')}',
+        data: {
+          'game': 'chess',
+          'stake': 50,
+          'coins': 500,
+          'status': 'fixed',
+          'note': 'Fixed: thanks for telling us!',
+        },
+        readAt: i < 6 ? null : now,
+        createdAt: now.subtract(Duration(hours: i * 3)),
+      ),
+  ];
 }

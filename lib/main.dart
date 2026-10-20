@@ -14,6 +14,7 @@ import 'core/platform/device_key.dart';
 import 'core/platform/view_focus.dart';
 import 'core/platform/web_page.dart';
 import 'core/theme/app_colors.dart';
+import 'core/theme/app_text_styles.dart';
 import 'core/theme/theme_controller.dart';
 import 'features/auth/presentation/screens/splash_screen.dart';
 
@@ -69,6 +70,7 @@ Future<void> main() async {
 void _run(Widget app) {
   // A browser focuses the view before the first frame (see the helper).
   if (kIsWeb) holdViewFocusUntilFirstFrame();
+  AppTextStyles.preloadFonts();
   runApp(app);
 }
 
