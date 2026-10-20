@@ -128,21 +128,25 @@ class _AmbientTilt3DState extends State<AmbientTilt3D>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final t = _controller.value * 2 * math.pi;
-        final matrix = Matrix4.identity()
-          ..setEntry(3, 2, 0.0014)
-          ..rotateX(math.sin(t) * widget.amount * 0.5)
-          ..rotateY(math.sin(t * 0.7) * widget.amount);
-        return Transform(
-          alignment: Alignment.center,
-          transform: matrix,
-          child: child,
-        );
-      },
-      child: widget.child,
+    // Its own layer, and what it tilts in another: turning every frame,
+    // only the turn is drawn again, not what it's on or what it holds.
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final t = _controller.value * 2 * math.pi;
+          final matrix = Matrix4.identity()
+            ..setEntry(3, 2, 0.0014)
+            ..rotateX(math.sin(t) * widget.amount * 0.5)
+            ..rotateY(math.sin(t * 0.7) * widget.amount);
+          return Transform(
+            alignment: Alignment.center,
+            transform: matrix,
+            child: child,
+          );
+        },
+        child: RepaintBoundary(child: widget.child),
+      ),
     );
   }
 }

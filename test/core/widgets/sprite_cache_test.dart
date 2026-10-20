@@ -56,4 +56,23 @@ void main() {
       cache.clear();
     },
   );
+
+  test("a frame's making stops at its budget; the rest are made after", () {
+    final cache = SpriteCache(frameBudget: Duration.zero);
+    final spies = [for (var i = 0; i < 4; i++) _Spy()];
+    final canvas = Canvas(ui.PictureRecorder());
+    for (final (i, spy) in spies.indexed) {
+      cache.draw(
+        canvas,
+        i,
+        bounds: const Rect.fromLTRB(-11, -11, 11, 11),
+        dpr: 3,
+        paint: spy.paint,
+      );
+    }
+    // The first is made (and spends the budget); the rest are drawn as is.
+    expect(cache.length, 1);
+    expect([for (final s in spies) s.drawn], [1, 1, 1, 1]);
+    cache.clear();
+  });
 }

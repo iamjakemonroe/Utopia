@@ -762,30 +762,32 @@ class _BigBubble extends StatelessWidget {
                 children: [
                   // A shine sweeping across now and then.
                   Positioned.fill(
-                    child: AnimatedBuilder(
-                      animation: shine,
-                      builder: (context, _) {
-                        final v = (shine.value / 0.4).clamp(0.0, 1.0);
-                        if (v <= 0 || v >= 1) return const SizedBox.shrink();
-                        return FractionalTranslation(
-                          translation: Offset(-1.2 + 2.4 * v, 0),
-                          child: Transform.rotate(
-                            angle: 0.4,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.white.withValues(alpha: 0),
-                                    Colors.white.withValues(alpha: 0.16),
-                                    Colors.white.withValues(alpha: 0),
-                                  ],
-                                  stops: const [0.35, 0.5, 0.65],
+                    child: RepaintBoundary(
+                      child: AnimatedBuilder(
+                        animation: shine,
+                        builder: (context, _) {
+                          final v = (shine.value / 0.4).clamp(0.0, 1.0);
+                          if (v <= 0 || v >= 1) return const SizedBox.shrink();
+                          return FractionalTranslation(
+                            translation: Offset(-1.2 + 2.4 * v, 0),
+                            child: Transform.rotate(
+                              angle: 0.4,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withValues(alpha: 0),
+                                      Colors.white.withValues(alpha: 0.16),
+                                      Colors.white.withValues(alpha: 0),
+                                    ],
+                                    stops: const [0.35, 0.5, 0.65],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                   Column(
@@ -956,23 +958,35 @@ class _GreetingBubbleState extends State<_GreetingBubble>
         Positioned(
           right: 6,
           top: -6,
-          child: AnimatedBuilder(
-            animation: _twinkle,
-            builder: (context, _) {
-              final t = _twinkle.value;
-              final s = math.sin(t * math.pi);
-              return Transform.rotate(
-                angle: t * math.pi,
-                child: Opacity(
-                  opacity: 0.35 + 0.65 * s,
-                  child: Icon(
-                    Icons.auto_awesome,
-                    size: 12 + 6 * s,
-                    color: AppColors.coinGoldBright,
+          child: RepaintBoundary(
+            child: AnimatedBuilder(
+              animation: _twinkle,
+              builder: (context, _) {
+                final t = _twinkle.value;
+                final s = math.sin(t * math.pi);
+                // Its biggest size always, grown and shrunk as it's drawn
+                // (from its corner, as before): a size that changed every
+                // frame laid the whole screen out again every frame.
+                return SizedBox.square(
+                  dimension: 18,
+                  child: Transform.scale(
+                    scale: (12 + 6 * s) / 18,
+                    alignment: Alignment.topRight,
+                    child: Transform.rotate(
+                      angle: t * math.pi,
+                      child: Opacity(
+                        opacity: 0.35 + 0.65 * s,
+                        child: const Icon(
+                          Icons.auto_awesome,
+                          size: 18,
+                          color: AppColors.coinGoldBright,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -1555,97 +1569,101 @@ class _RejoinCardState extends ConsumerState<_RejoinCard>
           ? const SizedBox(width: double.infinity)
           : Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-              child: AnimatedBuilder(
-                animation: _pulse,
-                builder: (context, child) {
-                  final v = Curves.easeInOut.transform(_pulse.value);
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.coral.withValues(
-                            alpha: 0.25 + 0.3 * v,
+              child: RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: _pulse,
+                  builder: (context, child) {
+                    final v = Curves.easeInOut.transform(_pulse.value);
+                    return DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.coral.withValues(
+                              alpha: 0.25 + 0.3 * v,
+                            ),
+                            blurRadius: 10 + 12 * v,
                           ),
-                          blurRadius: 10 + 12 * v,
-                        ),
-                      ],
-                    ),
-                    child: child,
-                  );
-                },
-                child: PopCard(
-                  borderRadius: 24,
-                  tint: AppColors.coral,
-                  glow: AppColors.coral,
-                  padding: EdgeInsets.zero,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(24),
-                      onTap: () => context.push(game.route),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                        child: Row(
-                          children: [
-                            GlossyBadge(
-                              icon: switch (game.kind) {
-                                GameKind.chess => Icons.extension_rounded,
-                                GameKind.checkers =>
-                                  Icons.blur_circular_rounded,
-                                GameKind.ludo => Icons.casino_rounded,
-                                GameKind.doodle => Icons.brush_rounded,
-                              },
-                              color: AppColors.coral,
-                              size: 44,
-                            ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Your game is still on',
-                                    style: AppTextStyles.display(fontSize: 17),
-                                  ),
-                                  Text(
-                                    _resumeLine(game),
-                                    style: AppTextStyles.body(
-                                      fontSize: 13,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
+                        ],
+                      ),
+                      child: child,
+                    );
+                  },
+                  child: PopCard(
+                    borderRadius: 24,
+                    tint: AppColors.coral,
+                    glow: AppColors.coral,
+                    padding: EdgeInsets.zero,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () => context.push(game.route),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                          child: Row(
+                            children: [
+                              GlossyBadge(
+                                icon: switch (game.kind) {
+                                  GameKind.chess => Icons.extension_rounded,
+                                  GameKind.checkers =>
+                                    Icons.blur_circular_rounded,
+                                  GameKind.ludo => Icons.casino_rounded,
+                                  GameKind.doodle => Icons.brush_rounded,
+                                },
                                 color: AppColors.coral,
+                                size: 44,
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Rejoin',
-                                    style: AppTextStyles.body(
-                                      fontWeight: FontWeight.w900,
+                              const SizedBox(width: AppSpacing.md),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Your game is still on',
+                                      style: AppTextStyles.display(
+                                        fontSize: 17,
+                                      ),
+                                    ),
+                                    Text(
+                                      _resumeLine(game),
+                                      style: AppTextStyles.body(
+                                        fontSize: 13,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: AppColors.coral,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Rejoin',
+                                      style: AppTextStyles.body(
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.play_arrow_rounded,
+                                      size: 18,
                                       color: Colors.white,
                                     ),
-                                  ),
-                                  const Icon(
-                                    Icons.play_arrow_rounded,
-                                    size: 18,
-                                    color: Colors.white,
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -1683,40 +1701,42 @@ class _PlayBubbleState extends State<_PlayBubble>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (context, child) {
-        final v = Curves.easeInOut.transform(_c.value);
-        return Transform.scale(
-          scale: 1 + 0.06 * v,
-          child: Container(
-            width: widget.size,
-            height: widget.size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                center: const Alignment(-0.3, -0.4),
-                colors: [
-                  Color.lerp(widget.color, Colors.white, 0.5)!,
-                  widget.color,
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, child) {
+          final v = Curves.easeInOut.transform(_c.value);
+          return Transform.scale(
+            scale: 1 + 0.06 * v,
+            child: Container(
+              width: widget.size,
+              height: widget.size,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  center: const Alignment(-0.3, -0.4),
+                  colors: [
+                    Color.lerp(widget.color, Colors.white, 0.5)!,
+                    widget.color,
+                  ],
+                ),
+                border: Border.all(color: Colors.white, width: 2.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: widget.color.withValues(alpha: 0.4 + 0.3 * v),
+                    blurRadius: 12 + 10 * v,
+                  ),
                 ],
               ),
-              border: Border.all(color: Colors.white, width: 2.5),
-              boxShadow: [
-                BoxShadow(
-                  color: widget.color.withValues(alpha: 0.4 + 0.3 * v),
-                  blurRadius: 12 + 10 * v,
-                ),
-              ],
+              child: child,
             ),
-            child: child,
-          ),
-        );
-      },
-      child: Icon(
-        Icons.play_arrow_rounded,
-        color: Colors.white,
-        size: widget.size * 0.62,
+          );
+        },
+        child: Icon(
+          Icons.play_arrow_rounded,
+          color: Colors.white,
+          size: widget.size * 0.62,
+        ),
       ),
     );
   }

@@ -34,7 +34,7 @@ class WebAudio {
       }
       if (!_unlocked) {
         _unlocked = true;
-        _preload.forEach(buffer);
+        unawaited(_trickle());
       }
     }
 
@@ -81,7 +81,24 @@ class WebAudio {
   void preloadOnUnlock(Iterable<String> assets) {
     _preload = assets;
     context;
-    if (_unlocked) assets.forEach(buffer);
+    if (_unlocked) unawaited(_trickle());
+  }
+
+  bool _trickling = false;
+
+  /// The effects, fetched and decoded one at a time, starting a moment
+  /// after the first touch. All at once (60 files, 8 MB) they held up
+  /// whatever that touch was for (signing in, typing a room code) while
+  /// the page took them all in. One asked for before its turn is fetched
+  /// then ([buffer]).
+  Future<void> _trickle() async {
+    if (_trickling) return;
+    _trickling = true;
+    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    for (final asset in _preload.toList()) {
+      await buffer(asset);
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+    }
   }
 
   /// Loops [asset] at [volume], fading in, until the loop is stopped.

@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:utopia/core/theme/utopia_themes.dart';
 import 'package:utopia/core/widgets/doodle_world.dart';
 import 'package:utopia/core/widgets/halloween_world.dart';
+import 'package:utopia/core/widgets/sprite_cache.dart';
 
 const _size = Size(390, 844);
 const _dpr = 3.0;
@@ -82,6 +83,16 @@ void main() {
           (c) => DoodleScenePainter(clock).paint(c, _size),
           save: 'doodle_app_$t',
         );
+        // A frame makes only so many drawings (SpriteCache.frameBudget):
+        // over a few frames, all of them.
+        var made = -1;
+        while (made != worldSprites.length) {
+          made = worldSprites.length;
+          final recorder = ui.PictureRecorder();
+          DoodleScenePainter(clock, dpr: _dpr).paint(Canvas(recorder), _size);
+          recorder.endRecording().dispose();
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+        }
         final web = await _pixels(
           (c) => DoodleScenePainter(clock, dpr: _dpr).paint(c, _size),
           save: 'doodle_web_$t',

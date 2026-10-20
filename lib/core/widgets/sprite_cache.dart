@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
 /// Drawings kept as pictures of pixels, for a browser.
@@ -16,11 +17,33 @@ import 'package:flutter/painting.dart';
 /// go; when they're all still showing (a huge window), what doesn't fit
 /// is drawn as it is each frame instead.
 class SpriteCache {
-  SpriteCache({this.maxBytes = 48 << 20});
+  SpriteCache({
+    this.maxBytes = 48 << 20,
+    this.frameBudget = const Duration(milliseconds: 6),
+  });
 
   final int maxBytes;
+
+  /// How long a frame may spend making new drawings into pixels (one is
+  /// always made, however slow the phone, so they all get made). Past it,
+  /// the rest are drawn as they are this frame and made on the frames
+  /// after: a world coming into view (the app opening, a trip to another
+  /// world) makes its drawings over a few frames instead of stalling on
+  /// them all at once. It looks the same either way.
+  final Duration frameBudget;
+
+  /// The frame making is in (a 60th of a second on [_clock]), and how
+  /// long making has taken in it.
+  int _frame = -1;
+  Duration _spent = Duration.zero;
   final _sprites = <Object, _Sprite>{};
   int _bytes = 0;
+
+  /// Pixels kept, and drawings, for tests.
+  @visibleForTesting
+  int get bytes => _bytes;
+  @visibleForTesting
+  int get length => _sprites.length;
 
   static final _clock = Stopwatch()..start();
   static const _stale = Duration(seconds: 2);
@@ -45,9 +68,14 @@ class SpriteCache {
     final fullKey = (key, dpr);
     var sprite = _sprites.remove(fullKey);
     if (sprite == null) {
+      final frame = _clock.elapsedMilliseconds ~/ 16;
+      if (frame != _frame) {
+        _frame = frame;
+        _spent = Duration.zero;
+      }
       final bytes = _Sprite.bytesFor(bounds, dpr);
       _makeRoom(bytes);
-      if (_bytes + bytes > maxBytes) {
+      if (_bytes + bytes > maxBytes || _spent > frameBudget) {
         canvas.save();
         canvas.translate(at.dx, at.dy);
         if (angle != 0) canvas.rotate(angle);
@@ -56,10 +84,12 @@ class SpriteCache {
         canvas.restore();
         return;
       }
+      final making = Stopwatch()..start();
       sprite = _Sprite.draw(bounds, dpr, (c) {
         if (absolute) c.translate(-at.dx, -at.dy);
         paint(c);
       });
+      _spent += making.elapsed;
       _bytes += sprite.bytes;
     }
     sprite.shown = _clock.elapsed;
