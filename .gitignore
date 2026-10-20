@@ -67,3 +67,6 @@ test/tool/goldens/
 *.MP4
 *.mov
 *.MOV
+
+# tool/perf/measure.mjs needs Playwright, installed there (npm i --no-save)
+tool/perf/node_modules/
