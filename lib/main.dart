@@ -11,6 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'core/config/env.dart';
 import 'core/platform/device_key.dart';
+import 'core/platform/view_focus.dart';
 import 'core/platform/web_page.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/theme_controller.dart';
@@ -53,7 +54,7 @@ Future<void> main() async {
   // Crash reports, once the build has a Sentry DSN: what went wrong, on
   // which phone and version, never who (no personal details).
   if (Env.sentryDsn.isEmpty) {
-    runApp(app);
+    _run(app);
     return;
   }
   await SentryFlutter.init((options) {
@@ -62,7 +63,13 @@ Future<void> main() async {
       ..environment = kReleaseMode ? 'production' : 'debug'
       ..sendDefaultPii = false
       ..tracesSampleRate = 0;
-  }, appRunner: () => runApp(app));
+  }, appRunner: () => _run(app));
+}
+
+void _run(Widget app) {
+  // A browser focuses the view before the first frame (see the helper).
+  if (kIsWeb) holdViewFocusUntilFirstFrame();
+  runApp(app);
 }
 
 /// The bundled fonts (assets/google_fonts) are under the SIL Open Font
