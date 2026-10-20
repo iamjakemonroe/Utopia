@@ -7,7 +7,6 @@ import '../../../core/audio/game_audio.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/bouncy_dialog.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/user_avatar.dart';
@@ -15,6 +14,7 @@ import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../data/coin_gift_repository.dart';
+import 'gift_pin.dart';
 import '../../../core/platform/keyboard.dart';
 
 /// Who a gift goes to.
@@ -27,8 +27,8 @@ typedef GiftFriend = ({
 });
 
 /// Send some coins to [friend]: how many (a few quick amounts, or any),
-/// what today's limits leave, and a last "sure?" before it goes. Says
-/// plainly when they can't send yet, and why.
+/// then the gift PIN (chosen right there the first time), which sends it.
+/// Says plainly when they can't send, and why.
 Future<void> showSendCoinsSheet(BuildContext context, GiftFriend friend) {
   ProviderScope.containerOf(context).read(gameAudioProvider).play(Sfx.drawer);
   return showModalBottomSheet<void>(
@@ -48,6 +48,10 @@ class _SendCoinsSheet extends ConsumerStatefulWidget {
   ConsumerState<_SendCoinsSheet> createState() => _SendCoinsSheetState();
 }
 
+/// Where the gift is: choosing how many, then the PIN (or choosing one,
+/// or a new one for a forgotten one).
+enum _Step { amount, pin, choosePin, resetPin }
+
 class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
   static const _quick = [100, 500, 1000, 5000, 10000, 50000];
 
@@ -56,12 +60,18 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
   final _key = newGiftKey();
   final _custom = TextEditingController();
   int _coins = 100;
+  _Step _step = _Step.amount;
 
   /// Whether [_coins] has been fitted to what they can send.
   bool _fitted = false;
   bool _typing = false;
   bool _sending = false;
   String? _error;
+
+  /// The PIN pad's error, and how many there have been (each shakes it).
+  String? _pinError;
+  int _pinErrors = 0;
+  DateTime? _lockedUntil;
 
   @override
   void dispose() {
@@ -71,102 +81,94 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
 
   String get _name => widget.friend.name;
 
-  Future<void> _send(GiftAllowance allow) async {
+  /// On to the PIN: the one they have, or choosing one first.
+  void _continue(GiftAllowance allow) {
+    final locked = allow.pinLockedUntil;
+    setState(() {
+      _error = null;
+      _pinError = null;
+      _lockedUntil = locked != null && locked.isAfter(DateTime.now())
+          ? locked
+          : null;
+      if (_lockedUntil != null) {
+        _pinError = giftPinWhy(
+          GiftResult(ok: false, why: 'locked', lockedUntil: _lockedUntil),
+        );
+      }
+      _step = allow.pinSet ? _Step.pin : _Step.choosePin;
+    });
+  }
+
+  Future<void> _sendWith(String pin) async {
     final coins = _coins;
-    final sure = await confirmBouncy(
-      context: context,
-      title: 'Send ${formatCoins(coins)} coins?',
-      message: '$_name gets them straight away. A gift can’t be undone.',
-      confirmLabel: 'Send',
-      hero: const CoinIcon(size: 48),
-      audio: ref.read(gameAudioProvider),
-    );
-    if (!sure || !mounted) return;
     setState(() {
       _sending = true;
-      _error = null;
+      _pinError = null;
     });
     try {
       final result = await ref
           .read(coinGiftRepositoryProvider)
-          .send(to: widget.friend.id, coins: coins, key: _key);
+          .send(to: widget.friend.id, coins: coins, key: _key, pin: pin);
       if (!mounted) return;
-      if (!result.ok) {
-        setState(() {
-          _sending = false;
-          _error = _why(result.why, allow);
-        });
-        ref.invalidate(giftAllowanceProvider(widget.friend.id));
+      if (result.ok) {
+        HapticFeedback.mediumImpact();
+        ref.read(gameAudioProvider).play(Sfx.coinsOut);
+        Navigator.of(context).pop();
+        showUtopiaToast(
+          context,
+          'Sent ${formatCoins(coins)} coins to $_name',
+          kind: ToastKind.success,
+          icon: Icons.redeem_rounded,
+        );
         return;
       }
-      HapticFeedback.mediumImpact();
-      ref.read(gameAudioProvider).play(Sfx.purchase);
-      Navigator.of(context).pop();
-      showUtopiaToast(
-        context,
-        'Sent ${formatCoins(coins)} coins to $_name',
-        kind: ToastKind.success,
-        icon: Icons.redeem_rounded,
-      );
+      setState(() {
+        _sending = false;
+        switch (result.why) {
+          case 'wrong_pin' || 'locked':
+            _step = _Step.pin;
+            _pinError = giftPinWhy(result);
+            _pinErrors++;
+            if (result.why == 'locked') _lockedUntil = result.lockedUntil;
+          case 'no_pin':
+            _step = _Step.choosePin;
+          default:
+            _step = _Step.amount;
+            _error = _why(result.why);
+        }
+      });
+      if (result.why != 'wrong_pin') ref.invalidate(giftAllowanceProvider);
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _sending = false;
-        _error = friendlyError(
+        _step = _Step.pin;
+        _pinError = friendlyError(
           e,
           fallback: "Couldn't send them. Try again (it won't send twice).",
         );
+        _pinErrors++;
       });
     }
   }
 
-  /// What sets today's most, when it's one of the safety rules.
-  String? _limitNote(GiftAllowance allow) => switch (allow.limitedBy) {
-    'friend' =>
-      "You and $_name are new friends: up to "
-          '${formatCoins(allow.friendLimit ?? 0)} a day for their first '
-          'few days.',
-    'share' =>
-      'Up to ${allow.share == 50 ? 'half' : '${allow.share}%'} of your coins '
-          'a day, so they can never all go at once.',
-    'young' =>
-      'Up to ${formatCoins(allow.dailyCap ?? 0)} a day until your account '
-          'is a month old.',
-    _ => null,
-  };
-
   /// Why a gift couldn't go, in plain words.
-  String _why(String? why, GiftAllowance allow) => switch (why) {
+  String _why(String? why) => switch (why) {
     'self' ||
     'nobody' ||
     'not_friends' => 'You can only send coins to friends.',
     'house' => "House players can't take gifts.",
-    'amount' =>
-      'A gift is ${formatCoins(allow.min)} to ${formatCoins(allow.max)} coins.',
-    'daily_send' =>
-      allow.young
-          ? 'Up to ${formatCoins(allow.dailyCap ?? 0)} a day until your '
-                'account is a month old.'
-          : "That's more than you can send today.",
-    'share' =>
-      'You can send up to ${allow.share == 50 ? 'half' : '${allow.share}%'} '
-          'of your coins a day.',
-    'new_friend' =>
-      "You're new friends: up to ${formatCoins(allow.friendLimit ?? 0)} a "
-          'day for now.',
+    'amount' => 'Choose how many to send.',
     'balance' => "You don't have that many coins.",
-    'held' =>
-      'Coins bought in the last ${allow.holdDays} days can’t be sent yet.',
-    'daily_receive' => "$_name can't take more gifts today. Try tomorrow.",
+    'held' => "Coins bought in the last two weeks can't be sent yet.",
     'guest' => 'Save your account to send coins.',
-    'new' => 'You can send coins once your account is a week old.',
     'off' => 'Sending coins is paused right now. Try again later.',
     _ => "Couldn't send them. Try again.",
   };
 
   @override
   Widget build(BuildContext context) {
-    final allowance = ref.watch(giftAllowanceProvider(widget.friend.id));
+    final allowance = ref.watch(giftAllowanceProvider);
     final f = widget.friend;
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
@@ -179,70 +181,82 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
             glow: AppColors.coinGold,
             sheet: true,
             padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        UserAvatar(
-                          avatarUrl: f.avatarUrl,
-                          avatarKind: f.avatarKind,
-                          avatarSeed: f.avatarSeed,
-                          fallbackInitial: f.name,
-                          radius: 26,
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 220),
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      if (_step != _Step.amount)
+                        IconButton(
+                          tooltip: 'Back',
+                          onPressed: _sending
+                              ? null
+                              : () => setState(() => _step = _Step.amount),
+                          icon: const Icon(Icons.arrow_back_rounded),
                         ),
-                        const Positioned(
-                          right: -6,
-                          bottom: -4,
-                          child: CoinIcon(size: 24),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Text(
-                            'Send coins',
-                            style: AppTextStyles.display(fontSize: 22),
+                          UserAvatar(
+                            avatarUrl: f.avatarUrl,
+                            avatarKind: f.avatarKind,
+                            avatarSeed: f.avatarSeed,
+                            fallbackInitial: f.name,
+                            radius: 26,
                           ),
-                          Text(
-                            'to $_name',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.body(
-                              color: AppColors.textSecondary,
-                            ),
+                          const Positioned(
+                            right: -6,
+                            bottom: -4,
+                            child: CoinIcon(size: 24),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-                switch (allowance) {
-                  AsyncData(:final value) =>
-                    value.ok ? _picker(value) : _cant(value),
-                  AsyncError() => _message(
-                    "Couldn't check what you can send. Try again.",
-                    action: (
-                      'Try again',
-                      () {
-                        ref.invalidate(giftAllowanceProvider(widget.friend.id));
-                      },
-                    ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _step == _Step.amount
+                                  ? 'Send coins'
+                                  : 'Send ${formatCoins(_coins)}',
+                              style: AppTextStyles.display(fontSize: 22),
+                            ),
+                            Text(
+                              'to $_name',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.body(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  _ => const SizedBox(
-                    height: 160,
-                    child: Center(child: UtopiaLoader(size: 40)),
-                  ),
-                },
-              ],
+                  const SizedBox(height: AppSpacing.md),
+                  switch (allowance) {
+                    AsyncData(:final value) =>
+                      !value.ok ? _cant(value) : _stepBody(value),
+                    AsyncError() => _message(
+                      "Couldn't check what you can send. Try again.",
+                      action: (
+                        'Try again',
+                        () => ref.invalidate(giftAllowanceProvider),
+                      ),
+                    ),
+                    _ => const SizedBox(
+                      height: 160,
+                      child: Center(child: UtopiaLoader(size: 40)),
+                    ),
+                  },
+                ],
+              ),
             ),
           ),
         ),
@@ -250,7 +264,44 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
     );
   }
 
-  /// They can't send yet: why, and what to do.
+  Widget _stepBody(GiftAllowance allow) => switch (_step) {
+    _Step.amount => _picker(allow),
+    _Step.pin => GiftPinPad(
+      key: const ValueKey('pin'),
+      title: 'Enter your gift PIN',
+      subtitle: '$_name gets them straight away. A gift can’t be undone.',
+      busy: _sending,
+      enabled: _lockedUntil == null || _lockedUntil!.isBefore(DateTime.now()),
+      error: _pinError,
+      errorCount: _pinErrors,
+      onDone: _sendWith,
+      extra: TextButton(
+        onPressed: _sending
+            ? null
+            : () => setState(() {
+                _pinError = null;
+                _step = _Step.resetPin;
+              }),
+        child: const Text('Forgot PIN?'),
+      ),
+    ),
+    _Step.choosePin => GiftPinFlow(
+      key: const ValueKey('choose'),
+      goal: GiftPinGoal.set,
+      firstTitle: 'Choose a gift PIN',
+      firstSubtitle:
+          "Gifts need one, so only you can send your coins: 4 digits you'll "
+          'enter each time.',
+      onDone: _sendWith,
+    ),
+    _Step.resetPin => GiftPinFlow(
+      key: const ValueKey('reset'),
+      goal: GiftPinGoal.reset,
+      onDone: _sendWith,
+    ),
+  };
+
+  /// They can't send: why, and what to do.
   Widget _cant(GiftAllowance allow) {
     switch (allow.why) {
       case 'guest':
@@ -264,16 +315,6 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
               context.push('/auth/link');
             },
           ),
-        );
-      case 'new':
-        final ready = allow.readyAt;
-        final days = ready == null
-            ? 7
-            : (ready.difference(DateTime.now()).inHours / 24).ceil();
-        return _message(
-          'You can send coins once your account is a week old: '
-          '${days <= 1 ? 'tomorrow' : 'in $days days'}. It keeps everyone’s '
-          'coins safe.',
         );
       default:
         return _message('Sending coins is paused right now. Try again later.');
@@ -304,7 +345,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
       // Opens on an amount they can send: 100, or the most that fits.
       _fitted = true;
       if (_coins > most) {
-        _coins = _quick.lastWhere((q) => q <= most, orElse: () => allow.min);
+        _coins = _quick.lastWhere((q) => q <= most, orElse: () => most);
       }
     }
     final valid = _coins >= allow.min && _coins <= most;
@@ -367,7 +408,7 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
+              LengthLimitingTextInputFormatter(9),
             ],
             textAlign: TextAlign.center,
             style: AppTextStyles.display(fontSize: 22),
@@ -389,11 +430,9 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
         const SizedBox(height: AppSpacing.md),
         Text(
           most < allow.min
-              ? (allow.giftsLeft <= 0 || allow.leftToday < allow.min
-                    ? "You've sent all you can today. More tomorrow."
-                    : "You don't have coins you can send right now.")
-              : 'You have ${formatCoins(allow.balance)} · up to '
-                    '${formatCoins(most)} today',
+              ? "You don't have coins you can send right now."
+              : 'You have ${formatCoins(allow.balance)} · you can send up to '
+                    '${formatCoins(most)}',
           textAlign: TextAlign.center,
           style: AppTextStyles.body(
             fontSize: 13,
@@ -401,18 +440,6 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
             color: AppColors.textSecondary,
           ),
         ),
-        if (_limitNote(allow) case final note?)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              note,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.body(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
         if (allow.held > 0)
           Padding(
             padding: const EdgeInsets.only(top: 4),
@@ -440,12 +467,13 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
         const SizedBox(height: AppSpacing.md),
         PrimaryButton(
           label: valid ? 'Send ${formatCoins(_coins)} coins' : 'Send coins',
-          isLoading: _sending,
-          onPressed: valid && !_sending ? () => _send(allow) : null,
+          onPressed: valid ? () => _continue(allow) : null,
         ),
         const SizedBox(height: 6),
         Text(
-          'Friends only · a gift can’t be undone',
+          allow.pinSet
+              ? 'Friends only · your gift PIN sends it'
+              : "Friends only · you'll choose a gift PIN next",
           textAlign: TextAlign.center,
           style: AppTextStyles.body(
             fontSize: 11.5,

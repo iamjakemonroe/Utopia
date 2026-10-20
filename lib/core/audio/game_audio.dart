@@ -40,6 +40,9 @@ enum Sfx {
   /// A drawer, menu or panel opening: soft rising bubbles.
   drawer('drawer'),
   purchase('purchase'),
+
+  /// Coins going out: a gift sent (purchase is coins coming in).
+  coinsOut('coins_out'),
   teleport('teleport'),
   tick('tick'),
   chessMove('chess_move'),

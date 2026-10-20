@@ -378,6 +378,22 @@ def make_sfx_drawer():
     sfx("drawer", delay_reverb(x, feedback=0.22), 0.42)
 
 
+def make_sfx_coins_out():
+    """Coins going out (a gift sent): a handful counted off, each clink a
+    little lower than the last, swept away with a soft whoosh and a low
+    drop as they go. Darker than the purchase cascade (coins coming in),
+    so giving never sounds like getting."""
+    random.seed(41)
+    x = buf(1.0)
+    for i in range(7):
+        f = 3300 - i * 230 + random.uniform(-80, 80)
+        add(x, tone(lambda _, f=f: f, 0.28, 0.07, harmonics=[(1, 1), (2.76, 0.35), (5.4, 0.15)]),
+            i * 0.055 + random.random() * 0.012, 0.32 * (1 - i * 0.06))
+    add(x, biquad(noise(0.45, 0.25, attack=0.05), "bp", lambda t: 2600 - 1800 * t / 0.45, 1.1), 0.12, 0.22)
+    add(x, tone(lambda t: 520 - 260 * t, 0.25, 0.08, harmonics=[(1, 1), (2, 0.3)]), 0.42, 0.3)
+    sfx("coins_out", delay_reverb(x, feedback=0.25), 0.7)
+
+
 def _two_tone(a, b):
     x = buf(0.16)
     add(x, bubble(a, 0.07, 1.2, 0.025), 0.0)
@@ -617,6 +633,10 @@ def make_music():
 if __name__ == "__main__":
     import sys
 
+    if sys.argv[1:] == ["coins_out"]:
+        # Only the gift-sent sound, leaving the rest as they are.
+        make_sfx_coins_out()
+        sys.exit(0)
     if sys.argv[1:] == ["hologram"]:
         # Only the hologram's sounds, leaving the rest as they are.
         make_sfx_hologram()
@@ -628,3 +648,4 @@ if __name__ == "__main__":
     make_sfx_drawer()
     make_sfx_hologram()
     make_sfx_hologram_ambience()
+    make_sfx_coins_out()

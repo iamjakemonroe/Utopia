@@ -39,6 +39,8 @@ import '../../maestro/presentation/maestro_providers.dart';
 import '../../maestro/presentation/maestro_sheet.dart';
 import '../../store/presentation/store_controller.dart';
 import '../../../core/layout/responsive.dart';
+import '../../coins/data/coin_gift_repository.dart';
+import '../../coins/presentation/gift_pin.dart';
 
 /// "Show my coins" while the change is on its way to the server, so the
 /// switch moves at once.
@@ -362,6 +364,25 @@ class SettingsScreen extends ConsumerWidget {
                             }
                           },
                   ),
+                  if (!isGuest)
+                    Builder(
+                      builder: (context) {
+                        final pin = ref
+                            .watch(giftPinStatusProvider)
+                            .valueOrNull;
+                        return _LinkRow(
+                          icon: Icons.lock_rounded,
+                          color: AppColors.coinGold,
+                          title: 'Gift PIN',
+                          subtitle: pin == null
+                              ? 'Every coin gift asks for it'
+                              : pin.set
+                              ? 'Set · every coin gift asks for it'
+                              : 'Not set yet · choose one for coin gifts',
+                          onTap: () => showGiftPinSheet(context),
+                        );
+                      },
+                    ),
                   if (isGuest)
                     _LinkRow(
                       icon: Icons.shield_rounded,

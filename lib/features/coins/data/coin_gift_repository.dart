@@ -11,24 +11,13 @@ class GiftAllowance {
   const GiftAllowance({
     required this.ok,
     required this.why,
-    required this.readyAt,
     required this.balance,
     required this.giftable,
     required this.held,
     required this.holdDays,
     required this.min,
-    required this.max,
-    required this.leftToday,
-    required this.giftsLeft,
-    this.capLeft,
-    this.dailyCap,
-    this.young = false,
-    this.grownAt,
-    this.shareLeft,
-    this.share = 50,
-    this.friendLeft,
-    this.friendLimit,
-    this.friendReadyAt,
+    required this.pinSet,
+    this.pinLockedUntil,
   });
 
   factory GiftAllowance.fromJson(Map<String, dynamic> json) {
@@ -36,34 +25,21 @@ class GiftAllowance {
     return GiftAllowance(
       ok: json['ok'] == true,
       why: json['why'] as String?,
-      readyAt: DateTime.tryParse(json['ready_at'] as String? ?? '')?.toLocal(),
       balance: n('balance'),
       giftable: n('giftable'),
       held: n('held'),
       holdDays: n('hold_days'),
       min: n('min'),
-      max: n('max'),
-      leftToday: n('left_today'),
-      giftsLeft: n('gifts_left'),
-      capLeft: (json['cap_left'] as num?)?.toInt(),
-      dailyCap: (json['daily_cap'] as num?)?.toInt(),
-      young: json['young'] == true,
-      grownAt: DateTime.tryParse(json['grown_at'] as String? ?? '')?.toLocal(),
-      shareLeft: (json['share_left'] as num?)?.toInt(),
-      share: (json['share'] as num?)?.toInt() ?? 50,
-      friendLeft: (json['friend_left'] as num?)?.toInt(),
-      friendLimit: (json['friend_limit'] as num?)?.toInt(),
-      friendReadyAt: DateTime.tryParse(
-        json['friend_ready_at'] as String? ?? '',
+      pinSet: json['pin_set'] == true,
+      pinLockedUntil: DateTime.tryParse(
+        json['pin_locked_until'] as String? ?? '',
       )?.toLocal(),
     );
   }
 
-  /// Whether they can send at all; if not, [why]: 'guest', 'new' (until
-  /// [readAt]) or 'off'.
+  /// Whether they can send at all; if not, [why]: 'guest' or 'off'.
   final bool ok;
   final String? why;
-  final DateTime? readyAt;
 
   final int balance;
 
@@ -73,64 +49,62 @@ class GiftAllowance {
   final int held;
   final int holdDays;
 
-  /// The least and most one gift can be.
+  /// The least one gift can be.
   final int min;
-  final int max;
 
-  /// What's left of today's limits ([leftToday] is the closest of them).
-  final int leftToday;
-  final int giftsLeft;
-
-  /// The day's limit for an account their age ([dailyCap]: less while
-  /// it's [young], until [grownAt]), and what's left of it.
-  final int? capLeft;
-  final int? dailyCap;
-  final bool young;
-  final DateTime? grownAt;
-
-  /// What's left of the most they can send a day: [share]% of the coins
-  /// they had today.
-  final int? shareLeft;
-  final int share;
-
-  /// To a new friend (until [friendReadyAt]), what's left of the
-  /// [friendLimit] a day they can take from them; null for an old friend.
-  final int? friendLeft;
-  final int? friendLimit;
-  final DateTime? friendReadyAt;
+  /// Whether they've a gift PIN yet (every gift asks for it), and when
+  /// it unlocks after too many wrong tries.
+  final bool pinSet;
+  final DateTime? pinLockedUntil;
 
   /// The most one gift can be right now.
-  int get most => giftsLeft <= 0
-      ? 0
-      : [max, giftable, leftToday, ?friendLeft].reduce(math.min);
-
-  /// Which rule stops them sending more: 'friend' (a new friend), 'share'
-  /// (half the day's coins), 'young' (an account under a month old) or
-  /// null (anything else: one gift's most, what they have).
-  String? get limitedBy {
-    final most = this.most;
-    if (friendLeft != null && friendLeft == most) return 'friend';
-    if (shareLeft != null && shareLeft == most && shareLeft! < max) {
-      return 'share';
-    }
-    if (young && capLeft == most) return 'young';
-    return null;
-  }
+  int get most => giftable;
 }
 
-/// How a gift went: [ok], or the rule that said no ([why]).
+/// How a gift (or a PIN change) went: [ok], or what said no ([why]).
 class GiftResult {
-  const GiftResult({required this.ok, this.why, this.coins = 0});
+  const GiftResult({
+    required this.ok,
+    this.why,
+    this.coins = 0,
+    this.triesLeft,
+    this.lockedUntil,
+  });
 
   factory GiftResult.fromJson(Map<String, dynamic> json) => GiftResult(
     ok: json['ok'] == true,
     why: json['why'] as String?,
     coins: (json['coins'] as num?)?.toInt() ?? 0,
+    triesLeft: (json['tries_left'] as num?)?.toInt(),
+    lockedUntil: DateTime.tryParse(
+      json['locked_until'] as String? ?? '',
+    )?.toLocal(),
   );
 
   final bool ok;
   final String? why;
   final int coins;
+
+  /// After a wrong PIN, how many tries before gifts lock.
+  final int? triesLeft;
+
+  /// Locked after too many wrong PINs, until then.
+  final DateTime? lockedUntil;
+}
+
+/// Whether the player has a gift PIN, and whether it's locked.
+class GiftPinStatus {
+  const GiftPinStatus({required this.set, this.lockedUntil});
+
+  factory GiftPinStatus.fromJson(Map<String, dynamic> json) => GiftPinStatus(
+    set: json['set'] == true,
+    lockedUntil: DateTime.tryParse(
+      json['locked_until'] as String? ?? '',
+    )?.toLocal(),
+  );
+
+  final bool set;
+  final DateTime? lockedUntil;
 }
 
 class CoinGiftRepository {
@@ -138,28 +112,63 @@ class CoinGiftRepository {
 
   final SupabaseClient _client;
 
-  /// What they can send now, to friend [to].
-  Future<GiftAllowance> allowance(String to) async => GiftAllowance.fromJson(
-    Map<String, dynamic>.from(
-      await _client.rpc('coin_gift_allowance', params: {'p_to': to}) as Map,
-    ),
-  );
+  Map<String, dynamic> _map(Object? json) =>
+      Map<String, dynamic>.from(json! as Map);
 
-  /// Sends [coins] to friend [to]. [key] is made once per gift
-  /// ([newGiftKey]): sending again with it (after a dropped connection)
-  /// never sends twice.
+  /// What they can send now.
+  Future<GiftAllowance> allowance() async =>
+      GiftAllowance.fromJson(_map(await _client.rpc('coin_gift_allowance')));
+
+  /// Sends [coins] to friend [to], with the gift [pin]. [key] is made once
+  /// per gift ([newGiftKey]): sending again with it (after a dropped
+  /// connection) never sends twice.
   Future<GiftResult> send({
     required String to,
     required int coins,
     required String key,
+    required String pin,
   }) async => GiftResult.fromJson(
-    Map<String, dynamic>.from(
+    _map(
       await _client.rpc(
-            'send_coin_gift',
-            params: {'p_to': to, 'p_coins': coins, 'p_key': key},
-          )
-          as Map,
+        'send_coin_gift',
+        params: {'p_to': to, 'p_coins': coins, 'p_key': key, 'p_pin': pin},
+      ),
     ),
+  );
+
+  Future<GiftPinStatus> pinStatus() async =>
+      GiftPinStatus.fromJson(_map(await _client.rpc('gift_pin_status')));
+
+  /// Sets the gift PIN, or changes it ([current], the one they have).
+  Future<GiftResult> setPin(String pin, {String? current}) async =>
+      GiftResult.fromJson(
+        _map(
+          await _client.rpc(
+            'set_gift_pin',
+            params: {'p_pin': pin, 'p_current': current},
+          ),
+        ),
+      );
+
+  /// Emails a code to [email] (the account's), to prove it's theirs
+  /// before a new PIN: the same kind of code they sign in with.
+  Future<void> sendPinResetCode(String email) =>
+      _client.auth.signInWithOtp(email: email, shouldCreateUser: false);
+
+  /// Checks the code from the email: the session's then proved by it,
+  /// which [resetPin] needs (within a few minutes).
+  Future<void> verifyPinResetCode(String email, String code) async {
+    await _client.auth.verifyOTP(
+      email: email,
+      token: code,
+      type: OtpType.email,
+    );
+  }
+
+  /// A new gift PIN for one who's forgotten theirs, once their email's
+  /// proved ([verifyPinResetCode]).
+  Future<GiftResult> resetPin(String pin) async => GiftResult.fromJson(
+    _map(await _client.rpc('reset_gift_pin', params: {'p_pin': pin})),
   );
 }
 
@@ -167,12 +176,15 @@ final coinGiftRepositoryProvider = Provider<CoinGiftRepository>(
   (ref) => CoinGiftRepository(ref.watch(supabaseClientProvider)),
 );
 
-/// What the player can send to a friend now, asked each time the send
-/// sheet opens.
-final giftAllowanceProvider = FutureProvider.autoDispose
-    .family<GiftAllowance, String>(
-      (ref, to) => ref.watch(coinGiftRepositoryProvider).allowance(to),
-    );
+/// What the player can send now, asked each time the send sheet opens.
+final giftAllowanceProvider = FutureProvider.autoDispose<GiftAllowance>(
+  (ref) => ref.watch(coinGiftRepositoryProvider).allowance(),
+);
+
+/// Whether the player has a gift PIN (for Settings).
+final giftPinStatusProvider = FutureProvider.autoDispose<GiftPinStatus>(
+  (ref) => ref.watch(coinGiftRepositoryProvider).pinStatus(),
+);
 
 /// A fresh random id for one gift (a version 4 UUID).
 String newGiftKey() {

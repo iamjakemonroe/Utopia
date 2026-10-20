@@ -1,5 +1,6 @@
-// Phone screenshots of the send-coins sheet (ready to send, and a new
-// account told to wait), into test/tool/goldens/. Run:
+// Phone screenshots of the send-coins sheet (choosing how many, the gift
+// PIN, choosing a PIN the first time, and a guest told to save their
+// account), into test/tool/goldens/. Run:
 // flutter test --run-skipped --update-goldens test/tool/send_coins_sheet_test.dart
 @Tags(['sheet'])
 library;
@@ -18,31 +19,28 @@ import 'package:utopia/core/widgets/app_background.dart';
 import 'package:utopia/features/coins/data/coin_gift_repository.dart';
 import 'package:utopia/features/coins/presentation/send_coins_sheet.dart';
 
-GiftAllowance _allowance({bool ok = true, String? why, int held = 0}) =>
-    GiftAllowance(
-      ok: ok,
-      why: why,
-      readyAt: why == 'new'
-          ? DateTime.now().add(const Duration(days: 3))
-          : null,
-      balance: 4820,
-      giftable: 4820 - held,
-      held: held,
-      holdDays: 14,
-      min: 10,
-      max: 50000,
-      leftToday: 2410,
-      giftsLeft: 19,
-      capLeft: 100000,
-      dailyCap: 100000,
-      shareLeft: 2410,
-    );
+GiftAllowance _allowance({
+  bool ok = true,
+  String? why,
+  int held = 0,
+  bool pinSet = true,
+}) => GiftAllowance(
+  ok: ok,
+  why: why,
+  balance: 4820,
+  giftable: 4820 - held,
+  held: held,
+  holdDays: 14,
+  min: 1,
+  pinSet: pinSet,
+);
 
 Future<void> _sheet(
   WidgetTester tester,
   GiftAllowance allowance,
-  String name,
-) async {
+  String name, {
+  bool send = false,
+}) async {
   tester.view.physicalSize = const Size(1290, 2796);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -56,7 +54,7 @@ Future<void> _sheet(
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        giftAllowanceProvider.overrideWith((ref, _) async => allowance),
+        giftAllowanceProvider.overrideWith((ref) async => allowance),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -94,9 +92,22 @@ Future<void> _sheet(
   for (var i = 0; i < 10; i++) {
     await tester.pump(const Duration(milliseconds: 100));
   }
+  if (send) {
+    await tester.tap(find.text('500'));
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.textContaining('Send 500'));
+    for (var i = 0; i < 6; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    // Two digits in, on the keypad.
+    for (final k in ['2', '5']) {
+      await tester.tap(find.text(k));
+      await tester.pump(const Duration(milliseconds: 60));
+    }
+  }
   // The sheet's own fonts, asked for once it was up.
   await tester.runAsync(GoogleFonts.pendingFonts);
-  await tester.pump(const Duration(milliseconds: 100));
+  await tester.pump(const Duration(milliseconds: 300));
   await expectLater(
     find.byType(MaterialApp),
     matchesGoldenFile('goldens/send_coins_$name.png'),
@@ -104,11 +115,19 @@ Future<void> _sheet(
 }
 
 void main() {
-  testWidgets('ready to send', (tester) async {
+  testWidgets('choosing how many', (tester) async {
     await _sheet(tester, _allowance(held: 1000), 'ready');
   });
 
-  testWidgets('a new account waits', (tester) async {
-    await _sheet(tester, _allowance(ok: false, why: 'new'), 'new');
+  testWidgets('the gift PIN', (tester) async {
+    await _sheet(tester, _allowance(), 'pin', send: true);
+  });
+
+  testWidgets('choosing a PIN, the first time', (tester) async {
+    await _sheet(tester, _allowance(pinSet: false), 'choose_pin', send: true);
+  });
+
+  testWidgets('a guest saves their account first', (tester) async {
+    await _sheet(tester, _allowance(ok: false, why: 'guest'), 'guest');
   });
 }

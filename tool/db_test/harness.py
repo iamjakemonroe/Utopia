@@ -41,7 +41,8 @@ create or replace function auth.uid() returns uuid language sql stable as
 create or replace function auth.role() returns text language sql stable as
   $f$ select coalesce(nullif(current_setting('request.jwt.claim.role', true), ''), 'anon') $f$;
 create or replace function auth.jwt() returns jsonb language sql stable as
-  $f$ select '{}'::jsonb $f$;
+  $f$ select coalesce(nullif(current_setting('request.jwt.claims', true), '')::jsonb,
+                      '{}'::jsonb) $f$;
 create schema if not exists storage;
 create table if not exists storage.buckets (
   id text primary key, name text, public boolean default false,
@@ -59,6 +60,16 @@ create or replace function storage.filename(name text) returns text
 create or replace function storage.extension(name text) returns text
   language sql immutable as $f$ select reverse(split_part(reverse(name), '.', 1)) $f$;
 create schema if not exists extensions;
+-- pgcrypto isn't in the bundled Postgres: a stand-in for crypt() and
+-- gen_salt() that behaves the same way (crypt(password, stored) = stored
+-- for the right password), hashing with sha256.
+create or replace function extensions.gen_salt(kind text, rounds int default 6)
+  returns text language sql volatile as
+  $f$ select '$shim$' || substr(md5(random()::text), 1, 16) $f$;
+create or replace function extensions.crypt(password text, salt text)
+  returns text language sql immutable as
+  $f$ select '$shim$' || substr(salt, 7, 16)
+             || encode(sha256(convert_to(substr(salt, 7, 16) || password, 'UTF8')), 'hex') $f$;
 create schema if not exists cron;
 create table if not exists cron.job (jobid serial, jobname text, schedule text, command text);
 create or replace function cron.schedule(name text, sched text, cmd text) returns bigint
@@ -78,9 +89,10 @@ grant usage on schema auth to anon, authenticated, service_role;
 
 
 def _prepare(sql):
-    # pg_cron isn't in the bundled Postgres; the cron schema above stands in.
-    return re.sub(r"create extension if not exists pg_cron[^;]*;", "", sql,
-                  flags=re.I)
+    # pg_cron and pgcrypto aren't in the bundled Postgres; the cron schema
+    # and the crypt functions above stand in.
+    return re.sub(r"create extension if not exists (pg_cron|pgcrypto)[^;]*;", "",
+                  sql, flags=re.I)
 
 
 _server = None
@@ -117,11 +129,16 @@ def fresh(repo=REPO, upto=None):
     return db
 
 
-def as_user(db, uid):
-    """Calls after this run as [uid] (an authenticated player)."""
+def as_user(db, uid, claims=None):
+    """Calls after this run as [uid] (an authenticated player), with the
+    session's token holding [claims] too (e.g. its amr)."""
+    import json
     with db.cursor() as c:
+        c.execute("reset role")
         c.execute("select set_config('request.jwt.claim.sub', %s, false)", (uid,))
         c.execute("select set_config('request.jwt.claim.role', 'authenticated', false)")
+        c.execute("select set_config('request.jwt.claims', %s, false)",
+                  (json.dumps({"sub": uid, "role": "authenticated", **(claims or {})}),))
         c.execute("set role authenticated")
 
 
@@ -129,6 +146,7 @@ def as_admin(db):
     with db.cursor() as c:
         c.execute("reset role")
         c.execute("select set_config('request.jwt.claim.sub', '', false)")
+        c.execute("select set_config('request.jwt.claims', '', false)")
 
 
 def new_user(db, email=None):
