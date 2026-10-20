@@ -108,7 +108,12 @@ class _BoardState extends ConsumerState<_Board> {
 
   void _open(BoardEntry entry) {
     ref.read(gameAudioProvider).play(Sfx.tap);
-    showBoardPlayer(context, entry: entry, gameName: _gameName(widget.game));
+    showBoardPlayer(
+      context,
+      entry: entry,
+      game: widget.game,
+      gameName: _gameName(widget.game),
+    );
   }
 
   @override

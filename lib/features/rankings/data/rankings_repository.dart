@@ -32,14 +32,19 @@ class RankingsRepository {
     return Leaderboard.fromJson(Map<String, dynamic>.from(data as Map));
   }
 
-  /// Everything worth knowing from the player's games in [game].
-  Future<RankInsights> insights(String game) async {
+  /// Everything worth knowing from the player's games in [game] (or
+  /// [user]'s, someone else's, unless they hide them).
+  Future<RankInsights> insights(String game, {String? user}) async {
     final data = await _client.rpc(
       'get_rank_insights',
-      params: {'p_game': game},
+      params: {'p_game': game, 'p_user': ?user},
     );
     return RankInsights.fromJson(Map<String, dynamic>.from(data as Map));
   }
+
+  /// Whether others can open the player's hologram (Settings).
+  Future<void> setShowStats(bool show) =>
+      _client.rpc('set_show_stats', params: {'p_show': show});
 
   /// The player's record in [game], or null before their first rated game.
   Future<PlayerRecord?> record(String game) async {
@@ -201,7 +206,12 @@ final ratingChangeProvider = FutureProvider.autoDispose
     );
 
 /// The player's insights in a game, for the hologram.
+/// Whose insights: the player's own ([user] null), or someone else's.
+typedef InsightsKey = ({String game, String? user});
+
 final rankInsightsProvider = FutureProvider.autoDispose
-    .family<RankInsights, String>(
-      (ref, game) => ref.watch(rankingsRepositoryProvider).insights(game),
+    .family<RankInsights, InsightsKey>(
+      (ref, key) => ref
+          .watch(rankingsRepositoryProvider)
+          .insights(key.game, user: key.user),
     );

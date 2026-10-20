@@ -27,21 +27,29 @@ Future<void> showRankHologram(
   required int rating,
   int? place,
   List<int> line = const [],
+  String? user,
+  String? name,
 }) {
   final container = ProviderScope.containerOf(context);
   // A soft power-up as it projects; the readouts then make their own
   // sounds as they come up (see _In and _CountUp).
   container.read(gameAudioProvider).play(Sfx.holoOn);
   HapticFeedback.mediumImpact();
-  container.invalidate(rankInsightsProvider(game));
+  container.invalidate(rankInsightsProvider((game: game, user: user)));
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
     barrierLabel: 'Close',
     barrierColor: const Color(0xD8050310),
     transitionDuration: const Duration(milliseconds: 250),
-    pageBuilder: (context, _, _) =>
-        _RankHologram(game: game, rating: rating, place: place, line: line),
+    pageBuilder: (context, _, _) => _RankHologram(
+      game: game,
+      rating: rating,
+      place: place,
+      line: line,
+      user: user,
+      name: name,
+    ),
   );
 }
 
@@ -51,12 +59,18 @@ class _RankHologram extends ConsumerStatefulWidget {
     required this.rating,
     required this.place,
     required this.line,
+    this.user,
+    this.name,
   });
 
   final String game;
   final int rating;
   final int? place;
   final List<int> line;
+
+  /// Someone else's (from the rankings), and their name; null for yours.
+  final String? user;
+  final String? name;
 
   @override
   ConsumerState<_RankHologram> createState() => _RankHologramState();
@@ -143,7 +157,9 @@ class _RankHologramState extends ConsumerState<_RankHologram>
 
   @override
   Widget build(BuildContext context) {
-    final insights = ref.watch(rankInsightsProvider(widget.game));
+    final insights = ref.watch(
+      rankInsightsProvider((game: widget.game, user: widget.user)),
+    );
     final rating = insights.valueOrNull?.rating ?? widget.rating;
     final tier = _tier = RankTier.of(rating);
     if (_auraTier != tier) {
@@ -219,6 +235,7 @@ class _RankHologramState extends ConsumerState<_RankHologram>
                       place: widget.place,
                       line: widget.line,
                       insights: insights,
+                      name: widget.user == null ? null : widget.name,
                     ),
                   ),
                 ),
@@ -264,6 +281,7 @@ class _Readout extends StatefulWidget {
     required this.place,
     required this.line,
     required this.insights,
+    this.name,
   });
 
   final RankTier tier;
@@ -272,6 +290,9 @@ class _Readout extends StatefulWidget {
   final int? place;
   final List<int> line;
   final AsyncValue<RankInsights> insights;
+
+  /// Whose they are, when they're someone else's (null: yours).
+  final String? name;
 
   @override
   State<_Readout> createState() => _ReadoutState();
@@ -289,24 +310,39 @@ class _ReadoutState extends State<_Readout> {
 
   @override
   Widget build(BuildContext context) {
-    final _Readout(:tier, :game, :rating, :place, :line, :insights) = widget;
+    final _Readout(:tier, :game, :rating, :place, :line, :insights, :name) =
+        widget;
     final i = insights.valueOrNull;
+    // Theirs or yours: who it's about, in words.
+    final mine = name == null;
+    final whose = mine ? 'YOUR' : "${name.toUpperCase()}'S";
+    final first = mine ? 'you' : name.split(' ').first;
     final sections = <Widget>[
+      if (!mine) _Note(tier: tier, text: "${name.toUpperCase()}'S HOLOGRAM"),
       _Header(tier: tier, game: game, rating: rating, place: place, i: i),
       _NextTier(tier: tier, rating: rating),
       if (i == null)
         insights.hasError
             ? _Note(
                 tier: tier,
-                text: "COULDN'T REACH YOUR STATS. CLOSE AND TRY AGAIN.",
+                text: "COULDN'T REACH $whose STATS. CLOSE AND TRY AGAIN.",
               )
-            : _Note(tier: tier, text: 'SCANNING YOUR GAMES…')
-      else if (i.games == 0)
+            : _Note(tier: tier, text: 'SCANNING $whose GAMES…')
+      else if (i.hidden)
         _Note(
           tier: tier,
           text:
-              'YOUR HOLOGRAM FILLS IN AS YOU PLAY RATED '
-              '${rankedGameName(game).toUpperCase()} GAMES.',
+              '${name?.toUpperCase() ?? 'THEY'} KEEPS THEIR STATS TO '
+              'THEMSELVES.',
+        )
+      else if (i.games == 0)
+        _Note(
+          tier: tier,
+          text: mine
+              ? 'YOUR HOLOGRAM FILLS IN AS YOU PLAY RATED '
+                    '${rankedGameName(game).toUpperCase()} GAMES.'
+              : "${name.toUpperCase()} HASN'T PLAYED RATED "
+                    '${rankedGameName(game).toUpperCase()} GAMES YET.',
         )
       else ...[
         if (line.length >= 2) _Trend(tier: tier, line: line, i: i),
@@ -314,29 +350,37 @@ class _ReadoutState extends State<_Readout> {
         _Tiles(tier: tier, i: i),
         if (i.boardGame && i.games > 0) _Sides(tier: tier, i: i),
         if (i.boardGame && i.winsBy.isNotEmpty)
-          _Breakdown(tier: tier, title: 'HOW YOU WIN', counts: i.winsBy),
+          _Breakdown(
+            tier: tier,
+            title: mine ? 'HOW YOU WIN' : 'HOW THEY WIN',
+            counts: i.winsBy,
+          ),
         if (i.boardGame && i.lossesBy.isNotEmpty)
-          _Breakdown(tier: tier, title: 'HOW YOU LOSE', counts: i.lossesBy),
+          _Breakdown(
+            tier: tier,
+            title: mine ? 'HOW YOU LOSE' : 'HOW THEY LOSE',
+            counts: i.lossesBy,
+          ),
         if (i.bestWin case final p?)
           _Person(
             tier: tier,
             title: 'BEST WIN',
             person: p,
-            detail: 'Rated ${p.rating} when you beat them',
+            detail: 'Rated ${p.rating} when $first beat them',
           ),
         if (i.rival case final p?)
           _Person(
             tier: tier,
-            title: 'YOUR RIVAL',
+            title: mine ? 'YOUR RIVAL' : 'THEIR RIVAL',
             person: p,
-            detail: '${p.games} games · you won ${p.wins}, lost ${p.losses}',
+            detail: '${p.games} games · $first won ${p.wins}, lost ${p.losses}',
           ),
         if (i.nemesis case final p?)
           _Person(
             tier: tier,
-            title: 'YOUR NEMESIS',
+            title: mine ? 'YOUR NEMESIS' : 'THEIR NEMESIS',
             person: p,
-            detail: 'Beat you ${p.losses} times',
+            detail: 'Beat $first ${p.losses} times',
           ),
         if (i.since case final since?)
           _Note(

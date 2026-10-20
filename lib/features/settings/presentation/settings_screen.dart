@@ -41,10 +41,12 @@ import '../../store/presentation/store_controller.dart';
 import '../../../core/layout/responsive.dart';
 import '../../coins/data/coin_gift_repository.dart';
 import '../../coins/presentation/gift_pin.dart';
+import '../../rankings/data/rankings_repository.dart';
 
 /// "Show my coins" while the change is on its way to the server, so the
 /// switch moves at once.
 final _showCoinsPending = StateProvider<bool?>((ref) => null);
+final _showStatsPending = StateProvider<bool?>((ref) => null);
 
 final _appVersionProvider = FutureProvider<String>((ref) async {
   final info = await PackageInfo.fromPlatform();
@@ -73,6 +75,9 @@ class SettingsScreen extends ConsumerWidget {
     final showCoins =
         ref.watch(_showCoinsPending) ??
         (myProfile?['show_coins'] as bool? ?? true);
+    final showStats =
+        ref.watch(_showStatsPending) ??
+        (myProfile?['show_stats'] as bool? ?? true);
 
     void toggled(bool on) => audio.play(on ? Sfx.toggleOn : Sfx.toggleOff);
 
@@ -361,6 +366,37 @@ class SettingsScreen extends ConsumerWidget {
                               }
                             } finally {
                               ref.read(_showCoinsPending.notifier).state = null;
+                            }
+                          },
+                  ),
+                  _ToggleRow(
+                    icon: Icons.query_stats_rounded,
+                    color: AppColors.sky,
+                    title: 'Show my stats',
+                    subtitle:
+                        'Others can open your rank hologram from the rankings',
+                    value: showStats,
+                    onChanged: myId == null
+                        ? (_) {}
+                        : (v) async {
+                            toggled(v);
+                            ref.read(_showStatsPending.notifier).state = v;
+                            try {
+                              await ref
+                                  .read(rankingsRepositoryProvider)
+                                  .setShowStats(v);
+                              ref.invalidate(profileByIdProvider(myId));
+                              await ref.read(profileByIdProvider(myId).future);
+                            } catch (_) {
+                              if (context.mounted) {
+                                showUtopiaToast(
+                                  context,
+                                  "Couldn't change that. Try again.",
+                                  kind: ToastKind.error,
+                                );
+                              }
+                            } finally {
+                              ref.read(_showStatsPending.notifier).state = null;
                             }
                           },
                   ),

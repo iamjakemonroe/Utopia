@@ -19,6 +19,8 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../friends/data/friend_repository.dart';
 import '../../friends/presentation/providers/friends_providers.dart';
 import '../domain/ranking.dart';
+import 'hologram/rank_hologram.dart';
+import '../../../core/profiles/profile_providers.dart';
 
 /// Medal colors for the top three.
 const kGoldMedal = AppColors.coinGold;
@@ -1020,12 +1022,14 @@ class MeBar extends StatelessWidget {
 Future<void> showBoardPlayer(
   BuildContext context, {
   required BoardEntry entry,
+  required String game,
   required String gameName,
 }) {
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
-    builder: (context) => _BoardPlayerSheet(entry: entry, gameName: gameName),
+    builder: (context) =>
+        _BoardPlayerSheet(entry: entry, game: game, gameName: gameName),
   );
 }
 
@@ -1038,9 +1042,14 @@ final _friendshipProvider = FutureProvider.autoDispose
     });
 
 class _BoardPlayerSheet extends ConsumerStatefulWidget {
-  const _BoardPlayerSheet({required this.entry, required this.gameName});
+  const _BoardPlayerSheet({
+    required this.entry,
+    required this.game,
+    required this.gameName,
+  });
 
   final BoardEntry entry;
+  final String game;
   final String gameName;
 
   @override
@@ -1080,6 +1089,11 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
     final username = e.profile['username'] as String?;
     final isGuest = ref.watch(isAnonymousProvider);
     final status = ref.watch(_friendshipProvider(e.userId)).valueOrNull;
+    // Their hologram, unless they keep their stats to themselves.
+    final showsStats =
+        ref.watch(profileByIdProvider(e.userId)).valueOrNull?['show_stats'] !=
+        false;
+    final self = status == FriendshipStatus.self;
 
     Widget stat(String value, String label) => Expanded(
       child: Column(
@@ -1105,80 +1119,107 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
           glow: tier.color,
           sheet: true,
           padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              UserAvatar.fromProfile(
-                e.profile,
-                fallbackInitial: name,
-                radius: 40,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(name, style: AppTextStyles.display(fontSize: 22)),
-              if (username != null)
-                Text(
-                  '@$username',
-                  style: AppTextStyles.body(color: AppColors.textSecondary),
-                ),
-              if (e.house) ...[
-                const SizedBox(height: AppSpacing.sm),
-                const HouseTag(big: true),
-                const SizedBox(height: 6),
-                Text(
-                  "One of Utopia's house players: they play free games "
-                  "when nobody's free, and keep the board busy while it's "
-                  "new. They never win prizes.",
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.body(
-                    fontSize: 12.5,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-              const SizedBox(height: AppSpacing.md),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TierEmblem(tier: tier, size: 40),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${tier.label} in ${widget.gameName}',
-                    style: AppTextStyles.body(
-                      fontWeight: FontWeight.w800,
+                  UserAvatar.fromProfile(
+                    e.profile,
+                    fallbackInitial: name,
+                    radius: 40,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(name, style: AppTextStyles.display(fontSize: 22)),
+                  if (username != null)
+                    Text(
+                      '@$username',
+                      style: AppTextStyles.body(color: AppColors.textSecondary),
+                    ),
+                  if (e.house) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    const HouseTag(big: true),
+                    const SizedBox(height: 6),
+                    Text(
+                      "One of Utopia's house players: they play free games "
+                      "when nobody's free, and keep the board busy while it's "
+                      "new. They never win prizes.",
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.body(
+                        fontSize: 12.5,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TierEmblem(tier: tier, size: 40),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${tier.label} in ${widget.gameName}',
+                        style: AppTextStyles.body(
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.readable(tier.color),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    children: [
+                      stat('${e.rating}', 'Rating'),
+                      stat('#${e.place}', 'Place'),
+                      stat('${e.games}', 'Rated games'),
+                    ],
+                  ),
+                  if (status != null &&
+                      status != FriendshipStatus.self &&
+                      !isGuest &&
+                      !e.house) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    PrimaryButton(
+                      label: switch (status) {
+                        FriendshipStatus.friends => 'Friends',
+                        FriendshipStatus.requested => 'Request sent',
+                        FriendshipStatus.incoming => 'Accept friend request',
+                        _ => 'Add friend',
+                      },
+                      color: AppColors.success,
+                      onPressed:
+                          _sending ||
+                              status == FriendshipStatus.friends ||
+                              status == FriendshipStatus.requested
+                          ? null
+                          : _add,
+                    ),
+                  ],
+                ],
+              ),
+              // Their stats as a hologram, the way their own shows them.
+              if (showsStats)
+                Positioned(
+                  top: -10,
+                  right: -10,
+                  child: IconButton(
+                    tooltip: self ? 'See my stats' : 'See their stats',
+                    onPressed: () => showRankHologram(
+                      context,
+                      game: widget.game,
+                      rating: e.rating,
+                      place: e.place,
+                      user: self ? null : e.userId,
+                      name: self ? null : name,
+                    ),
+                    icon: Icon(
+                      Icons.query_stats_rounded,
                       color: AppColors.readable(tier.color),
+                      size: 26,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Row(
-                children: [
-                  stat('${e.rating}', 'Rating'),
-                  stat('#${e.place}', 'Place'),
-                  stat('${e.games}', 'Rated games'),
-                ],
-              ),
-              if (status != null &&
-                  status != FriendshipStatus.self &&
-                  !isGuest &&
-                  !e.house) ...[
-                const SizedBox(height: AppSpacing.lg),
-                PrimaryButton(
-                  label: switch (status) {
-                    FriendshipStatus.friends => 'Friends',
-                    FriendshipStatus.requested => 'Request sent',
-                    FriendshipStatus.incoming => 'Accept friend request',
-                    _ => 'Add friend',
-                  },
-                  color: AppColors.success,
-                  onPressed:
-                      _sending ||
-                          status == FriendshipStatus.friends ||
-                          status == FriendshipStatus.requested
-                      ? null
-                      : _add,
                 ),
-              ],
             ],
           ),
         ),

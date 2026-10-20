@@ -72,7 +72,12 @@ RankInsights _insights(int rating) => RankInsights.fromJson({
   },
 });
 
-Future<void> _hologram(WidgetTester tester, int rating, String name) async {
+Future<void> _hologram(
+  WidgetTester tester,
+  int rating,
+  String name, {
+  String? player,
+}) async {
   tester.view.physicalSize = const Size(1290, 2796);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -119,6 +124,8 @@ Future<void> _hologram(WidgetTester tester, int rating, String name) async {
     rating: rating,
     place: 12,
     line: [for (var i = 0; i < 24; i++) rating - 140 + i * 6 + (i % 4) * 9],
+    user: player == null ? null : 'someone',
+    name: player,
   );
   for (var i = 0; i < 30; i++) {
     await tester.pump(const Duration(milliseconds: 100));
@@ -141,4 +148,9 @@ void main() {
   ]) {
     testWidgets('hologram, $name', (tester) => _hologram(tester, rating, name));
   }
+  // Someone else's, from the rankings.
+  testWidgets(
+    "hologram, someone else's",
+    (tester) => _hologram(tester, 1400, 'theirs', player: 'Ada Lovelace'),
+  );
 }

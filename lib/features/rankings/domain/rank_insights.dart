@@ -29,6 +29,9 @@ class RankInsights {
 
   final Map<String, dynamic> _json;
 
+  /// Someone else's, who keeps their stats to themselves: nothing else.
+  bool get hidden => _json['hidden'] == true;
+
   int _n(String key) => (_json[key] as num?)?.toInt() ?? 0;
   int? _maybe(String key) => (_json[key] as num?)?.toInt();
   DateTime? _at(String key) =>
