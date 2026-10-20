@@ -18,6 +18,7 @@ import '../../../core/widgets/user_avatar.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../auth/presentation/widgets/auth_world.dart';
+import '../domain/nickname_rules.dart';
 
 /// What the player typed, ready to save.
 class _Names {
@@ -105,21 +106,13 @@ class _NamesCardState extends ConsumerState<_NamesCard> {
   late final _nick = TextEditingController(text: widget.nickname ?? '');
   late final _user = TextEditingController(text: widget.username ?? '');
   static final _userChars = RegExp(r'^[a-z0-9_]*$');
-  static final _nickChars = RegExp(
-    r"^[\p{L}\p{N}][\p{L}\p{N} _.'-]*$",
-    unicode: true,
-  );
   Timer? _debounce;
   _Availability _availability = _Availability.unknown;
 
-  String get _nickText => _nick.text.trim().replaceAll(RegExp(r'\s+'), ' ');
+  String get _nickText => NicknameRules.tidy(_nick.text);
   String get _userText => _user.text.trim();
 
-  bool get _nickOk =>
-      _nickText.isEmpty ||
-      (_nickText.length >= 2 &&
-          _nickText.length <= 24 &&
-          _nickChars.hasMatch(_nickText));
+  bool get _nickOk => NicknameRules.problem(_nickText) == null;
   bool get _userLengthOk => _userText.length >= 3 && _userText.length <= 20;
   bool get _userCharsOk =>
       _userText.isNotEmpty && _userChars.hasMatch(_userText);
@@ -277,7 +270,9 @@ class _NamesCardState extends ConsumerState<_NamesCard> {
                 const SizedBox(height: AppSpacing.md),
                 const _FieldLabel(
                   title: 'Nickname',
-                  hint: 'What everyone sees. Spaces are fine.',
+                  hint:
+                      'What everyone sees. Write it any way you like: '
+                      'fancy letters, symbols and emoji are all fine.',
                 ),
                 const SizedBox(height: 6),
                 UtopiaTextField(
@@ -285,11 +280,9 @@ class _NamesCardState extends ConsumerState<_NamesCard> {
                   icon: Icons.badge_rounded,
                   hint: 'Nickname',
                   textCapitalization: TextCapitalization.words,
+                  // Counted as a person counts them (an emoji family is one).
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r"[\p{L}\p{N} _.'-]", unicode: true),
-                    ),
-                    LengthLimitingTextInputFormatter(24),
+                    LengthLimitingTextInputFormatter(NicknameRules.max),
                   ],
                   onSubmitted: (_) => _save(),
                 ),
@@ -297,7 +290,7 @@ class _NamesCardState extends ConsumerState<_NamesCard> {
                   Padding(
                     padding: const EdgeInsets.only(top: 6, left: 4),
                     child: Text(
-                      'Use 2 to 24 letters or numbers (spaces are fine).',
+                      NicknameRules.problem(_nickText) ?? '',
                       style: AppTextStyles.body(
                         fontSize: 12,
                         color: AppColors.error,
