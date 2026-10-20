@@ -33,7 +33,6 @@ import '../../../../core/widgets/game_card_art.dart';
 import '../../../../core/widgets/pop_card.dart';
 import '../../../../core/widgets/utopia_loader.dart';
 import '../../../../core/widgets/tilt_3d.dart';
-import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../../../core/widgets/utopia_icons.dart';
 import '../../../../core/widgets/utopia_toast.dart';
@@ -50,6 +49,7 @@ import '../../../store/presentation/store_controller.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../chess/presentation/controllers/chess_match_controller.dart';
 import '../../../friends/presentation/widgets/friend_icon_button.dart';
+import '../../../notifications/presentation/answer_buttons.dart';
 import '../../../notifications/presentation/notification_bell.dart';
 import '../../../profile/presentation/username_dialog.dart';
 import '../../data/active_game.dart';
@@ -436,66 +436,82 @@ class _HomeGreetingState extends ConsumerState<_HomeGreeting> {
         ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => vibing
-                ? showNowPlaying(context, ref)
-                : _showGreeting(context, ref, greeting),
-            child: _GreetingBubble(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 420),
-                switchInCurve: Curves.easeOutBack,
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: ScaleTransition(
-                    scale: Tween(begin: 0.9, end: 1.0).animate(animation),
-                    alignment: Alignment.centerLeft,
-                    child: child,
+          // As wide as there's room for, up to a phone's worth: on a tablet
+          // or a computer it ran the whole width of the screen.
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: _bubbleMaxWidth),
+              child: SizedBox(
+                width: double.infinity,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => vibing
+                      ? showNowPlaying(context, ref)
+                      : _showGreeting(context, ref, greeting),
+                  child: _GreetingBubble(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 420),
+                      switchInCurve: Curves.easeOutBack,
+                      transitionBuilder: (child, animation) => FadeTransition(
+                        opacity: animation,
+                        child: ScaleTransition(
+                          scale: Tween(begin: 0.9, end: 1.0).animate(animation),
+                          alignment: Alignment.centerLeft,
+                          child: child,
+                        ),
+                      ),
+                      layoutBuilder: (current, previous) => Stack(
+                        alignment: Alignment.centerLeft,
+                        children: [...previous, ?current],
+                      ),
+                      child: vibing
+                          ? _MusicLine(
+                              key: const ValueKey('music'),
+                              music: music,
+                            )
+                          : Column(
+                              key: const ValueKey('greeting'),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      greeting.icon,
+                                      size: 16,
+                                      color: AppColors.coinGold,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        greeting.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppTextStyles.display(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  greeting.line,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.body(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary.withValues(
+                                      alpha: 0.88,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
                 ),
-                layoutBuilder: (current, previous) => Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [...previous, ?current],
-                ),
-                child: vibing
-                    ? _MusicLine(key: const ValueKey('music'), music: music)
-                    : Column(
-                        key: const ValueKey('greeting'),
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                greeting.icon,
-                                size: 16,
-                                color: AppColors.coinGold,
-                              ),
-                              const SizedBox(width: 6),
-                              Flexible(
-                                child: Text(
-                                  greeting.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles.display(fontSize: 20),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            greeting.line,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.body(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary.withValues(
-                                alpha: 0.88,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
               ),
             ),
           ),
@@ -667,10 +683,17 @@ class _GreetingPopupState extends State<_GreetingPopup>
                         child: Transform.scale(
                           scale: 0.4 + 0.6 * pop,
                           alignment: Alignment.topCenter,
-                          child: _BigBubble(
-                            greeting: greeting,
-                            shine: _shine,
-                            burst: t,
+                          // A tablet's or a computer's width would stretch
+                          // what Chip says across the whole screen.
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: _bubbleMaxWidth,
+                            ),
+                            child: _BigBubble(
+                              greeting: greeting,
+                              shine: _shine,
+                              burst: t,
+                            ),
                           ),
                         ),
                       ),
@@ -902,6 +925,9 @@ class _SparkBurstPainter extends CustomPainter {
 /// Chip's speech bubble: frosted glass with a little tail pointing at Chip,
 /// so the greeting reads clearly over any world, with a sparkle drifting
 /// around its corner.
+/// How wide Chip's speech bubbles on home grow: a phone's width.
+const _bubbleMaxWidth = 460.0;
+
 class _GreetingBubble extends StatefulWidget {
   const _GreetingBubble({required this.child});
 
@@ -1186,18 +1212,32 @@ class _IncomingInvites extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: pending.map((invite) => _InviteCard(invite: invite)).toList(),
+        children: pending
+            .map((invite) => ChallengeCard(invite: invite))
+            .toList(),
       ),
     );
   }
 }
 
-class _InviteCard extends ConsumerWidget {
-  const _InviteCard({required this.invite});
+/// A challenge a friend sent: who, the game, its clock and entry on
+/// tags that wrap (on one line they squeezed together on small phones),
+/// and the answer as two full-width buttons underneath.
+class ChallengeCard extends ConsumerStatefulWidget {
+  const ChallengeCard({super.key, required this.invite});
 
   final Map<String, dynamic> invite;
 
-  Future<void> _accept(BuildContext context, WidgetRef ref) async {
+  @override
+  ConsumerState<ChallengeCard> createState() => _ChallengeCardState();
+}
+
+class _ChallengeCardState extends ConsumerState<ChallengeCard> {
+  bool _declining = false;
+
+  Map<String, dynamic> get invite => widget.invite;
+
+  Future<void> _accept() async {
     final stake = (invite['stake'] as num).toInt();
     final balance = ref.read(coinBalanceProvider).valueOrNull ?? 0;
     if (stake > balance) {
@@ -1213,11 +1253,11 @@ class _InviteCard extends ConsumerWidget {
           accept: true,
         ),
       );
-      if (matchId != null && context.mounted) {
+      if (matchId != null && mounted) {
         context.push(boardMatchRoute(invite['game'] as String?, matchId));
       }
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         showUtopiaToast(
           context,
           friendlyError(e, fallback: 'That challenge is no longer open.'),
@@ -1227,12 +1267,25 @@ class _InviteCard extends ConsumerWidget {
     }
   }
 
+  /// The card goes once the invite's answered (it's watched).
+  Future<void> _decline() async {
+    setState(() => _declining = true);
+    try {
+      await ref
+          .read(chessRepositoryProvider)
+          .respondMatchInvite(inviteId: invite['id'] as String, accept: false);
+    } catch (_) {
+      if (mounted) setState(() => _declining = false);
+    }
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final fromId = invite['from_user'] as String;
     final profile = ref.watch(profileByIdProvider(fromId)).valueOrNull;
     final name = profileDisplayName(profile, fromId);
     final stake = (invite['stake'] as num).toInt();
+    final checkers = invite['game'] == 'checkers';
     final time = TimeControl(
       (invite['minutes'] as num?)?.toInt() ?? 10,
       (invite['increment'] as num?)?.toInt() ?? 0,
@@ -1244,94 +1297,154 @@ class _InviteCard extends ConsumerWidget {
         borderRadius: 22,
         tint: AppColors.accentSecondary,
         glow: AppColors.accentSecondary,
-        padding: const EdgeInsets.fromLTRB(10, 10, 6, 10),
-        child: Row(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            UserAvatar.fromProfile(profile, fallbackInitial: name, radius: 22),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$name wants a game',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.body(fontWeight: FontWeight.w800),
-                  ),
-                  const SizedBox(height: 3),
-                  Row(
-                    children: [
-                      Text(
-                        invite['game'] == 'checkers' ? 'Checkers' : 'Chess',
-                        style: AppTextStyles.body(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        speedIcon(time.speed),
-                        size: 15,
-                        color: speedColor(time.speed),
-                      ),
-                      const SizedBox(width: 3),
-                      Text(
-                        time.label,
-                        style: AppTextStyles.body(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      if (stake == 0) ...[
-                        Icon(
-                          Icons.favorite_rounded,
-                          size: 14,
-                          color: AppColors.coral,
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          'Free',
-                          style: AppTextStyles.body(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
+            Row(
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    UserAvatar.fromProfile(
+                      profile,
+                      fallbackInitial: name,
+                      radius: 24,
+                    ),
+                    Positioned(
+                      right: -4,
+                      bottom: -4,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.accentSecondary,
+                          border: Border.all(
+                            color: AppColors.surface,
+                            width: 2,
                           ),
                         ),
-                      ] else
-                        CoinAmount(
-                          stake,
-                          size: 13,
-                          color: AppColors.textSecondary,
+                        child: Icon(
+                          checkers
+                              ? Icons.blur_circular_rounded
+                              : Icons.extension_rounded,
+                          size: 12,
+                          color: Colors.white,
                         ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$name challenged you',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.body(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _InviteTag(
+                            icon: checkers
+                                ? Icons.blur_circular_rounded
+                                : Icons.extension_rounded,
+                            label: checkers ? 'Checkers' : 'Chess',
+                          ),
+                          _InviteTag(
+                            icon: speedIcon(time.speed),
+                            iconColor: speedColor(time.speed),
+                            label: time.label,
+                          ),
+                          if (stake == 0)
+                            _InviteTag(
+                              icon: Icons.favorite_rounded,
+                              iconColor: AppColors.coral,
+                              label: 'Free',
+                            )
+                          else
+                            _InviteTag(
+                              child: CoinAmount(
+                                stake,
+                                size: 12.5,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            IconButton(
-              tooltip: 'Decline',
-              icon: Icon(Icons.close_rounded, color: AppColors.textSecondary),
-              onPressed: () => ref
-                  .read(chessRepositoryProvider)
-                  .respondMatchInvite(
-                    inviteId: invite['id'] as String,
-                    accept: false,
-                  )
-                  .catchError((_) => null),
-            ),
-            SizedBox(
-              width: 92,
-              child: PrimaryButton(
-                label: 'Play',
-                color: AppColors.success,
-                onPressed: () => _accept(context, ref),
-              ),
+            const SizedBox(height: 12),
+            AnswerButtons(
+              acceptLabel: 'Play',
+              busy: _declining,
+              onDecline: _decline,
+              onAccept: _accept,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// One fact about a challenge, on a soft pill.
+class _InviteTag extends StatelessWidget {
+  const _InviteTag({this.icon, this.iconColor, this.label, this.child})
+    : assert(child != null || label != null);
+
+  final IconData? icon;
+  final Color? iconColor;
+  final String? label;
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    final ink = AppColors.light ? Colors.black : Colors.white;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: ink.withValues(alpha: AppColors.light ? 0.05 : 0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: ink.withValues(alpha: 0.1)),
+      ),
+      child:
+          child ??
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  size: 13,
+                  color: AppColors.readable(
+                    iconColor ?? AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(width: 4),
+              ],
+              Text(
+                label!,
+                style: AppTextStyles.body(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
     );
   }
 }

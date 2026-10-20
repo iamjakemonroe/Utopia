@@ -44,6 +44,14 @@ Future<void> showChipChat(BuildContext context) {
   );
 }
 
+/// How wide the chat is: the screen's width, up to the widest a sheet
+/// grows (on a tablet or a computer). Its bubbles and pictures are sized
+/// from this, not the screen, or they'd outgrow it.
+double _chatWidth(BuildContext context) => math.min(
+  MediaQuery.sizeOf(context).width,
+  Theme.of(context).bottomSheetTheme.constraints?.maxWidth ?? double.infinity,
+);
+
 class _ChipChatSheet extends ConsumerStatefulWidget {
   const _ChipChatSheet();
 
@@ -318,7 +326,9 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
       _toBottom();
     });
     final insets = MediaQuery.viewInsetsOf(context).bottom;
-    final height = MediaQuery.sizeOf(context).height * 0.78;
+    // Most of a phone's height; on a tablet or a computer, no taller than
+    // a big phone's (it ran nearly from the top of the screen).
+    final height = math.min(MediaQuery.sizeOf(context).height * 0.78, 720.0);
 
     return Padding(
       padding: EdgeInsets.only(bottom: insets),
@@ -667,9 +677,7 @@ class _Bubble extends StatelessWidget {
       child: Align(
         alignment: fromChip ? Alignment.centerLeft : Alignment.centerRight,
         child: Container(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.sizeOf(context).width * 0.74,
-          ),
+          constraints: BoxConstraints(maxWidth: _chatWidth(context) * 0.74),
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
@@ -1092,7 +1100,7 @@ class _PictureCard extends ConsumerWidget {
       'off' => (BuddyMood.thinking, "My pencil isn't ready yet."),
       _ => (BuddyMood.sad, "That drawing didn't work out. Ask me again?"),
     };
-    final width = MediaQuery.sizeOf(context).width * 0.58;
+    final width = _chatWidth(context) * 0.58;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Container(

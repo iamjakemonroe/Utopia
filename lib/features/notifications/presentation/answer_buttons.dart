@@ -133,13 +133,18 @@ class _AnswerButtonState extends State<_AnswerButton> {
                   : Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          widget.label,
-                          maxLines: 1,
-                          style: AppTextStyles.body(
-                            fontSize: widget.compact ? 12.5 : 14,
-                            fontWeight: FontWeight.w900,
-                            color: widget.textColor,
+                        // On a very narrow screen (or with big text) it
+                        // ends in "…" rather than running out of its button.
+                        Flexible(
+                          child: Text(
+                            widget.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.body(
+                              fontSize: widget.compact ? 12.5 : 14,
+                              fontWeight: FontWeight.w900,
+                              color: widget.textColor,
+                            ),
                           ),
                         ),
                       ],
