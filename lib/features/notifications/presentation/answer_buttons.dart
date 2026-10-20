@@ -17,7 +17,9 @@ class AnswerButtons extends StatelessWidget {
   });
 
   final VoidCallback onDecline;
-  final VoidCallback onAccept;
+
+  /// Null keeps Accept off (a challenge whose sender stepped away).
+  final VoidCallback? onAccept;
   final String acceptLabel;
   final bool busy;
   final bool compact;

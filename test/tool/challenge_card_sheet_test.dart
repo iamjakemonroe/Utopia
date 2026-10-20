@@ -18,9 +18,10 @@ import 'package:utopia/core/theme/app_theme.dart';
 import 'package:utopia/core/theme/theme_controller.dart';
 import 'package:utopia/core/theme/utopia_themes.dart';
 import 'package:utopia/core/widgets/app_background.dart';
+import 'package:utopia/features/auth/presentation/providers/auth_providers.dart';
 import 'package:utopia/features/home/presentation/screens/home_screen.dart';
 
-const _invites = [
+final _invites = [
   {
     'id': 'a',
     'from_user': 'ada',
@@ -29,6 +30,10 @@ const _invites = [
     'minutes': 15,
     'increment': 10,
     'status': 'pending',
+    'expires_at': DateTime.now()
+        .add(const Duration(minutes: 7, seconds: 10))
+        .toUtc()
+        .toIso8601String(),
   },
   {
     'id': 'b',
@@ -58,6 +63,7 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
+            currentUserProvider.overrideWithValue(null),
             profileByIdProvider.overrideWith(
               (ref, id) async => id == 'ada'
                   ? {

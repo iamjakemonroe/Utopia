@@ -71,6 +71,13 @@ String friendlyError(
       text.contains('connection')) {
     return "Can't reach Utopia right now. Check your connection.";
   }
+  if (text.contains('challenge expired')) {
+    return 'That challenge ran out: they last 10 minutes. Challenge them back!';
+  }
+  if (text.contains('challenger away')) {
+    return "They've stepped away, so the game can't start yet. It waits "
+        "till they're back (or it runs out).";
+  }
   if (text.contains('room is full')) return 'That room is already full.';
   if (text.contains('room not found') || text.contains('no such room')) {
     return "We couldn't find a room with that code.";

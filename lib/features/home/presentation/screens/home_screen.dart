@@ -47,6 +47,8 @@ import '../../../store/presentation/coin_shop.dart';
 import '../../../notifications/data/notification_repository.dart';
 import '../../../store/presentation/store_controller.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../friends/data/presence.dart';
+import '../../../friends/presentation/providers/friends_providers.dart';
 import '../../../chess/presentation/controllers/chess_match_controller.dart';
 import '../../../friends/presentation/widgets/friend_icon_button.dart';
 import '../../../notifications/presentation/answer_buttons.dart';
@@ -1196,16 +1198,45 @@ class _UsernameBanner extends ConsumerWidget {
   }
 }
 
-class _IncomingInvites extends ConsumerWidget {
+/// When a challenge runs out (they last 10 minutes); null for an old one.
+DateTime? _expiresAt(Map<String, dynamic> invite) =>
+    DateTime.tryParse(invite['expires_at'] as String? ?? '')?.toLocal();
+
+class _IncomingInvites extends ConsumerStatefulWidget {
   const _IncomingInvites({required this.myId});
 
   final String myId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_IncomingInvites> createState() => _IncomingInvitesState();
+}
+
+class _IncomingInvitesState extends ConsumerState<_IncomingInvites> {
+  /// Looks again now and then: each challenge's time left, and one that's
+  /// run out goes (before the server's sweep says so).
+  late final Timer _tick = Timer.periodic(
+    const Duration(seconds: 20),
+    (_) => setState(() {}),
+  );
+
+  @override
+  void dispose() {
+    _tick.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _tick;
     final invites =
-        ref.watch(incomingInvitesProvider(myId)).valueOrNull ?? const [];
-    final pending = invites.where((i) => i['status'] == 'pending').toList();
+        ref.watch(incomingInvitesProvider(widget.myId)).valueOrNull ?? const [];
+    final now = DateTime.now();
+    final pending = invites
+        .where(
+          (i) =>
+              i['status'] == 'pending' && (_expiresAt(i)?.isAfter(now) ?? true),
+        )
+        .toList();
     if (pending.isEmpty) return const SizedBox.shrink();
 
     return Padding(
@@ -1286,6 +1317,25 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
     final name = profileDisplayName(profile, fromId);
     final stake = (invite['stake'] as num).toInt();
     final checkers = invite['game'] == 'checkers';
+    // A friend who sent it and has since stepped away (their presence is
+    // live): the game would start without them, so Play waits for them.
+    final me = ref.watch(currentUserProvider)?.id;
+    final friend =
+        me != null &&
+        ref
+            .watch(friendsPopupControllerProvider(me))
+            .friends
+            .any((f) => f.id == fromId);
+    final away =
+        friend &&
+        ref.watch(friendsOnlineProvider).valueOrNull?.contains(fromId) == false;
+    final expires = _expiresAt(invite);
+    final minutesLeft = expires == null
+        ? null
+        : math.max(
+            1,
+            (expires.difference(DateTime.now()).inSeconds / 60).ceil(),
+          );
     final time = TimeControl(
       (invite['minutes'] as num?)?.toInt() ?? 10,
       (invite['increment'] as num?)?.toInt() ?? 0,
@@ -1379,8 +1429,41 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
                                 color: AppColors.textSecondary,
                               ),
                             ),
+                          if (minutesLeft != null)
+                            _InviteTag(
+                              icon: Icons.hourglass_bottom_rounded,
+                              label: '$minutesLeft min left',
+                            ),
                         ],
                       ),
+                      if (away) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.textSecondary.withValues(
+                                  alpha: 0.6,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                '$name stepped away. Play waits for them.',
+                                style: AppTextStyles.body(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -1391,7 +1474,7 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
               acceptLabel: 'Play',
               busy: _declining,
               onDecline: _decline,
-              onAccept: _accept,
+              onAccept: away ? null : _accept,
             ),
           ],
         ),

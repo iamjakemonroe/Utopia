@@ -661,7 +661,7 @@ class _PersonRow extends ConsumerWidget {
       if (context.mounted) {
         showUtopiaToast(
           context,
-          'Challenge sent to ${person.name}',
+          'Challenge sent to ${person.name}. It lasts 10 minutes.',
           kind: ToastKind.success,
           icon: Icons.send_rounded,
         );
