@@ -793,7 +793,11 @@ class _ScreenSize extends ConsumerWidget {
                       value: scale,
                       min: WebScaleController.min,
                       max: WebScaleController.max,
-                      divisions: 20,
+                      // In steps of 5%.
+                      divisions:
+                          ((WebScaleController.max - WebScaleController.min) *
+                                  20)
+                              .round(),
                       label: '${(scale * 100).round()}%',
                       onChanged: control.set,
                     ),

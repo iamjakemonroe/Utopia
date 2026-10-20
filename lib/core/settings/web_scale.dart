@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,27 +8,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/theme_controller.dart';
 
 /// How big Utopia is drawn in a browser, as a share of its normal size
-/// (Settings > Screen size). A computer's screen shows the app's sizes
-/// larger than a phone does, so there it starts smaller, to look the size
-/// it does on a phone; a phone's or tablet's browser starts at 100%. The
-/// apps are always 100%.
+/// (Settings > Screen size): 85% on a phone's browser, 90% on a tablet's or
+/// a computer's, up to 120%. The apps are always 100%.
 class WebScaleController extends StateNotifier<double> {
   WebScaleController(this._prefs)
-    : super(kIsWeb ? (_prefs?.getDouble(_key) ?? defaultScale) : 1);
+    : super(
+        kIsWeb
+            ? (_prefs?.getDouble(_key)?.clamp(min, max).toDouble() ??
+                  defaultScale)
+            : 1,
+      );
 
   final SharedPreferences? _prefs;
 
   static const _key = 'web_scale';
   static const min = 0.5;
-  static const max = 1.5;
+  static const max = 1.2;
 
-  /// The size it starts at: on a computer, phone-sized.
-  static double get defaultScale => switch (defaultTargetPlatform) {
-    TargetPlatform.macOS ||
-    TargetPlatform.windows ||
-    TargetPlatform.linux => 0.8,
-    _ => 1,
-  };
+  /// The size it starts at: 85% on a phone (more of the game fits, still
+  /// easy to tap), 90% on anything bigger. The screen's size decides, not
+  /// what the browser says it is: a tablet's says it's a computer.
+  static double get defaultScale {
+    final view = ui.PlatformDispatcher.instance.views.firstOrNull;
+    if (view == null || view.devicePixelRatio == 0) return 0.9;
+    final size = view.physicalSize / view.devicePixelRatio;
+    return size.shortestSide < 600 ? 0.85 : 0.9;
+  }
 
   void set(double scale) {
     if (!kIsWeb) return;

@@ -172,8 +172,8 @@ class UtopiaApp extends ConsumerWidget {
             const RoomEars(),
           ],
         );
-        // In a browser, at the size chosen in Settings (phone-sized on a
-        // computer, at first).
+        // In a browser, at the size chosen in Settings (85% on a phone, 90%
+        // on a tablet or a computer, at first).
         if (!kScreenTour) {
           if (!kIsWeb) return app;
           return Consumer(
