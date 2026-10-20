@@ -252,10 +252,17 @@ class _RowState extends ConsumerState<_Row> {
   Widget build(BuildContext context) {
     final n = widget.notification;
     final actor = n.actorId;
-    final profile = actor == null
+    final fromUtopia = n.kind == 'report_update';
+    final profile = fromUtopia
+        ? NotificationLook.utopia
+        : actor == null
         ? null
         : ref.watch(profileByIdProvider(actor)).valueOrNull;
-    final name = actor == null ? 'Someone' : profileDisplayName(profile, actor);
+    final name = fromUtopia
+        ? 'Utopia'
+        : actor == null
+        ? 'Someone'
+        : profileDisplayName(profile, actor);
     final look = NotificationLook.of(n, name);
     final open = widget.open && _answered == null;
 

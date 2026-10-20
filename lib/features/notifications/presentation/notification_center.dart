@@ -32,6 +32,12 @@ class NotificationLook {
   final IconData icon;
   final Color color;
 
+  /// Who news from Utopia itself (a report fixed) comes from: Chip.
+  static const utopia = <String, dynamic>{
+    'display_name': 'Utopia',
+    'avatar_kind': 'chip',
+  };
+
   static NotificationLook of(AppNotification n, String name) {
     switch (n.kind) {
       case 'friend_request':
@@ -75,6 +81,18 @@ class NotificationLook {
           'A gift. They’re in your coins now.',
           Icons.redeem_rounded,
           AppColors.coinGold,
+        );
+      case 'report_update':
+        final fixed = n.data['status'] == 'fixed';
+        final idea = n.data['idea'] == true;
+        final note = n.data['note'] as String?;
+        return NotificationLook(
+          fixed
+              ? (idea ? 'Your idea is in Utopia!' : 'Your report is fixed!')
+              : (idea ? 'About your idea' : 'About your report'),
+          note != null && note.isNotEmpty ? note : 'Thanks for telling us.',
+          idea ? Icons.lightbulb_rounded : Icons.build_circle_rounded,
+          fixed ? AppColors.success : AppColors.sky,
         );
       case 'birthday_wish':
         return NotificationLook(
@@ -359,10 +377,17 @@ class _BannerState extends ConsumerState<_Banner> {
   Widget build(BuildContext context) {
     final n = widget.notification;
     final actor = n.actorId;
-    final profile = actor == null
+    final fromUtopia = n.kind == 'report_update';
+    final profile = fromUtopia
+        ? NotificationLook.utopia
+        : actor == null
         ? null
         : ref.watch(profileByIdProvider(actor)).valueOrNull;
-    final name = actor == null ? 'Someone' : profileDisplayName(profile, actor);
+    final name = fromUtopia
+        ? 'Utopia'
+        : actor == null
+        ? 'Someone'
+        : profileDisplayName(profile, actor);
     final look = NotificationLook.of(n, name);
     final answerable = n.kind == 'friend_request' || n.kind == 'game_invite';
 

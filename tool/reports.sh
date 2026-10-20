@@ -10,6 +10,8 @@
 #   tool/reports.sh mark <id> <status> [note]
 #       status: triaged (seen, on the list), fixed (done), wontfix
 #       note:   shown to the player under their report ("Fixed in 1.0.0+15")
+#       Marked fixed or wontfix, the player also gets a notification (from
+#       Chip) with the note, so mark with the note in the same go.
 #
 # The project's secret key is fetched from the Supabase CLI each run and
 # only ever held in memory: it's never printed or written anywhere.
