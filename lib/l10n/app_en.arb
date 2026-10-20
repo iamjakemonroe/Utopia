@@ -1,0 +1,297 @@
+{
+  "@@locale": "en",
+  "appTitle": "Utopia",
+  "@appTitle": {
+    "description": "The app's name."
+  },
+  "settingsSettings": "Settings",
+  "@settingsSettings": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsSound": "Sound",
+  "@settingsSound": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsMusic": "Music",
+  "@settingsMusic": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsSoundEffects": "Sound effects",
+  "@settingsSoundEffects": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsMusicWorldHearsTheRoom": "Music world hears the room",
+  "@settingsMusicWorldHearsTheRoom": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsTheShowDancesToThe": "The show dances to the sound around you. Nothing is recorded.",
+  "@settingsTheShowDancesToThe": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsScreen": "Screen",
+  "@settingsScreen": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsInstallUtopia": "Install Utopia",
+  "@settingsInstallUtopia": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsPlayFullScreenFromYour": "Play full screen from your home screen",
+  "@settingsPlayFullScreenFromYour": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsPlay": "Play",
+  "@settingsPlay": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsVibration": "Vibration",
+  "@settingsVibration": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsDiceCapturesYourTurn": "Dice, captures, your turn",
+  "@settingsDiceCapturesYourTurn": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsTimerTicks": "Timer ticks",
+  "@settingsTimerTicks": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsASoftTickWhenYour": "A soft tick when your time is nearly up",
+  "@settingsASoftTickWhenYour": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsPlayVoiceNotes": "Play voice notes",
+  "@settingsPlayVoiceNotes": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsHearOtherPlayersVoiceNotes": "Hear other players' voice notes as they arrive",
+  "@settingsHearOtherPlayersVoiceNotes": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsGameReminders": "Game reminders",
+  "@settingsGameReminders": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsANudgeToComePlay": "A nudge to come play when you have been away",
+  "@settingsANudgeToComePlay": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsShowTheMusicIM": "Show the music I'm playing",
+  "@settingsShowTheMusicIM": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsChipVibesAlongWithWhat": "Chip vibes along with what's on. Titles go to Chip's AI to read the vibe",
+  "@settingsChipVibesAlongWithWhat": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsFloatingChip": "Floating Chip",
+  "@settingsFloatingChip": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsChipFloatsOverEveryScreen": "Chip floats over every screen. Tap him to chat",
+  "@settingsChipFloatsOverEveryScreen": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsLetChipSeeYourMusic": "Let Chip see your music",
+  "@settingsLetChipSeeYourMusic": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsTurnOnNotificationAccessFor": "Turn on notification access for Utopia",
+  "@settingsTurnOnNotificationAccessFor": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsAllowAppleMusicSoChip": "Allow Apple Music so Chip can show the song",
+  "@settingsAllowAppleMusicSoChip": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsChessMoveHints": "Chess move hints",
+  "@settingsChessMoveHints": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsShowWhereAPieceCan": "Show where a piece can go",
+  "@settingsShowWhereAPieceCan": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsUtopia": "Utopia",
+  "@settingsUtopia": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsWorld": "World",
+  "@settingsWorld": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsGetCoins": "Get coins",
+  "@settingsGetCoins": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsChipMaestro": "Chip Maestro",
+  "@settingsChipMaestro": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsYouReAMember": "You're a member",
+  "@settingsYouReAMember": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsRealPortraitsAndMoreFrom": "Real portraits and more from Chip",
+  "@settingsRealPortraitsAndMoreFrom": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsRestorePurchases": "Restore purchases",
+  "@settingsRestorePurchases": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsGotChipMaestroOnAnother": "Got Chip Maestro on another phone? Get it here",
+  "@settingsGotChipMaestroOnAnother": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsAccount": "Account",
+  "@settingsAccount": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsProfile": "Profile",
+  "@settingsProfile": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsYourBirthday": "Your birthday",
+  "@settingsYourBirthday": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsAddItAndChipThrows": "Add it, and Chip throws you a party every year",
+  "@settingsAddItAndChipThrows": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsYouCanChangeItToday": "{label} (you can change it today)",
+  "@settingsYouCanChangeItToday": {
+    "description": "features/settings/presentation/settings_screen.dart",
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      }
+    }
+  },
+  "settingsShowMyCoins": "Show my coins",
+  "@settingsShowMyCoins": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsOtherPlayersSeeThemOn": "Other players see them on your player card",
+  "@settingsOtherPlayersSeeThemOn": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsCouldnTChangeThatTry": "Couldn't change that. Try again.",
+  "@settingsCouldnTChangeThatTry": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsShowMyStats": "Show my stats",
+  "@settingsShowMyStats": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsOthersCanOpenYourRank": "Others can open your rank hologram from the rankings",
+  "@settingsOthersCanOpenYourRank": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsGiftPin": "Gift PIN",
+  "@settingsGiftPin": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsEveryCoinGiftAsksFor": "Every coin gift asks for it",
+  "@settingsEveryCoinGiftAsksFor": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsSetEveryCoinGiftAsks": "Set · every coin gift asks for it",
+  "@settingsSetEveryCoinGiftAsks": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsNotSetYetChooseOne": "Not set yet · choose one for coin gifts",
+  "@settingsNotSetYetChooseOne": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsSaveYourAccount": "Save your account",
+  "@settingsSaveYourAccount": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsKeepYourCoinsAndWorlds": "Keep your coins and worlds on any phone",
+  "@settingsKeepYourCoinsAndWorlds": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsSignOut": "Sign out",
+  "@settingsSignOut": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsDeleteAccount": "Delete account",
+  "@settingsDeleteAccount": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsRemoveYourAccountAndEverything": "Remove your account and everything in it",
+  "@settingsRemoveYourAccountAndEverything": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsHelp": "Help",
+  "@settingsHelp": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsHowToPlay": "How to play",
+  "@settingsHowToPlay": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsReportABug": "Report a bug",
+  "@settingsReportABug": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsSuggestAFeature": "Suggest a feature",
+  "@settingsSuggestAFeature": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsPrivacyPolicy": "Privacy policy",
+  "@settingsPrivacyPolicy": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "description": "features/settings/presentation/settings_screen.dart",
+    "placeholders": {
+      "version": {
+        "type": "Object"
+      }
+    }
+  },
+  "settingsDeleteYourAccount": "Delete your account?",
+  "@settingsDeleteYourAccount": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsYourProfileFriendsChatsCoins": "Your profile, friends, chats, coins and everything you own in Utopia will be gone for good. This can't be undone.",
+  "@settingsYourProfileFriendsChatsCoins": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsDelete": "Delete",
+  "@settingsDelete": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsKeepIt": "Keep it",
+  "@settingsKeepIt": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsCouldnTDeleteYourAccount": "Couldn't delete your account. Check your connection and try again.",
+  "@settingsCouldnTDeleteYourAccount": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsSignOut2": "Sign out?",
+  "@settingsSignOut2": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsYouCanSignBackIn": "You can sign back in with your email any time.",
+  "@settingsYouCanSignBackIn": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsStay": "Stay",
+  "@settingsStay": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsScreenSize": "Screen size",
+  "@settingsScreenSize": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  },
+  "settingsReset": "Reset",
+  "@settingsReset": {
+    "description": "features/settings/presentation/settings_screen.dart"
+  }
+}

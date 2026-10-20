@@ -42,6 +42,7 @@ import '../../../core/layout/responsive.dart';
 import '../../coins/data/coin_gift_repository.dart';
 import '../../coins/presentation/gift_pin.dart';
 import '../../rankings/data/rankings_repository.dart';
+import '../../../l10n/strings.dart';
 
 /// "Show my coins" while the change is on its way to the server, so the
 /// switch moves at once.
@@ -82,7 +83,7 @@ class SettingsScreen extends ConsumerWidget {
     void toggled(bool on) => audio.play(on ? Sfx.toggleOn : Sfx.toggleOff);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(strings.settingsSettings)),
       body: AppBackground(
         child: SafeArea(
           child: ListView(
@@ -92,12 +93,12 @@ class SettingsScreen extends ConsumerWidget {
             ),
             children: [
               _Section(
-                title: 'Sound',
+                title: strings.settingsSound,
                 children: [
                   _ToggleRow(
                     icon: Icons.music_note_rounded,
                     color: const Color(0xFFB27BFF),
-                    title: 'Music',
+                    title: strings.settingsMusic,
                     value: sound.musicOn,
                     onChanged: (v) {
                       soundCtl.setMusicOn(v);
@@ -112,7 +113,7 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.graphic_eq_rounded,
                     color: const Color(0xFF4DA3FF),
-                    title: 'Sound effects',
+                    title: strings.settingsSoundEffects,
                     value: sound.sfxOn,
                     onChanged: (v) {
                       soundCtl.setSfxOn(v);
@@ -128,10 +129,8 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.mic_rounded,
                     color: const Color(0xFFFF4FD8),
-                    title: 'Music world hears the room',
-                    subtitle:
-                        'The show dances to the sound around you. Nothing is '
-                        'recorded.',
+                    title: strings.settingsMusicWorldHearsTheRoom,
+                    subtitle: strings.settingsTheShowDancesToThe,
                     value: ref.watch(musicWorldListensProvider),
                     onChanged: (v) {
                       ref.read(musicWorldListensProvider.notifier).set(v);
@@ -142,27 +141,27 @@ class SettingsScreen extends ConsumerWidget {
               ),
               if (kIsWeb)
                 _Section(
-                  title: 'Screen',
+                  title: strings.settingsScreen,
                   children: [
                     const _ScreenSize(),
                     if (!WebInstall.installed)
                       _LinkRow(
                         icon: Icons.install_mobile_rounded,
                         color: const Color(0xFFFFC94D),
-                        title: 'Install Utopia',
-                        subtitle: 'Play full screen from your home screen',
+                        title: strings.settingsInstallUtopia,
+                        subtitle: strings.settingsPlayFullScreenFromYour,
                         onTap: () => showInstallSheet(context, ref),
                       ),
                   ],
                 ),
               _Section(
-                title: 'Play',
+                title: strings.settingsPlay,
                 children: [
                   _ToggleRow(
                     icon: Icons.vibration_rounded,
                     color: const Color(0xFFFF8A3D),
-                    title: 'Vibration',
-                    subtitle: 'Dice, captures, your turn',
+                    title: strings.settingsVibration,
+                    subtitle: strings.settingsDiceCapturesYourTurn,
                     value: play.haptics,
                     onChanged: (v) {
                       playCtl.setHaptics(v);
@@ -172,8 +171,8 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.timer_rounded,
                     color: const Color(0xFFFF5C9C),
-                    title: 'Timer ticks',
-                    subtitle: 'A soft tick when your time is nearly up',
+                    title: strings.settingsTimerTicks,
+                    subtitle: strings.settingsASoftTickWhenYour,
                     value: play.timerTicks,
                     onChanged: (v) {
                       playCtl.setTimerTicks(v);
@@ -183,8 +182,8 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.record_voice_over_rounded,
                     color: AppColors.mint,
-                    title: 'Play voice notes',
-                    subtitle: "Hear other players' voice notes as they arrive",
+                    title: strings.settingsPlayVoiceNotes,
+                    subtitle: strings.settingsHearOtherPlayersVoiceNotes,
                     value: play.autoPlayVoice,
                     onChanged: (v) {
                       playCtl.setAutoPlayVoice(v);
@@ -194,8 +193,8 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.notifications_active_rounded,
                     color: AppColors.sky,
-                    title: 'Game reminders',
-                    subtitle: 'A nudge to come play when you have been away',
+                    title: strings.settingsGameReminders,
+                    subtitle: strings.settingsANudgeToComePlay,
                     value: play.reminders,
                     onChanged: (v) {
                       playCtl.setReminders(v);
@@ -206,9 +205,8 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.headphones_rounded,
                     color: AppColors.coinGold,
-                    title: "Show the music I'm playing",
-                    subtitle:
-                        "Chip vibes along with what's on. Titles go to Chip's AI to read the vibe",
+                    title: strings.settingsShowTheMusicIM,
+                    subtitle: strings.settingsChipVibesAlongWithWhat,
                     value: play.showNowPlaying,
                     onChanged: (v) {
                       playCtl.setShowNowPlaying(v);
@@ -218,8 +216,8 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.bubble_chart_rounded,
                     color: const Color(0xFF9B8CFF),
-                    title: 'Floating Chip',
-                    subtitle: 'Chip floats over every screen. Tap him to chat',
+                    title: strings.settingsFloatingChip,
+                    subtitle: strings.settingsChipFloatsOverEveryScreen,
                     value: play.floatingChip,
                     onChanged: (v) {
                       playCtl.setFloatingChip(v);
@@ -231,18 +229,18 @@ class SettingsScreen extends ConsumerWidget {
                     _LinkRow(
                       icon: Icons.music_note_rounded,
                       color: AppColors.coinGold,
-                      title: 'Let Chip see your music',
+                      title: strings.settingsLetChipSeeYourMusic,
                       subtitle: !kIsWeb && Platform.isAndroid
-                          ? 'Turn on notification access for Utopia'
-                          : 'Allow Apple Music so Chip can show the song',
+                          ? strings.settingsTurnOnNotificationAccessFor
+                          : strings.settingsAllowAppleMusicSoChip,
                       onTap: () =>
                           ref.read(nowPlayingProvider.notifier).requestAccess(),
                     ),
                   _ToggleRow(
                     icon: Icons.blur_on_rounded,
                     color: const Color(0xFF3DDC97),
-                    title: 'Chess move hints',
-                    subtitle: 'Show where a piece can go',
+                    title: strings.settingsChessMoveHints,
+                    subtitle: strings.settingsShowWhereAPieceCan,
                     value: play.moveHints,
                     onChanged: (v) {
                       playCtl.setMoveHints(v);
@@ -252,12 +250,12 @@ class SettingsScreen extends ConsumerWidget {
                 ],
               ),
               _Section(
-                title: 'Utopia',
+                title: strings.settingsUtopia,
                 children: [
                   _LinkRow(
                     icon: Icons.public_rounded,
                     color: AppColors.mint,
-                    title: 'World',
+                    title: strings.settingsWorld,
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -285,19 +283,19 @@ class SettingsScreen extends ConsumerWidget {
                   _LinkRow(
                     icon: Icons.add_circle_rounded,
                     color: AppColors.coinGold,
-                    title: 'Get coins',
+                    title: strings.settingsGetCoins,
                     trailing: const CoinIcon(size: 20),
                     onTap: () => showCoinShop(context),
                   ),
                   _LinkRow(
                     icon: Icons.brush_rounded,
                     color: const Color(0xFFFF5C9C),
-                    title: 'Chip Maestro',
+                    title: strings.settingsChipMaestro,
                     subtitle:
                         (ref.watch(maestroProvider).valueOrNull?.active ??
                             false)
-                        ? "You're a member"
-                        : 'Real portraits and more from Chip',
+                        ? strings.settingsYouReAMember
+                        : strings.settingsRealPortraitsAndMoreFrom,
                     onTap: () => showMaestroSheet(context),
                   ),
                   // App stores require a way to get a subscription back on
@@ -306,21 +304,20 @@ class SettingsScreen extends ConsumerWidget {
                     _LinkRow(
                       icon: Icons.restore_rounded,
                       color: AppColors.sky,
-                      title: 'Restore purchases',
-                      subtitle:
-                          'Got Chip Maestro on another phone? Get it here',
+                      title: strings.settingsRestorePurchases,
+                      subtitle: strings.settingsGotChipMaestroOnAnother,
                       onTap: () =>
                           ref.read(storeControllerProvider.notifier).restore(),
                     ),
                 ],
               ),
               _Section(
-                title: 'Account',
+                title: strings.settingsAccount,
                 children: [
                   _LinkRow(
                     icon: Icons.person_rounded,
                     color: AppColors.sky,
-                    title: 'Profile',
+                    title: strings.settingsProfile,
                     onTap: () => context.push('/profile'),
                   ),
                   Builder(
@@ -329,11 +326,13 @@ class SettingsScreen extends ConsumerWidget {
                       return _LinkRow(
                         icon: Icons.cake_rounded,
                         color: const Color(0xFFFF6FAE),
-                        title: 'Your birthday',
+                        title: strings.settingsYourBirthday,
                         subtitle: saved == null
-                            ? 'Add it, and Chip throws you a party every year'
+                            ? strings.settingsAddItAndChipThrows
                             : saved.canChange
-                            ? '${saved.birthday.label} (you can change it today)'
+                            ? strings.settingsYouCanChangeItToday(
+                                saved.birthday.label,
+                              )
                             : saved.birthday.label,
                         onTap: () => context.push('/birthday'),
                       );
@@ -342,8 +341,8 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.monetization_on_rounded,
                     color: AppColors.coinGold,
-                    title: 'Show my coins',
-                    subtitle: 'Other players see them on your player card',
+                    title: strings.settingsShowMyCoins,
+                    subtitle: strings.settingsOtherPlayersSeeThemOn,
                     value: showCoins,
                     onChanged: myId == null
                         ? (_) {}
@@ -360,7 +359,7 @@ class SettingsScreen extends ConsumerWidget {
                               if (context.mounted) {
                                 showUtopiaToast(
                                   context,
-                                  "Couldn't change that. Try again.",
+                                  strings.settingsCouldnTChangeThatTry,
                                   kind: ToastKind.error,
                                 );
                               }
@@ -372,9 +371,8 @@ class SettingsScreen extends ConsumerWidget {
                   _ToggleRow(
                     icon: Icons.query_stats_rounded,
                     color: AppColors.sky,
-                    title: 'Show my stats',
-                    subtitle:
-                        'Others can open your rank hologram from the rankings',
+                    title: strings.settingsShowMyStats,
+                    subtitle: strings.settingsOthersCanOpenYourRank,
                     value: showStats,
                     onChanged: myId == null
                         ? (_) {}
@@ -391,7 +389,7 @@ class SettingsScreen extends ConsumerWidget {
                               if (context.mounted) {
                                 showUtopiaToast(
                                   context,
-                                  "Couldn't change that. Try again.",
+                                  strings.settingsCouldnTChangeThatTry,
                                   kind: ToastKind.error,
                                 );
                               }
@@ -409,12 +407,12 @@ class SettingsScreen extends ConsumerWidget {
                         return _LinkRow(
                           icon: Icons.lock_rounded,
                           color: AppColors.coinGold,
-                          title: 'Gift PIN',
+                          title: strings.settingsGiftPin,
                           subtitle: pin == null
-                              ? 'Every coin gift asks for it'
+                              ? strings.settingsEveryCoinGiftAsksFor
                               : pin.set
-                              ? 'Set · every coin gift asks for it'
-                              : 'Not set yet · choose one for coin gifts',
+                              ? strings.settingsSetEveryCoinGiftAsks
+                              : strings.settingsNotSetYetChooseOne,
                           onTap: () => showGiftPinSheet(context),
                         );
                       },
@@ -423,51 +421,51 @@ class SettingsScreen extends ConsumerWidget {
                     _LinkRow(
                       icon: Icons.shield_rounded,
                       color: AppColors.success,
-                      title: 'Save your account',
-                      subtitle: 'Keep your coins and worlds on any phone',
+                      title: strings.settingsSaveYourAccount,
+                      subtitle: strings.settingsKeepYourCoinsAndWorlds,
                       onTap: () => context.push('/auth/link'),
                     )
                   else
                     _LinkRow(
                       icon: Icons.logout_rounded,
                       color: AppColors.coral,
-                      title: 'Sign out',
+                      title: strings.settingsSignOut,
                       onTap: () => _signOut(context, ref),
                     ),
                   _LinkRow(
                     icon: Icons.delete_forever_rounded,
                     color: AppColors.error,
-                    title: 'Delete account',
-                    subtitle: 'Remove your account and everything in it',
+                    title: strings.settingsDeleteAccount,
+                    subtitle: strings.settingsRemoveYourAccountAndEverything,
                     onTap: () => _deleteAccount(context, ref),
                   ),
                 ],
               ),
               _Section(
-                title: 'Help',
+                title: strings.settingsHelp,
                 children: [
                   _LinkRow(
                     icon: Icons.menu_book_rounded,
                     color: const Color(0xFFFF8A3D),
-                    title: 'How to play',
+                    title: strings.settingsHowToPlay,
                     onTap: () => context.push('/how-to-play'),
                   ),
                   _LinkRow(
                     icon: Icons.bug_report_rounded,
                     color: AppColors.coral,
-                    title: 'Report a bug',
+                    title: strings.settingsReportABug,
                     onTap: () => context.push('/report-bug'),
                   ),
                   _LinkRow(
                     icon: Icons.lightbulb_rounded,
                     color: AppColors.coinGold,
-                    title: 'Suggest a feature',
+                    title: strings.settingsSuggestAFeature,
                     onTap: () => context.push('/report-bug?kind=idea'),
                   ),
                   _LinkRow(
                     icon: Icons.privacy_tip_rounded,
                     color: AppColors.sky,
-                    title: 'Privacy policy',
+                    title: strings.settingsPrivacyPolicy,
                     onTap: () => context.push('/privacy'),
                   ),
                 ],
@@ -482,10 +480,13 @@ class SettingsScreen extends ConsumerWidget {
                       height: 56,
                     ),
                     const SizedBox(height: 6),
-                    Text('Utopia', style: AppTextStyles.display(fontSize: 16)),
+                    Text(
+                      strings.settingsUtopia,
+                      style: AppTextStyles.display(fontSize: 16),
+                    ),
                     if (version != null)
                       Text(
-                        'Version $version',
+                        strings.settingsVersion(version),
                         style: AppTextStyles.body(
                           fontSize: 12,
                           color: AppColors.textSecondary,
@@ -507,11 +508,10 @@ class SettingsScreen extends ConsumerWidget {
     final ok = await confirmBouncy(
       context: context,
       audio: ref.read(gameAudioProvider),
-      title: 'Delete your account?',
-      message:
-          'Your profile, friends, chats, coins and everything you own in Utopia will be gone for good. This can\'t be undone.',
-      confirmLabel: 'Delete',
-      cancelLabel: 'Keep it',
+      title: strings.settingsDeleteYourAccount,
+      message: strings.settingsYourProfileFriendsChatsCoins,
+      confirmLabel: strings.settingsDelete,
+      cancelLabel: strings.settingsKeepIt,
       hero: const CoinBuddy(mood: BuddyMood.sad, size: 72),
     );
     if (!ok || !context.mounted) return;
@@ -525,7 +525,7 @@ class SettingsScreen extends ConsumerWidget {
       if (context.mounted) {
         showUtopiaToast(
           context,
-          "Couldn't delete your account. Check your connection and try again.",
+          strings.settingsCouldnTDeleteYourAccount,
           kind: ToastKind.error,
         );
       }
@@ -545,10 +545,10 @@ class SettingsScreen extends ConsumerWidget {
     final ok = await confirmBouncy(
       context: context,
       audio: ref.read(gameAudioProvider),
-      title: 'Sign out?',
-      message: 'You can sign back in with your email any time.',
-      confirmLabel: 'Sign out',
-      cancelLabel: 'Stay',
+      title: strings.settingsSignOut2,
+      message: strings.settingsYouCanSignBackIn,
+      confirmLabel: strings.settingsSignOut,
+      cancelLabel: strings.settingsStay,
       hero: const CoinBuddy(mood: BuddyMood.sad, size: 72),
     );
     if (ok) await ref.read(authRepositoryProvider).signOut();
@@ -813,7 +813,7 @@ class _ScreenSize extends ConsumerWidget {
               const SizedBox(width: 14),
               Expanded(
                 child: Text(
-                  'Screen size',
+                  strings.settingsScreenSize,
                   style: AppTextStyles.body(fontWeight: FontWeight.w700),
                 ),
               ),
@@ -824,7 +824,7 @@ class _ScreenSize extends ConsumerWidget {
               if (!isDefault)
                 TextButton(
                   onPressed: control.reset,
-                  child: const Text('Reset'),
+                  child: Text(strings.settingsReset),
                 ),
             ],
           ),

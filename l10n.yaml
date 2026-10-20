@@ -1,0 +1,8 @@
+# Every word the app shows is in lib/l10n/app_en.arb (English, the
+# template); a translation is another app_<language>.arb beside it.
+# flutter pub get makes lib/l10n/app_localizations*.dart from them.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: L10n
+nullable-getter: false

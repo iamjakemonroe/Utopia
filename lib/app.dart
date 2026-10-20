@@ -29,6 +29,7 @@ import 'core/audio/world_soundscape.dart';
 import 'features/dev/screen_tour.dart';
 import 'features/friends/data/presence.dart';
 import 'features/music/presentation/room_ears.dart';
+import 'l10n/strings.dart';
 
 class UtopiaApp extends ConsumerWidget {
   const UtopiaApp({super.key});
@@ -153,7 +154,9 @@ class UtopiaApp extends ConsumerWidget {
     });
 
     return MaterialApp.router(
-      title: 'Utopia',
+      title: strings.appTitle,
+      localizationsDelegates: L10n.localizationsDelegates,
+      supportedLocales: L10n.supportedLocales,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       darkTheme: AppTheme.dark,
