@@ -34,13 +34,23 @@ class _Beat {
     bar = count ~/ 4;
   }
 
-  /// The room's beat (see [RoomSound]): each one heard is a beat, the
-  /// pulse falling away after it.
+  /// The room's beat (see [RoomSound]): its tempo once it has a steady
+  /// one (the grid runs ahead, so the pulse lands on the beat); until
+  /// then each hit heard is a beat, the pulse falling away after it.
   _Beat.room(double t) {
-    final since = (t - RoomSound.beatAt).clamp(0.0, 10.0);
-    count = RoomSound.beats;
-    phase = (since / 0.5).clamp(0.0, 1.0);
-    pulse = math.exp(-since * 7);
+    final period = RoomSound.period;
+    if (period > 0) {
+      final beats = (t - RoomSound.anchor) / period;
+      final whole = beats.floor();
+      count = RoomSound.anchorCount + whole;
+      phase = beats - whole;
+      pulse = math.exp(-phase * 6);
+    } else {
+      final since = (t - RoomSound.beatAt).clamp(0.0, 10.0);
+      count = RoomSound.beats;
+      phase = (since / 0.5).clamp(0.0, 1.0);
+      pulse = math.exp(-since * 7);
+    }
     bar = count ~/ 4;
   }
 
@@ -73,31 +83,37 @@ void paintMusicScene(
   final encore = WorldSets.music.amount;
   final live = WorldSets.musicLive.amount;
   // The room, when the world's allowed to hear it and something's playing:
-  // its loudness lifts the whole show, and its beats are the show's.
-  final hearing = RoomSound.hearing;
-  final room = hearing ? RoomSound.level : 0.0;
+  // its loudness lifts the whole show, its beats are the show's, the
+  // equalizer is its spectrum and the stage's screen its waveform.
+  final hearing = RoomSound.presenceAt(t);
+  if (hearing > 0) RoomSound.show(t);
+  final room = hearing * RoomSound.level;
   final energy = (0.55 + 0.25 * live + 0.45 * encore + 0.75 * room).clamp(
     0.0,
     1.5,
   );
-  final beat = hearing ? _Beat.room(t) : _Beat(t, 120);
+  // The room's beat while it has one (a tempo, or hits lately); in a room
+  // that's only noisy, the show keeps its own.
+  final roomBeat =
+      hearing > 0 && (RoomSound.period > 0 || t - RoomSound.beatAt < 2);
+  final beat = roomBeat ? _Beat.room(t) : _Beat(t, 120);
   final stage = Offset(w * 0.5, h * 0.74);
 
-  // The whole night lifts a little on every beat.
+  // The whole night lifts a little on every beat (a flash, to the room's).
   canvas.drawRect(
     Offset.zero & size,
     Paint()
       ..color = _a(
         Color.lerp(_magenta, _violet, (beat.bar % 2).toDouble())!,
-        0.05 * beat.pulse * energy,
+        (0.05 * energy + 0.1 * hearing) * beat.pulse,
       ),
   );
   _vinylMoon(canvas, moon, w * 0.17, t, beat);
   if (encore > 0) _fireworks(canvas, size, t, encore);
   _spotlights(canvas, size, t, energy);
   _lasers(canvas, stage, size, t, beat, energy, encore);
-  _equalizer(canvas, size, t, beat, energy, style);
-  _stage(canvas, stage, w, h, t, beat, energy);
+  _equalizer(canvas, size, t, beat, energy, hearing);
+  _stage(canvas, stage, w, h, t, beat, energy, hearing);
   if (encore > 0) _shockwaves(canvas, stage, w, beat, encore);
   _notes(canvas, size, t, 10 + (energy * 8).round());
   _crowd(canvas, size, t, beat, energy, encore);
@@ -255,14 +271,15 @@ void _lasers(
 }
 
 /// The skyline is an equalizer: towers of glowing segments rising and
-/// falling to the beat, the low end on the left thumping hardest.
+/// falling to the beat, the low end on the left thumping hardest. Hearing
+/// the room, it's the room's spectrum ([RoomSound.bands]).
 void _equalizer(
   Canvas canvas,
   Size size,
   double t,
   _Beat beat,
   double energy,
-  WorldStyle style,
+  double hearing,
 ) {
   final w = size.width;
   final h = size.height;
@@ -284,9 +301,13 @@ void _equalizer(
     final x = i * (bw + gap) + gap / 2;
     final kick = beat.pulse * (1 - band) * 0.9;
     final flutter = 0.5 + 0.5 * math.sin(t * (6 + band * 14) + i * 1.9);
-    final level =
+    var level =
         (0.25 + 0.35 * _rand(i, 400) + 0.4 * kick + 0.25 * flutter * band) *
         energy;
+    if (hearing > 0) {
+      final heard = 0.1 + 0.95 * RoomSound.bands[i] + 0.15 * kick;
+      level += (heard - level) * hearing;
+    }
     final tall = h * 0.26 * level.clamp(0.08, 1.15);
     final color = Color.lerp(_cyan, _magenta, band)!;
     final top = ground - tall;
@@ -324,8 +345,9 @@ void _equalizer(
   );
 }
 
-/// The stage: a truss arch of lights, a big screen showing the waveform,
-/// and speaker stacks whose woofers pump on every beat.
+/// The stage: a truss arch of lights, a big screen showing the waveform
+/// (the room's, with a red light on, while it's heard), and speaker stacks
+/// whose woofers pump on every beat.
 void _stage(
   Canvas canvas,
   Offset c,
@@ -334,6 +356,7 @@ void _stage(
   double t,
   _Beat beat,
   double energy,
+  double hearing,
 ) {
   final sw = w * 0.86;
   final floor = Rect.fromCenter(center: c, width: sw, height: h * 0.05);
@@ -393,15 +416,15 @@ void _stage(
     Paint()..color = const Color(0xFF080414),
   );
   final wave = Path();
-  for (var i = 0; i <= 40; i++) {
-    final u = i / 40;
+  const last = RoomSound.waveLength - 1;
+  for (var i = 0; i <= last; i++) {
+    final u = i / last;
     final x = screen.left + screen.width * u;
-    final y =
-        screen.center.dy +
-        math.sin(u * 18 + t * 9) *
-            math.sin(u * math.pi) *
-            screen.height *
-            (0.18 + 0.22 * beat.pulse * energy);
+    var swing = math.sin(u * 18 + t * 9) * (0.18 + 0.22 * beat.pulse * energy);
+    if (hearing > 0) {
+      swing += (RoomSound.wave[i] * 0.42 - swing) * hearing;
+    }
+    final y = screen.center.dy + swing * math.sin(u * math.pi) * screen.height;
     if (i == 0) {
       wave.moveTo(x, y);
     } else {
@@ -424,6 +447,21 @@ void _stage(
       ..strokeWidth = 1.5
       ..color = _a(_violet, 0.8),
   );
+  // On air: the room's being heard.
+  if (hearing > 0) {
+    final dot = screen.topLeft.translate(9, 9);
+    final glow = 0.75 + 0.25 * math.sin(t * 5);
+    canvas.drawCircle(
+      dot,
+      7,
+      Paint()..color = _a(const Color(0xFFFF2D55), 0.25 * hearing * glow),
+    );
+    canvas.drawCircle(
+      dot,
+      3.2,
+      Paint()..color = _a(const Color(0xFFFF2D55), hearing * glow),
+    );
+  }
 
   // Speaker stacks, woofers pumping.
   for (final side in const [-1.0, 1.0]) {

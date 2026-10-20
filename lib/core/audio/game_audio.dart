@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../settings/gameplay_settings.dart';
+import 'room_sound.dart';
 import 'web_audio.dart';
 import '../theme/theme_controller.dart';
 
@@ -559,6 +560,10 @@ class GameAudio {
 
   Future<void> _ensureContext() async {
     if (_contextReady) return;
+    // The Music world is listening: the microphone's play-and-record setup
+    // plays everything as well, and switching away would cut it off. Put
+    // back once it lets go ([reclaimSession]).
+    if (RoomSound.listening) return;
     _contextReady = true;
     // Ambient on iOS: respects the silent switch and mixes with other
     // apps' audio on its own (asking for mixWithOthers as well trips the

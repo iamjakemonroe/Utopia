@@ -21,6 +21,7 @@ class WebAudio {
   final _buffers = <String, Future<web.AudioBuffer?>>{};
   Iterable<String> _preload = const [];
   bool _unlocked = false;
+  final _touched = <void Function()>[];
 
   web.AudioContext get context {
     final existing = _context;
@@ -28,6 +29,9 @@ class WebAudio {
     final context = _context = web.AudioContext();
     void unlock(web.Event _) {
       if (context.state != 'running') context.resume();
+      for (final action in List.of(_touched)) {
+        action();
+      }
       if (!_unlocked) {
         _unlocked = true;
         _preload.forEach(buffer);
@@ -62,6 +66,15 @@ class WebAudio {
           return null;
         }
       });
+
+  /// Runs [action] on every touch or key (from the browser's own event,
+  /// where it may turn sound on), until [offTouch].
+  void onTouch(void Function() action) {
+    context;
+    if (!_touched.contains(action)) _touched.add(action);
+  }
+
+  void offTouch(void Function() action) => _touched.remove(action);
 
   /// Decodes [assets] once the page is first touched, so each effect plays
   /// the moment it's asked for.

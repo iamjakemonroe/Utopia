@@ -12,6 +12,10 @@ class WebAudio {
   WebLoop loop(String asset, double volume) => WebLoop();
 
   void preloadOnUnlock(Iterable<String> assets) {}
+
+  void onTouch(void Function() action) {}
+
+  void offTouch(void Function() action) {}
 }
 
 class WebLoop {
