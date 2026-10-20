@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
@@ -119,18 +120,57 @@ class ChessPieceArtPainter extends CustomPainter {
 
   static final Map<PieceType, Path> _bodies = {};
 
+  /// What never changes in a piece, recorded once and replayed after.
+  /// A browser builds a path again every frame it's drawn (a piece's
+  /// outline is a union of its parts, worked out again each time) and a
+  /// recording keeps them built. It's the same drawing, at any size.
+  static final _recorded = <Object, ui.Picture>{};
+
+  static void _replay(
+    Canvas canvas,
+    Object key,
+    void Function(Canvas canvas) draw,
+  ) {
+    final picture = _recorded.putIfAbsent(key, () {
+      final recorder = ui.PictureRecorder();
+      draw(Canvas(recorder));
+      return recorder.endRecording();
+    });
+    canvas.drawPicture(picture);
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
-    final body = _bodies.putIfAbsent(type, () => _body(type));
     final light = finish.gradient[1].computeLuminance() > 0.3;
     final outline = light
         ? Color.lerp(finish.gradient.last, const Color(0xFF120C24), 0.68)!
         : finish.rim.withValues(alpha: 1);
-    const box = Rect.fromLTWH(10, 6, 80, 90);
 
     canvas.save();
     canvas.scale(size.width / 100, size.height / 100);
 
+    if (glowColor != null || finish.glow != null) {
+      _replay(canvas, ('glow', type, finish, glowColor), _glows);
+    }
+
+    if (_faced) _behind(canvas, outline);
+
+    // Faces, and a knight's mane that sways with them, change as they're
+    // shown; without them, every bit of the piece stays as it is.
+    _replay(canvas, ('piece', type, finish, _faced), (canvas) {
+      _piece(canvas, outline);
+      if (!_faced) _finishing(canvas, outline);
+    });
+    if (_faced) _finishing(canvas, outline);
+
+    if (_faced) _face(canvas, light);
+    if (mood == PieceMood.ko) _dizzy(canvas);
+
+    canvas.restore();
+  }
+
+  void _glows(Canvas canvas) {
+    final body = _bodies.putIfAbsent(type, () => _body(type));
     if (glowColor != null) {
       canvas.drawPath(
         body,
@@ -147,8 +187,12 @@ class ChessPieceArtPainter extends CustomPainter {
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
       );
     }
+  }
 
-    if (_faced) _behind(canvas, outline);
+  /// The piece itself: its contact shadow, body, sheen and outline.
+  void _piece(Canvas canvas, Color outline) {
+    final body = _bodies.putIfAbsent(type, () => _body(type));
+    const box = Rect.fromLTWH(10, 6, 80, 90);
 
     // Contact shadow, then the piece itself.
     canvas.drawPath(
@@ -195,7 +239,10 @@ class ChessPieceArtPainter extends CustomPainter {
         ..strokeJoin = StrokeJoin.round
         ..color = outline,
     );
+  }
 
+  /// The carved details and the specular glint.
+  void _finishing(Canvas canvas, Color outline) {
     final detail = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.2
@@ -211,11 +258,6 @@ class ChessPieceArtPainter extends CustomPainter {
         ..color = Colors.white.withValues(alpha: 0.75 * finish.highlight)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.2),
     );
-
-    if (_faced) _face(canvas, light);
-    if (mood == PieceMood.ko) _dizzy(canvas);
-
-    canvas.restore();
   }
 
   // ── character extras ─────────────────────────────────────────────────────
@@ -790,20 +832,32 @@ class ChessPieceArtPainter extends CustomPainter {
     }
   }
 
-  /// The knight's mane: sharp locks swept back off the crest of the neck
-  /// like flames in the wind, in the set's rim color so they stand out.
-  void _mane(Canvas canvas, Color ink) {
-    final mane = Color.lerp(finish.rim.withValues(alpha: 1), ink, 0.25)!;
+  static const _locks = 6;
+
+  /// Where the mane's locks start and end along the crest of the neck,
+  /// measured once (a faced knight's mane is drawn every frame).
+  static final List<ui.Tangent> _crest = () {
     final edge = Path()
       ..moveTo(48, 18)
       ..cubicTo(58, 20.5, 64, 30, 63.5, 45)
       ..cubicTo(63.3, 53, 62.8, 60, 62.6, 66);
     final metric = edge.computeMetrics().first;
+    return [
+      for (var i = 0; i <= _locks; i++)
+        metric.getTangentForOffset(metric.length * i / _locks)!,
+    ];
+  }();
+
+  /// The knight's mane: sharp locks swept back off the crest of the neck
+  /// like flames in the wind, in the set's rim color so they stand out.
+  void _mane(Canvas canvas, Color ink) {
+    final mane = Color.lerp(finish.rim.withValues(alpha: 1), ink, 0.25)!;
+    final crest = _crest;
     final locks = Path();
-    const count = 6;
+    const count = _locks;
     for (var i = 0; i < count; i++) {
-      final a = metric.getTangentForOffset(metric.length * i / count)!;
-      final b = metric.getTangentForOffset(metric.length * (i + 1) / count)!;
+      final a = crest[i];
+      final b = crest[i + 1];
       final along = a.vector;
       final outward = Offset(along.dy, -along.dx);
       final sway = math.sin(t * 2.2 + i * 0.8 + seed) * (_faced ? 1.0 : 0);

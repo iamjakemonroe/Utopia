@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+import '../../../../core/widgets/app_background.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/chess_engine.dart';
 import '../../domain/chess_move.dart';
@@ -359,43 +360,53 @@ class _AnimatedChessBoardState extends State<AnimatedChessBoard>
         final squareSize = size / 8;
         final kingInCheckSquare = _kingInCheckSquare();
 
-        return SizedBox(
-          width: size,
-          height: size,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(
-              children: [
-                _boardSquares(squareSize),
-                _highlights(squareSize, kingInCheckSquare),
-                if (widget.trail && widget.lastMove != null)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: CustomPaint(
-                        painter: _TrailPainter(
-                          from: _squareCenter(
-                            widget.lastMove!.from,
-                            squareSize,
+        // Layers of its own: the board isn't drawn again with whatever
+        // moves around it (Chip, the clocks), the squares aren't drawn
+        // again with the pieces, and the pieces' reactions and faces
+        // aren't drawn again with the rest of the screen.
+        return RepaintBoundary(
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
+                children: [
+                  RepaintBoundary(child: _boardSquares(squareSize)),
+                  _highlights(squareSize, kingInCheckSquare),
+                  if (widget.trail && widget.lastMove != null)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: CustomPaint(
+                          painter: _TrailPainter(
+                            from: _squareCenter(
+                              widget.lastMove!.from,
+                              squareSize,
+                            ),
+                            to: _squareCenter(widget.lastMove!.to, squareSize),
+                            knight:
+                                widget.lastMove!.piece.type == PieceType.knight,
+                            squareSize: squareSize,
                           ),
-                          to: _squareCenter(widget.lastMove!.to, squareSize),
-                          knight:
-                              widget.lastMove!.piece.type == PieceType.knight,
-                          squareSize: squareSize,
                         ),
                       ),
                     ),
+                  // Built again with each tick of their clock: in a LayoutIsland,
+                  // so that lays out the pieces, not the screen.
+                  Positioned.fill(
+                    child: LayoutIsland(child: _staticPieces(squareSize)),
                   ),
-                _staticPieces(squareSize),
-                if (_animatingMove != null) _capturedPieceFade(squareSize),
-                if (_animatingMove != null) _flyingPiece(squareSize),
-                if (widget.trail && widget.lastMove != null)
-                  _LandingRing(
-                    key: ValueKey(widget.lastMove),
-                    offset: _squareOffset(widget.lastMove!.to, squareSize),
-                    squareSize: squareSize,
-                  ),
-                _tapTargets(squareSize),
-              ],
+                  if (_animatingMove != null) _capturedPieceFade(squareSize),
+                  if (_animatingMove != null) _flyingPiece(squareSize),
+                  if (widget.trail && widget.lastMove != null)
+                    _LandingRing(
+                      key: ValueKey(widget.lastMove),
+                      offset: _squareOffset(widget.lastMove!.to, squareSize),
+                      squareSize: squareSize,
+                    ),
+                  _tapTargets(squareSize),
+                ],
+              ),
             ),
           ),
         );
