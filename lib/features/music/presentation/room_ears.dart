@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,10 +16,10 @@ import '../../../core/widgets/primary_button.dart';
 import '../../notifications/presentation/notification_actions.dart';
 
 /// Lets the Music world hear the room: while it's turned on (Settings >
-/// Sound), the Music world is on screen, the app is open and nothing else
-/// needs the microphone (a voice note), it listens (RoomListener) and the
-/// show dances to what it hears. The first time a player is home in the
-/// Music world, it asks.
+/// Sound), the Music world is on screen (being drawn, not just chosen: not
+/// under a game), the app is open and nothing else needs the microphone (a
+/// voice note), it listens (RoomListener) and the show dances to what it
+/// hears. The first time a player is home in the Music world, it asks.
 class RoomEars extends ConsumerStatefulWidget {
   const RoomEars({super.key});
 
@@ -31,6 +33,9 @@ class _RoomEarsState extends ConsumerState<RoomEars>
   bool _open = true;
   bool _asking = false;
 
+  /// Looks every couple of seconds whether the world's still on screen.
+  Timer? _look;
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +43,7 @@ class _RoomEarsState extends ConsumerState<RoomEars>
     final state = WidgetsBinding.instance.lifecycleState;
     _open = state == null || state == AppLifecycleState.resumed;
     RoomSound.hold.addListener(_sync);
+    _look = Timer.periodic(const Duration(seconds: 2), (_) => _sync());
     ref.read(goRouterProvider).routerDelegate.addListener(_maybeAsk);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _sync();
@@ -49,6 +55,7 @@ class _RoomEarsState extends ConsumerState<RoomEars>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     RoomSound.hold.removeListener(_sync);
+    _look?.cancel();
     ref.read(goRouterProvider).routerDelegate.removeListener(_maybeAsk);
     _listener.stop();
     super.dispose();
@@ -69,6 +76,7 @@ class _RoomEarsState extends ConsumerState<RoomEars>
     final wanted =
         ref.read(musicWorldListensProvider) &&
         _inMusicWorld &&
+        RoomSound.onScreen &&
         _open &&
         RoomSound.hold.value == 0;
     if (wanted && !RoomSound.listening) {

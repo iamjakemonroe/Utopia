@@ -85,6 +85,7 @@ void paintMusicScene(
   // The room, when the world's allowed to hear it and something's playing:
   // its loudness lifts the whole show, its beats are the show's, the
   // equalizer is its spectrum and the stage's screen its waveform.
+  RoomSound.drawnAt = t;
   final hearing = RoomSound.presenceAt(t);
   if (hearing > 0) RoomSound.show(t);
   final room = hearing * RoomSound.level;

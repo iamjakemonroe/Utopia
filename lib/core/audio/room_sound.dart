@@ -54,6 +54,13 @@ abstract final class RoomSound {
   /// recorded), the room isn't listened to.
   static final hold = ValueNotifier<int>(0);
 
+  /// When the Music world was last drawn ([worldSeconds]). It's only drawn
+  /// while it's on screen (covered, its clock stops), and the microphone's
+  /// only on while it is.
+  static double drawnAt = -100;
+
+  static bool get onScreen => worldSeconds - drawnAt < 3;
+
   /// How much the room is driving the show at [t], 0 to 1: all of it
   /// while there's sound, fading out over a second once it's gone quiet.
   static double presenceAt(double t) =>
@@ -243,6 +250,10 @@ class RoomListener {
   int _frames = 0;
   double _lastHit = -100;
   double _quietSince = 0;
+
+  // The tempo's working, kept from one look to the next.
+  final _rises = Float64List(_history);
+  final _repeats = Float64List(_longest * 2 + 4);
 
   // The tempo being found, and how sure it was last time.
   @visibleForTesting
@@ -566,7 +577,7 @@ class RoomListener {
     final n = math.min(_frames, _history);
     final first = _frames - n;
     // The change less its running mean, the rises only: where hits are.
-    final e = Float64List(n);
+    final e = _rises;
     var run = 0.0;
     for (var k = 0; k < n; k++) {
       final v = _flux[(first + k) % _history];
@@ -579,7 +590,7 @@ class RoomListener {
     }
     r0 /= n;
     if (r0 <= 0) return _doubt();
-    final r = Float64List(_longest * 2 + 4);
+    final r = _repeats;
     for (var lag = _shortest ~/ 2; lag < r.length; lag++) {
       var sum = 0.0;
       for (var k = lag; k < n; k++) {
