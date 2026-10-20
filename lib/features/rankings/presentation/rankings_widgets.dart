@@ -486,7 +486,7 @@ class TierLadder extends StatelessWidget {
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
                                 color: t == tier
-                                    ? t.color
+                                    ? AppColors.readable(t.color)
                                     : AppColors.textSecondary,
                               ),
                             ),
@@ -694,7 +694,7 @@ class _Step extends StatelessWidget {
                   '${e.rating}',
                   style: AppTextStyles.display(
                     fontSize: 16,
-                    color: RankTier.of(e.rating).color,
+                    color: AppColors.readable(RankTier.of(e.rating).color),
                   ),
                 ),
               ],
@@ -910,7 +910,10 @@ class BoardRow extends StatelessWidget {
               ),
               Text(
                 '${entry.rating}',
-                style: AppTextStyles.display(fontSize: 20, color: tier.color),
+                style: AppTextStyles.display(
+                  fontSize: 20,
+                  color: AppColors.readable(tier.color),
+                ),
               ),
             ],
           ),
@@ -999,7 +1002,10 @@ class MeBar extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             '$rating',
-            style: AppTextStyles.display(fontSize: 20, color: tier.color),
+            style: AppTextStyles.display(
+              fontSize: 20,
+              color: AppColors.readable(tier.color),
+            ),
           ),
         ],
       ),
@@ -1139,7 +1145,7 @@ class _BoardPlayerSheetState extends ConsumerState<_BoardPlayerSheet> {
                     '${tier.label} in ${widget.gameName}',
                     style: AppTextStyles.body(
                       fontWeight: FontWeight.w800,
-                      color: tier.color,
+                      color: AppColors.readable(tier.color),
                     ),
                   ),
                 ],
@@ -1225,7 +1231,7 @@ Future<void> showTierGuide(BuildContext context) {
                           t.label,
                           style: AppTextStyles.body(
                             fontWeight: FontWeight.w800,
-                            color: t.color,
+                            color: AppColors.readable(t.color),
                           ),
                         ),
                       ),

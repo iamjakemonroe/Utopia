@@ -599,8 +599,11 @@ class _CorrectBurst extends StatelessWidget {
           children: [
             Text(
               'You got it!',
-              style: AppTextStyles.display(fontSize: 30, color: Colors.white)
-                  .copyWith(
+              style:
+                  AppTextStyles.display(
+                    fontSize: 30,
+                    color: AppColors.onWorld,
+                  ).copyWith(
                     shadows: const [
                       Shadow(blurRadius: 12, color: Colors.black54),
                     ],

@@ -160,7 +160,7 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
                 AppTextStyles.body(
                   fontSize: compact ? 16 : 18,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: AppColors.onWorld,
                 ).copyWith(
                   height: 1.3,
                   shadows: const [
@@ -239,7 +239,7 @@ class _AuthChoiceScreenState extends ConsumerState<AuthChoiceScreen> {
                 mode: LaunchMode.externalApplication,
               ),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white.withValues(alpha: 0.75),
+                foregroundColor: AppColors.onWorld.withValues(alpha: 0.75),
                 minimumSize: const Size(0, 36),
                 textStyle: AppTextStyles.body(
                   fontSize: 12.5,

@@ -442,7 +442,9 @@ class _Task extends StatelessWidget {
               style: AppTextStyles.body(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
-                color: n >= of ? AppColors.success : AppColors.textSecondary,
+                color: n >= of
+                    ? AppColors.readable(AppColors.success)
+                    : AppColors.textSecondary,
               ),
             ),
           ],

@@ -320,7 +320,9 @@ class _SendCoinsSheetState extends ConsumerState<_SendCoinsSheet> {
                 formatCoins(_coins),
                 style: AppTextStyles.display(
                   fontSize: 44,
-                  color: valid ? AppColors.coinGoldBright : AppColors.error,
+                  color: AppColors.readable(
+                    valid ? AppColors.coinGoldBright : AppColors.error,
+                  ),
                 ),
               ),
             ],
@@ -479,11 +481,11 @@ class _Chip extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             color: on
                 ? AppColors.coinGold
-                : Colors.white.withValues(alpha: 0.08),
+                : AppColors.textPrimary.withValues(alpha: 0.08),
             border: Border.all(
               color: on
                   ? AppColors.coinGoldBright
-                  : Colors.white.withValues(alpha: 0.2),
+                  : AppColors.textPrimary.withValues(alpha: 0.2),
               width: 1.5,
             ),
           ),
@@ -491,7 +493,7 @@ class _Chip extends StatelessWidget {
             label,
             style: AppTextStyles.body(
               fontWeight: FontWeight.w800,
-              color: on ? const Color(0xFF3A2400) : Colors.white,
+              color: on ? const Color(0xFF3A2400) : AppColors.textPrimary,
             ),
           ),
         ),

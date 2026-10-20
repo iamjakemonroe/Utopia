@@ -288,7 +288,7 @@ class _EmailLinkScreenState extends ConsumerState<EmailLinkScreen> {
                       : "Enter your email and we'll send you a code.",
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(
-                    color: Colors.white.withValues(alpha: 0.85),
+                    color: AppColors.onWorld.withValues(alpha: 0.85),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),

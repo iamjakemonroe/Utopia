@@ -63,13 +63,17 @@ class TimeControlPicker extends StatelessWidget {
             key: ValueKey(value),
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(speedIcon(speed), size: 18, color: speedColor(speed)),
+              Icon(
+                speedIcon(speed),
+                size: 18,
+                color: AppColors.readable(speedColor(speed)),
+              ),
               const SizedBox(width: 6),
               Text(
                 speed.title,
                 style: AppTextStyles.body(
                   fontWeight: FontWeight.w800,
-                  color: speedColor(speed),
+                  color: AppColors.readable(speedColor(speed)),
                 ),
               ),
               Text(
@@ -138,7 +142,7 @@ class _TimeTile extends StatelessWidget {
               Icon(
                 speedIcon(control.speed),
                 size: 18,
-                color: selected ? Colors.white : tint,
+                color: selected ? Colors.white : AppColors.readable(tint),
               ),
               Text(
                 '${control.minutes}',

@@ -685,7 +685,7 @@ class _AccessHint extends ConsumerWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.black.withValues(alpha: 0.3),
+        color: AppColors.scrim(0.3),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

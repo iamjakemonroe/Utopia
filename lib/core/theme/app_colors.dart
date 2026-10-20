@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'utopia_themes.dart';
@@ -36,6 +38,33 @@ class AppColors {
 
   /// Whether the active world is a light one (dark text on light paper).
   static bool get light => _theme.light;
+
+  /// Text or icons drawn straight on the world, with no fill of their own
+  /// under them: white over a night sky, ink over paper.
+  static Color get onWorld => light ? textPrimary : Colors.white;
+
+  /// A see-through black fill (a pill, a chat bubble) over the world:
+  /// [alpha] of black in a dark world; in a light one, deep enough that
+  /// white text on it still reads (a faint black over paper is only grey).
+  static Color scrim(double alpha) =>
+      Colors.black.withValues(alpha: light ? math.max(alpha, 0.72) : alpha);
+
+  /// [color] as text or an icon on this world's surfaces: as it is in a
+  /// dark world; in a light one, the same hue deepened until it reads on
+  /// paper (a coin gold, a mint or a sky blue glows on a night sky and
+  /// all but vanishes on white).
+  static Color readable(Color color) {
+    if (!light) return color;
+    final hsl = HSLColor.fromColor(color);
+    if (hsl.lightness <= 0.4) return color;
+    // White (no hue) reads as the world's own secondary ink.
+    if (hsl.saturation < 0.1) return textSecondary.withValues(alpha: color.a);
+    return hsl
+        .withLightness(0.36)
+        .withSaturation(math.min(1, hsl.saturation * 1.1))
+        .toColor()
+        .withValues(alpha: color.a);
+  }
 
   /// Text and icons on an accent fill (a selected chip, a filled button):
   /// white on a dark accent like Doodle's ink, dark ink on a pale one.

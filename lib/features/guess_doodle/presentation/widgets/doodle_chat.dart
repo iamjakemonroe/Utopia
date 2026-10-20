@@ -134,7 +134,7 @@ class _Line extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: message.guessedOnly
                     ? const Color(0xFF1F8F55).withValues(alpha: 0.55)
-                    : Colors.black.withValues(alpha: mine ? 0.42 : 0.3),
+                    : AppColors.scrim(mine ? 0.42 : 0.3),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: message.guessedOnly
@@ -348,7 +348,7 @@ class _DoodleGuessFieldState extends State<DoodleGuessField> {
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.fromLTRB(16, 2, 4, 2),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.4),
+        color: AppColors.scrim(0.4),
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
           color: glow ?? Colors.white.withValues(alpha: 0.2),

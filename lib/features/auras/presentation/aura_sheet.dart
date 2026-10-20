@@ -276,7 +276,9 @@ class _AuraSheetState extends ConsumerState<_AuraSheet> {
                             CoinAmount(
                               balance,
                               size: 13,
-                              color: AppColors.coinGoldBright,
+                              color: AppColors.readable(
+                                AppColors.coinGoldBright,
+                              ),
                             ),
                             const SizedBox(width: 6),
                             Icon(
@@ -436,7 +438,9 @@ class _LengthTile extends StatelessWidget {
                       AuraLength.month => Icons.calendar_month_rounded,
                     },
                     size: 20,
-                    color: selected ? Colors.white : AppColors.textSecondary,
+                    color: selected
+                        ? AppColors.textPrimary
+                        : AppColors.textSecondary,
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -444,7 +448,11 @@ class _LengthTile extends StatelessWidget {
                     style: AppTextStyles.body(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 4),
-                  CoinAmount(price, size: 13, color: AppColors.coinGoldBright),
+                  CoinAmount(
+                    price,
+                    size: 13,
+                    color: AppColors.readable(AppColors.coinGoldBright),
+                  ),
                   const SizedBox(height: 2),
                   Text(
                     '${formatCoins(perDay)} a day',
@@ -585,14 +593,18 @@ class TierChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(tier.icon, size: small ? 11 : 14, color: tier.color),
+          Icon(
+            tier.icon,
+            size: small ? 11 : 14,
+            color: AppColors.readable(tier.color),
+          ),
           const SizedBox(width: 3),
           Text(
             tier.title,
             style: AppTextStyles.body(
               fontSize: small ? 10 : 12,
               fontWeight: FontWeight.w900,
-              color: tier.color,
+              color: AppColors.readable(tier.color),
             ),
           ),
         ],

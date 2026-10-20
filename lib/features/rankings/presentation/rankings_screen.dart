@@ -428,7 +428,7 @@ class _MyRankCard extends StatelessWidget {
                       style: AppTextStyles.body(
                         fontSize: 12,
                         fontWeight: FontWeight.w900,
-                        color: tier.color,
+                        color: AppColors.readable(tier.color),
                       ).copyWith(letterSpacing: 1.5),
                     ),
                   ],
@@ -530,14 +530,18 @@ class _InsightsHint extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.auto_awesome_rounded, size: 13, color: tier.color),
+          Icon(
+            Icons.auto_awesome_rounded,
+            size: 13,
+            color: AppColors.readable(tier.color),
+          ),
           const SizedBox(width: 4),
           Text(
             'Insights',
             style: AppTextStyles.body(
               fontSize: 11.5,
               fontWeight: FontWeight.w800,
-              color: tier.color,
+              color: AppColors.readable(tier.color),
             ),
           ),
         ],
@@ -676,7 +680,13 @@ class _MiniStat extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(value, style: AppTextStyles.display(fontSize: 20, color: color)),
+          Text(
+            value,
+            style: AppTextStyles.display(
+              fontSize: 20,
+              color: AppColors.readable(color),
+            ),
+          ),
           Text(
             label,
             style: AppTextStyles.body(

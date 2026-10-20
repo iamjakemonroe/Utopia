@@ -201,7 +201,9 @@ class _DailyRewardSheetState extends ConsumerState<DailyRewardSheet>
                                 '+${formatCoins(claimed)}',
                                 style: AppTextStyles.display(
                                   fontSize: 34,
-                                  color: AppColors.coinGoldBright,
+                                  color: AppColors.readable(
+                                    AppColors.coinGoldBright,
+                                  ),
                                 ),
                               ),
                             ],

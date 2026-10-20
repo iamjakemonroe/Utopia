@@ -303,7 +303,7 @@ class WelcomeWeekSheet extends ConsumerWidget {
                 style: AppTextStyles.body(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.success,
+                  color: AppColors.readable(AppColors.success),
                 ),
               ),
             ],

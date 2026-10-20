@@ -792,14 +792,18 @@ class _StatusLineState extends State<_StatusLine>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history_rounded, size: 18, color: AppColors.sky),
+            Icon(
+              Icons.history_rounded,
+              size: 18,
+              color: AppColors.readable(AppColors.sky),
+            ),
             const SizedBox(width: 6),
             Text(
               state.displayPly == 0
                   ? 'Starting position'
                   : 'Move ${state.displayPly} of ${state.history.length}',
               style: AppTextStyles.body(
-                color: AppColors.sky,
+                color: AppColors.readable(AppColors.sky),
                 fontWeight: FontWeight.w800,
               ),
             ),

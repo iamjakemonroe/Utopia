@@ -376,7 +376,7 @@ class _RowState extends ConsumerState<_Row> {
                       style: AppTextStyles.body(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.success,
+                        color: AppColors.readable(AppColors.success),
                       ),
                     ),
                   ),

@@ -718,8 +718,8 @@ class _Pill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: highlight
-            ? AppColors.success
-            : Colors.black.withValues(alpha: 0.45),
+            ? AppColors.readable(AppColors.success)
+            : AppColors.scrim(0.45),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

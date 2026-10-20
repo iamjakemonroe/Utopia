@@ -295,7 +295,13 @@ class _ReportBugScreenState extends ConsumerState<ReportBugScreen> {
                   children: [
                     for (final (id, icon, label) in _categories)
                       ChoiceChip(
-                        avatar: Icon(icon, size: 18),
+                        avatar: Icon(
+                          icon,
+                          size: 18,
+                          color: _category == id
+                              ? AppColors.onAccent
+                              : AppColors.textSecondary,
+                        ),
                         label: Text(label),
                         selected: _category == id,
                         onSelected: (_) => setState(() => _category = id),

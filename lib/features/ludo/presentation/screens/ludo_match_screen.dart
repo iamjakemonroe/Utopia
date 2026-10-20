@@ -1103,7 +1103,7 @@ class _StandingRow extends ConsumerWidget {
                 prize!,
                 prefix: '+',
                 size: 13,
-                color: AppColors.success,
+                color: AppColors.readable(AppColors.success),
               ),
             ],
           ],

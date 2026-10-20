@@ -132,7 +132,7 @@ class AurasTab extends ConsumerWidget {
                       AuraLength.week,
                     ),
                     size: 13,
-                    color: AppColors.coinGoldBright,
+                    color: AppColors.readable(AppColors.coinGoldBright),
                   ),
                 ],
               ),
@@ -266,7 +266,7 @@ class _AuraCard extends StatelessWidget {
                           style: AppTextStyles.body(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.success,
+                            color: AppColors.readable(AppColors.success),
                           ),
                         )
                       : Row(
@@ -281,7 +281,9 @@ class _AuraCard extends StatelessWidget {
                             CoinAmount(
                               price,
                               size: 12,
-                              color: AppColors.coinGoldBright,
+                              color: AppColors.readable(
+                                AppColors.coinGoldBright,
+                              ),
                             ),
                           ],
                         ),

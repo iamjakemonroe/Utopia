@@ -92,7 +92,7 @@ class _DoodleTimerState extends State<DoodleTimer> {
               widget.endsAt == null ? '' : '$seconds',
               style: AppTextStyles.display(
                 fontSize: widget.size * 0.36,
-                color: urgent ? AppColors.error : Colors.white,
+                color: urgent ? AppColors.error : AppColors.onWorld,
               ),
             ),
           ),
@@ -287,7 +287,7 @@ class _Blank extends StatelessWidget {
         border: Border(
           bottom: BorderSide(
             color: l == null
-                ? Colors.white.withValues(alpha: 0.7)
+                ? AppColors.onWorld.withValues(alpha: 0.7)
                 : AppColors.coinGold,
             width: 3,
           ),
@@ -310,7 +310,7 @@ class _Blank extends StatelessWidget {
                 key: ValueKey(l),
                 style: AppTextStyles.display(
                   fontSize: 20,
-                  color: AppColors.coinGold,
+                  color: AppColors.readable(AppColors.coinGold),
                 ),
               ),
       ),
@@ -474,7 +474,7 @@ class _PlayerChipState extends State<_PlayerChip>
                   style: AppTextStyles.body(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.coinGold,
+                    color: AppColors.readable(AppColors.coinGold),
                   ),
                 ),
               ),

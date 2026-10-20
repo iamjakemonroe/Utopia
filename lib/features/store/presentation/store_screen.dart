@@ -284,8 +284,8 @@ class _StatusPill extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: highlight
-            ? AppColors.success.withValues(alpha: 0.9)
-            : Colors.black.withValues(alpha: 0.45),
+            ? AppColors.readable(AppColors.success).withValues(alpha: 0.9)
+            : AppColors.scrim(0.45),
         border: Border.all(
           color: highlight ? Colors.white : AppColors.goldBorder,
           width: 1.2,

@@ -216,7 +216,7 @@ class VoiceNoteBubble extends ConsumerWidget {
             style: AppTextStyles.body(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: Colors.white.withValues(alpha: 0.85),
+              color: ink.withValues(alpha: 0.85),
             ),
           ),
         ],

@@ -576,6 +576,7 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isGuest ? const Color(0xFFFFB020) : AppColors.mint;
+    final ink = AppColors.readable(color);
     final text = isGuest
         ? 'Guest'
         : since == null
@@ -594,7 +595,7 @@ class _StatusBadge extends StatelessWidget {
           Icon(
             isGuest ? Icons.person_outline_rounded : Icons.verified_rounded,
             size: 15,
-            color: color,
+            color: ink,
           ),
           const SizedBox(width: 5),
           Text(
@@ -602,7 +603,7 @@ class _StatusBadge extends StatelessWidget {
             style: AppTextStyles.body(
               fontSize: 12,
               fontWeight: FontWeight.w800,
-              color: color,
+              color: ink,
             ),
           ),
         ],
@@ -652,7 +653,7 @@ class _CoinsCard extends ConsumerWidget {
                   balance == null ? '...' : formatCoins(balance),
                   style: AppTextStyles.display(
                     fontSize: 26,
-                    color: AppColors.coinGoldBright,
+                    color: AppColors.readable(AppColors.coinGoldBright),
                   ),
                 ),
                 Text(
@@ -961,7 +962,9 @@ class _RatingTile extends StatelessWidget {
                 style: AppTextStyles.body(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
-                  color: r == null ? AppColors.textSecondary : tier.color,
+                  color: r == null
+                      ? AppColors.textSecondary
+                      : AppColors.readable(tier.color),
                 ),
               ),
             ],
@@ -1010,7 +1013,7 @@ class _BestRank extends StatelessWidget {
               style: AppTextStyles.body(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
-                color: tier.color,
+                color: AppColors.readable(tier.color),
               ),
             ),
           ],
@@ -1377,7 +1380,9 @@ class _RecentRow extends ConsumerWidget {
               game.won ? prize : game.stake,
               prefix: game.won ? '+' : '-',
               size: 13,
-              color: game.won ? AppColors.success : AppColors.textSecondary,
+              color: game.won
+                  ? AppColors.readable(AppColors.success)
+                  : AppColors.textSecondary,
             ),
           const SizedBox(width: 10),
           Text(

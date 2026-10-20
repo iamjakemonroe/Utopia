@@ -749,7 +749,9 @@ class _MatchResultCardState extends ConsumerState<MatchResultCard>
                             ((iWon ? prize : stake) * v).round(),
                             prefix: iWon ? '+' : '-',
                             size: 22,
-                            color: iWon ? AppColors.success : AppColors.error,
+                            color: AppColors.readable(
+                              iWon ? AppColors.success : AppColors.error,
+                            ),
                           ),
                         ),
                       ),
@@ -837,7 +839,9 @@ class _RatingPill extends StatelessWidget {
               change.label,
               style: AppTextStyles.body(
                 fontWeight: FontWeight.w900,
-                color: up ? AppColors.success : AppColors.error,
+                color: AppColors.readable(
+                  up ? AppColors.success : AppColors.error,
+                ),
               ),
             ),
           ],

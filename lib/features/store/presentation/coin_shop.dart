@@ -274,7 +274,7 @@ class _Header extends StatelessWidget {
                   CoinAmount(
                     balance!,
                     size: 16,
-                    color: AppColors.coinGoldBright,
+                    color: AppColors.readable(AppColors.coinGoldBright),
                   ),
                 if (short != null) ...[
                   const SizedBox(height: 4),
@@ -486,7 +486,7 @@ class _BonusTag extends StatelessWidget {
         style: AppTextStyles.body(
           fontSize: 11,
           fontWeight: FontWeight.w900,
-          color: AppColors.success,
+          color: AppColors.readable(AppColors.success),
         ),
       ),
     );
@@ -580,7 +580,7 @@ class _Celebration extends StatelessWidget {
                       coins,
                       prefix: '+',
                       size: 28,
-                      color: AppColors.coinGoldBright,
+                      color: AppColors.readable(AppColors.coinGoldBright),
                     ),
                   ],
                 ),

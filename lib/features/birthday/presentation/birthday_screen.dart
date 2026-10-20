@@ -210,7 +210,7 @@ class _BirthdayScreenState extends ConsumerState<BirthdayScreen> {
                                 'that only opens on your birthday.',
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body(
-                        color: Colors.white.withValues(alpha: 0.88),
+                        color: AppColors.onWorld.withValues(alpha: 0.88),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),

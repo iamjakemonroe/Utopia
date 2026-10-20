@@ -139,7 +139,12 @@ class UserAvatar extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         fallbackInitial.isNotEmpty ? fallbackInitial[0].toUpperCase() : '?',
-        style: AppTextStyles.body(fontWeight: FontWeight.w700),
+        // On the dark circle: the world's ink in a dark world (light), and
+        // paper in a light one (its ink would vanish on it).
+        style: AppTextStyles.body(
+          fontWeight: FontWeight.w700,
+          color: AppColors.light ? AppColors.onAccent : AppColors.textPrimary,
+        ),
       ),
     );
   }

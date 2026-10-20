@@ -27,7 +27,7 @@ class CoinBalancePill extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 6, right: 4),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(19),
-            color: Colors.black.withValues(alpha: 0.32),
+            color: AppColors.scrim(0.32),
             border: Border.all(
               color: AppColors.coinGold.withValues(alpha: 0.55),
               width: 1.4,

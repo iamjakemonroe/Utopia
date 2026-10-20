@@ -447,7 +447,10 @@ class _Bubble extends ConsumerWidget {
           ? ChatSticker(id: message.body, size: 52)
           : Text(
               message.body,
-              style: AppTextStyles.body(fontSize: 14, color: Colors.white),
+              style: AppTextStyles.body(
+                fontSize: 14,
+                color: mine ? AppColors.onAccent : AppColors.textPrimary,
+              ),
             ),
     );
 

@@ -245,7 +245,7 @@ class _SmallButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withValues(alpha: 0.12),
+      color: AppColors.onWorld.withValues(alpha: 0.12),
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -255,13 +255,13 @@ class _SmallButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 18, color: Colors.white),
+              Icon(icon, size: 18, color: AppColors.onWorld),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: AppTextStyles.body(
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: AppColors.onWorld,
                 ),
               ),
             ],
@@ -314,7 +314,10 @@ class _CountdownState extends State<_Countdown> {
       child: Text(
         s > 0 ? 'Starting in $s' : 'Here we go',
         key: ValueKey(s),
-        style: AppTextStyles.display(fontSize: 20, color: AppColors.coinGold),
+        style: AppTextStyles.display(
+          fontSize: 20,
+          color: AppColors.readable(AppColors.coinGold),
+        ),
       ),
     );
   }
@@ -541,7 +544,7 @@ class DoodleReveal extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.display(
                   fontSize: 34,
-                  color: AppColors.coinGold,
+                  color: AppColors.readable(AppColors.coinGold),
                 ).copyWith(letterSpacing: 2),
               ),
             ),
@@ -850,7 +853,7 @@ class _ScoreLine extends ConsumerWidget {
             '$score',
             style: AppTextStyles.body(
               fontWeight: FontWeight.w900,
-              color: AppColors.coinGold,
+              color: AppColors.readable(AppColors.coinGold),
             ),
           ),
         ],
@@ -893,7 +896,10 @@ class _NextInState extends State<_NextIn> {
     final s = (left.inMilliseconds / 1000).ceil().clamp(0, 99);
     return Text(
       s > 0 ? 'Next game in $s' : 'Next game starting',
-      style: AppTextStyles.display(fontSize: 18, color: AppColors.coinGold),
+      style: AppTextStyles.display(
+        fontSize: 18,
+        color: AppColors.readable(AppColors.coinGold),
+      ),
     );
   }
 }

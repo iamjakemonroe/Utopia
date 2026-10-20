@@ -325,7 +325,7 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
                 '${g.score}',
                 style: AppTextStyles.display(
                   fontSize: 46,
-                  color: AppColors.coinGoldBright,
+                  color: AppColors.readable(AppColors.coinGoldBright),
                 ),
               ),
               Text(
