@@ -51,6 +51,19 @@ class WebAudio {
 
   bool get _running => context.state == 'running';
 
+  /// After the first touch, sound the browser has put to sleep since (Safari
+  /// after a call or another app's sound, a long pause) is woken as soon as
+  /// something plays, not only at the next touch: the Halloween world's
+  /// thunder and screams come with no touch at all.
+  Future<void> _wake() async {
+    if (!_unlocked || _running) return;
+    try {
+      await context.resume().toDart;
+    } catch (_) {
+      // Not allowed yet: the next touch wakes it.
+    }
+  }
+
   /// [asset] decoded (once), or null if it can't be.
   Future<web.AudioBuffer?> buffer(String asset) =>
       _buffers.putIfAbsent(asset, () async {
@@ -129,8 +142,10 @@ class WebAudio {
   /// Plays [asset] once at [volume]. Not before the first touch: they'd
   /// all play at once when sound comes on.
   void effect(String asset, double volume) {
-    if (!_running) return;
-    buffer(asset).then((buffer) {
+    if (!_unlocked) return;
+    final awake = _wake();
+    buffer(asset).then((buffer) async {
+      await awake;
       if (buffer == null || !_running) return;
       final ctx = context;
       final gain = ctx.createGain()..gain.value = volume;
@@ -208,7 +223,9 @@ class WebMusic {
     final asset = _asset;
     if (asset == null) return;
     final turn = ++_turn;
+    final awake = _audio._wake();
     final buffer = await _audio.buffer(asset);
+    await awake;
     if (buffer == null || turn != _turn) return;
     _stop();
     final ctx = _audio.context;

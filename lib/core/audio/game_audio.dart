@@ -294,11 +294,29 @@ class GameAudio {
   bool isPlaying(MusicTrack track) =>
       _playing == track && _onScreen && !_quiet && _settings.musicOn;
 
+  /// Whether [track] is the world now showing its own sounds: its world's
+  /// on screen with nothing over it (not in a game), the app's open, and
+  /// Utopia isn't stepping aside for the player's own music. Unlike
+  /// [isPlaying], the music needn't be on: a world's sound effects (the
+  /// Halloween world's thunder and screams) play with effects on.
+  bool worldShowing(MusicTrack track) =>
+      _worldTrack == track &&
+      _pushed.isEmpty &&
+      _base != MusicTrack.none &&
+      _foreground &&
+      _onScreen &&
+      !_quiet;
+
   /// One of a world's sounds, as part of its music: at the music's volume
-  /// (and ducked with it), only while the music is on.
+  /// (and ducked with it) while the music's on; with the music off (and
+  /// effects on), softer, as a sound effect.
   void playWithMusic(Sfx sfx, {double volume = 1}) {
-    if (!_onScreen || !_settings.musicOn || _quiet) return;
-    _start(sfx, _settings.musicVolume * volume * (_ducked ? 0.25 : 1));
+    if (!_onScreen || _quiet) return;
+    if (_settings.musicOn) {
+      _start(sfx, _settings.musicVolume * volume * (_ducked ? 0.25 : 1));
+    } else if (_settings.sfxOn) {
+      _start(sfx, _settings.sfxVolume * volume * 0.5);
+    }
   }
 
   /// [sfx] looping, fading in, until the returned loop is stopped (it
@@ -453,7 +471,12 @@ class GameAudio {
   }
 
   void _onLifecycle(AppLifecycleState state) {
-    _foreground = state == AppLifecycleState.resumed;
+    // In a browser, a window that's showing but not the one in use
+    // (another app clicked) is inactive: still seen, so still heard. Only a
+    // hidden tab is away.
+    _foreground =
+        state == AppLifecycleState.resumed ||
+        (kIsWeb && state == AppLifecycleState.inactive);
     _onScreen =
         state == AppLifecycleState.resumed ||
         state == AppLifecycleState.inactive;

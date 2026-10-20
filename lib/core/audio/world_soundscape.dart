@@ -25,8 +25,8 @@ import 'game_audio.dart';
 /// now and then a far-off owl, and once in a while the scare: a wraith
 /// rushing out at you, screaming (sometimes after a swell of dread, and
 /// sometimes the dread comes and nothing does). Played at the music's
-/// volume (the scream louder), and only while that music is (so not in
-/// games, or with the music off).
+/// volume (the scream louder) while the world's showing (not in games);
+/// with the music off, all but the music box still play, as sound effects.
 ///
 /// Reads the same clock and timings as the scene ([worldSeconds],
 /// [HalloweenTimeline]), so nothing is heard before or after it's seen.
@@ -106,9 +106,11 @@ class WorldSoundscape {
     final now = worldSeconds;
     final prev = _last;
     _last = now;
-    // Back from the background (or a long stall), or the music's off, in a
-    // game, or giving way to the player's own: nothing to catch up on.
-    if (now - prev > 1 || !_audio.isPlaying(MusicTrack.halloween)) {
+    // Back from the background (or a long stall), in a game, or giving way
+    // to the player's own music: nothing to catch up on. (With the music
+    // off, the hollow's sounds still play, as sound effects: only the music
+    // box is the music.)
+    if (now - prev > 1 || !_audio.worldShowing(MusicTrack.halloween)) {
       _due.clear();
       _loud.clear();
       return;
@@ -224,7 +226,7 @@ class WorldSoundscape {
     }
     // The music box: a few notes at a time, wandering up and down a minor
     // scale, so the lullaby is never the same twice.
-    if (now >= _nextPhrase) {
+    if (now >= _nextPhrase && _audio.isPlaying(MusicTrack.halloween)) {
       final notes = 1 + _rng.nextInt(3);
       var at = now;
       for (var k = 0; k < notes; k++) {
