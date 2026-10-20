@@ -161,6 +161,10 @@ class ChessRepository {
     return result as String?;
   }
 
+  /// Takes back a challenge the player sent, while it's still waiting.
+  Future<void> cancelMatchInvite(String inviteId) =>
+      _client.rpc('cancel_match_invite', params: {'p_invite_id': inviteId});
+
   Future<void> recordMove({
     required String matchId,
     required String from,

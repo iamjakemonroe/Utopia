@@ -1,5 +1,5 @@
-// The challenge card on home at a small, a middling and a big phone's
-// width, for a look. Run:
+// The challenge cards on home (a friend's to you, and yours waiting for
+// them) at a small, a middling and a big phone's width, for a look. Run:
 // flutter test --run-skipped --update-goldens test/tool/challenge_card_sheet_test.dart
 @Tags(['sheet'])
 library;
@@ -46,6 +46,12 @@ final _invites = [
   },
 ];
 
+// The same, sent by the player: waiting for their friend.
+final _sent = [
+  for (final invite in _invites)
+    {...invite, 'to_user': invite['from_user']},
+];
+
 void main() {
   for (final world in [
     UtopiaThemes.utopiaTwilight,
@@ -54,7 +60,7 @@ void main() {
     testWidgets('challenge cards in ${world.id}', (tester) async {
       UtopiaThemes.active = world;
       addTearDown(() => UtopiaThemes.active = UtopiaThemes.utopiaTwilight);
-      tester.view.physicalSize = const Size(1290 * 3 / 3, 900);
+      tester.view.physicalSize = const Size(1290 * 3 / 3, 1400);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       SharedPreferences.setMockInitialValues({'utopia.theme': world.id});
@@ -100,6 +106,9 @@ void main() {
                               const SizedBox(height: 8),
                               for (final invite in _invites)
                                 ChallengeCard(invite: invite),
+                              const SizedBox(height: 16),
+                              for (final invite in _sent)
+                                SentChallengeCard(invite: invite),
                             ],
                           ),
                         ),

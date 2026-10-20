@@ -12,6 +12,8 @@ import '../../../../core/widgets/pop_card.dart';
 import '../../../../core/widgets/utopia_loader.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../chess/presentation/controllers/chess_match_controller.dart';
+import '../../../chess/presentation/sent_challenges.dart';
+import '../../../../core/widgets/bouncy_dialog.dart';
 import '../../../notifications/presentation/answer_buttons.dart';
 import '../../../notifications/presentation/notification_actions.dart';
 import '../../data/friend_repository.dart';
@@ -550,6 +552,12 @@ class _PersonRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final me = ref.watch(currentUserProvider)?.id;
+    final sent = me == null
+        ? null
+        : waitingChallenges(
+            ref.watch(outgoingInvitesProvider(me)).valueOrNull ?? const [],
+          ).where((i) => i['to_user'] == person.id).firstOrNull;
     final avatar = UserAvatar(
       avatarUrl: person.avatarUrl,
       avatarKind: person.avatarKind,
@@ -621,19 +629,56 @@ class _PersonRow extends ConsumerWidget {
               ),
             ),
           const SizedBox(width: 6),
-          FilledButton.tonalIcon(
-            onPressed: () => _invite(context),
-            icon: const Icon(Icons.sports_esports_outlined, size: 18),
-            label: const Text('Play'),
-            style: FilledButton.styleFrom(
-              visualDensity: VisualDensity.compact,
-              backgroundColor: AppColors.accent.withValues(alpha: 0.2),
-              foregroundColor: AppColors.accentSecondary,
+          // A challenge already waiting for them: "Sent" (tap to take it
+          // back) in place of Play.
+          if (sent != null)
+            FilledButton.tonalIcon(
+              onPressed: () => _askCancel(context, ref, sent),
+              icon: const Icon(Icons.hourglass_top_rounded, size: 18),
+              label: const Text('Sent'),
+              style: FilledButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                backgroundColor: AppColors.textSecondary.withValues(
+                  alpha: 0.14,
+                ),
+                foregroundColor: AppColors.textSecondary,
+              ),
+            )
+          else
+            FilledButton.tonalIcon(
+              onPressed: () => _invite(context),
+              icon: const Icon(Icons.sports_esports_outlined, size: 18),
+              label: const Text('Play'),
+              style: FilledButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                backgroundColor: AppColors.accent.withValues(alpha: 0.2),
+                foregroundColor: AppColors.accentSecondary,
+              ),
             ),
-          ),
         ],
       ),
     );
+  }
+
+  Future<void> _askCancel(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> invite,
+  ) async {
+    final left = challengeMinutesLeft(invite);
+    final sure = await confirmBouncy(
+      context: context,
+      title: 'Challenge sent',
+      message: left == null
+          ? 'Waiting for ${person.name} to answer. Take it back?'
+          : '${person.name} has $left min left to answer. Take it back?',
+      confirmLabel: 'Cancel challenge',
+      cancelLabel: 'Keep it',
+      destructive: true,
+    );
+    if (sure && context.mounted) {
+      await cancelChallenge(context, ref, invite, person.name);
+    }
   }
 
   Future<void> _invite(BuildContext context) async {

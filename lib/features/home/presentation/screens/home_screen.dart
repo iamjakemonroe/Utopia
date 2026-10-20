@@ -50,6 +50,7 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../friends/data/presence.dart';
 import '../../../friends/presentation/providers/friends_providers.dart';
 import '../../../chess/presentation/controllers/chess_match_controller.dart';
+import '../../../chess/presentation/sent_challenges.dart';
 import '../../../friends/presentation/widgets/friend_icon_button.dart';
 import '../../../notifications/presentation/answer_buttons.dart';
 import '../../../notifications/presentation/notification_bell.dart';
@@ -97,6 +98,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   final Set<String> _navigatedInviteIds = {};
   bool _invitesPrimed = false;
+
+  /// Challenges we sent that were waiting the last time we looked: one
+  /// that's been declined or has run out since gets a word.
+  final Set<String> _waitingInviteIds = {};
   bool _adoptedWorld = false;
   GoRouter? _router;
   late final NowPlayingController _music;
@@ -266,6 +271,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               if (invite['status'] == 'accepted' && invite['match_id'] != null)
                 invite,
           ];
+          // A friend said no, or it ran out: say so (once, and only for
+          // ones seen waiting, never old history).
+          for (final invite in invites) {
+            final id = invite['id'] as String;
+            final status = invite['status'];
+            if (status == 'pending') {
+              _waitingInviteIds.add(id);
+              continue;
+            }
+            if (!_waitingInviteIds.remove(id)) continue;
+            if (status != 'declined' && status != 'expired') continue;
+            // Not over a game, or anything else on top of home.
+            if (ModalRoute.of(context)?.isCurrent == false) continue;
+            final toId = invite['to_user'] as String;
+            final name = profileDisplayName(
+              ref.read(profileByIdProvider(toId)).valueOrNull,
+              toId,
+            );
+            showUtopiaToast(
+              context,
+              status == 'declined'
+                  ? '$name said not now.'
+                  : 'Your challenge to $name ran out.',
+              icon: status == 'declined'
+                  ? Icons.do_not_disturb_on_outlined
+                  : Icons.hourglass_disabled_rounded,
+            );
+          }
           // The first batch is history: invites accepted before we were
           // watching (earlier games) must not reopen those games.
           if (!_invitesPrimed) {
@@ -314,6 +347,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               _UsernameBanner(myId: myId),
               _IncomingInvites(myId: myId),
+              _SentChallenges(myId: myId),
             ],
           ],
         )
@@ -326,6 +360,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         if (myId != null) const EventCard(),
         if (myId != null) _UsernameBanner(myId: myId),
         if (myId != null) _IncomingInvites(myId: myId),
+        if (myId != null) _SentChallenges(myId: myId),
       ],
     ];
     const extras = [_SketchbookCard(), _StoreCard()];
@@ -1475,6 +1510,218 @@ class _ChallengeCardState extends ConsumerState<ChallengeCard> {
               busy: _declining,
               onDecline: _decline,
               onAccept: away ? null : _accept,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The challenges the player sent that are still waiting, each with how
+/// long it has left and a way to take it back.
+class _SentChallenges extends ConsumerStatefulWidget {
+  const _SentChallenges({required this.myId});
+
+  final String myId;
+
+  @override
+  ConsumerState<_SentChallenges> createState() => _SentChallengesState();
+}
+
+class _SentChallengesState extends ConsumerState<_SentChallenges> {
+  /// Looks again now and then, like [_IncomingInvites]: the time left, and
+  /// one that's run out goes.
+  late final Timer _tick = Timer.periodic(
+    const Duration(seconds: 20),
+    (_) => setState(() {}),
+  );
+
+  @override
+  void dispose() {
+    _tick.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _tick;
+    final waiting = waitingChallenges(
+      ref.watch(outgoingInvitesProvider(widget.myId)).valueOrNull ?? const [],
+    );
+    if (waiting.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final invite in waiting)
+            SentChallengeCard(key: ValueKey(invite['id']), invite: invite),
+        ],
+      ),
+    );
+  }
+}
+
+/// A challenge the player sent, waiting for their friend: who, the game,
+/// its clock and entry, the time it has left, and Cancel.
+class SentChallengeCard extends ConsumerStatefulWidget {
+  const SentChallengeCard({super.key, required this.invite});
+
+  final Map<String, dynamic> invite;
+
+  @override
+  ConsumerState<SentChallengeCard> createState() => _SentChallengeCardState();
+}
+
+class _SentChallengeCardState extends ConsumerState<SentChallengeCard> {
+  bool _cancelling = false;
+
+  Map<String, dynamic> get invite => widget.invite;
+
+  Future<void> _cancel(String name) async {
+    setState(() => _cancelling = true);
+    final done = await cancelChallenge(context, ref, invite, name);
+    // Gone once cancelled (the invites are watched); back if it wasn't.
+    if (!done && mounted) setState(() => _cancelling = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final toId = invite['to_user'] as String;
+    final profile = ref.watch(profileByIdProvider(toId)).valueOrNull;
+    final name = profileDisplayName(profile, toId);
+    final stake = (invite['stake'] as num).toInt();
+    final checkers = invite['game'] == 'checkers';
+    final minutesLeft = challengeMinutesLeft(invite);
+    final time = TimeControl(
+      (invite['minutes'] as num?)?.toInt() ?? 10,
+      (invite['increment'] as num?)?.toInt() ?? 0,
+    );
+    final ink = AppColors.light ? Colors.black : Colors.white;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: PopCard(
+        borderRadius: 22,
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Who, and Cancel beside them; the facts get the card's whole
+            // width underneath (beside the button they squeezed into a
+            // column on a small phone).
+            Row(
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    UserAvatar.fromProfile(
+                      profile,
+                      fallbackInitial: name,
+                      radius: 22,
+                    ),
+                    Positioned(
+                      right: -4,
+                      bottom: -4,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.accent,
+                          border: Border.all(
+                            color: AppColors.surface,
+                            width: 2,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.hourglass_top_rounded,
+                          size: 12,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Waiting for $name',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.body(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 36,
+                  child: OutlinedButton(
+                    onPressed: _cancelling ? null : () => _cancel(name),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      foregroundColor: AppColors.textPrimary,
+                      side: BorderSide(color: ink.withValues(alpha: 0.25)),
+                      shape: const StadiumBorder(),
+                      textStyle: AppTextStyles.body(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    child: _cancelling
+                        ? SizedBox.square(
+                            dimension: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.textSecondary,
+                            ),
+                          )
+                        : const Text('Cancel'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 56),
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  _InviteTag(
+                    icon: checkers
+                        ? Icons.blur_circular_rounded
+                        : Icons.extension_rounded,
+                    label: checkers ? 'Checkers' : 'Chess',
+                  ),
+                  _InviteTag(
+                    icon: speedIcon(time.speed),
+                    iconColor: speedColor(time.speed),
+                    label: time.label,
+                  ),
+                  if (stake == 0)
+                    _InviteTag(
+                      icon: Icons.favorite_rounded,
+                      iconColor: AppColors.coral,
+                      label: 'Free',
+                    )
+                  else
+                    _InviteTag(
+                      child: CoinAmount(
+                        stake,
+                        size: 12.5,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  if (minutesLeft != null)
+                    _InviteTag(
+                      icon: Icons.hourglass_bottom_rounded,
+                      label: '$minutesLeft min left',
+                    ),
+                ],
+              ),
             ),
           ],
         ),

@@ -71,6 +71,9 @@ String friendlyError(
       text.contains('connection')) {
     return "Can't reach Utopia right now. Check your connection.";
   }
+  if (text.contains('challenge already answered')) {
+    return 'Too late: they already answered it.';
+  }
   if (text.contains('challenge expired')) {
     return 'That challenge ran out: they last 10 minutes. Challenge them back!';
   }
