@@ -1859,6 +1859,16 @@ class _GamesGrid extends StatelessWidget {
               ],
               onTap: () => context.push('/guess-my-doodle'),
             ),
+            _GameTile(
+              game: GameKind.eights,
+              title: strings.homeCrazyEights,
+              color: AppColors.sky,
+              facts: [
+                (Icons.style_rounded, strings.homeEightsAreWild),
+                (Icons.groups_rounded, strings.home2To6Players),
+              ],
+              onTap: () => context.push('/eights'),
+            ),
           ],
         ),
       ],
@@ -2061,6 +2071,7 @@ class _RejoinCardState extends ConsumerState<_RejoinCard>
                                     Icons.blur_circular_rounded,
                                   GameKind.ludo => Icons.casino_rounded,
                                   GameKind.doodle => Icons.brush_rounded,
+                                  GameKind.eights => Icons.style_rounded,
                                 },
                                 color: AppColors.coral,
                                 size: 44,
@@ -2399,6 +2410,7 @@ String _resumeLine(ActiveGame game) {
     GameKind.checkers => strings.homeCheckers,
     GameKind.ludo => strings.homeLudo,
     GameKind.doodle => strings.homeGuessMyDoodle,
+    GameKind.eights => strings.homeCrazyEights,
   };
   final offline = game.offline;
   if (offline != null) {
@@ -2410,6 +2422,7 @@ String _resumeLine(ActiveGame game) {
   }
   return switch (game.kind) {
     GameKind.ludo => strings.homeLudoTheTableIsWaiting,
+    GameKind.eights => strings.homeEightsTheTableIsWaiting,
     GameKind.doodle => strings.homeTheGameGoesOnWithout(name),
     _ => strings.homeYourClockMayBeRunning(name),
   };

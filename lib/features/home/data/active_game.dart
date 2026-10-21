@@ -4,6 +4,8 @@ import '../../../core/widgets/game_card_art.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../chess/data/chess_repository.dart';
 import '../../chess/presentation/controllers/chess_match_controller.dart';
+import '../../eights/data/eights_repository.dart';
+import '../../eights/presentation/controllers/eights_match_controller.dart';
 import '../../ludo/data/ludo_repository.dart';
 import 'offline_game.dart';
 import '../../ludo/presentation/controllers/ludo_match_controller.dart';
@@ -25,6 +27,7 @@ class ActiveGame {
         GameKind.checkers => '/checkers/$matchId',
         GameKind.ludo => '/ludo/$matchId',
         GameKind.doodle => '/doodle-game/$matchId',
+        GameKind.eights => '/eights/$matchId',
       };
 }
 
@@ -39,6 +42,7 @@ final activeGameProvider = FutureProvider.autoDispose<ActiveGame?>((ref) {
     ref.read(ludoRepositoryProvider),
     me,
     offline: ref.read(offlineGameStoreProvider),
+    eights: ref.read(eightsRepositoryProvider),
   );
 });
 
@@ -47,6 +51,7 @@ Future<ActiveGame?> findActiveGame(
   LudoRepository ludo,
   String userId, {
   OfflineGameStore? offline,
+  EightsRepository? eights,
 }) async {
   final board = await chess.activeMatch(userId).catchError((Object _) => null);
   if (board != null) {
@@ -60,6 +65,12 @@ Future<ActiveGame?> findActiveGame(
       .activeMatchId(userId)
       .catchError((Object _) => null);
   if (ludoId != null) return ActiveGame(kind: GameKind.ludo, matchId: ludoId);
+  final eightsId = await eights
+      ?.activeMatchId(userId)
+      .catchError((Object _) => null);
+  if (eightsId != null) {
+    return ActiveGame(kind: GameKind.eights, matchId: eightsId);
+  }
   // Then a game against bots on this phone, if the app closed mid-game.
   final saved = offline?.load();
   if (saved == null) return null;

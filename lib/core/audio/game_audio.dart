@@ -49,6 +49,22 @@ enum Sfx {
   /// Someone got all four pieces home and took their place.
   finish('finish'),
 
+  // Cards (Crazy Eights).
+  /// A card dealt: a soft flick.
+  cardDeal('card_deal'),
+
+  /// A card played onto the pile: a snap.
+  cardPlay('card_play'),
+
+  /// A card drawn: a slide.
+  cardDraw('card_draw'),
+
+  /// An eight played: a magic swirl as the suit changes.
+  cardWild('card_wild'),
+
+  /// Down to one card: a cheeky two-note call.
+  lastCard('last_card'),
+
   /// A drawer, menu or panel opening: soft rising bubbles.
   drawer('drawer'),
   purchase('purchase'),

@@ -399,7 +399,7 @@ class _BotsSheetState extends State<_BotsSheet> {
   Widget build(BuildContext context) {
     final colors = ludoSeatColors(_players);
     final seats = _offlineSeats(_players, _mySeat, _friends, '');
-    return _SheetShell(
+    return LobbySheetShell(
       icon: Icons.smart_toy_rounded,
       color: const Color(0xFF2E8FE0),
       title: strings.ludoLobbyPlayOffline,
@@ -551,7 +551,7 @@ class _OnlineSheetState extends State<_OnlineSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return _SheetShell(
+    return LobbySheetShell(
       icon: Icons.public_rounded,
       color: const Color(0xFF1FB877),
       title: strings.ludoLobbyPlayOnline,
@@ -623,12 +623,12 @@ class _FriendsSheetState extends State<_FriendsSheet> {
     final code = _code.text;
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: _SheetShell(
+      child: LobbySheetShell(
         icon: Icons.group_rounded,
         color: const Color(0xFF7B5CFF),
         title: strings.ludoLobbyPlayWithFriends,
         children: [
-          _TabSwitch(
+          LobbyTabSwitch(
             joining: _joining,
             onChanged: (j) {
               setState(() => _joining = j);
@@ -750,8 +750,12 @@ class _FriendsSheetState extends State<_FriendsSheet> {
   }
 }
 
-class _TabSwitch extends StatelessWidget {
-  const _TabSwitch({required this.joining, required this.onChanged});
+class LobbyTabSwitch extends StatelessWidget {
+  const LobbyTabSwitch({
+    super.key,
+    required this.joining,
+    required this.onChanged,
+  });
 
   final bool joining;
   final ValueChanged<bool> onChanged;
@@ -817,8 +821,9 @@ class _TabSwitch extends StatelessWidget {
   }
 }
 
-class _SheetShell extends StatelessWidget {
-  const _SheetShell({
+class LobbySheetShell extends StatelessWidget {
+  const LobbySheetShell({
+    super.key,
     required this.icon,
     required this.color,
     required this.title,

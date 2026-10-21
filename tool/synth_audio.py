@@ -665,8 +665,51 @@ def make_sfx_ludo_fun():
     sfx("finish", delay_reverb(x), 0.8)
 
 
+def make_sfx_cards():
+    """The card table's sounds. Seeded on their own, like the others."""
+    random.seed(31)
+
+    # Deal: a quick soft flick of card on felt.
+    x = buf(0.14)
+    add(x, biquad(noise(0.06, 0.018, attack=0.002), "hp", 2600, 0.8), 0.0, 0.8)
+    add(x, biquad(noise(0.05, 0.02, attack=0.004), "bp", 1200, 1.5), 0.01, 0.3)
+    sfx("card_deal", x, 0.55)
+
+    # Play: the card snapped down on the pile.
+    x = buf(0.3)
+    add(x, biquad(noise(0.08, 0.02, attack=0.001), "bp", 1800, 1.2), 0.0, 1.0)
+    add(x, tone(lambda t: 190 - 80 * t, 0.12, 0.035, attack=0.001), 0.0, 0.45)
+    add(x, biquad(noise(0.04, 0.01), "hp", 4000, 0.7), 0.0, 0.35)
+    sfx("card_play", x, 0.75)
+
+    # Draw: a card sliding off the deck.
+    x = buf(0.32)
+    add(x, biquad(noise(0.28, 0.12, attack=0.05), "bp", lambda t: 900 + 2600 * t / 0.28, 1.4), 0.0, 0.9)
+    sfx("card_draw", x, 0.6)
+
+    # Wild: a sparkling swirl rising, then a bright chord.
+    x = buf(1.0)
+    for i, n in enumerate(("C5", "E5", "G5", "B5", "D6", "G6")):
+        add(x, bell(note(n), 0.5, 0.18), i * 0.045, 0.35)
+    add(x, biquad(noise(0.5, 0.3, attack=0.15), "bp", lambda t: 1200 + 5000 * t / 0.5, 2.0), 0.0, 0.35)
+    for n in ("G4", "B4", "D5"):
+        add(x, biquad(tone(lambda t, f=note(n): f, 0.6, 0.3, "saw", attack=0.01), "lp", 2800), 0.3, 0.15)
+    sfx("card_wild", delay_reverb(x), 0.75)
+
+    # Last card: a cheeky rising two-note call.
+    x = buf(0.6)
+    add(x, bubble(note("E5") * 0.5, 0.14, 1.5, 0.05), 0.0, 0.6)
+    add(x, bell(note("A5"), 0.4, 0.15), 0.12, 0.55)
+    add(x, bell(note("E6"), 0.4, 0.18), 0.12, 0.3)
+    sfx("last_card", delay_reverb(x), 0.65)
+
+
 if __name__ == "__main__":
     import sys
+
+    if sys.argv[1:] == ["cards"]:
+        make_sfx_cards()
+        sys.exit(0)
 
     if sys.argv[1:] == ["ludo"]:
         # Only Ludo's newer sounds, leaving the rest as they are.
@@ -684,4 +727,5 @@ if __name__ == "__main__":
     make_sfx_hologram()
     make_sfx_hologram_ambience()
     make_sfx_ludo_fun()
+    make_sfx_cards()
     # (coins_out, a gift sent, is a recording: tool/recorded_sfx.py.)

@@ -6901,4 +6901,179 @@ class L10nEn extends L10n {
 
   @override
   String get chipChatGetMaestro => 'Chip Maestro: 200 chats a day';
+
+  @override
+  String get eightsConnectionLost => 'Connection lost. Reconnecting…';
+
+  @override
+  String get eightsNotFound => 'We couldn\'t find that game.';
+
+  @override
+  String get eightsThatCardDidntGo =>
+      'That card didn\'t go through. Here\'s the table as it is.';
+
+  @override
+  String get eightsCouldntDraw => 'Couldn\'t draw a card. Try again.';
+
+  @override
+  String get eightsCouldntPass => 'Couldn\'t pass. Try again.';
+
+  @override
+  String get eightsPass => 'Pass';
+
+  @override
+  String get homeCrazyEights => 'Crazy Eights';
+
+  @override
+  String get homeEightsTheTableIsWaiting =>
+      'The card table is waiting for you.';
+
+  @override
+  String get homeEightsAreWild => 'Eights are wild';
+
+  @override
+  String get ludoPlayerEightsWins => 'Crazy Eights wins';
+
+  @override
+  String get eightsOutOfTimeDrew =>
+      'Out of time: you drew a card and your turn passed.';
+
+  @override
+  String eightsLeaveLoseEntry(int coins) {
+    return 'You\'ll lose your $coins coin entry and the game goes on without you.';
+  }
+
+  @override
+  String get eightsLeaveLoseGame =>
+      'You\'ll lose this game, and it goes on without you.';
+
+  @override
+  String get eightsShuffling => 'Shuffling the cards…';
+
+  @override
+  String get eightsLastCard => 'Last card!';
+
+  @override
+  String get eightsSpades => 'Spades';
+
+  @override
+  String get eightsHearts => 'Hearts';
+
+  @override
+  String get eightsDiamonds => 'Diamonds';
+
+  @override
+  String get eightsClubs => 'Clubs';
+
+  @override
+  String get eightsYouHaveOneLeft => 'Last card! One more and you win';
+
+  @override
+  String get eightsNothingGoesPassing => 'Nothing goes: passing…';
+
+  @override
+  String get eightsPlayOrPass => 'Play a glowing card, or pass';
+
+  @override
+  String get eightsNothingGoesDraw => 'Nothing goes: tap the deck to draw';
+
+  @override
+  String eightsPlayASuitOrEight(String suit) {
+    return 'Your turn: play $suit, or an eight';
+  }
+
+  @override
+  String eightsMatchSuitOrRank(String suit, String rank) {
+    return 'Your turn: $suit or a $rank, or an eight';
+  }
+
+  @override
+  String get eightsPickASuit => 'Pick a suit';
+
+  @override
+  String get eightsPickASuitHint =>
+      'Everyone has to follow it. The one you hold most of is marked.';
+
+  @override
+  String get eightsYouWentOut => 'You played your last card first!';
+
+  @override
+  String eightsWentOut(String name) {
+    return '$name played their last card first.';
+  }
+
+  @override
+  String eightsNameLeft(String name) {
+    return '$name (left)';
+  }
+
+  @override
+  String get eightsRulesTitle => 'How to play Crazy Eights';
+
+  @override
+  String get eightsRulesMatchTitle => 'Match the pile';
+
+  @override
+  String get eightsRulesMatchBody =>
+      'On your turn, play a card of the same suit or the same number as the top card. On a 7 of hearts: any heart, or any 7.';
+
+  @override
+  String get eightsRulesWildTitle => 'Eights are wild';
+
+  @override
+  String get eightsRulesWildBody =>
+      'An eight goes on anything (it has a rainbow rim). Play one and pick the suit everyone has to follow next.';
+
+  @override
+  String get eightsRulesDrawTitle => 'Can\'t go? Draw one';
+
+  @override
+  String get eightsRulesDrawBody =>
+      'Tap the deck to draw a card. If something fits now, play it; if not, your turn passes.';
+
+  @override
+  String get eightsRulesTimeBody =>
+      'The ring around your timer is your clock. Run out and you draw a card and your turn passes. Three in a row and you\'re out.';
+
+  @override
+  String get eightsRulesWinTitle => 'First to empty their hand wins';
+
+  @override
+  String get eightsRulesWinBody =>
+      'Get rid of every card to win the table, and the pot if there\'s an entry. Down to one? Everyone hears \"Last card!\"';
+
+  @override
+  String get eightsRulesLeaveBody =>
+      'If you leave, you lose your entry. Your cards go back in the deck and the others play on.';
+
+  @override
+  String get eightsLobbyOnlineSubtitle => 'Join a table of 2, 3 or 4';
+
+  @override
+  String get eightsLobbyOfflineSubtitle => 'Against bots, on this phone';
+
+  @override
+  String get eightsLobbyChatVoice => 'Chat & voice';
+
+  @override
+  String eightsLobbyBotsFill(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bots',
+      one: '1 bot',
+    );
+    return 'You and $_temp0';
+  }
+
+  @override
+  String eightsRoomComePlay(String code, Object link) {
+    return 'Come play Crazy Eights with me in Utopia! Room code: $code\n$link';
+  }
+
+  @override
+  String get eightsRoomInUtopia => 'Crazy Eights in Utopia';
+
+  @override
+  String get eightsRoomDeal => 'Deal the cards';
 }

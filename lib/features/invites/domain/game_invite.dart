@@ -8,7 +8,8 @@ const kInviteHost = 'utopia.kaivon.app';
 /// The games a link can invite someone to.
 enum InviteGame {
   ludo('ludo'),
-  doodle('doodle');
+  doodle('doodle'),
+  eights('eights');
 
   const InviteGame(this.key);
 
@@ -18,6 +19,7 @@ enum InviteGame {
   String get title => switch (this) {
     InviteGame.ludo => strings.gameInviteLudo,
     InviteGame.doodle => strings.gameInviteGuessMyDoodle,
+    InviteGame.eights => strings.homeCrazyEights,
   };
 }
 

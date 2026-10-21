@@ -7,12 +7,14 @@ import '../../features/chess/presentation/widgets/chess_piece_art.dart';
 import '../../features/chess/presentation/widgets/chess_piece_styles.dart';
 import '../../features/checkers/domain/checkers_engine.dart';
 import '../../features/checkers/presentation/widgets/checkers_disc.dart';
+import '../../features/eights/domain/eights_engine.dart';
+import '../../features/eights/presentation/widgets/card_art.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../theme/utopia_themes.dart';
 import 'ambient_tick.dart';
 
-enum GameKind { chess, ludo, checkers, doodle }
+enum GameKind { chess, ludo, checkers, doodle, eights }
 
 /// A game's banner art: a little living diorama in the current world. A
 /// floating island drifts in the theme's sky with the game set up on top:
@@ -21,7 +23,9 @@ enum GameKind { chess, ludo, checkers, doodle }
 /// while the king and queen sway; for checkers a king double-jumping two
 /// pieces, which pop and come back for another go; for Guess My Doodle an
 /// easel where a pencil sketches a cat while guesses pop up around it, the
-/// last one right. A waterfall spills off the edge and sparkles rise.
+/// last one right; for Crazy Eights a fanned hand where a card flips up and
+/// sails onto the pile, now and then a rainbow eight. A waterfall spills off
+/// the edge and sparkles rise.
 class GameSceneArt extends StatefulWidget {
   const GameSceneArt({super.key, required this.game, this.height = 136});
 
@@ -167,6 +171,8 @@ class _DioramaPainter extends CustomPainter {
         _checkers(canvas, top, iw, h, t);
       case GameKind.doodle:
         _doodle(canvas, top, iw, h, t);
+      case GameKind.eights:
+        _eights(canvas, top, iw, h, t);
     }
     canvas.restore();
 
@@ -731,6 +737,119 @@ class _DioramaPainter extends CustomPainter {
     draws.sort((a, b) => a.$1.compareTo(b.$1));
     for (final (_, paint) in draws) {
       paint();
+    }
+  }
+
+  /// A card table: a hand of cards fanned at the back, the deck to one
+  /// side and the pile to the other. Every couple of seconds a card lifts
+  /// out of the hand, flips and sails onto the pile; every fourth one is a
+  /// wild eight, which flashes its suit.
+  void _eights(Canvas canvas, Offset top, double iw, double h, double t) {
+    final dpr =
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    final cw = (iw * 0.15).roundToDouble();
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: top.translate(0, -h * 0.06),
+        width: iw * 0.86,
+        height: h * 0.3,
+      ),
+      Paint()..color = const Color(0xFF1F6B57),
+    );
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: top.translate(0, -h * 0.07),
+        width: iw * 0.78,
+        height: h * 0.24,
+      ),
+      Paint()..color = const Color(0xFF2E9C7D),
+    );
+    const plays = [
+      PlayingCard(7, CardSuit.hearts),
+      PlayingCard(7, CardSuit.clubs),
+      PlayingCard(12, CardSuit.clubs),
+      PlayingCard(8, CardSuit.diamonds),
+      PlayingCard(1, CardSuit.diamonds),
+      PlayingCard(13, CardSuit.diamonds),
+      PlayingCard(13, CardSuit.spades),
+      PlayingCard(8, CardSuit.hearts),
+    ];
+    const period = 2.2;
+    final n = (t / period).floor();
+    final f = (t % period) / period;
+    final playing = plays[n % plays.length];
+    final under = plays[(n - 1) % plays.length];
+    final deck = top.translate(-iw * 0.24, -h * 0.07);
+    final pile = top.translate(iw * 0.24, -h * 0.07);
+    final hand = top.translate(0, -h * 0.34);
+
+    for (var i = 0; i < 3; i++) {
+      drawCard(
+        canvas,
+        null,
+        at: deck.translate(-i * 1.2, -i * 1.6),
+        width: cw * 0.9,
+        dpr: dpr,
+        angle: -0.08,
+      );
+    }
+    drawCard(canvas, under, at: pile, width: cw, dpr: dpr, angle: 0.1);
+
+    // The hand, fanned, bobbing a little.
+    final fan = [
+      const PlayingCard(1, CardSuit.spades),
+      const PlayingCard(10, CardSuit.hearts),
+      playing,
+      const PlayingCard(4, CardSuit.clubs),
+      const PlayingCard(11, CardSuit.diamonds),
+    ];
+    for (var i = 0; i < fan.length; i++) {
+      if (i == 2 && f > 0.15) continue;
+      final k = i - 2;
+      final lift = i == 2 ? math.sin(f / 0.15 * math.pi / 2) * h * 0.05 : 0.0;
+      drawCard(
+        canvas,
+        fan[i],
+        at: hand.translate(
+          k * cw * 0.55,
+          k * k * cw * 0.06 - lift + math.sin(t * 2 + i) * 1.5,
+        ),
+        width: cw,
+        dpr: dpr,
+        angle: k * 0.16,
+      );
+    }
+
+    // The card flying to the pile, turning as it goes.
+    if (f > 0.15 && f < 0.6) {
+      final p = Curves.easeInOut.transform((f - 0.15) / 0.45);
+      final at =
+          Offset.lerp(hand, pile, p)! -
+          Offset(0, math.sin(p * math.pi) * h * 0.22);
+      canvas.save();
+      canvas.translate(at.dx, at.dy);
+      canvas.rotate(p * math.pi * 2 + 0.1 * p);
+      drawCard(canvas, playing, at: Offset.zero, width: cw, dpr: dpr);
+      canvas.restore();
+    } else if (f >= 0.6) {
+      drawCard(canvas, playing, at: pile, width: cw, dpr: dpr, angle: -0.06);
+      // A wild eight: its suit flashes over the pile.
+      if (playing.isEight) {
+        final b = ((f - 0.6) / 0.35).clamp(0.0, 1.0);
+        final r = cw * (0.3 + 0.5 * Curves.easeOutBack.transform(b));
+        canvas.drawCircle(
+          pile,
+          r,
+          Paint()..color = Colors.white.withValues(alpha: 0.85 * (1 - b)),
+        );
+        drawSuit(
+          canvas,
+          playing.suit,
+          pile,
+          r * 1.2,
+          color: suitColor(playing.suit).withValues(alpha: 1 - b),
+        );
+      }
     }
   }
 

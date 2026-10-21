@@ -1,3 +1,4 @@
+import '../../eights/presentation/controllers/eights_match_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -49,6 +50,8 @@ class _JoinInviteScreenState extends ConsumerState<JoinInviteScreen> {
           '/ludo/room/${await ref.read(ludoRepositoryProvider).joinRoom(invite.code)}',
         InviteGame.doodle =>
           '/doodle-game/${await ref.read(doodleGameRepositoryProvider).join(invite.code)}',
+        InviteGame.eights =>
+          '/eights/room/${await ref.read(eightsRepositoryProvider).joinRoom(invite.code)}',
       };
       if (!mounted) return;
       ref.read(gameAudioProvider).play(Sfx.reaction);
@@ -61,6 +64,7 @@ class _JoinInviteScreenState extends ConsumerState<JoinInviteScreen> {
         () => _error = switch (invite.game) {
           InviteGame.ludo => ludoErrorText(e),
           InviteGame.doodle => doodleErrorText(e),
+          InviteGame.eights => ludoErrorText(e),
         },
       );
     }

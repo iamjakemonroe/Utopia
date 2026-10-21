@@ -9236,5 +9236,238 @@
   "chipChatGetMaestro": "Chip Maestro: 200 chats a day",
   "@chipChatGetMaestro": {
     "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "eightsConnectionLost": "Connection lost. Reconnecting\u2026",
+  "@eightsConnectionLost": {
+    "description": "Crazy Eights: the live connection to the game dropped."
+  },
+  "eightsNotFound": "We couldn't find that game.",
+  "@eightsNotFound": {
+    "description": "Crazy Eights: the game no longer exists."
+  },
+  "eightsThatCardDidntGo": "That card didn't go through. Here's the table as it is.",
+  "@eightsThatCardDidntGo": {
+    "description": "Crazy Eights: playing a card failed; the table was reloaded."
+  },
+  "eightsCouldntDraw": "Couldn't draw a card. Try again.",
+  "@eightsCouldntDraw": {
+    "description": "Crazy Eights: drawing failed."
+  },
+  "eightsCouldntPass": "Couldn't pass. Try again.",
+  "@eightsCouldntPass": {
+    "description": "Crazy Eights: passing failed."
+  },
+  "eightsPass": "Pass",
+  "@eightsPass": {
+    "description": "Crazy Eights button: end your turn after drawing a card."
+  },
+  "homeCrazyEights": "Crazy Eights",
+  "@homeCrazyEights": {
+    "description": "The card game's name."
+  },
+  "homeEightsTheTableIsWaiting": "The card table is waiting for you.",
+  "@homeEightsTheTableIsWaiting": {
+    "description": "Home: an unfinished Crazy Eights game."
+  },
+  "homeEightsAreWild": "Eights are wild",
+  "@homeEightsAreWild": {
+    "description": "A fact on the Crazy Eights tile on home."
+  },
+  "ludoPlayerEightsWins": "Crazy Eights wins",
+  "@ludoPlayerEightsWins": {
+    "description": "Player card stat at the card table."
+  },
+  "eightsOutOfTimeDrew": "Out of time: you drew a card and your turn passed.",
+  "@eightsOutOfTimeDrew": {
+    "description": "Crazy Eights toast when the player's turn timed out."
+  },
+  "eightsLeaveLoseEntry": "You'll lose your {coins} coin entry and the game goes on without you.",
+  "@eightsLeaveLoseEntry": {
+    "description": "Crazy Eights: confirm leaving a game with an entry.",
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "eightsLeaveLoseGame": "You'll lose this game, and it goes on without you.",
+  "@eightsLeaveLoseGame": {
+    "description": "Crazy Eights: confirm leaving a free game."
+  },
+  "eightsShuffling": "Shuffling the cards\u2026",
+  "@eightsShuffling": {
+    "description": "Crazy Eights loading label."
+  },
+  "eightsLastCard": "Last card!",
+  "@eightsLastCard": {
+    "description": "Crazy Eights call when a player is down to one card."
+  },
+  "eightsSpades": "Spades",
+  "@eightsSpades": {
+    "description": "Card suit."
+  },
+  "eightsHearts": "Hearts",
+  "@eightsHearts": {
+    "description": "Card suit."
+  },
+  "eightsDiamonds": "Diamonds",
+  "@eightsDiamonds": {
+    "description": "Card suit."
+  },
+  "eightsClubs": "Clubs",
+  "@eightsClubs": {
+    "description": "Card suit."
+  },
+  "eightsYouHaveOneLeft": "Last card! One more and you win",
+  "@eightsYouHaveOneLeft": {
+    "description": "Crazy Eights status when the player is down to one card."
+  },
+  "eightsNothingGoesPassing": "Nothing goes: passing\u2026",
+  "@eightsNothingGoesPassing": {
+    "description": "Crazy Eights status after drawing a card that doesn't fit."
+  },
+  "eightsPlayOrPass": "Play a glowing card, or pass",
+  "@eightsPlayOrPass": {
+    "description": "Crazy Eights status after drawing a card that fits."
+  },
+  "eightsNothingGoesDraw": "Nothing goes: tap the deck to draw",
+  "@eightsNothingGoesDraw": {
+    "description": "Crazy Eights status when no card in hand fits."
+  },
+  "eightsPlayASuitOrEight": "Your turn: play {suit}, or an eight",
+  "@eightsPlayASuitOrEight": {
+    "description": "Crazy Eights status after someone played an eight and named a suit.",
+    "placeholders": {
+      "suit": {
+        "type": "String"
+      }
+    }
+  },
+  "eightsMatchSuitOrRank": "Your turn: {suit} or a {rank}, or an eight",
+  "@eightsMatchSuitOrRank": {
+    "description": "Crazy Eights status: what can be played.",
+    "placeholders": {
+      "suit": {
+        "type": "String"
+      },
+      "rank": {
+        "type": "String"
+      }
+    }
+  },
+  "eightsPickASuit": "Pick a suit",
+  "@eightsPickASuit": {
+    "description": "Crazy Eights: title when playing an eight."
+  },
+  "eightsPickASuitHint": "Everyone has to follow it. The one you hold most of is marked.",
+  "@eightsPickASuitHint": {
+    "description": "Crazy Eights: under the suit picker title."
+  },
+  "eightsYouWentOut": "You played your last card first!",
+  "@eightsYouWentOut": {
+    "description": "Crazy Eights game over subtitle for the winner."
+  },
+  "eightsWentOut": "{name} played their last card first.",
+  "@eightsWentOut": {
+    "description": "Crazy Eights game over subtitle.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eightsNameLeft": "{name} (left)",
+  "@eightsNameLeft": {
+    "description": "Crazy Eights standings: a player who left.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eightsRulesTitle": "How to play Crazy Eights",
+  "@eightsRulesTitle": {
+    "description": "Crazy Eights rules title."
+  },
+  "eightsRulesMatchTitle": "Match the pile",
+  "@eightsRulesMatchTitle": {
+    "description": "Crazy Eights rule title."
+  },
+  "eightsRulesMatchBody": "On your turn, play a card of the same suit or the same number as the top card. On a 7 of hearts: any heart, or any 7.",
+  "@eightsRulesMatchBody": {
+    "description": "Crazy Eights rule."
+  },
+  "eightsRulesWildTitle": "Eights are wild",
+  "@eightsRulesWildTitle": {
+    "description": "Crazy Eights rule title."
+  },
+  "eightsRulesWildBody": "An eight goes on anything (it has a rainbow rim). Play one and pick the suit everyone has to follow next.",
+  "@eightsRulesWildBody": {
+    "description": "Crazy Eights rule."
+  },
+  "eightsRulesDrawTitle": "Can't go? Draw one",
+  "@eightsRulesDrawTitle": {
+    "description": "Crazy Eights rule title."
+  },
+  "eightsRulesDrawBody": "Tap the deck to draw a card. If something fits now, play it; if not, your turn passes.",
+  "@eightsRulesDrawBody": {
+    "description": "Crazy Eights rule."
+  },
+  "eightsRulesTimeBody": "The ring around your timer is your clock. Run out and you draw a card and your turn passes. Three in a row and you're out.",
+  "@eightsRulesTimeBody": {
+    "description": "Crazy Eights rule."
+  },
+  "eightsRulesWinTitle": "First to empty their hand wins",
+  "@eightsRulesWinTitle": {
+    "description": "Crazy Eights rule title."
+  },
+  "eightsRulesWinBody": "Get rid of every card to win the table, and the pot if there's an entry. Down to one? Everyone hears \"Last card!\"",
+  "@eightsRulesWinBody": {
+    "description": "Crazy Eights rule."
+  },
+  "eightsRulesLeaveBody": "If you leave, you lose your entry. Your cards go back in the deck and the others play on.",
+  "@eightsRulesLeaveBody": {
+    "description": "Crazy Eights rule."
+  },
+  "eightsLobbyOnlineSubtitle": "Join a table of 2, 3 or 4",
+  "@eightsLobbyOnlineSubtitle": {
+    "description": "Crazy Eights lobby: under Play online."
+  },
+  "eightsLobbyOfflineSubtitle": "Against bots, on this phone",
+  "@eightsLobbyOfflineSubtitle": {
+    "description": "Crazy Eights lobby: under Play offline."
+  },
+  "eightsLobbyChatVoice": "Chat & voice",
+  "@eightsLobbyChatVoice": {
+    "description": "Crazy Eights lobby fact."
+  },
+  "eightsLobbyBotsFill": "You and {count, plural, =1{1 bot} other{{count} bots}}",
+  "@eightsLobbyBotsFill": {
+    "description": "Crazy Eights offline setup: who you'll play.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eightsRoomComePlay": "Come play Crazy Eights with me in Utopia! Room code: {code}\n{link}",
+  "@eightsRoomComePlay": {
+    "description": "Crazy Eights room invite text.",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "link": {
+        "type": "Object"
+      }
+    }
+  },
+  "eightsRoomInUtopia": "Crazy Eights in Utopia",
+  "@eightsRoomInUtopia": {
+    "description": "Crazy Eights invite subject."
+  },
+  "eightsRoomDeal": "Deal the cards",
+  "@eightsRoomDeal": {
+    "description": "Crazy Eights room: the host's start button."
   }
 }

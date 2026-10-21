@@ -51,6 +51,32 @@ Future<void> showLudoPlayerCard({
   );
 }
 
+/// The same card at the card table: Crazy Eights stats, in the seat's
+/// color.
+Future<void> showEightsPlayerCard({
+  required BuildContext context,
+  required WidgetRef ref,
+  required String userId,
+  required Color color,
+  required String matchId,
+  required bool muted,
+  required VoidCallback onToggleMute,
+}) {
+  return showBouncyDialog<void>(
+    context: context,
+    audio: ref.read(gameAudioProvider),
+    builder: (context) => _PlayerCard(
+      userId: userId,
+      game: GameKind.eights,
+      accent: color,
+      side: strings.homeCrazyEights,
+      matchId: matchId,
+      muted: muted,
+      onToggleMute: onToggleMute,
+    ),
+  );
+}
+
 /// The same card in a chess (or checkers) game: that game's stats, and
 /// which side they play. [white] is the side that moves first (dark in
 /// checkers).
@@ -139,7 +165,10 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
       GameKind.ludo =>
         StoreCatalog.ludoSet(pieceSetFor(profile))?.name ??
             strings.ludoPlayerClassicGloss,
-      GameKind.chess || GameKind.checkers || GameKind.doodle =>
+      GameKind.chess ||
+      GameKind.checkers ||
+      GameKind.doodle ||
+      GameKind.eights =>
         StoreCatalog.chessSet(
               profile?['equipped_chess_pieces'] as String? ?? 'classic',
             )?.name ??
@@ -275,6 +304,7 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
                           GameKind.chess => strings.ludoPlayerChessWins,
                           GameKind.checkers => strings.ludoPlayerCheckersWins,
                           GameKind.doodle => strings.ludoPlayerDoodleWins,
+                          GameKind.eights => strings.ludoPlayerEightsWins,
                         },
                         value: won == null ? '–' : '$won',
                       ),

@@ -29,6 +29,9 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/guess_doodle/presentation/guess_doodle_lobby_screen.dart';
 import '../../features/guess_doodle/presentation/chip_doodle_screen.dart';
 import '../../features/guess_doodle/presentation/guess_doodle_screen.dart';
+import '../../features/eights/presentation/screens/eights_lobby_screen.dart';
+import '../../features/eights/presentation/screens/eights_match_screen.dart';
+import '../../features/eights/presentation/screens/eights_room_screen.dart';
 import '../../features/ludo/presentation/screens/ludo_lobby_screen.dart';
 import '../../features/ludo/presentation/screens/ludo_match_screen.dart';
 import '../../features/ludo/presentation/screens/ludo_room_screen.dart';
@@ -279,6 +282,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/ludo/:matchId',
         builder: (context, state) =>
             LudoMatchScreen(matchId: state.pathParameters['matchId']!),
+      ),
+      GoRoute(
+        path: '/eights',
+        builder: (context, state) => const EightsLobbyScreen(),
+      ),
+      GoRoute(
+        path: '/eights/room/:roomId',
+        builder: (context, state) =>
+            EightsRoomScreen(roomId: state.pathParameters['roomId']!),
+      ),
+      GoRoute(
+        path: '/eights/:matchId',
+        builder: (context, state) =>
+            EightsMatchScreen(matchId: state.pathParameters['matchId']!),
       ),
       // Invite links (https://utopia.kaivon.app/join?game=ludo&code=...),
       // opened by the phone straight into the app.

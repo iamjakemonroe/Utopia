@@ -12205,6 +12205,294 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Chip Maestro: 200 chats a day'**
   String get chipChatGetMaestro;
+
+  /// Crazy Eights: the live connection to the game dropped.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection lost. Reconnecting…'**
+  String get eightsConnectionLost;
+
+  /// Crazy Eights: the game no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find that game.'**
+  String get eightsNotFound;
+
+  /// Crazy Eights: playing a card failed; the table was reloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'That card didn\'t go through. Here\'s the table as it is.'**
+  String get eightsThatCardDidntGo;
+
+  /// Crazy Eights: drawing failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t draw a card. Try again.'**
+  String get eightsCouldntDraw;
+
+  /// Crazy Eights: passing failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t pass. Try again.'**
+  String get eightsCouldntPass;
+
+  /// Crazy Eights button: end your turn after drawing a card.
+  ///
+  /// In en, this message translates to:
+  /// **'Pass'**
+  String get eightsPass;
+
+  /// The card game's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Crazy Eights'**
+  String get homeCrazyEights;
+
+  /// Home: an unfinished Crazy Eights game.
+  ///
+  /// In en, this message translates to:
+  /// **'The card table is waiting for you.'**
+  String get homeEightsTheTableIsWaiting;
+
+  /// A fact on the Crazy Eights tile on home.
+  ///
+  /// In en, this message translates to:
+  /// **'Eights are wild'**
+  String get homeEightsAreWild;
+
+  /// Player card stat at the card table.
+  ///
+  /// In en, this message translates to:
+  /// **'Crazy Eights wins'**
+  String get ludoPlayerEightsWins;
+
+  /// Crazy Eights toast when the player's turn timed out.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of time: you drew a card and your turn passed.'**
+  String get eightsOutOfTimeDrew;
+
+  /// Crazy Eights: confirm leaving a game with an entry.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll lose your {coins} coin entry and the game goes on without you.'**
+  String eightsLeaveLoseEntry(int coins);
+
+  /// Crazy Eights: confirm leaving a free game.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll lose this game, and it goes on without you.'**
+  String get eightsLeaveLoseGame;
+
+  /// Crazy Eights loading label.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffling the cards…'**
+  String get eightsShuffling;
+
+  /// Crazy Eights call when a player is down to one card.
+  ///
+  /// In en, this message translates to:
+  /// **'Last card!'**
+  String get eightsLastCard;
+
+  /// Card suit.
+  ///
+  /// In en, this message translates to:
+  /// **'Spades'**
+  String get eightsSpades;
+
+  /// Card suit.
+  ///
+  /// In en, this message translates to:
+  /// **'Hearts'**
+  String get eightsHearts;
+
+  /// Card suit.
+  ///
+  /// In en, this message translates to:
+  /// **'Diamonds'**
+  String get eightsDiamonds;
+
+  /// Card suit.
+  ///
+  /// In en, this message translates to:
+  /// **'Clubs'**
+  String get eightsClubs;
+
+  /// Crazy Eights status when the player is down to one card.
+  ///
+  /// In en, this message translates to:
+  /// **'Last card! One more and you win'**
+  String get eightsYouHaveOneLeft;
+
+  /// Crazy Eights status after drawing a card that doesn't fit.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing goes: passing…'**
+  String get eightsNothingGoesPassing;
+
+  /// Crazy Eights status after drawing a card that fits.
+  ///
+  /// In en, this message translates to:
+  /// **'Play a glowing card, or pass'**
+  String get eightsPlayOrPass;
+
+  /// Crazy Eights status when no card in hand fits.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing goes: tap the deck to draw'**
+  String get eightsNothingGoesDraw;
+
+  /// Crazy Eights status after someone played an eight and named a suit.
+  ///
+  /// In en, this message translates to:
+  /// **'Your turn: play {suit}, or an eight'**
+  String eightsPlayASuitOrEight(String suit);
+
+  /// Crazy Eights status: what can be played.
+  ///
+  /// In en, this message translates to:
+  /// **'Your turn: {suit} or a {rank}, or an eight'**
+  String eightsMatchSuitOrRank(String suit, String rank);
+
+  /// Crazy Eights: title when playing an eight.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a suit'**
+  String get eightsPickASuit;
+
+  /// Crazy Eights: under the suit picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone has to follow it. The one you hold most of is marked.'**
+  String get eightsPickASuitHint;
+
+  /// Crazy Eights game over subtitle for the winner.
+  ///
+  /// In en, this message translates to:
+  /// **'You played your last card first!'**
+  String get eightsYouWentOut;
+
+  /// Crazy Eights game over subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} played their last card first.'**
+  String eightsWentOut(String name);
+
+  /// Crazy Eights standings: a player who left.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (left)'**
+  String eightsNameLeft(String name);
+
+  /// Crazy Eights rules title.
+  ///
+  /// In en, this message translates to:
+  /// **'How to play Crazy Eights'**
+  String get eightsRulesTitle;
+
+  /// Crazy Eights rule title.
+  ///
+  /// In en, this message translates to:
+  /// **'Match the pile'**
+  String get eightsRulesMatchTitle;
+
+  /// Crazy Eights rule.
+  ///
+  /// In en, this message translates to:
+  /// **'On your turn, play a card of the same suit or the same number as the top card. On a 7 of hearts: any heart, or any 7.'**
+  String get eightsRulesMatchBody;
+
+  /// Crazy Eights rule title.
+  ///
+  /// In en, this message translates to:
+  /// **'Eights are wild'**
+  String get eightsRulesWildTitle;
+
+  /// Crazy Eights rule.
+  ///
+  /// In en, this message translates to:
+  /// **'An eight goes on anything (it has a rainbow rim). Play one and pick the suit everyone has to follow next.'**
+  String get eightsRulesWildBody;
+
+  /// Crazy Eights rule title.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t go? Draw one'**
+  String get eightsRulesDrawTitle;
+
+  /// Crazy Eights rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the deck to draw a card. If something fits now, play it; if not, your turn passes.'**
+  String get eightsRulesDrawBody;
+
+  /// Crazy Eights rule.
+  ///
+  /// In en, this message translates to:
+  /// **'The ring around your timer is your clock. Run out and you draw a card and your turn passes. Three in a row and you\'re out.'**
+  String get eightsRulesTimeBody;
+
+  /// Crazy Eights rule title.
+  ///
+  /// In en, this message translates to:
+  /// **'First to empty their hand wins'**
+  String get eightsRulesWinTitle;
+
+  /// Crazy Eights rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Get rid of every card to win the table, and the pot if there\'s an entry. Down to one? Everyone hears \"Last card!\"'**
+  String get eightsRulesWinBody;
+
+  /// Crazy Eights rule.
+  ///
+  /// In en, this message translates to:
+  /// **'If you leave, you lose your entry. Your cards go back in the deck and the others play on.'**
+  String get eightsRulesLeaveBody;
+
+  /// Crazy Eights lobby: under Play online.
+  ///
+  /// In en, this message translates to:
+  /// **'Join a table of 2, 3 or 4'**
+  String get eightsLobbyOnlineSubtitle;
+
+  /// Crazy Eights lobby: under Play offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Against bots, on this phone'**
+  String get eightsLobbyOfflineSubtitle;
+
+  /// Crazy Eights lobby fact.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat & voice'**
+  String get eightsLobbyChatVoice;
+
+  /// Crazy Eights offline setup: who you'll play.
+  ///
+  /// In en, this message translates to:
+  /// **'You and {count, plural, =1{1 bot} other{{count} bots}}'**
+  String eightsLobbyBotsFill(int count);
+
+  /// Crazy Eights room invite text.
+  ///
+  /// In en, this message translates to:
+  /// **'Come play Crazy Eights with me in Utopia! Room code: {code}\n{link}'**
+  String eightsRoomComePlay(String code, Object link);
+
+  /// Crazy Eights invite subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Crazy Eights in Utopia'**
+  String get eightsRoomInUtopia;
+
+  /// Crazy Eights room: the host's start button.
+  ///
+  /// In en, this message translates to:
+  /// **'Deal the cards'**
+  String get eightsRoomDeal;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

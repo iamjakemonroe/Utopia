@@ -262,7 +262,7 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
               bottom: AppSpacing.xl,
             ),
             children: [
-              _CodeCard(
+              RoomCodeCard(
                 code: code,
                 onCopy: () => _copy(code),
                 onShare: () => _share(code),
@@ -365,8 +365,9 @@ class _LudoRoomScreenState extends ConsumerState<LudoRoomScreen> {
   }
 }
 
-class _CodeCard extends StatelessWidget {
-  const _CodeCard({
+class RoomCodeCard extends StatelessWidget {
+  const RoomCodeCard({
+    super.key,
     required this.code,
     required this.onCopy,
     required this.onShare,

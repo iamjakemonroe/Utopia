@@ -12,15 +12,17 @@ Built by Emmanuel Jake Okeowo, with Claude (Anthropic) as an AI coding agent.
 
 ## Highlights
 
-- **Real-time multiplayer games**: Chess, Checkers, Ludo (2 to 6 players)
-  and Guess My Doodle, a drawing-and-guessing party game for up to 20.
+- **Real-time multiplayer games**: Chess, Checkers, Ludo (2 to 6 players,
+  and play goes on for the places after the winner), Guess My Doodle, a
+  drawing-and-guessing party game for up to 20, and Crazy Eights, the first
+  card game (2 to 6; the server deals and keeps every hand hidden).
   Matchmaking, private rooms with share links, friend challenges that last
   10 minutes (and can be taken back), clocks and turn timers.
 - **Rankings**: Elo ratings for online chess, checkers and Guess My Doodle,
   tiers from Bronze to Legend, the top 100 on every board, and each
   player's stats as a hologram in their tier's aura.
 - **Bots and house players**: chess and checkers engines (negamax with
-  alpha-beta) at three levels, Ludo tables filled with bots, and house
+  alpha-beta) at three levels, Ludo and card tables filled with bots, and house
   players when no one's free (always labelled, never on prize boards).
 - **Living worlds**: 17 hand-animated worlds drawn entirely in code, from a
   neon city and the deep sea to a haunted Halloween hollow and a snowy
@@ -66,7 +68,7 @@ lib/
   core/        Shared services and UI: theme and worlds, audio, router,
                profiles, notifications, the Chip mascot and widgets
   features/    One folder per feature, each split into data / domain /
-               presentation (chess, checkers, ludo, guess_doodle, rankings,
+               presentation (chess, checkers, ludo, eights, guess_doodle, rankings,
                events, coins, store, auras, friends, chip, ...)
   l10n/        Every word the app shows (app_en.arb) and how it's read
 supabase/
