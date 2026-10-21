@@ -24,6 +24,7 @@ import 'package:utopia/app.dart';
 import 'package:utopia/core/bots/bots.dart';
 import 'package:utopia/core/config/env.dart';
 import 'package:utopia/core/router/app_router.dart';
+import 'package:utopia/core/settings/web_scale.dart';
 import 'package:utopia/core/theme/app_text_styles.dart';
 import 'package:utopia/core/theme/theme_controller.dart';
 import 'package:utopia/core/widgets/app_background.dart';
@@ -84,6 +85,9 @@ Future<void> main() async {
     ),
     'cards' || 'notifications' => const _Cards(),
     'chipshow' => const _ChipShow(),
+    // A Ludo table halfway through: pieces all over the board, so pieces
+    // are taken (and react) within moments.
+    'ludomid' => LudoMatchScreen(matchId: _midGame()),
     'chipdraws' => const ChipDoodleScreen(),
     // Home itself, as a signed-in player sees it (their profile made up;
     // friends, invites and games come back empty).
@@ -174,6 +178,10 @@ Future<void> main() async {
         activeGameProvider.overrideWith((ref) async => null),
         friendsOnlineProvider.overrideWith((ref) => Stream.value(const {})),
         chipDoodleRepositoryProvider.overrideWithValue(_Airplane()),
+        // &scale=2.6667 on a 1080x1920 window: a phone's screen, drawn
+        // at full size (for filming).
+        if (double.tryParse(query['scale'] ?? '') case final scale?)
+          webScaleProvider.overrideWith((ref) => _FilmScale(scale)),
       ],
       child: const UtopiaApp(),
     ),
@@ -181,6 +189,40 @@ Future<void> main() async {
 }
 
 const _perfUser = '00000000-0000-4000-8000-000000000001';
+
+String _midGame() {
+  const id = 'local-midgame';
+  const colors = [
+    LudoColor.red,
+    LudoColor.green,
+    LudoColor.yellow,
+    LudoColor.blue,
+  ];
+  final players = [for (final b in kLudoBots.take(4)) b.id];
+  final game = LudoState.initial(colors).copyWith(
+    tokens: {
+      LudoColor.red: const [4, 17, 29, -1],
+      LudoColor.green: const [9, 21, 38, -1],
+      LudoColor.yellow: const [2, 26, 34, -1],
+      LudoColor.blue: const [7, 14, 43, -1],
+    },
+  );
+  restoreLocalLudo('/ludo/$id', {
+    'players': players,
+    'colors': [for (final c in colors) c.name],
+    'human': players.first,
+    'game': game.toJson(),
+    'turn': 12,
+  });
+  return id;
+}
+
+/// The screen drawn [scale] times bigger, past the setting's limits.
+class _FilmScale extends WebScaleController {
+  _FilmScale(double scale) : super(null) {
+    state = scale;
+  }
+}
 
 /// Chip through his moods, a couple of seconds each, big in the world.
 class _ChipShow extends StatefulWidget {
