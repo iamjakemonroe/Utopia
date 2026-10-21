@@ -107,17 +107,23 @@ class _WebFrameWatchState extends ConsumerState<WebFrameWatch> {
           .currentConfiguration
           .uri
           .path;
-      return path
-          .split('/')
-          .map(
-            (part) =>
-                RegExp(r'^[0-9a-f-]{16,}$|^\d+$').hasMatch(part) ? ':id' : part,
-          )
-          .join('/');
+      // Asked every frame, so worked out only when the address changes.
+      if (path != _address) {
+        _address = path;
+        _addressShown = path
+            .split('/')
+            .map((part) => _id.hasMatch(part) ? ':id' : part)
+            .join('/');
+      }
+      return _addressShown;
     } catch (_) {
       return '?';
     }
   }
+
+  static final _id = RegExp(r'^[0-9a-f-]{16,}$|^\d+$');
+  String? _address;
+  String _addressShown = '?';
 
   void _onFrame(Duration stamp) {
     if (!_on) return;

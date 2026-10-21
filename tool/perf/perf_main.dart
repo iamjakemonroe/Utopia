@@ -33,6 +33,12 @@ import 'package:utopia/features/chess/domain/chess_types.dart';
 import 'package:utopia/features/chess/presentation/screens/chess_bot_screen.dart';
 import 'package:utopia/features/notifications/data/notification_repository.dart';
 import 'package:utopia/features/notifications/presentation/notifications_screen.dart';
+import 'package:utopia/core/profiles/profile_providers.dart';
+import 'package:utopia/features/auth/presentation/providers/auth_providers.dart';
+import 'package:utopia/features/coins/presentation/providers/coin_balance_provider.dart';
+import 'package:utopia/features/friends/data/presence.dart';
+import 'package:utopia/features/home/data/active_game.dart';
+import 'package:utopia/features/home/presentation/screens/home_screen.dart';
 import 'package:utopia/features/eights/presentation/controllers/eights_match_controller.dart';
 import 'package:utopia/features/eights/presentation/screens/eights_match_screen.dart';
 import 'package:utopia/features/ludo/domain/ludo_engine.dart';
@@ -70,6 +76,9 @@ Future<void> main() async {
       mySide: CheckersSide.dark,
     ),
     'cards' || 'notifications' => const _Cards(),
+    // Home itself, as a signed-in player sees it (their profile made up;
+    // friends, invites and games come back empty).
+    'home' => const HomeScreen(),
     // Bots in every seat (the first is "this phone", played by a bot too),
     // so the game goes on by itself.
     'ludo' => LudoMatchScreen(
@@ -118,11 +127,38 @@ Future<void> main() async {
         notificationsProvider.overrideWith(
           (ref) => Stream.value(_fakeNotifications()),
         ),
+        currentUserProvider.overrideWithValue(
+          User(
+            id: _perfUser,
+            appMetadata: const {},
+            userMetadata: const {},
+            aud: 'authenticated',
+            createdAt: DateTime(2026).toIso8601String(),
+          ),
+        ),
+        isAnonymousProvider.overrideWithValue(false),
+        profileByIdProvider.overrideWith(
+          (ref, id) async =>
+              botProfile(id) ??
+              {
+                'id': id,
+                'display_name': 'Jake',
+                'username': 'jake',
+                'avatar_kind': 'human',
+                'avatar_seed': 4,
+                'balance': 2500,
+              },
+        ),
+        coinBalanceProvider.overrideWith((ref) => Stream.value(2500)),
+        activeGameProvider.overrideWith((ref) async => null),
+        friendsOnlineProvider.overrideWith((ref) => Stream.value(const {})),
       ],
       child: const UtopiaApp(),
     ),
   );
 }
+
+const _perfUser = '00000000-0000-4000-8000-000000000001';
 
 /// What home shows most of: Chip over the four game cards, in the world.
 class _Cards extends StatelessWidget {

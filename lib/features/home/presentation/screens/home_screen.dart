@@ -66,6 +66,7 @@ import '../../../../core/layout/responsive.dart';
 import '../../../../core/layout/tile_grid.dart';
 import '../../../../core/widgets/frosted.dart';
 import '../../../../core/widgets/frame_island.dart';
+import '../../../../core/widgets/live_transform.dart';
 import '../../../../l10n/strings.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -2163,47 +2164,65 @@ class _PlayBubbleState extends State<_PlayBubble>
 
   @override
   Widget build(BuildContext context) {
-    // It pulses forever: by itself, or home is laid out each frame.
+    // It pulses forever: by itself, or home is laid out each frame. And
+    // only drawn again as it does (grown, its glow brighter), not built.
     return FrameIsland(
       size: Size.square(widget.size),
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (context, child) {
-          final v = Curves.easeInOut.transform(_c.value);
-          return Transform.scale(
-            scale: 1 + 0.06 * v,
-            child: Container(
-              width: widget.size,
-              height: widget.size,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  center: const Alignment(-0.3, -0.4),
-                  colors: [
-                    Color.lerp(widget.color, Colors.white, 0.5)!,
-                    widget.color,
-                  ],
-                ),
-                border: Border.all(color: Colors.white, width: 2.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: widget.color.withValues(alpha: 0.4 + 0.3 * v),
-                    blurRadius: 12 + 10 * v,
-                  ),
-                ],
-              ),
-              child: child,
-            ),
-          );
+      child: LiveTransform(
+        listenable: _c,
+        transform: () {
+          final scale = 1 + 0.06 * Curves.easeInOut.transform(_c.value);
+          return Matrix4.diagonal3Values(scale, scale, 1);
         },
-        child: Icon(
-          Icons.play_arrow_rounded,
-          color: Colors.white,
-          size: widget.size * 0.62,
+        child: SizedBox.square(
+          dimension: widget.size,
+          child: CustomPaint(
+            painter: _PlayBubblePainter(_c, widget.color),
+            child: Icon(
+              Icons.play_arrow_rounded,
+              color: Colors.white,
+              size: widget.size * 0.62,
+            ),
+          ),
         ),
       ),
     );
   }
+}
+
+/// The play button's ball: [color]'s, glowing brighter as [pulse] rises.
+class _PlayBubblePainter extends CustomPainter {
+  _PlayBubblePainter(this.pulse, this.color) : super(repaint: pulse);
+
+  final Animation<double> pulse;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final v = Curves.easeInOut.transform(pulse.value);
+    BoxDecoration(
+      shape: BoxShape.circle,
+      gradient: RadialGradient(
+        center: const Alignment(-0.3, -0.4),
+        colors: [Color.lerp(color, Colors.white, 0.5)!, color],
+      ),
+      border: Border.all(color: Colors.white, width: 2.5),
+      boxShadow: [
+        BoxShadow(
+          color: color.withValues(alpha: 0.4 + 0.3 * v),
+          blurRadius: 12 + 10 * v,
+        ),
+      ],
+    ).createBoxPainter().paint(
+      canvas,
+      Offset.zero,
+      ImageConfiguration(size: size),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_PlayBubblePainter old) =>
+      old.pulse != pulse || old.color != color;
 }
 
 /// Your avatar in the corner of home; tapping it opens the side menu.

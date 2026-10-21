@@ -1,5 +1,7 @@
 import 'dart:math' as math;
+import 'dart:ui' show PathMetric;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../features/chess/domain/chess_types.dart';
@@ -13,6 +15,7 @@ import 'package:flutter/scheduler.dart';
 
 import '../theme/utopia_themes.dart';
 import 'ambient_tick.dart';
+import 'sprite_cache.dart';
 
 enum GameKind { chess, ludo, checkers, doodle, eights }
 
@@ -70,6 +73,9 @@ class _GameSceneArtState extends State<GameSceneArt>
             game: widget.game,
             style: UtopiaThemes.active.world,
             accent: UtopiaThemes.active.accent,
+            dpr: kIsWeb || debugDioramaSprites
+                ? MediaQuery.devicePixelRatioOf(context)
+                : null,
           ),
         ),
       ),
@@ -77,18 +83,70 @@ class _GameSceneArtState extends State<GameSceneArt>
   }
 }
 
+/// The dioramas' still parts (the sun, the rock, the grass and the board on
+/// it) kept as pixels in a browser: see [_DioramaPainter._still].
+final _dioramaSprites = SpriteCache(maxBytes: 24 << 20);
+
+/// Draws the dioramas' still parts from pixels outside a browser too, to
+/// test that path.
+@visibleForTesting
+bool debugDioramaSprites = false;
+
+/// Lets go of the dioramas' pixels, for tests.
+@visibleForTesting
+void debugClearDioramaSprites() => _dioramaSprites.clear();
+
+/// How many of the dioramas' drawings are kept as pixels, for tests.
+@visibleForTesting
+// ignore: invalid_use_of_visible_for_testing_member
+int get debugDioramaSpriteCount => _dioramaSprites.length;
+
 class _DioramaPainter extends CustomPainter {
   _DioramaPainter({
     required this.clock,
     required this.game,
     required this.style,
     required this.accent,
+    this.dpr,
   }) : super(repaint: clock);
 
   final ValueNotifier<double> clock;
   final GameKind game;
   final WorldStyle style;
   final Color accent;
+
+  /// In a browser, the screen's pixels per point: what doesn't move (or
+  /// only moves as a whole) is drawn once into pixels at that sharpness and
+  /// placed each frame, rather than drawn again shape by shape. Null in the
+  /// apps, which keep what hasn't changed by themselves.
+  final double? dpr;
+
+  /// Draws what [paint] draws around the origin, at [at]: from pixels made
+  /// once (in a browser), or directly.
+  void _still(
+    Canvas canvas,
+    Object key,
+    Rect bounds,
+    Offset at,
+    void Function(Canvas canvas) paint,
+  ) {
+    final dpr = this.dpr;
+    if (dpr == null) {
+      canvas.save();
+      canvas.translate(at.dx, at.dy);
+      paint(canvas);
+      canvas.restore();
+      return;
+    }
+    _dioramaSprites.draw(
+      canvas,
+      key,
+      bounds: bounds,
+      dpr: dpr,
+      at: at,
+      paint: paint,
+    );
+  }
 
   static const _red = Color(0xFFFF5C6C);
   static const _green = Color(0xFF2FD98E);
@@ -124,27 +182,40 @@ class _DioramaPainter extends CustomPainter {
         star,
       );
     }
-    final sun = Offset(w * 0.86, h * 0.24);
-    canvas.drawCircle(
-      sun,
-      h * 0.32,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [
-            style.celestialColors[1].withValues(alpha: 0.4),
-            Colors.transparent,
-          ],
-        ).createShader(Rect.fromCircle(center: sun, radius: h * 0.32)),
-    );
-    canvas.drawCircle(
-      sun,
-      h * 0.13,
-      Paint()
-        ..shader = RadialGradient(
-          center: const Alignment(-0.3, -0.3),
-          colors: style.celestialColors,
-          stops: const [0.0, 0.4, 0.8, 1.0],
-        ).createShader(Rect.fromCircle(center: sun, radius: h * 0.13)),
+    _still(
+      canvas,
+      ('sun', style, h),
+      Rect.fromCircle(center: Offset.zero, radius: h * 0.33),
+      Offset(w * 0.86, h * 0.24),
+      (canvas) {
+        canvas.drawCircle(
+          Offset.zero,
+          h * 0.32,
+          Paint()
+            ..shader =
+                RadialGradient(
+                  colors: [
+                    style.celestialColors[1].withValues(alpha: 0.4),
+                    Colors.transparent,
+                  ],
+                ).createShader(
+                  Rect.fromCircle(center: Offset.zero, radius: h * 0.32),
+                ),
+        );
+        canvas.drawCircle(
+          Offset.zero,
+          h * 0.13,
+          Paint()
+            ..shader =
+                RadialGradient(
+                  center: const Alignment(-0.3, -0.3),
+                  colors: style.celestialColors,
+                  stops: const [0.0, 0.4, 0.8, 1.0],
+                ).createShader(
+                  Rect.fromCircle(center: Offset.zero, radius: h * 0.13),
+                ),
+        );
+      },
     );
     _cloud(canvas, Offset((t * 9) % (w + 120) - 60, h * 0.22), h * 0.16, 0.5);
     _cloud(
@@ -158,7 +229,44 @@ class _DioramaPainter extends CustomPainter {
     final bob = math.sin(t * 1.4) * h * 0.025;
     final top = Offset(w * 0.5, h * 0.66 + bob);
     final iw = math.min(w * 0.66, h * 2.5);
-    _island(canvas, top, iw, h, t);
+    // The rock under the island, the waterfall's falling streaks, then the
+    // grass on top and the game's board on it: the rock and the grass with
+    // its board are still (they only bob, as a whole).
+    _still(
+      canvas,
+      ('rock', style, iw, h),
+      Rect.fromLTRB(-iw * 0.56, -h * 0.02, iw * 0.56, h * 0.68),
+      top,
+      (canvas) => _rock(canvas, Offset.zero, iw, h),
+    );
+    _streaks(canvas, top, iw, h, t);
+    _still(
+      canvas,
+      ('deck', game, style, accent, iw, h),
+      // The easel stands tall; the boards lie flat.
+      Rect.fromLTRB(
+        -iw * 0.62,
+        h * (game == GameKind.doodle ? -0.72 : -0.3),
+        iw * 0.62,
+        h * 0.24,
+      ),
+      top,
+      (canvas) {
+        _cap(canvas, Offset.zero, iw, h);
+        switch (game) {
+          case GameKind.ludo:
+            _ludoBoard(canvas, Offset.zero, iw, h);
+          case GameKind.chess:
+            _chessBoard(canvas, Offset.zero, iw, h);
+          case GameKind.checkers:
+            _checkersBoard(canvas, Offset.zero, iw, h);
+          case GameKind.doodle:
+            _easel(canvas, Offset.zero, iw, h);
+          case GameKind.eights:
+            _eightsTable(canvas, Offset.zero, iw, h);
+        }
+      },
+    );
 
     canvas.save();
     canvas.clipRect(rect);
@@ -206,7 +314,8 @@ class _DioramaPainter extends CustomPainter {
     );
   }
 
-  void _island(Canvas canvas, Offset top, double iw, double h, double t) {
+  /// The rock under the island, and the waterfall's water down its side.
+  void _rock(Canvas canvas, Offset top, double iw, double h) {
     final left = top.translate(-iw / 2, 0);
     final right = top.translate(iw / 2, 0);
     final tip = top.translate(iw * 0.05, h * 0.62);
@@ -250,6 +359,11 @@ class _DioramaPainter extends CustomPainter {
           colors: [Color(0xCC9FE8FF), Color(0x005AB8FF)],
         ).createShader(band),
     );
+  }
+
+  /// The waterfall's streaks of light, falling.
+  void _streaks(Canvas canvas, Offset top, double iw, double h, double t) {
+    final fallTop = top.translate(iw * 0.4, h * 0.03);
     final streak = Paint()
       ..strokeWidth = 1.4
       ..strokeCap = StrokeCap.round;
@@ -262,6 +376,10 @@ class _DioramaPainter extends CustomPainter {
         streak,
       );
     }
+  }
+
+  /// The grass on top of the island.
+  void _cap(Canvas canvas, Offset top, double iw, double h) {
     final cap = Rect.fromCenter(center: top, width: iw * 1.04, height: h * 0.2);
     canvas.drawOval(
       cap.shift(Offset(0, h * 0.03)),
@@ -305,7 +423,8 @@ class _DioramaPainter extends CustomPainter {
     return Path()..addPolygon([a, b, c, d], true);
   }
 
-  void _ludo(Canvas canvas, Offset top, double iw, double h, double t) {
+  /// The Ludo board on the island: still.
+  void _ludoBoard(Canvas canvas, Offset top, double iw, double h) {
     final bw = iw * 0.62;
     canvas.drawPath(
       _quad(top, bw, h, -0.04, -0.06, 1.04, 1.06),
@@ -347,6 +466,10 @@ class _DioramaPainter extends CustomPainter {
         Paint()..color = c.withValues(alpha: 0.75),
       );
     }
+  }
+
+  void _ludo(Canvas canvas, Offset top, double iw, double h, double t) {
+    final bw = iw * 0.62;
 
     // Pieces hopping around the track, one square at a time.
     const ring = [
@@ -535,7 +658,8 @@ class _DioramaPainter extends CustomPainter {
     return (b.dx - a.dx) * (c.dy - a.dy) - (b.dy - a.dy) * (c.dx - a.dx) > 0;
   }
 
-  void _chess(Canvas canvas, Offset top, double iw, double h, double t) {
+  /// The chessboard on the island: still.
+  void _chessBoard(Canvas canvas, Offset top, double iw, double h) {
     final bw = iw * 0.66;
     const cols = 6;
     const rows = 4;
@@ -555,6 +679,12 @@ class _DioramaPainter extends CustomPainter {
         );
       }
     }
+  }
+
+  void _chess(Canvas canvas, Offset top, double iw, double h, double t) {
+    final bw = iw * 0.66;
+    const cols = 6;
+    const rows = 4;
     Offset cell(double c, double r) =>
         _board(top, bw, h, (c + 0.5) / cols, (r + 0.5) / rows);
 
@@ -637,7 +767,8 @@ class _DioramaPainter extends CustomPainter {
     }
   }
 
-  void _checkers(Canvas canvas, Offset top, double iw, double h, double t) {
+  /// The checkerboard on the island: still.
+  void _checkersBoard(Canvas canvas, Offset top, double iw, double h) {
     final bw = iw * 0.66;
     const cols = 6;
     const rows = 4;
@@ -657,6 +788,12 @@ class _DioramaPainter extends CustomPainter {
         );
       }
     }
+  }
+
+  void _checkers(Canvas canvas, Offset top, double iw, double h, double t) {
+    final bw = iw * 0.66;
+    const cols = 6;
+    const rows = 4;
     Offset cell(double c, double r) =>
         _board(top, bw, h, (c + 0.5) / cols, (r + 0.5) / rows);
     double radius(double r) =>
@@ -678,6 +815,36 @@ class _DioramaPainter extends CustomPainter {
       if (scale <= 0.01) return;
       final ground = cell(c, r);
       final rad = radius(r) * scale;
+      // One sitting still on a square: always the same disc, so from
+      // pixels in a browser (see [_still]).
+      final sitting =
+          lift == 0 &&
+          scale == 1 &&
+          spin == 0 &&
+          c == c.roundToDouble() &&
+          r == r.roundToDouble();
+      if (sitting) {
+        draws.add((
+          ground.dy,
+          () => _still(
+            canvas,
+            ('disc', identical(finish, dark), king, rad),
+            Rect.fromCircle(center: Offset.zero, radius: rad * 2.6),
+            ground,
+            (canvas) {
+              canvas.scale(1, squash);
+              paintCheckersDisc(
+                canvas,
+                Offset.zero,
+                rad,
+                finish: finish,
+                king: king,
+              );
+            },
+          ),
+        ));
+        return;
+      }
       draws.add((
         ground.dy,
         () {
@@ -744,10 +911,8 @@ class _DioramaPainter extends CustomPainter {
   /// side and the pile to the other. Every couple of seconds a card lifts
   /// out of the hand, flips and sails onto the pile; every fourth one is a
   /// wild eight, which flashes its suit.
-  void _eights(Canvas canvas, Offset top, double iw, double h, double t) {
-    final dpr =
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    final cw = (iw * 0.15).roundToDouble();
+  /// The card table's felt and the deck on it: still.
+  void _eightsTable(Canvas canvas, Offset top, double iw, double h) {
     canvas.drawOval(
       Rect.fromCenter(
         center: top.translate(0, -h * 0.06),
@@ -764,6 +929,12 @@ class _DioramaPainter extends CustomPainter {
       ),
       Paint()..color = const Color(0xFF2E9C7D),
     );
+  }
+
+  void _eights(Canvas canvas, Offset top, double iw, double h, double t) {
+    final dpr =
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    final cw = (iw * 0.15).roundToDouble();
     const plays = [
       PlayingCard(7, CardSuit.hearts),
       PlayingCard(7, CardSuit.clubs),
@@ -853,15 +1024,8 @@ class _DioramaPainter extends CustomPainter {
     }
   }
 
-  /// An easel with a cat being sketched on it, over and over: the pencil
-  /// follows the line as it goes down, guesses bubble up beside it, and
-  /// once the cat is done a green bubble with a check says someone got it.
-  void _doodle(Canvas canvas, Offset top, double iw, double h, double t) {
-    const cycle = 6.5;
-    final k = (t % cycle) / cycle;
-    final draw = (k / 0.68).clamp(0.0, 1.0);
-
-    // The easel: back leg, front legs, the paper, the ledge.
+  /// The easel on the island (legs, the paper, the ledge): still.
+  void _easel(Canvas canvas, Offset top, double iw, double h) {
     final bw = math.min(iw * 0.42, h * 0.62);
     final bh = bw * 0.82;
     final board = Rect.fromCenter(
@@ -912,10 +1076,18 @@ class _DioramaPainter extends CustomPainter {
       ),
       Paint()..color = const Color(0xFF9A6233),
     );
+  }
 
-    // The cat, in board units (0-1), drawn up to [draw] of its length.
-    Offset at(double u, double v) =>
-        Offset(board.left + u * bw, board.top + v * bh);
+  /// The cat's line, around the board's top-left corner, and its pieces
+  /// measured: made once for a board's size, not each frame.
+  static (double, double, List<PathMetric>, double)? _cat;
+  static (List<PathMetric>, double) _catLines(double bw, double bh) {
+    final made = _cat;
+    if (made != null && made.$1 == bw && made.$2 == bh) {
+      return (made.$3, made.$4);
+    }
+    // In board units (0-1).
+    Offset at(double u, double v) => Offset(u * bw, v * bh);
     final cat = Path()
       ..moveTo(at(0.3, 0.42).dx, at(0.3, 0.42).dy)
       ..lineTo(at(0.33, 0.18).dx, at(0.33, 0.18).dy)
@@ -959,14 +1131,37 @@ class _DioramaPainter extends CustomPainter {
       ..lineTo(at(0.85, 0.7).dx, at(0.85, 0.7).dy);
     final metrics = cat.computeMetrics().toList();
     final total = metrics.fold<double>(0, (a, m) => a + m.length);
+    _cat = (bw, bh, metrics, total);
+    return (metrics, total);
+  }
+
+  /// An easel with a cat being sketched on it, over and over: the pencil
+  /// follows the line as it goes down, guesses bubble up beside it, and
+  /// once the cat is done a green bubble with a check says someone got it.
+  void _doodle(Canvas canvas, Offset top, double iw, double h, double t) {
+    const cycle = 6.5;
+    final k = (t % cycle) / cycle;
+    final draw = (k / 0.68).clamp(0.0, 1.0);
+
+    final bw = math.min(iw * 0.42, h * 0.62);
+    final bh = bw * 0.82;
+    final board = Rect.fromCenter(
+      center: top.translate(0, -h * 0.06 - bh / 2),
+      width: bw,
+      height: bh,
+    );
+
+    // The cat, drawn up to [draw] of its length.
+    final (metrics, total) = _catLines(bw, bh);
     var left = total * draw;
     final drawn = Path();
     Offset? tip;
     for (final m in metrics) {
       if (left <= 0) break;
       final len = math.min(left, m.length);
-      drawn.addPath(m.extractPath(0, len), Offset.zero);
-      tip = m.getTangentForOffset(len)?.position;
+      drawn.addPath(m.extractPath(0, len), board.topLeft);
+      final at = m.getTangentForOffset(len)?.position;
+      tip = at == null ? null : at + board.topLeft;
       left -= len;
     }
     canvas.drawPath(

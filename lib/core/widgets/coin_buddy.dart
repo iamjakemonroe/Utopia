@@ -287,6 +287,8 @@ class _CoinBuddyState extends State<CoinBuddy>
     );
   }
 
+  static final _hands = <(double, double), Widget>{};
+
   Widget _hand(
     double side,
     _ChipPose pose,
@@ -305,12 +307,13 @@ class _CoinBuddyState extends State<CoinBuddy>
       side * spread + wave.dx * s,
       body * 0.12 + wave.dy * s,
     );
-    return Positioned(
-      left: c.dx - r,
-      top: c.dy - r,
-      width: r * 2,
-      height: r * 2,
-      child: DecoratedBox(
+    // How his hands look changes only as he turns or dresses for the
+    // cold: the same widget every frame, so it isn't built again.
+    final key = (zombie, winter);
+    var ball = _hands[key];
+    if (ball == null) {
+      if (_hands.length >= 16) _hands.clear();
+      ball = _hands[key] = DecoratedBox(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(
@@ -339,7 +342,14 @@ class _CoinBuddyState extends State<CoinBuddy>
             ),
           ],
         ),
-      ),
+      );
+    }
+    return Positioned(
+      left: c.dx - r,
+      top: c.dy - r,
+      width: r * 2,
+      height: r * 2,
+      child: ball,
     );
   }
 }
@@ -382,6 +392,43 @@ class _ChipBody extends StatelessWidget {
       -half,
       CustomPaint(size: Size.square(size), painter: face),
     );
+    // The back and the rim change only with his size and how far he's
+    // turned: the same widgets every frame, so they aren't built again.
+    final key = (size, zombie);
+    var still = _still[key];
+    if (still == null) {
+      if (_still.length >= 16) _still.clear();
+      still = _still[key] = _backAndRim(at, half, gap);
+    }
+    final (back, rim) = still;
+
+    Widget coin = Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: frontFacing
+          ? [back, ...rim, front]
+          : [front, ...rim.reversed, back],
+    );
+    if (zombie > 0) {
+      coin = ClipPath(clipper: _BiteClipper(zombie), child: coin);
+    }
+    return Transform(
+      alignment: Alignment.center,
+      transform: Matrix4.identity()
+        ..setEntry(3, 2, 0.25 / size)
+        ..rotateX(pitch)
+        ..rotateY(yaw),
+      child: coin,
+    );
+  }
+
+  static final _still = <(double, double), (Widget, List<Widget>)>{};
+
+  (Widget, List<Widget>) _backAndRim(
+    Widget Function(double z, Widget child) at,
+    double half,
+    double gap,
+  ) {
     final back = at(
       half,
       Transform(
@@ -421,25 +468,7 @@ class _ChipBody extends StatelessWidget {
           ),
         ),
     ];
-
-    Widget coin = Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.center,
-      children: frontFacing
-          ? [back, ...rim, front]
-          : [front, ...rim.reversed, back],
-    );
-    if (zombie > 0) {
-      coin = ClipPath(clipper: _BiteClipper(zombie), child: coin);
-    }
-    return Transform(
-      alignment: Alignment.center,
-      transform: Matrix4.identity()
-        ..setEntry(3, 2, 0.25 / size)
-        ..rotateX(pitch)
-        ..rotateY(yaw),
-      child: coin,
-    );
+    return (back, rim);
   }
 }
 
