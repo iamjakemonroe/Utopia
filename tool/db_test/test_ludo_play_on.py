@@ -1,8 +1,9 @@
-"""Ludo plays on after the first finisher (20261021340000_ludo_play_on.sql):
-the first home is paid at once and the game goes on while two or more are
-still racing; turns skip whoever's finished; a finisher can go without a
-forfeit; the game ends (paying no one twice) once at most one is racing;
-and a piece sent home can react "sad" or "again"."""
+"""Ludo plays on after the first finisher (20261021340000_ludo_play_on.sql,
+moves on the server since 20261021360000_ludo_server_moves.sql): the first
+home is paid at once and the game goes on while two or more are still
+racing; turns skip whoever's finished; a finisher can go without a forfeit;
+the game ends (paying no one twice) once at most one is racing; and a piece
+sent home can react "sad" or "again"."""
 import json
 import sys
 
@@ -76,14 +77,17 @@ def balance(user):
     return one("select balance from profiles where id = %s", user)
 
 
-def move(user, match, st):
-    turn = row(match)[3] + 1
-    return attempt(user, "select record_ludo_move(%s, %s, 6, 0, false, true, %s)",
-                   match, turn, json.dumps(st))
-
-
-def report(user, match, winner):
-    return attempt(user, "select report_ludo_match_result(%s, %s, 'win')", match, winner)
+def finish(user, match, color):
+    """[color] (played by [user]) brings its last piece home, through the
+    server's own move: three home, one a step away, a 1 rolled."""
+    harness.as_admin(db)
+    with db.cursor() as c:
+        c.execute("select state from ludo_matches where id = %s", (match,))
+        st = c.fetchone()[0]
+        st["tokens"][color] = [HOME, HOME, HOME, HOME - 1]
+        st.update(turn=color, dice_value=1, has_rolled=True)
+        c.execute("update ludo_matches set state = %s where id = %s", (json.dumps(st), match))
+    return attempt(user, "select move_ludo_token(%s, 3)", match)
 
 
 def go_quiet(match, seconds=20):
@@ -104,16 +108,12 @@ start = {u: balance(u) for u in (ada, bo, cy)}
 
 # ── Three at the table: red finishes first ─────────────────────────────────
 m = new_match([ada, bo, cy])
-check("red brings the last piece home",
-      move(ada, m, state(3, turn="green", finished=["red"], winner="red")) == "ok")
-check("…and the game goes on", row(m)[0] == "active")
-report(ada, m, ada)
-report(bo, m, ada)
-check("two agreeing reports pay red the pot at once",
+check("red brings the last piece home", finish(ada, m, "red") == "ok")
+check("…and the game goes on, on to green",
+      row(m)[0] == "active" and row(m)[2]["turn"] == "green")
+check("red is paid the pot at once",
       balance(ada) - start[ada] == 300, balance(ada) - start[ada])
-check("…with the game still on", row(m)[0] == "active" and row(m)[1] == ada)
-report(cy, m, ada)
-check("a third report pays no more", balance(ada) - start[ada] == 300)
+check("…and is the winner", row(m)[1] == ada)
 
 check("red can go without a forfeit", attempt(ada, "select resign_ludo_match(%s)", m) == "ok")
 st = row(m)[2]
@@ -143,8 +143,7 @@ check("a turn stuck on red moves on to green", row(m)[2]["turn"] == "green")
 check("…and red isn't counted as missing it", "red" not in row(m)[4])
 
 check("green comes home second: the game's over",
-      move(bo, m, state(3, turn="green", finished=["red", "green"], winner="red")) == "ok"
-      and row(m)[0] == "completed")
+      finish(bo, m, "green") == "ok" and row(m)[0] == "completed")
 check("…red still the winner", row(m)[1] == ada)
 check("…and no one else was paid",
       balance(bo) == start[bo] and balance(cy) == start[cy] and balance(ada) - start[ada] == 300)
@@ -154,22 +153,11 @@ check("cy's game counts once it's over",
 # ── Someone leaves after red finished: the game ends, red keeps the pot ───
 b = {u: balance(u) for u in (ada, bo, cy)}
 m2 = new_match([ada, bo, cy])
-move(ada, m2, state(3, turn="green", finished=["red"], winner="red"))
-report(ada, m2, ada)
-report(cy, m2, ada)
+finish(ada, m2, "red")
 check("bo leaves: only cy is racing, so it's over",
       attempt(bo, "select resign_ludo_match(%s)", m2) == "ok" and row(m2)[0] == "completed")
 check("…red keeps the pot and cy gets nothing",
       balance(ada) - b[ada] == 300 and balance(cy) == b[cy], (balance(ada) - b[ada], balance(cy) - b[cy]))
-
-# ── …or leaves before the reports agreed: the first home is still paid ───
-b = {u: balance(u) for u in (ada, bo, cy)}
-m3 = new_match([ada, bo, cy])
-move(ada, m3, state(3, turn="green", finished=["red"], winner="red"))
-attempt(bo, "select resign_ludo_match(%s)", m3)
-check("bo leaves before anyone reported: red is paid, not cy",
-      row(m3)[0] == "completed" and row(m3)[1] == ada
-      and balance(ada) - b[ada] == 300 and balance(cy) == b[cy])
 
 # ── No one home yet: leaving works as before ──────────────────────────────
 b = {u: balance(u) for u in (ada, bo, cy)}
@@ -184,30 +172,22 @@ check("two leave: the last one standing wins the pot",
 # ── Two players: over as soon as one is home, as before ───────────────────
 b = {u: balance(u) for u in (ada, bo)}
 m5 = new_match([ada, bo])
-move(ada, m5, state(2, turn="red", finished=["red"], winner="red"))
-check("two players: still waiting on the reports", row(m5)[0] == "active")
-report(ada, m5, ada)
-report(bo, m5, ada)
-check("…then it's over and paid", row(m5)[0] == "completed" and balance(ada) - b[ada] == 200)
+finish(ada, m5, "red")
+check("two players: over and paid the moment red is home",
+      row(m5)[0] == "completed" and balance(ada) - b[ada] == 200)
 
-# A game saved before `finished` existed still settles.
-m6 = new_match([ada, bo])
-move(ada, m6, state(2, turn="red", winner="red", legacy=True))
-report(ada, m6, ada)
-report(bo, m6, ada)
-check("an older game with only a winner still ends", row(m6)[0] == "completed")
-
-# ── Over but never settled (everyone closed the app) ─────────────────────
+# A game from before the server settled (over, with only a winner in it,
+# never settled because everyone closed the app): the cleanup settles it.
 b = {u: balance(u) for u in (ada, bo, cy)}
 m7 = new_match([ada, bo, cy])
-move(ada, m7, state(3, turn="green", finished=["red"], winner="red"))
-move(bo, m7, state(3, turn="green", finished=["red", "green"], winner="red"))
-check("over, but no reports came", row(m7)[0] == "active")
-go_quiet(m7, 20 * 60)
 harness.as_admin(db)
 with db.cursor() as c:
+    c.execute("update ludo_matches set state = %s where id = %s",
+              (json.dumps(state(3, turn="green", finished=["red", "green"], winner="red")), m7))
+go_quiet(m7, 20 * 60)
+with db.cursor() as c:
     c.execute("select forfeit_abandoned_ludo_matches()")
-check("the cleanup settles it for the first home",
+check("an old unsettled game is settled for the first home",
       row(m7)[0] == "completed" and row(m7)[1] == ada and balance(ada) - b[ada] == 300
       and balance(bo) == b[bo])
 

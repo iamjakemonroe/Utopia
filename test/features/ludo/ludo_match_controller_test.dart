@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:utopia/features/ludo/data/ludo_repository.dart';
@@ -14,10 +15,21 @@ class _FakeRepo extends LudoRepository {
 
   final match = StreamController<Map<String, dynamic>?>.broadcast();
   final chat = StreamController<List<Map<String, dynamic>>>.broadcast();
-  final moves = <Map<String, dynamic>>[];
 
-  /// Everything sent, in order: ('roll', state) or ('move', state).
+  /// The row as the server has it (set by [push]).
+  Map<String, dynamic>? current;
+
+  /// The server's die: these numbers next, then random ones.
+  final dice = <int>[];
+
+  /// Every roll and move the server made, in order, with the state after.
   final sent = <(String, Map<String, dynamic>)>[];
+
+  /// The server's row changes: everyone hears.
+  void push(Map<String, dynamic> row) {
+    current = row;
+    match.add(row);
+  }
 
   @override
   Stream<Map<String, dynamic>?> watchMatch(String matchId) => match.stream;
@@ -25,34 +37,43 @@ class _FakeRepo extends LudoRepository {
   @override
   Stream<List<Map<String, dynamic>>> watchChat(String matchId) => chat.stream;
 
+  /// Rolls like the server: a third six, or a roll nothing can use, passes.
   @override
-  Future<void> recordRoll({
-    required String matchId,
-    required Map<String, dynamic> state,
-  }) async {
-    sent.add(('roll', state));
+  Future<Map<String, dynamic>> rollDice(String matchId) async {
+    final row = current!;
+    final game = LudoState.fromJson(row['state'] as Map<String, dynamic>);
+    final value = dice.isNotEmpty ? dice.removeAt(0) : Random().nextInt(6) + 1;
+    final outcome = const LudoEngine().registerRoll(game, value);
+    var turns = row['turn_count'] as int;
+    var next = outcome.state;
+    if (outcome.forfeited) {
+      turns++;
+    } else if (outcome.movableTokens.isEmpty) {
+      next = const LudoEngine().passTurnNoMove(next);
+      turns++;
+    }
+    sent.add(('roll', next.toJson()));
+    return current = {...row, 'state': next.toJson(), 'turn_count': turns};
   }
 
+  /// Moves like the server.
   @override
-  Future<void> recordMove({
+  Future<Map<String, dynamic>> moveToken({
     required String matchId,
-    required int turnNumber,
-    required int diceValue,
-    int? tokenIndex,
-    required bool captured,
-    required bool reachedHome,
-    required Map<String, dynamic> stateAfter,
+    required int token,
   }) async {
-    moves.add(stateAfter);
-    sent.add(('move', stateAfter));
+    final row = current!;
+    final game = LudoState.fromJson(row['state'] as Map<String, dynamic>);
+    final next = const LudoEngine()
+        .applyMove(game, token, game.diceValue!)
+        .state;
+    sent.add(('move', next.toJson()));
+    return current = {
+      ...row,
+      'state': next.toJson(),
+      'turn_count': (row['turn_count'] as int) + 1,
+    };
   }
-
-  @override
-  Future<void> reportMatchResult({
-    required String matchId,
-    String? winnerId,
-    required String result,
-  }) async {}
 
   /// Chat messages sent: (kind, body).
   final chats = <(String, String)>[];
@@ -110,11 +131,11 @@ void main() {
   test(
     'the first capture after opening the match asks for a reaction',
     () async {
-      repo.match.add(_row(_base()));
+      repo.push(_row(_base()));
       await _settle();
       expect(controller.state.pendingReaction, isNull);
 
-      repo.match.add(_row(_captured(_base(), 1), turnCount: 1));
+      repo.push(_row(_captured(_base(), 1), turnCount: 1));
       await _settle();
       expect(controller.state.pendingReaction?.capture.seq, 1);
       expect(controller.state.pendingReaction?.capture.by, LudoColor.yellow);
@@ -124,7 +145,7 @@ void main() {
   );
 
   test('the one who captured can roll on, which passes on reacting', () async {
-    repo.match.add(_row(_base()));
+    repo.push(_row(_base()));
     await _settle();
     final mine = _base().copyWith(
       turn: LudoColor.red,
@@ -135,7 +156,7 @@ void main() {
         victims: [(LudoColor.yellow, 0)],
       ),
     );
-    repo.match.add(_row(mine, turnCount: 1));
+    repo.push(_row(mine, turnCount: 1));
     await _settle();
     expect(controller.state.choosingReaction, isTrue);
     // The die doesn't wait for a reaction no one has asked to make.
@@ -153,16 +174,16 @@ void main() {
   });
 
   test('a capture from before the match was opened is not replayed', () async {
-    repo.match.add(_row(_captured(_base(), 3), turnCount: 5));
+    repo.push(_row(_captured(_base(), 3), turnCount: 5));
     await _settle();
     expect(controller.state.pendingReaction, isNull);
   });
 
   test("the capturer's reaction plays for everyone", () async {
-    repo.match.add(_row(_base()));
+    repo.push(_row(_base()));
     repo.chat.add([]); // the (empty) history on opening
     await _settle();
-    repo.match.add(_row(_captured(_base(), 1), turnCount: 1));
+    repo.push(_row(_captured(_base(), 1), turnCount: 1));
     await _settle();
     repo.chat.add([
       {
@@ -185,10 +206,10 @@ void main() {
   });
 
   test('a piece sent home reacts sad or again, on that piece', () async {
-    repo.match.add(_row(_base()));
+    repo.push(_row(_base()));
     repo.chat.add([]);
     await _settle();
-    repo.match.add(_row(_captured(_base(), 1), turnCount: 1));
+    repo.push(_row(_captured(_base(), 1), turnCount: 1));
     await _settle();
     expect(controller.state.sentHomeChoosing, [LudoColor.red]);
     // Not the capturer: war isn't mine to pick.
@@ -223,10 +244,10 @@ void main() {
   test(
     "a sent-home reaction from someone who wasn't sent home is ignored",
     () async {
-      repo.match.add(_row(_base()));
+      repo.push(_row(_base()));
       repo.chat.add([]);
       await _settle();
-      repo.match.add(_row(_captured(_base(), 1), turnCount: 1));
+      repo.push(_row(_captured(_base(), 1), turnCount: 1));
       await _settle();
       repo.chat.add([
         {
@@ -247,16 +268,16 @@ void main() {
       rollSeq: 4,
       lastRoll: const LudoRoll(LudoColor.red, 5),
     );
-    repo.match.add(_row(rolled, turnCount: 3));
+    repo.push(_row(rolled, turnCount: 3));
     await _settle();
-    repo.match.add(_row(_base().copyWith(rollSeq: 2), turnCount: 3));
+    repo.push(_row(_base().copyWith(rollSeq: 2), turnCount: 3));
     await _settle();
     expect(controller.state.game.rollSeq, 4);
-    repo.match.add(_row(_base().copyWith(rollSeq: 1), turnCount: 2));
+    repo.push(_row(_base().copyWith(rollSeq: 1), turnCount: 2));
     await _settle();
     expect(controller.state.game.rollSeq, 4);
     // A genuinely newer move is taken.
-    repo.match.add(_row(_base().copyWith(rollSeq: 5), turnCount: 4));
+    repo.push(_row(_base().copyWith(rollSeq: 5), turnCount: 4));
     await _settle();
     expect(controller.state.game.rollSeq, 5);
   });
@@ -264,7 +285,7 @@ void main() {
   test('pieces only light up once the die shows its number', () async {
     // One piece already out, so whatever comes up, something can move.
     final base = _base();
-    repo.match.add(
+    repo.push(
       _row(
         base.copyWith(
           tokens: {
@@ -295,7 +316,7 @@ void main() {
           LudoColor.yellow: const [10, -1, -1, -1],
         },
       );
-      repo.match.add(_row(before, turnCount: 3));
+      repo.push(_row(before, turnCount: 3));
       await _settle();
       // Yellow rolled a 4 and moved; this phone never saw the roll alone.
       final after = before.copyWith(
@@ -307,7 +328,7 @@ void main() {
           LudoColor.yellow: const [14, -1, -1, -1],
         },
       );
-      repo.match.add(_row(after, turnCount: 4));
+      repo.push(_row(after, turnCount: 4));
       await _settle();
       // The die rolls first, on the board as it was.
       expect(controller.state.game.rollSeq, after.rollSeq);
@@ -325,59 +346,58 @@ void main() {
     },
   );
 
-  test('a roll with no legal move is shown and passes the turn', () async {
-    // All tokens in base: anything but a 6 has no legal move.
-    repo.match.add(_row(_base()));
+  test('a roll no piece can use is shown, then the turn passes', () async {
+    // All in the yard: a 3 can't be used. The server passes the turn.
+    repo.push(_row(_base()));
     await _settle();
-    var tries = 0;
-    // A 6 lets a piece out instead (and the same player rolls again), so
-    // keep going until a roll passes the turn.
-    bool passedTurn() =>
-        repo.moves.any((m) => LudoState.fromJson(m).turn == LudoColor.yellow);
-    while (!passedTurn() && tries++ < 15) {
-      // A 6 lets a piece out instead; reset the board and retry. The count
-      // jumps well past anything this phone played, so the reset always
-      // counts as newer.
-      repo.match.add(
+    repo.dice.add(3);
+    await controller.rollDice();
+    await _settle();
+    expect(repo.sent.single.$1, 'roll');
+    // Everyone sees the 3 land first, still on red's turn...
+    expect(controller.state.game.lastRoll, const LudoRoll(LudoColor.red, 3));
+    expect(controller.state.game.turn, LudoColor.red);
+    // ...and then the turn moves on.
+    await Future<void>.delayed(
+      kDiceReveal + kNoMoveHold + const Duration(milliseconds: 80),
+    );
+    expect(controller.state.game.turn, LudoColor.yellow);
+    expect(controller.state.game.hasRolled, isFalse);
+  });
+
+  test(
+    'the server rolls, and the move it works out is the one that counts',
+    () async {
+      final base = _base();
+      repo.push(
         _row(
-          _base().copyWith(rollSeq: controller.state.game.rollSeq + 1),
-          turnCount: tries * 10,
+          base.copyWith(
+            tokens: {
+              ...base.tokens,
+              LudoColor.red: const [5, 20, -1, -1],
+            },
+          ),
         ),
       );
       await _settle();
-      // The roll that came in has to land before the next one.
-      await Future<void>.delayed(kDiceReveal + kDiceReadTime);
-      await _settle();
+      repo.dice.add(4);
       await controller.rollDice();
-      // Let whatever that roll set going (a pass, or a piece leaving base
-      // on a 6) finish before the board is reset.
-      await Future<void>.delayed(
-        kDiceReadTime + const Duration(milliseconds: 300),
-      );
       await _settle();
-    }
-    expect(passedTurn(), isTrue);
-    // Everyone saw the roll before the turn passed: it went out on its own
-    // first, still the roller's turn, and the pass came after it.
-    final passIndex = repo.sent.indexWhere(
-      (e) =>
-          e.$1 == 'move' && LudoState.fromJson(e.$2).turn == LudoColor.yellow,
-    );
-    final (kind, rolled) = repo.sent[passIndex - 1];
-    expect(kind, 'roll');
-    expect(LudoState.fromJson(rolled).turn, LudoColor.red);
-    expect(LudoState.fromJson(rolled).hasRolled, isTrue);
-    final passed = LudoState.fromJson(repo.sent[passIndex].$2);
-    expect(passed.turn, LudoColor.yellow);
-    expect(passed.lastRoll?.color, LudoColor.red);
-    expect(passed.lastRoll?.value, isNot(6));
-    expect(passed.hasRolled, isFalse);
-  });
+      expect(controller.state.game.diceValue, 4);
+      await Future<void>.delayed(kDiceReveal);
+      await controller.selectToken(0);
+      await _settle();
+      expect(repo.sent.map((e) => e.$1), ['roll', 'move']);
+      expect(controller.state.game.tokens[LudoColor.red], [9, 20, -1, -1]);
+      expect(controller.state.game.turn, LudoColor.yellow);
+      expect(controller.state.busy, isFalse);
+    },
+  );
 
   test(
     'chat history on opening is not unread and old reactions stay put',
     () async {
-      repo.match.add(_row(_base()));
+      repo.push(_row(_base()));
       await _settle();
       Map<String, dynamic> msg(int id, String kind, String body) => {
         'id': id,

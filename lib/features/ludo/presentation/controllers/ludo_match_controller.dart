@@ -455,7 +455,6 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
 
   StreamSubscription<Map<String, dynamic>?>? _matchSub;
   StreamSubscription<List<Map<String, dynamic>>>? _chatSub;
-  bool _hasReportedResult = false;
   int _seenCaptureSeq = 0;
   int _seenChatId = -1;
   bool _chatPrimed = false;
@@ -593,10 +592,14 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
       );
     }
 
-    // Someone moved before their die had landed here: show the roll first.
+    // Someone moved before their die had landed here: show the roll first
+    // (a roll no piece could use holds longer, so everyone sees it).
     final shownAt = state.rollShownAt;
     if (!state.loading && shownAt != null && turn > localTurn) {
-      final wait = shownAt.add(kDiceReadTime).difference(DateTime.now());
+      final passed = _samePieces(game, state.game);
+      final wait = shownAt
+          .add(passed ? kNoMoveHold : kDiceReadTime)
+          .difference(DateTime.now());
       if (wait > Duration.zero) {
         _heldRow = row;
         _heldTimer?.cancel();
@@ -625,7 +628,18 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     );
     _restartTimerIfNew(row, game);
     _noticeCapture(game, firstLoad: firstLoad);
-    if (row['status'] == 'active') _maybeReportResult(game);
+  }
+
+  /// No piece moved between [a] and [b] (a roll that passed the turn).
+  bool _samePieces(LudoState a, LudoState b) {
+    for (final color in a.players) {
+      final x = a.tokens[color], y = b.tokens[color];
+      if (x == null || y == null || x.length != y.length) return false;
+      for (var i = 0; i < x.length; i++) {
+        if (x[i] != y[i]) return false;
+      }
+    }
+    return true;
   }
 
   /// Rows only ever move the game forward: more moves, or more rolls on the
@@ -658,18 +672,6 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     _reactionTimer = Timer(kReactionWindow, () {
       if (mounted) state = state.copyWith(clearPendingReaction: true);
     });
-  }
-
-  void _maybeReportResult(LudoState game) {
-    if (game.winner == null || _hasReportedResult) return;
-    _hasReportedResult = true;
-    _repository
-        .reportMatchResult(
-          matchId: _matchId,
-          winnerId: state.userFor(game.winner!),
-          result: 'win',
-        )
-        .catchError((_) => _hasReportedResult = false);
   }
 
   // ── chat ─────────────────────────────────────────────────────────────────
@@ -838,38 +840,57 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     if (!state.canRoll) return;
     // Rolling on instead of reacting to a capture.
     if (state.choosingReaction) skipReaction();
+    if (!_isLocal) {
+      await _rollOnServer();
+      return;
+    }
     final before = state.game;
     final dice = _engine.rollDie();
     final outcome = _engine.registerRoll(before, dice);
 
     if (outcome.forfeited || outcome.movableTokens.isEmpty) {
-      await _showThenPass(before, dice, outcome, send: true);
+      await _showThenPass(before, dice, outcome);
       return;
     }
 
     final rolledAt = DateTime.now();
     _rolledAt = rolledAt;
-    state = state.copyWith(game: outcome.state, busy: !_isLocal);
+    state = state.copyWith(game: outcome.state);
     _restartTimerIfNew(state.matchRow, outcome.state);
-    if (!_isLocal) {
-      try {
-        await _repository.recordRoll(
-          matchId: _matchId,
-          state: outcome.state.toJson(),
-        );
-        state = state.copyWith(busy: false);
-      } catch (_) {
-        await _resync(strings.ludoMatchCouldnTSendYourRoll);
-        return;
-      }
-    }
+    _autoMoveIfOneChoice(rolledAt);
+  }
 
-    // Only one real choice (one movable token, or several still sharing
-    // the same spot, like all in base): move it once the die has landed.
-    final options = outcome.movableTokens;
-    final mine = outcome.state.tokens[outcome.state.turn]!;
+  /// Online the server rolls (so no one can choose their number): the die
+  /// tumbles here while it does, then lands on what came up. A roll no
+  /// piece can use comes back with the turn already passed; the die shows
+  /// it first, then the turn moves on.
+  Future<void> _rollOnServer() async {
+    final rolledAt = DateTime.now();
+    _rolledAt = rolledAt;
+    state = state.copyWith(busy: true);
+    final Map<String, dynamic> row;
+    try {
+      row = await _repository.rollDice(_matchId);
+    } catch (_) {
+      await _resync(strings.ludoMatchCouldnTSendYourRoll);
+      return;
+    }
+    if (!mounted) return;
+    state = state.copyWith(busy: false);
+    _onMatchRow(row);
+    _autoMoveIfOneChoice(rolledAt);
+  }
+
+  /// Only one real choice (one movable token, or several still sharing the
+  /// same spot, like all in base): move it once the die has landed.
+  void _autoMoveIfOneChoice(DateTime rolledAt) {
+    final g = state.game;
+    final dice = g.diceValue;
+    if (!state.isMyTurn || !g.hasRolled || dice == null) return;
+    final options = _engine.legalTokenMoves(g, dice);
+    final mine = g.tokens[g.turn]!;
     final positions = {for (final i in options) mine[i]};
-    if (positions.length == 1) {
+    if (options.isNotEmpty && positions.length == 1) {
       // Counted from the tap, so a slow network doesn't add to the wait:
       // the die lands, the number holds a moment, then the piece goes.
       final wait =
@@ -901,16 +922,14 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     selectToken(legal.contains(pick) ? pick : legal.first);
   }
 
-  /// A roll that can't be played (no piece can move, or a third six in a
-  /// row): everyone sees the die land on it first, the number holds a
-  /// moment, and only then does the turn pass. [send] puts the roll on the
-  /// server (this player's own roll in an online game).
+  /// Offline, a roll that can't be played (no piece can move, or a third
+  /// six in a row): the die lands on it first, the number holds a moment,
+  /// and only then does the turn pass. (Online the server passes it.)
   Future<void> _showThenPass(
     LudoState before,
     int dice,
-    LudoRollOutcome outcome, {
-    required bool send,
-  }) async {
+    LudoRollOutcome outcome,
+  ) async {
     // On a third six nothing may move while it shows: no dice value.
     final shown = outcome.forfeited
         ? before.copyWith(
@@ -921,17 +940,8 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
         : outcome.state;
     final rolledAt = DateTime.now();
     _rolledAt = rolledAt;
-    state = state.copyWith(game: shown, busy: send && !_isLocal);
+    state = state.copyWith(game: shown);
     _restartTimerIfNew(state.matchRow, shown);
-    if (send && !_isLocal) {
-      try {
-        await _repository.recordRoll(matchId: _matchId, state: shown.toJson());
-        state = state.copyWith(busy: false);
-      } catch (_) {
-        await _resync(strings.ludoMatchCouldnTSendYourRoll);
-        return;
-      }
-    }
     final wait =
         kDiceReveal + kNoMoveHold - DateTime.now().difference(rolledAt);
     if (wait > Duration.zero) await Future<void>.delayed(wait);
@@ -1005,6 +1015,8 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
       _restartTimerIfNew(state.matchRow, next);
       return;
     }
+    // Online: shown straight away as this phone works it out; the server
+    // works it out too, and what it sends back is the move that counts.
     state = state.copyWith(
       game: next,
       busy: true,
@@ -1013,17 +1025,13 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     _restartTimerIfNew(state.matchRow, next);
     _noticeCapture(next, firstLoad: false);
     try {
-      await _repository.recordMove(
+      final row = await _repository.moveToken(
         matchId: _matchId,
-        turnNumber: turnNumber,
-        diceValue: diceValue,
-        tokenIndex: tokenIndex,
-        captured: captured,
-        reachedHome: reachedHome,
-        stateAfter: next.toJson(),
+        token: tokenIndex!,
       );
+      if (!mounted) return;
       state = state.copyWith(busy: false);
-      if (state.isActive) _maybeReportResult(next);
+      _onMatchRow(row);
     } catch (_) {
       await _resync(strings.ludoMatchThatMoveDidnTGo);
     }
@@ -1124,7 +1132,7 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     final dice = _engine.rollDie(_rng);
     final outcome = _engine.registerRoll(g, dice);
     if (outcome.forfeited || outcome.movableTokens.isEmpty) {
-      _showThenPass(g, dice, outcome, send: false);
+      _showThenPass(g, dice, outcome);
       return;
     }
     state = state.copyWith(game: outcome.state);

@@ -83,16 +83,27 @@ class LudoRepository {
     return _client.rpc('leave_ludo_matchmaking_queue');
   }
 
-  /// Shares a roll that leaves the player choosing a token.
-  Future<void> recordRoll({
+  /// Rolls the die: the server picks the number (and passes the turn if
+  /// no piece can use it). Returns the match row after.
+  Future<Map<String, dynamic>> rollDice(String matchId) async =>
+      Map<String, dynamic>.from(
+        await _client.rpc('roll_ludo_dice', params: {'p_match_id': matchId})
+            as Map,
+      );
+
+  /// Moves piece [token] (0-3) by the die just rolled; the server works out
+  /// where it lands, what it captures and whether it wins. Returns the
+  /// match row after.
+  Future<Map<String, dynamic>> moveToken({
     required String matchId,
-    required Map<String, dynamic> state,
-  }) {
-    return _client.rpc(
-      'record_ludo_roll',
-      params: {'p_match_id': matchId, 'p_state': state},
-    );
-  }
+    required int token,
+  }) async => Map<String, dynamic>.from(
+    await _client.rpc(
+          'move_ludo_token',
+          params: {'p_match_id': matchId, 'p_token': token},
+        )
+        as Map,
+  );
 
   /// Passes the turn on once the player on turn has run out of time. The
   /// turn is named by [turnCount] and [rollSeq] so a stale call can't skip
@@ -111,44 +122,6 @@ class LudoRepository {
       },
     );
     return result == true;
-  }
-
-  Future<void> recordMove({
-    required String matchId,
-    required int turnNumber,
-    required int diceValue,
-    int? tokenIndex,
-    required bool captured,
-    required bool reachedHome,
-    required Map<String, dynamic> stateAfter,
-  }) {
-    return _client.rpc(
-      'record_ludo_move',
-      params: {
-        'p_match_id': matchId,
-        'p_turn_number': turnNumber,
-        'p_dice_value': diceValue,
-        'p_token_index': tokenIndex,
-        'p_captured': captured,
-        'p_reached_home': reachedHome,
-        'p_state_after': stateAfter,
-      },
-    );
-  }
-
-  Future<void> reportMatchResult({
-    required String matchId,
-    String? winnerId,
-    required String result,
-  }) {
-    return _client.rpc(
-      'report_ludo_match_result',
-      params: {
-        'p_match_id': matchId,
-        'p_winner_id': winnerId,
-        'p_result': result,
-      },
-    );
   }
 
   /// Leaves a match for good: a forfeit. With two players left the other
