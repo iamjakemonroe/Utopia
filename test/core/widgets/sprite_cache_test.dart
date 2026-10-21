@@ -71,7 +71,10 @@ void main() {
       );
     }
     // The first is made (and spends the budget); the rest are drawn as is.
-    expect(cache.length, 1);
+    // (A frame is a 60th of a second on the cache's own clock: if the four
+    // happen to straddle the start of the next one, that one makes one
+    // more. Never all four.)
+    expect(cache.length, inInclusiveRange(1, 2));
     expect([for (final s in spies) s.drawn], [1, 1, 1, 1]);
     cache.clear();
   });
