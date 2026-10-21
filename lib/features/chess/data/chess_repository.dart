@@ -165,6 +165,15 @@ class ChessRepository {
   Future<void> cancelMatchInvite(String inviteId) =>
       _client.rpc('cancel_match_invite', params: {'p_invite_id': inviteId});
 
+  /// Plays a move. The server checks it with the games' own rules on the
+  /// board it holds (the board-move function) and settles the game if it
+  /// ended it; [san] tells two checkers jumps between the same squares
+  /// apart. Throws if the move isn't allowed, it isn't this player's turn,
+  /// or their clock ran out.
+  ///
+  /// Until the server checks moves (its function or migration not there
+  /// yet), the move and the board after it ([fenAfter]) are saved as they
+  /// were before.
   Future<void> recordMove({
     required String matchId,
     required String from,
@@ -172,8 +181,24 @@ class ChessRepository {
     String? promotion,
     required String san,
     required String fenAfter,
-  }) {
-    return _client.rpc(
+  }) async {
+    try {
+      await _client.functions.invoke(
+        'board-move',
+        body: {
+          'match_id': matchId,
+          'from': from,
+          'to': to,
+          'promotion': promotion,
+          'notation': san,
+        },
+      );
+      return;
+    } on FunctionException catch (e) {
+      // The referee said no: not a move to save some other way.
+      if (e.status == 409 || e.status == 422 || e.status == 403) rethrow;
+    }
+    await _client.rpc(
       'record_move',
       params: {
         'p_match_id': matchId,

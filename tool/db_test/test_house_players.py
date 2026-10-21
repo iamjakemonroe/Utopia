@@ -80,8 +80,10 @@ check("the turn state says whose move it is", state["house_to_move"] == white_ho
 check("…only for a player in the game",
       one("select house_turn_state(%s, %s)", match, other) is None)
 if not white_house:
-    harness.as_user(db, me)
-    q("select record_move(%s, 'e2', 'e4', null, 'e4', 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1')", match)
+    # The player's move, as the board-move function saves it.
+    harness.as_admin(db)
+    one("select board_play_move(%s, %s, 0, 'e2', 'e4', null, 'e4', "
+        "'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1', null, null)", match, me)
 ply = one("select ply_count from matches where id = %s", match)
 check("one think per move", one("select house_claim_turn(%s, %s)", match, ply) is True
       and one("select house_claim_turn(%s, %s)", match, ply) is False)
@@ -98,15 +100,17 @@ check("players can't move for the house", raises("select house_play_move(%s, 1, 
 
 # At least a move each (a game of one move isn't rated, for anyone).
 if white_house:
-    harness.as_user(db, me)
-    q("select record_move(%s, 'e7', 'e5', null, 'e5', 'rnbqkbnr/pppp1ppp/8/4p3/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2')", match)
+    harness.as_admin(db)
+    one("select board_play_move(%s, %s, 1, 'e7', 'e5', null, 'e5', "
+        "'rnbqkbnr/pppp1ppp/8/4p3/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2', null, null)", match, me)
 
-# The end: both report the same, and it's settled and rated.
+# The end: the house player's engine reads the server's board, so its word
+# settles the game, and it's rated.
+harness.as_admin(db)
 before = one("select coalesce((select games from player_ratings where user_id = %s and game = 'chess'), 0)", me)
-harness.as_user(db, me)
-q("select report_match_result(%s, %s, 'checkmate')", match, me)
 one("select house_report_result(%s, %s, 'checkmate')", match, "white" if not white_house else "black")
-check("both reports agree: settled", one("select status from matches where id = %s", match) == "completed"
+check("the house player's engine says how it ended: settled",
+      one("select status from matches where id = %s", match) == "completed"
       and one("select winner_id from matches where id = %s", match) == me)
 check("…and rated like any game", one("select games from player_ratings where user_id = %s and game = 'chess'", me) == before + 1)
 
