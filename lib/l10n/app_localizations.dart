@@ -2891,36 +2891,6 @@ abstract class L10n {
   /// features/maestro/presentation/maestro_sheet.dart
   ///
   /// In en, this message translates to:
-  /// **'Chip becomes your own artist.'**
-  String get maestroChipBecomesYourOwnArtist;
-
-  /// features/maestro/presentation/maestro_sheet.dart
-  ///
-  /// In en, this message translates to:
-  /// **'{kMaestroPortraitsPerMonth} real portraits a month: anyone, from a photo or a famous name, looking just like them'**
-  String maestroRealPortraitsAMonthAnyone(Object kMaestroPortraitsPerMonth);
-
-  /// features/maestro/presentation/maestro_sheet.dart
-  ///
-  /// In en, this message translates to:
-  /// **'Color with Chip all day long'**
-  String get maestroColorWithChipAllDay;
-
-  /// features/maestro/presentation/maestro_sheet.dart
-  ///
-  /// In en, this message translates to:
-  /// **'10 of Chip\'s own drawings a day instead of 4'**
-  String get maestro10OfChipSOwn;
-
-  /// features/maestro/presentation/maestro_sheet.dart
-  ///
-  /// In en, this message translates to:
-  /// **'Chip\'s artist look, and the Maestro frame for your picture'**
-  String get maestroChipSArtistLookAnd;
-
-  /// features/maestro/presentation/maestro_sheet.dart
-  ///
-  /// In en, this message translates to:
   /// **'Coming soon'**
   String get maestroComingSoon;
 
@@ -9875,12 +9845,6 @@ abstract class L10n {
   /// features/doodle_studio/presentation/sketchbook_screen.dart
   ///
   /// In en, this message translates to:
-  /// **'Utopia\'s pictures'**
-  String get sketchbookUtopiaSPictures;
-
-  /// features/doodle_studio/presentation/sketchbook_screen.dart
-  ///
-  /// In en, this message translates to:
   /// **'Drawn for players'**
   String get sketchbookDrawnForPlayers;
 
@@ -12013,6 +11977,168 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Note: {note}'**
   String giftNoteTheirNote(Object note);
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Lotus mandala'**
+  String get coloringPagesLotusMandala;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Rose window'**
+  String get coloringPagesRoseWindow;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Moroccan tiles'**
+  String get coloringPagesMoroccanTiles;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Koi pond'**
+  String get coloringPagesKoiPond;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Low-poly peaks'**
+  String get coloringPagesLowPolyPeaks;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Art deco fans'**
+  String get coloringPagesArtDecoFans;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'City at night'**
+  String get coloringPagesCityAtNight;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Peacock feathers'**
+  String get coloringPagesPeacockFeathers;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed'**
+  String get sketchbookDetailed;
+
+  /// features/doodle_studio: a coloring page name or a heading in the picture picker
+  ///
+  /// In en, this message translates to:
+  /// **'Playful'**
+  String get sketchbookPlayful;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Chip'**
+  String get maestroUpgradeChip;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Maestro'**
+  String get maestroBadge;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Chip at his best: smarter, chattier, and your own artist.'**
+  String get maestroChipAtHisBest;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get maestroCompareFree;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Yours'**
+  String get maestroCompareYours;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Chats a day'**
+  String get maestroCompareChats;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Chip\'s brain'**
+  String get maestroCompareBrain;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Quick'**
+  String get maestroCompareBrainFree;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Smartest, searches the web'**
+  String get maestroCompareBrainMaestro;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Drawings a day'**
+  String get maestroCompareDrawings;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Coloring with Chip a day'**
+  String get maestroCompareColoring;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Real portraits'**
+  String get maestroComparePortraits;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Your first'**
+  String get maestroComparePortraitsFree;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'{count} a month'**
+  String maestroComparePortraitsMaestro(Object count);
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Artist look and Maestro frame'**
+  String get maestroCompareLook;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Chip at his best: 200 chats a day, his smartest brain and 30 real portraits a month.'**
+  String get maestroStripText;
+
+  /// features/maestro: Chip Maestro, the upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'Chip Maestro: 200 chats a day'**
+  String get chipChatGetMaestro;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

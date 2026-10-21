@@ -1605,25 +1605,6 @@ class L10nEn extends L10n {
       'You\'re a Chip Maestro. Chip is your artist.';
 
   @override
-  String get maestroChipBecomesYourOwnArtist => 'Chip becomes your own artist.';
-
-  @override
-  String maestroRealPortraitsAMonthAnyone(Object kMaestroPortraitsPerMonth) {
-    return '$kMaestroPortraitsPerMonth real portraits a month: anyone, from a photo or a famous name, looking just like them';
-  }
-
-  @override
-  String get maestroColorWithChipAllDay => 'Color with Chip all day long';
-
-  @override
-  String get maestro10OfChipSOwn =>
-      '10 of Chip\'s own drawings a day instead of 4';
-
-  @override
-  String get maestroChipSArtistLookAnd =>
-      'Chip\'s artist look, and the Maestro frame for your picture';
-
-  @override
   String get maestroComingSoon => 'Coming soon';
 
   @override
@@ -5575,9 +5556,6 @@ class L10nEn extends L10n {
   String get sketchbookYours => 'Yours';
 
   @override
-  String get sketchbookUtopiaSPictures => 'Utopia\'s pictures';
-
-  @override
   String get sketchbookDrawnForPlayers => 'Drawn for players';
 
   @override
@@ -6796,4 +6774,89 @@ class L10nEn extends L10n {
   String giftNoteTheirNote(Object note) {
     return 'Note: $note';
   }
+
+  @override
+  String get coloringPagesLotusMandala => 'Lotus mandala';
+
+  @override
+  String get coloringPagesRoseWindow => 'Rose window';
+
+  @override
+  String get coloringPagesMoroccanTiles => 'Moroccan tiles';
+
+  @override
+  String get coloringPagesKoiPond => 'Koi pond';
+
+  @override
+  String get coloringPagesLowPolyPeaks => 'Low-poly peaks';
+
+  @override
+  String get coloringPagesArtDecoFans => 'Art deco fans';
+
+  @override
+  String get coloringPagesCityAtNight => 'City at night';
+
+  @override
+  String get coloringPagesPeacockFeathers => 'Peacock feathers';
+
+  @override
+  String get sketchbookDetailed => 'Detailed';
+
+  @override
+  String get sketchbookPlayful => 'Playful';
+
+  @override
+  String get maestroUpgradeChip => 'Upgrade Chip';
+
+  @override
+  String get maestroBadge => 'Maestro';
+
+  @override
+  String get maestroChipAtHisBest =>
+      'Chip at his best: smarter, chattier, and your own artist.';
+
+  @override
+  String get maestroCompareFree => 'Free';
+
+  @override
+  String get maestroCompareYours => 'Yours';
+
+  @override
+  String get maestroCompareChats => 'Chats a day';
+
+  @override
+  String get maestroCompareBrain => 'Chip\'s brain';
+
+  @override
+  String get maestroCompareBrainFree => 'Quick';
+
+  @override
+  String get maestroCompareBrainMaestro => 'Smartest, searches the web';
+
+  @override
+  String get maestroCompareDrawings => 'Drawings a day';
+
+  @override
+  String get maestroCompareColoring => 'Coloring with Chip a day';
+
+  @override
+  String get maestroComparePortraits => 'Real portraits';
+
+  @override
+  String get maestroComparePortraitsFree => 'Your first';
+
+  @override
+  String maestroComparePortraitsMaestro(Object count) {
+    return '$count a month';
+  }
+
+  @override
+  String get maestroCompareLook => 'Artist look and Maestro frame';
+
+  @override
+  String get maestroStripText =>
+      'Chip at his best: 200 chats a day, his smartest brain and 30 real portraits a month.';
+
+  @override
+  String get chipChatGetMaestro => 'Chip Maestro: 200 chats a day';
 }

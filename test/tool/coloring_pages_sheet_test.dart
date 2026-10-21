@@ -41,13 +41,13 @@ class _Sheet extends CustomPainter {
 
 void main() {
   testWidgets('coloring pages', (tester) async {
-    tester.view.physicalSize = const Size(2000, 1300);
+    tester.view.physicalSize = const Size(2000, 650.0 * 4);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       RepaintBoundary(
         key: const ValueKey('sheet'),
-        child: CustomPaint(painter: _Sheet(), size: const Size(2000, 1300)),
+        child: CustomPaint(painter: _Sheet(), size: const Size(2000, 650.0 * 4)),
       ),
     );
     await expectLater(

@@ -2119,31 +2119,6 @@
   "@maestroYouReAChipMaestro": {
     "description": "features/maestro/presentation/maestro_sheet.dart"
   },
-  "maestroChipBecomesYourOwnArtist": "Chip becomes your own artist.",
-  "@maestroChipBecomesYourOwnArtist": {
-    "description": "features/maestro/presentation/maestro_sheet.dart"
-  },
-  "maestroRealPortraitsAMonthAnyone": "{kMaestroPortraitsPerMonth} real portraits a month: anyone, from a photo or a famous name, looking just like them",
-  "@maestroRealPortraitsAMonthAnyone": {
-    "description": "features/maestro/presentation/maestro_sheet.dart",
-    "placeholders": {
-      "kMaestroPortraitsPerMonth": {
-        "type": "Object"
-      }
-    }
-  },
-  "maestroColorWithChipAllDay": "Color with Chip all day long",
-  "@maestroColorWithChipAllDay": {
-    "description": "features/maestro/presentation/maestro_sheet.dart"
-  },
-  "maestro10OfChipSOwn": "10 of Chip's own drawings a day instead of 4",
-  "@maestro10OfChipSOwn": {
-    "description": "features/maestro/presentation/maestro_sheet.dart"
-  },
-  "maestroChipSArtistLookAnd": "Chip's artist look, and the Maestro frame for your picture",
-  "@maestroChipSArtistLookAnd": {
-    "description": "features/maestro/presentation/maestro_sheet.dart"
-  },
   "maestroComingSoon": "Coming soon",
   "@maestroComingSoon": {
     "description": "features/maestro/presentation/maestro_sheet.dart"
@@ -7368,10 +7343,6 @@
   "@sketchbookYours": {
     "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
   },
-  "sketchbookUtopiaSPictures": "Utopia's pictures",
-  "@sketchbookUtopiaSPictures": {
-    "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
-  },
   "sketchbookDrawnForPlayers": "Drawn for players",
   "@sketchbookDrawnForPlayers": {
     "description": "features/doodle_studio/presentation/sketchbook_screen.dart"
@@ -9085,5 +9056,118 @@
         "type": "Object"
       }
     }
+  },
+  "coloringPagesLotusMandala": "Lotus mandala",
+  "@coloringPagesLotusMandala": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "coloringPagesRoseWindow": "Rose window",
+  "@coloringPagesRoseWindow": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "coloringPagesMoroccanTiles": "Moroccan tiles",
+  "@coloringPagesMoroccanTiles": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "coloringPagesKoiPond": "Koi pond",
+  "@coloringPagesKoiPond": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "coloringPagesLowPolyPeaks": "Low-poly peaks",
+  "@coloringPagesLowPolyPeaks": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "coloringPagesArtDecoFans": "Art deco fans",
+  "@coloringPagesArtDecoFans": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "coloringPagesCityAtNight": "City at night",
+  "@coloringPagesCityAtNight": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "coloringPagesPeacockFeathers": "Peacock feathers",
+  "@coloringPagesPeacockFeathers": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "sketchbookDetailed": "Detailed",
+  "@sketchbookDetailed": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "sketchbookPlayful": "Playful",
+  "@sketchbookPlayful": {
+    "description": "features/doodle_studio: a coloring page name or a heading in the picture picker"
+  },
+  "maestroUpgradeChip": "Upgrade Chip",
+  "@maestroUpgradeChip": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroBadge": "Maestro",
+  "@maestroBadge": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroChipAtHisBest": "Chip at his best: smarter, chattier, and your own artist.",
+  "@maestroChipAtHisBest": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroCompareFree": "Free",
+  "@maestroCompareFree": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroCompareYours": "Yours",
+  "@maestroCompareYours": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroCompareChats": "Chats a day",
+  "@maestroCompareChats": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroCompareBrain": "Chip's brain",
+  "@maestroCompareBrain": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroCompareBrainFree": "Quick",
+  "@maestroCompareBrainFree": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroCompareBrainMaestro": "Smartest, searches the web",
+  "@maestroCompareBrainMaestro": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroCompareDrawings": "Drawings a day",
+  "@maestroCompareDrawings": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroCompareColoring": "Coloring with Chip a day",
+  "@maestroCompareColoring": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroComparePortraits": "Real portraits",
+  "@maestroComparePortraits": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroComparePortraitsFree": "Your first",
+  "@maestroComparePortraitsFree": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroComparePortraitsMaestro": "{count} a month",
+  "@maestroComparePortraitsMaestro": {
+    "description": "features/maestro: Chip Maestro, the upgrade",
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "maestroCompareLook": "Artist look and Maestro frame",
+  "@maestroCompareLook": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "maestroStripText": "Chip at his best: 200 chats a day, his smartest brain and 30 real portraits a month.",
+  "@maestroStripText": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
+  },
+  "chipChatGetMaestro": "Chip Maestro: 200 chats a day",
+  "@chipChatGetMaestro": {
+    "description": "features/maestro: Chip Maestro, the upgrade"
   }
 }

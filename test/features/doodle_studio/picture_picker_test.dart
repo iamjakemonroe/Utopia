@@ -97,8 +97,9 @@ void main() {
     expect(find.text('Yours'), findsOneWidget);
     expect(find.text('Big square'), findsOneWidget);
     expect(find.text('Chip is drawing...'), findsOneWidget);
-    expect(find.text("Utopia's pictures"), findsOneWidget);
-    expect(find.text('Mandala'), findsOneWidget);
+    // Ours: the detailed pages first.
+    expect(find.text('Detailed'), findsOneWidget);
+    expect(find.text('Lotus mandala'), findsOneWidget);
     await tester.pump(const Duration(seconds: 2));
   });
 
@@ -109,7 +110,7 @@ void main() {
     await search(tester, 'zebra');
     expect(find.text('Nobody has asked for that yet.'), findsOneWidget);
     expect(find.text('Ask Chip to draw "zebra"'), findsOneWidget);
-    expect(find.text('Mandala'), findsNothing);
+    expect(find.text('Lotus mandala'), findsNothing);
 
     await tester.tap(find.text('Ask Chip to draw "zebra"'));
     for (var i = 0; i < 10; i++) {

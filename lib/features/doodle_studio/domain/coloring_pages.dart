@@ -1,9 +1,12 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'art_doc.dart';
 import 'svg_path.dart';
 import '../../../l10n/strings.dart';
+
+part 'coloring_pages_detailed.dart';
 
 /// A picture to color in: bold outlines on the page ([kPageSize]), drawn
 /// as closed shapes so each one fills with a single tap.
@@ -13,6 +16,7 @@ class ColoringPage {
     required this.name,
     required this.draw,
     this.artPath,
+    this.detailed = false,
   });
 
   /// A page from the picture library (pictures Chip draws for players):
@@ -43,6 +47,9 @@ class ColoringPage {
   /// Where a line-art page's image is kept; null for outlines.
   final String? artPath;
 
+  /// A page with lots to fill, for grown-ups (shown first, as Detailed).
+  final bool detailed;
+
   /// How thick the outlines are drawn, in page units.
   static const lineWidth = 7.0;
 
@@ -66,6 +73,17 @@ class ColoringPage {
 List<Path> _noLines() => const [];
 
 final kColoringPages = [
+  for (final (id, name, draw) in [
+    ('lotus_mandala', strings.coloringPagesLotusMandala, _lotusMandala),
+    ('rose_window', strings.coloringPagesRoseWindow, _roseWindow),
+    ('moroccan_tiles', strings.coloringPagesMoroccanTiles, _moroccanTiles),
+    ('koi_pond', strings.coloringPagesKoiPond, _koiPond),
+    ('low_poly_peaks', strings.coloringPagesLowPolyPeaks, _lowPolyPeaks),
+    ('art_deco_fans', strings.coloringPagesArtDecoFans, _artDecoFans),
+    ('city_at_night', strings.coloringPagesCityAtNight, _cityAtNight),
+    ('peacock', strings.coloringPagesPeacockFeathers, _peacock),
+  ])
+    ColoringPage(id: id, name: name, draw: draw, detailed: true),
   ColoringPage(
     id: 'mandala',
     name: strings.coloringPagesMandala,

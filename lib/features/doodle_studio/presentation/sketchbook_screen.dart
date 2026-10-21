@@ -624,19 +624,37 @@ class _PagePickerState extends ConsumerState<_PagePicker> {
                               ),
                           ]),
                         ],
-                        if (builtIn.isNotEmpty) ...[
-                          heading(strings.sketchbookUtopiaSPictures),
-                          grid([
-                            for (final page in builtIn)
-                              _Pop(
-                                index: n++,
-                                child: _PickTile(
-                                  page: page,
-                                  onTap: () => _open(page),
+                        // Utopia's own pages: the detailed ones (for
+                        // grown-ups) first, then the playful ones.
+                        for (final (title, pages) in [
+                          (
+                            strings.sketchbookDetailed,
+                            [
+                              for (final p in builtIn)
+                                if (p.detailed) p,
+                            ],
+                          ),
+                          (
+                            strings.sketchbookPlayful,
+                            [
+                              for (final p in builtIn)
+                                if (!p.detailed) p,
+                            ],
+                          ),
+                        ])
+                          if (pages.isNotEmpty) ...[
+                            heading(title),
+                            grid([
+                              for (final page in pages)
+                                _Pop(
+                                  index: n++,
+                                  child: _PickTile(
+                                    page: page,
+                                    onTap: () => _open(page),
+                                  ),
                                 ),
-                              ),
-                          ]),
-                        ],
+                            ]),
+                          ],
                         if (shared.isNotEmpty) ...[
                           heading(
                             query.isEmpty
