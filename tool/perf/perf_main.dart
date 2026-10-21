@@ -8,7 +8,10 @@
 //   &world=<theme id> [&pieces=<set>]. "notifications" is home's cards with
 //   window.__push() opening the notifications (20 of every kind) over them.
 //   "ludo" and "eights" are offline tables where bots play every seat.
+//   "chipshow" is Chip going through his moods; "chipdraws" is Chip
+//   drawing an airplane in "Chip draws, you guess" (both for filming).
 //   (tool/perf/measure.mjs measures it in a throttled browser)
+import 'dart:async';
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
@@ -32,7 +35,11 @@ import 'package:utopia/features/chess/domain/chess_bot.dart';
 import 'package:utopia/features/chess/domain/chess_types.dart';
 import 'package:utopia/features/chess/presentation/screens/chess_bot_screen.dart';
 import 'package:utopia/features/notifications/data/notification_repository.dart';
+import 'package:utopia/features/guess_doodle/data/chip_doodle_repository.dart';
+import 'package:utopia/features/guess_doodle/domain/chip_doodle.dart';
+import 'package:utopia/features/guess_doodle/presentation/chip_doodle_screen.dart';
 import 'package:utopia/features/notifications/presentation/notifications_screen.dart';
+import 'package:utopia/features/settings/presentation/settings_screen.dart';
 import 'package:utopia/core/profiles/profile_providers.dart';
 import 'package:utopia/features/auth/presentation/providers/auth_providers.dart';
 import 'package:utopia/features/coins/presentation/providers/coin_balance_provider.dart';
@@ -76,6 +83,8 @@ Future<void> main() async {
       mySide: CheckersSide.dark,
     ),
     'cards' || 'notifications' => const _Cards(),
+    'chipshow' => const _ChipShow(),
+    'chipdraws' => const ChipDoodleScreen(),
     // Home itself, as a signed-in player sees it (their profile made up;
     // friends, invites and games come back empty).
     'home' => const HomeScreen(),
@@ -117,8 +126,20 @@ Future<void> main() async {
                 path: '/notifications',
                 builder: (_, _) => const NotificationsScreen(),
               ),
+              GoRoute(
+                path: '/settings',
+                builder: (_, _) => const SettingsScreen(),
+              ),
             ],
           );
+          // window.__settings() opens Settings over the scene;
+          // window.__where() says where the router is.
+          globalContext['__settings'] = (() {
+            router.push('/settings');
+          }).toJS;
+          globalContext['__where'] =
+              (() => router.routerDelegate.currentConfiguration.uri.path.toJS)
+                  .toJS;
           globalContext['__push'] = (() {
             router.push('/notifications');
           }).toJS;
@@ -152,6 +173,7 @@ Future<void> main() async {
         coinBalanceProvider.overrideWith((ref) => Stream.value(2500)),
         activeGameProvider.overrideWith((ref) async => null),
         friendsOnlineProvider.overrideWith((ref) => Stream.value(const {})),
+        chipDoodleRepositoryProvider.overrideWithValue(_Airplane()),
       ],
       child: const UtopiaApp(),
     ),
@@ -159,6 +181,71 @@ Future<void> main() async {
 }
 
 const _perfUser = '00000000-0000-4000-8000-000000000001';
+
+/// Chip through his moods, a couple of seconds each, big in the world.
+class _ChipShow extends StatefulWidget {
+  const _ChipShow();
+
+  @override
+  State<_ChipShow> createState() => _ChipShowState();
+}
+
+class _ChipShowState extends State<_ChipShow> {
+  static const _moods = [
+    BuddyMood.happy,
+    BuddyMood.excited,
+    BuddyMood.thinking,
+    BuddyMood.evil,
+    BuddyMood.peaceful,
+    BuddyMood.sad,
+    BuddyMood.vibing,
+    BuddyMood.hot,
+  ];
+  int _at = 0;
+  late final Timer _timer = Timer.periodic(
+    const Duration(milliseconds: 1800),
+    (_) => setState(() => _at = (_at + 1) % _moods.length),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _timer;
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: AppBackground(
+      child: Center(child: CoinBuddy(mood: _moods[_at], size: 240)),
+    ),
+  );
+}
+
+/// Chip's real airplane doodle, from the deck.
+class _Airplane implements ChipDoodleRepository {
+  @override
+  Future<ChipDoodleRound> round() async => const ChipDoodleRound(
+    word: 'airplane',
+    strokes: [
+      'M150 520 Q150 470 220 465 L780 455 Q860 455 880 500 Q860 545 780 545 L220 540 Q150 540 150 520',
+      'M450 460 L330 200 L400 200 L560 458',
+      'M450 540 L330 820 L400 820 L560 542',
+      'M220 465 L170 320 L230 320 L300 463',
+      'M200 538 L160 620 L210 620 L280 540',
+      'M820 470 Q850 480 860 500 L800 500 Q800 480 820 470',
+      'M330 490 Q330 480 340 480 Q350 480 350 490 Q350 500 340 500 Q330 500 330 490',
+      'M400 490 Q400 480 410 480 Q420 480 420 490 Q420 500 410 500 Q400 500 400 490',
+      'M470 490 Q470 480 480 480 Q490 480 490 490 Q490 500 480 500 Q470 500 470 490',
+      'M600 180 Q620 140 660 160 Q690 120 730 155 Q770 150 760 190 Q700 200 600 180',
+    ],
+  );
+}
 
 /// What home shows most of: Chip over the four game cards, in the world.
 class _Cards extends StatelessWidget {

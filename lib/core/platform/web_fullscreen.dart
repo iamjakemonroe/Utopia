@@ -30,4 +30,10 @@ abstract final class WebFullscreen {
   /// Runs [action] once, on the next tap or key, from inside the browser's
   /// own event (where going full screen is allowed).
   static void onNextTouch(void Function() action) => impl.onNextTouch(action);
+
+  /// Runs [action] whenever full screen ends by the browser's doing, not
+  /// the game's: on a phone, the Back button (which the browser spends on
+  /// leaving full screen rather than going back); Esc on a computer.
+  static void onLeftByBrowser(void Function() action) =>
+      impl.onLeftByBrowser(action);
 }

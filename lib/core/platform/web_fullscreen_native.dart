@@ -11,3 +11,5 @@ void enter() {}
 void exit() {}
 
 void onNextTouch(void Function() action) {}
+
+void onLeftByBrowser(void Function() action) {}

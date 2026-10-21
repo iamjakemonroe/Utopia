@@ -36,15 +36,44 @@ bool _now() {
   }
 }
 
-ValueNotifier<bool> watch() {
-  final active = ValueNotifier(_now());
+/// Leaving full screen because the game asked ([exit]), not the browser.
+bool _leaving = false;
+final _leftByBrowser = <void Function()>[];
+final _active = ValueNotifier(_now());
+bool _listening = false;
+
+/// Hears the browser go in and out of full screen (once, however many
+/// ask).
+void _listen() {
+  if (_listening) return;
+  _listening = true;
   try {
     web.document.addEventListener(
       'fullscreenchange',
-      ((web.Event _) => active.value = _now()).toJS,
+      ((web.Event _) {
+        final now = _now();
+        _active.value = now;
+        if (now) return;
+        if (_leaving) {
+          _leaving = false;
+          return;
+        }
+        for (final action in List.of(_leftByBrowser)) {
+          action();
+        }
+      }).toJS,
     );
   } catch (_) {}
-  return active;
+}
+
+ValueNotifier<bool> watch() {
+  _listen();
+  return _active;
+}
+
+void onLeftByBrowser(void Function() action) {
+  _listen();
+  _leftByBrowser.add(action);
 }
 
 void enter() {
@@ -59,6 +88,7 @@ void enter() {
 
 void exit() {
   if (!_now()) return;
+  _leaving = true;
   try {
     web.document.exitFullscreen().toDart.catchError((_) => null);
   } catch (_) {}
