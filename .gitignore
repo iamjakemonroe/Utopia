@@ -70,3 +70,9 @@ test/tool/goldens/
 
 # tool/perf/measure.mjs needs Playwright, installed there (npm i --no-save)
 tool/perf/node_modules/
+
+# Local tool folders: AI assistant settings, the PostHog setup wizard's
+# working files, and Node packages a tool installed at the root
+.claude/
+.posthog-wizard-cache/
+/node_modules/

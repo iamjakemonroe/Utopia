@@ -123,6 +123,11 @@ flutter test --run-skipped test/tool/split_check_test.dart   # pixel check
 Art and screen sheets render on demand:
 `flutter test --run-skipped --update-goldens test/tool`.
 
+## License
+
+All rights reserved: you're welcome to read the code, but not to copy or
+reuse it (see [LICENSE](LICENSE)).
+
 ## Credits
 
 Sounds built from public domain (CC0) recordings are listed in
