@@ -7,6 +7,8 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/frame_island.dart';
 import '../../../../l10n/strings.dart';
+import '../../domain/ludo_engine.dart';
+import 'ludo_pieces.dart';
 
 /// How far the piece is from the middle of what's anchored over it, when
 /// the board kept that inside its edges: its point still points at it.
@@ -152,21 +154,100 @@ class _LudoCaptureBadgeState extends State<LudoCaptureBadge>
   }
 }
 
-/// War or peace, for the player who captured, over the piece that did it.
-/// Opens when they tap it; the time left runs along the bottom.
+/// One of the two reactions on a [LudoReactionCard].
+class LudoReactionChoice {
+  const LudoReactionChoice({
+    required this.face,
+    required this.label,
+    required this.tint,
+    required this.onTap,
+  });
+
+  final Widget face;
+  final String label;
+  final Color tint;
+  final VoidCallback onTap;
+}
+
+/// Two reactions over a piece: war or peace for the one that captured,
+/// sad or "again" for one sent home. Opens when its player taps the piece;
+/// the time left runs along the bottom.
 class LudoReactionCard extends StatefulWidget {
   const LudoReactionCard({
     super.key,
     required this.deadline,
     required this.window,
-    required this.onWar,
-    required this.onPeace,
+    required this.choices,
   });
+
+  /// War or peace, for the piece that captured.
+  factory LudoReactionCard.capture({
+    Key? key,
+    required DateTime deadline,
+    required Duration window,
+    required VoidCallback onWar,
+    required VoidCallback onPeace,
+  }) => LudoReactionCard(
+    key: key,
+    deadline: deadline,
+    window: window,
+    choices: [
+      LudoReactionChoice(
+        face: const CoinBuddy(mood: BuddyMood.evil, size: 42),
+        label: strings.ludoCaptureBubbleWar,
+        tint: AppColors.error,
+        onTap: onWar,
+      ),
+      LudoReactionChoice(
+        face: const CoinBuddy(mood: BuddyMood.peaceful, size: 42),
+        label: strings.ludoCaptureBubblePeace,
+        tint: AppColors.success,
+        onTap: onPeace,
+      ),
+    ],
+  );
+
+  /// Sad, or not giving up, for a piece sent home: shown on the piece
+  /// itself.
+  factory LudoReactionCard.sentHome({
+    Key? key,
+    required DateTime deadline,
+    required Duration window,
+    required LudoColor color,
+    required String setId,
+    required VoidCallback onSad,
+    required VoidCallback onAgain,
+  }) => LudoReactionCard(
+    key: key,
+    deadline: deadline,
+    window: window,
+    choices: [
+      LudoReactionChoice(
+        face: _ReactingPiece(
+          color: color,
+          setId: setId,
+          kind: TokenReaction.sad,
+        ),
+        label: strings.ludoCaptureBubbleSad,
+        tint: AppColors.sky,
+        onTap: onSad,
+      ),
+      LudoReactionChoice(
+        face: _ReactingPiece(
+          color: color,
+          setId: setId,
+          kind: TokenReaction.again,
+        ),
+        label: strings.ludoCaptureBubbleAgain,
+        tint: const Color(0xFFFF8A3D),
+        onTap: onAgain,
+      ),
+    ],
+  );
 
   final DateTime deadline;
   final Duration window;
-  final VoidCallback onWar;
-  final VoidCallback onPeace;
+  final List<LudoReactionChoice> choices;
 
   static const size = Size(184, 116);
 
@@ -234,19 +315,10 @@ class _LudoReactionCardState extends State<LudoReactionCard>
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              _Choice(
-                                mood: BuddyMood.evil,
-                                label: strings.ludoCaptureBubbleWar,
-                                tint: AppColors.error,
-                                onTap: widget.onWar,
-                              ),
-                              const SizedBox(width: 10),
-                              _Choice(
-                                mood: BuddyMood.peaceful,
-                                label: strings.ludoCaptureBubblePeace,
-                                tint: AppColors.success,
-                                onTap: widget.onPeace,
-                              ),
+                              for (final (i, c) in widget.choices.indexed) ...[
+                                if (i > 0) const SizedBox(width: 10),
+                                _Choice(choice: c),
+                              ],
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -282,26 +354,19 @@ class _LudoReactionCardState extends State<LudoReactionCard>
 }
 
 class _Choice extends StatelessWidget {
-  const _Choice({
-    required this.mood,
-    required this.label,
-    required this.tint,
-    required this.onTap,
-  });
+  const _Choice({required this.choice});
 
-  final BuddyMood mood;
-  final String label;
-  final Color tint;
-  final VoidCallback onTap;
+  final LudoReactionChoice choice;
 
   @override
   Widget build(BuildContext context) {
+    final tint = choice.tint;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: choice.onTap,
       child: Semantics(
         button: true,
-        label: label,
+        label: choice.label,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -317,11 +382,11 @@ class _Choice extends StatelessWidget {
                   width: 1.5,
                 ),
               ),
-              child: CoinBuddy(mood: mood, size: 42),
+              child: choice.face,
             ),
             const SizedBox(height: 3),
             Text(
-              label,
+              choice.label,
               style: AppTextStyles.body(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w900,
@@ -329,6 +394,55 @@ class _Choice extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A small piece in its player's set, playing [kind] over and over: what
+/// the choice will look like on the board.
+class _ReactingPiece extends StatefulWidget {
+  const _ReactingPiece({
+    required this.color,
+    required this.setId,
+    required this.kind,
+  });
+
+  final LudoColor color;
+  final String setId;
+  final TokenReaction kind;
+
+  @override
+  State<_ReactingPiece> createState() => _ReactingPieceState();
+}
+
+class _ReactingPieceState extends State<_ReactingPiece>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _clock = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 60),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _clock.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _clock,
+      builder: (context, _) => CustomPaint(
+        size: const Size(30, 30 * LudoTokenPainter.aspect),
+        painter: LudoTokenPainter(
+          setId: widget.setId,
+          color: widget.color,
+          t: _clock.value * 60,
+          reaction: widget.kind,
+          // Held at full strength.
+          reactionProgress: 0.5,
         ),
       ),
     );

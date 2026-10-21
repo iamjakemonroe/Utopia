@@ -159,6 +159,7 @@ class LudoState {
     this.hasRolled = false,
     this.consecutiveSixes = 0,
     this.winner,
+    this.finished = const [],
     this.left = const [],
     this.rollSeq = 0,
     this.lastRoll,
@@ -173,7 +174,14 @@ class LudoState {
   final int? diceValue;
   final bool hasRolled;
   final int consecutiveSixes;
+
+  /// The first to get all four pieces home: the one who takes the pot.
   final LudoColor? winner;
+
+  /// Everyone with all four pieces home, in the order they got there
+  /// (first place first). With three or more at the table the rest play
+  /// on for the places after them.
+  final List<LudoColor> finished;
 
   /// Players who quit or timed out: skipped, their tokens off the board.
   final List<LudoColor> left;
@@ -190,6 +198,22 @@ class LudoState {
       if (!left.contains(c)) c,
   ];
 
+  /// Still racing: not home with all four, and not gone.
+  List<LudoColor> get racing => [
+    for (final c in players)
+      if (!left.contains(c) && !finished.contains(c)) c,
+  ];
+
+  /// Someone has finished and no more than one player is left racing:
+  /// there's no one left to play against.
+  bool get isOver => finished.isNotEmpty && racing.length <= 1;
+
+  /// [color]'s finishing place (1 for first), or null while racing.
+  int? placeOf(LudoColor color) {
+    final i = finished.indexOf(color);
+    return i < 0 ? null : i + 1;
+  }
+
   static LudoState initial(List<LudoColor> players, {LudoBoardKind? board}) {
     return LudoState(
       players: players,
@@ -203,12 +227,14 @@ class LudoState {
     );
   }
 
-  /// The next player in turn order who is still in the game.
+  /// The next player in turn order who is still racing.
   LudoColor nextPlayer() {
     final i = players.indexOf(turn);
     for (var step = 1; step <= players.length; step++) {
       final candidate = players[(i + step) % players.length];
-      if (!left.contains(candidate)) return candidate;
+      if (!left.contains(candidate) && !finished.contains(candidate)) {
+        return candidate;
+      }
     }
     return turn;
   }
@@ -221,6 +247,7 @@ class LudoState {
     bool? hasRolled,
     int? consecutiveSixes,
     LudoColor? winner,
+    List<LudoColor>? finished,
     List<LudoColor>? left,
     int? rollSeq,
     LudoRoll? lastRoll,
@@ -235,6 +262,7 @@ class LudoState {
       hasRolled: hasRolled ?? this.hasRolled,
       consecutiveSixes: consecutiveSixes ?? this.consecutiveSixes,
       winner: winner ?? this.winner,
+      finished: finished ?? this.finished,
       left: left ?? this.left,
       rollSeq: rollSeq ?? this.rollSeq,
       lastRoll: lastRoll ?? this.lastRoll,
@@ -251,6 +279,7 @@ class LudoState {
     'has_rolled': hasRolled,
     'consecutive_sixes': consecutiveSixes,
     'winner': winner?.name,
+    'finished': finished.map((c) => c.name).toList(),
     'left': left.map((c) => c.name).toList(),
     'roll_seq': rollSeq,
     'last_roll': lastRoll?.toJson(),
@@ -262,6 +291,10 @@ class LudoState {
 
   factory LudoState.fromJson(Map<String, dynamic> json) {
     final lastRoll = json['last_roll'];
+    final winner = json['winner'] == null
+        ? null
+        : _colorByName(json['winner'] as String);
+    final finished = json['finished'] as List?;
     return LudoState(
       board: json['board'] == 'hex' ? LudoBoardKind.hex : LudoBoardKind.classic,
       players: (json['players'] as List)
@@ -277,9 +310,12 @@ class LudoState {
       diceValue: (json['dice_value'] as num?)?.toInt(),
       hasRolled: json['has_rolled'] as bool? ?? false,
       consecutiveSixes: (json['consecutive_sixes'] as num?)?.toInt() ?? 0,
-      winner: json['winner'] == null
-          ? null
-          : _colorByName(json['winner'] as String),
+      winner: winner,
+      // Games from before anyone played on after a win: the winner is
+      // the only one home.
+      finished: finished == null
+          ? [?winner]
+          : [for (final n in finished) _colorByName(n as String)],
       left: [
         for (final n in (json['left'] as List? ?? const []))
           _colorByName(n as String),
@@ -323,12 +359,18 @@ class LudoMoveResult {
     required this.wonGame,
   });
 
+  /// [wonGame] for the one who takes the pot: the first home with all
+  /// four.
+  bool get firstPlace => wonGame && state.finished.length == 1;
+
   final LudoState state;
   final int fromPosition;
   final int toPosition;
   final bool captured;
   final bool reachedHome;
   final bool extraTurn;
+
+  /// This move brought the mover's last piece home.
   final bool wonGame;
 }
 
@@ -454,15 +496,22 @@ class LudoEngine {
     final wonGame = mine.every(rules.isHome);
     final extraTurn = !wonGame && (diceValue == 6 || captured || reachedHome);
 
-    final next = state.copyWith(
+    // Home with all four: this player takes the next place, and (unless
+    // that ends it) the others race on for the places after.
+    final placed = state.copyWith(
       tokens: positions,
-      turn: wonGame ? color : (extraTurn ? color : state.nextPlayer()),
+      finished: wonGame ? [...state.finished, color] : null,
+    );
+    final next = placed.copyWith(
+      turn: extraTurn || (wonGame && placed.isOver)
+          ? color
+          : placed.nextPlayer(),
       clearDiceValue: true,
       hasRolled: false,
       consecutiveSixes: extraTurn && diceValue == 6
           ? state.consecutiveSixes
           : 0,
-      winner: wonGame ? color : null,
+      winner: wonGame ? (state.winner ?? color) : null,
       capture: captured
           ? LudoCapture(
               seq: (state.capture?.seq ?? 0) + 1,

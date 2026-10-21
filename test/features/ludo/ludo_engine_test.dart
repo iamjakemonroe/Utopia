@@ -386,4 +386,113 @@ void main() {
       expect(restored.capture, isNull);
     });
   });
+
+  group('playing on after a finish', () {
+    const three = [LudoColor.red, LudoColor.green, LudoColor.yellow];
+
+    LudoState withTokens(
+      List<LudoColor> players,
+      Map<LudoColor, List<int>> tokens, {
+      LudoColor? turn,
+    }) {
+      final s = LudoState.initial(players);
+      return s.copyWith(tokens: {...s.tokens, ...tokens}, turn: turn);
+    }
+
+    test('with three, the first home takes first and the others play on', () {
+      final state = withTokens(three, {
+        LudoColor.red: [56, 56, 56, 53],
+      });
+      final result = engine.applyMove(state, 3, 3);
+      final next = result.state;
+      expect(result.wonGame, isTrue);
+      expect(result.firstPlace, isTrue);
+      expect(next.winner, LudoColor.red);
+      expect(next.finished, [LudoColor.red]);
+      expect(next.placeOf(LudoColor.red), 1);
+      expect(next.isOver, isFalse);
+      expect(next.racing, [LudoColor.green, LudoColor.yellow]);
+      // No extra turn for getting home last: on to green.
+      expect(next.turn, LudoColor.green);
+    });
+
+    test('turns skip whoever has finished', () {
+      final state = withTokens(
+        three,
+        {
+          LudoColor.red: [56, 56, 56, 56],
+        },
+        turn: LudoColor.yellow,
+      ).copyWith(finished: [LudoColor.red], winner: LudoColor.red);
+      expect(state.nextPlayer(), LudoColor.green);
+      // A roll with nothing to move passes past red too.
+      expect(engine.passTurnNoMove(state).turn, LudoColor.green);
+    });
+
+    test('the second home ends a three-player game; the winner stays', () {
+      final state = withTokens(
+        three,
+        {
+          LudoColor.red: [56, 56, 56, 56],
+          LudoColor.green: [56, 56, 55, 56],
+        },
+        turn: LudoColor.green,
+      ).copyWith(finished: [LudoColor.red], winner: LudoColor.red);
+      final result = engine.applyMove(state, 2, 1);
+      final next = result.state;
+      expect(result.wonGame, isTrue);
+      expect(result.firstPlace, isFalse);
+      expect(next.finished, [LudoColor.red, LudoColor.green]);
+      expect(next.placeOf(LudoColor.green), 2);
+      expect(next.winner, LudoColor.red);
+      expect(next.isOver, isTrue);
+      expect(next.turn, LudoColor.green);
+    });
+
+    test('with two, the first home ends it', () {
+      final state = withTokens(
+        const [LudoColor.red, LudoColor.yellow],
+        {
+          LudoColor.red: [56, 56, 56, 53],
+        },
+      );
+      final next = engine.applyMove(state, 3, 3).state;
+      expect(next.isOver, isTrue);
+      expect(next.turn, LudoColor.red);
+    });
+
+    test('someone leaving can end it once one finished', () {
+      final state =
+          withTokens(three, {
+            LudoColor.red: [56, 56, 56, 56],
+          }).copyWith(
+            finished: [LudoColor.red],
+            winner: LudoColor.red,
+            left: [LudoColor.green],
+          );
+      expect(state.racing, [LudoColor.yellow]);
+      expect(state.isOver, isTrue);
+    });
+
+    test('the finishing order survives a JSON round trip', () {
+      final state = LudoState.initial(three).copyWith(
+        finished: [LudoColor.yellow, LudoColor.red],
+        winner: LudoColor.yellow,
+      );
+      final restored = LudoState.fromJson(state.toJson());
+      expect(restored.finished, [LudoColor.yellow, LudoColor.red]);
+      expect(restored.winner, LudoColor.yellow);
+    });
+
+    test('a game saved with only a winner has them finished first', () {
+      final json = LudoState.initial(const [
+        LudoColor.red,
+        LudoColor.yellow,
+      ]).toJson()..remove('finished');
+      json['winner'] = 'yellow';
+      final restored = LudoState.fromJson(json);
+      expect(restored.finished, [LudoColor.yellow]);
+      expect(restored.isOver, isTrue);
+    });
+  });
 }

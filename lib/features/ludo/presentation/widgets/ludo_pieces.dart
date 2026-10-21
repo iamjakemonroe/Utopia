@@ -19,13 +19,30 @@ const Map<LudoColor, Color> ludoColorPalette = {
 String ludoColorName(LudoColor color) =>
     '${color.name[0].toUpperCase()}${color.name.substring(1)}';
 
-/// A capture reaction playing on a token.
-enum TokenReaction { none, war, peace }
+/// "1st", "2nd", "3rd", "4th"...
+String placeLabel(int place) => switch (place) {
+  1 => '1st',
+  2 => '2nd',
+  3 => '3rd',
+  _ => '${place}th',
+};
+
+/// The medal colors for the first three places (light, mid, dark).
+const Map<int, List<Color>> kPlaceMedals = {
+  1: [Color(0xFFFFF0B8), Color(0xFFFFC94D), Color(0xFFD9962A)],
+  2: [Color(0xFFFFFFFF), Color(0xFFD5DCE8), Color(0xFF9AA6B8)],
+  3: [Color(0xFFFFD9B8), Color(0xFFE09A5E), Color(0xFFA8622E)],
+};
+
+/// A capture reaction playing on a token: the piece that captured goes
+/// [war] or [peace]; the piece sent home goes [sad], or [again] (not
+/// giving up).
+enum TokenReaction { none, war, peace, sad, again }
 
 /// Paints one Ludo token in a piece set's style, standing on the bottom
 /// center of its box (the box is taller than wide: [aspect]). Every style
 /// shares the ground shadow, the "you can move this" glow ring, and the
-/// war / peace reaction overlays.
+/// reaction overlays (war, peace, sad, again).
 class LudoTokenPainter extends CustomPainter {
   LudoTokenPainter({
     required this.setId,
@@ -68,9 +85,21 @@ class LudoTokenPainter extends CustomPainter {
     final shake = reaction == TokenReaction.war && reactionProgress < 0.85
         ? math.sin(t * 40) * 0.06 * math.sin(reactionProgress * math.pi)
         : 0.0;
+    final s = _strength;
+    // Fired up: flames licking up behind it, and it pumps on the spot.
+    if (reaction == TokenReaction.again && s > 0) {
+      _flames(canvas, ground, w, s);
+    }
+    final pump = reaction == TokenReaction.again
+        ? (math.sin(t * 9)).abs() * w * 0.07 * s
+        : 0.0;
     canvas.save();
-    canvas.translate(ground.dx, ground.dy);
+    canvas.translate(ground.dx, ground.dy - pump);
     canvas.rotate(shake);
+    // Sad: it slumps.
+    if (reaction == TokenReaction.sad) {
+      canvas.scale(1 + 0.05 * s, 1 - 0.08 * s);
+    }
     canvas.translate(-ground.dx, -ground.dy);
 
     final Offset face;
@@ -561,17 +590,321 @@ class LudoTokenPainter extends CustomPainter {
 
   // ── reactions ────────────────────────────────────────────────────────────
 
-  void _reaction(Canvas canvas, Offset face, double w) {
+  /// How much the reaction shows: in fast, hold, then fade back to the
+  /// plain piece.
+  double get _strength {
+    if (reaction == TokenReaction.none) return 0;
     final p = reactionProgress;
-    // In fast, hold, then fade back to the plain piece.
-    final strength = p < 0.15
+    return p < 0.15
         ? Curves.easeOutBack.transform(p / 0.15)
         : (p > 0.82 ? (1 - p) / 0.18 : 1.0);
+  }
+
+  void _reaction(Canvas canvas, Offset face, double w) {
+    final strength = _strength;
     if (strength <= 0) return;
-    if (reaction == TokenReaction.war) {
-      _warFace(canvas, face, w, strength);
-    } else {
-      _peaceFace(canvas, face, w, strength);
+    switch (reaction) {
+      case TokenReaction.war:
+        _warFace(canvas, face, w, strength);
+      case TokenReaction.peace:
+        _peaceFace(canvas, face, w, strength);
+      case TokenReaction.sad:
+        _sadFace(canvas, face, w, strength);
+      case TokenReaction.again:
+        _againFace(canvas, face, w, strength);
+      case TokenReaction.none:
+    }
+  }
+
+  /// Sent home and sad about it: a little rain cloud of its own, brows up,
+  /// a wobbling frown, and tears running down.
+  void _sadFace(Canvas canvas, Offset c, double w, double s) {
+    final a = s.clamp(0.0, 1.0);
+    canvas.drawCircle(
+      c,
+      w * 0.55,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            const Color(0xFF7FB8FF).withValues(alpha: 0.35 * a),
+            const Color(0x007FB8FF),
+          ],
+        ).createShader(Rect.fromCircle(center: c, radius: w * 0.55)),
+    );
+    final ink = AppColors.faceInk.withValues(alpha: a);
+    final line = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = w * 0.024
+      ..color = ink;
+    for (final side in const [-1.0, 1.0]) {
+      // Brows up in the middle.
+      canvas.drawLine(
+        c.translate(side * w * 0.04, -w * 0.085),
+        c.translate(side * w * 0.14, -w * 0.05),
+        line,
+      );
+      // Big wet eyes looking down.
+      final e = c.translate(side * w * 0.09, -w * 0.005);
+      canvas.drawOval(
+        Rect.fromCenter(center: e, width: w * 0.06, height: w * 0.07),
+        Paint()..color = ink,
+      );
+      canvas.drawCircle(
+        e.translate(-w * 0.012, -w * 0.016),
+        w * 0.013,
+        Paint()..color = Colors.white.withValues(alpha: a),
+      );
+      canvas.drawArc(
+        Rect.fromCenter(
+          center: e.translate(0, w * 0.012),
+          width: w * 0.07,
+          height: w * 0.06,
+        ),
+        0.15 * math.pi,
+        0.7 * math.pi,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = w * 0.014
+          ..color = const Color(0xFF8FD8FF).withValues(alpha: a),
+      );
+      // Tears, one after another.
+      for (var k = 0; k < 3; k++) {
+        final life = (t * 1.3 + k / 3 + (side > 0 ? 0.17 : 0)) % 1.0;
+        _tear(
+          canvas,
+          e.translate(side * w * 0.025, w * 0.05 + life * w * 0.32),
+          w * 0.03 * (1 - 0.3 * life),
+          a * (1 - life),
+        );
+      }
+    }
+    // A trembling frown.
+    final wobble = math.sin(t * 28) * w * 0.004;
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: c.translate(wobble, w * 0.115),
+        width: w * 0.13,
+        height: w * 0.08,
+      ),
+      1.15 * math.pi,
+      0.7 * math.pi,
+      false,
+      line,
+    );
+    // Its own little rain cloud.
+    final cloud = c.translate(
+      math.sin(t * 1.6) * w * 0.03,
+      -w * (0.46 + 0.1 * (1 - a)),
+    );
+    final grey = Paint()..color = const Color(0xFF9AA6B8).withValues(alpha: a);
+    final dark = Paint()..color = const Color(0xFF6E7A8E).withValues(alpha: a);
+    for (final (dx, dy, r) in const [
+      (-0.1, 0.02, 0.07),
+      (0.0, -0.02, 0.09),
+      (0.1, 0.02, 0.065),
+    ]) {
+      canvas.drawCircle(
+        cloud.translate(dx * w, dy * w + w * 0.012),
+        r * w,
+        dark,
+      );
+      canvas.drawCircle(cloud.translate(dx * w, dy * w), r * w, grey);
+    }
+    final rain = Paint()
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = w * 0.014;
+    for (var k = 0; k < 4; k++) {
+      final life = (t * 2.2 + k * 0.27) % 1.0;
+      final x = cloud.dx + (k - 1.5) * w * 0.06;
+      final y = cloud.dy + w * 0.08 + life * w * 0.16;
+      canvas.drawLine(
+        Offset(x, y),
+        Offset(x - w * 0.008, y + w * 0.035),
+        rain..color = const Color(0xFF8FD8FF).withValues(alpha: a * (1 - life)),
+      );
+    }
+  }
+
+  void _tear(Canvas canvas, Offset c, double r, double alpha) {
+    if (alpha <= 0) return;
+    canvas.drawPath(
+      Path()
+        ..moveTo(c.dx, c.dy - r * 1.8)
+        ..quadraticBezierTo(c.dx + r * 1.1, c.dy - r * 0.2, c.dx, c.dy + r)
+        ..quadraticBezierTo(
+          c.dx - r * 1.1,
+          c.dy - r * 0.2,
+          c.dx,
+          c.dy - r * 1.8,
+        )
+        ..close(),
+      Paint()..color = const Color(0xFF8FD8FF).withValues(alpha: alpha),
+    );
+  }
+
+  /// Sent home and not giving up: flames behind it (see [_flames]), a
+  /// headband with its ends flying, brows down and a gritted grin.
+  void _againFace(Canvas canvas, Offset c, double w, double s) {
+    final a = s.clamp(0.0, 1.0);
+    final ink = AppColors.faceInk.withValues(alpha: a);
+    // The headband, its two ends streaming out behind.
+    const red = Color(0xFFFF3B4E);
+    final band = RRect.fromRectAndRadius(
+      Rect.fromCenter(
+        center: c.translate(0, -w * 0.115),
+        width: w * 0.42 * (0.6 + 0.4 * a),
+        height: w * 0.065,
+      ),
+      Radius.circular(w * 0.03),
+    );
+    for (var k = 0; k < 2; k++) {
+      final flap = math.sin(t * 14 + k * 1.7) * w * 0.035;
+      final from = Offset(band.right - w * 0.02, band.center.dy);
+      canvas.drawPath(
+        Path()
+          ..moveTo(from.dx, from.dy - w * 0.02)
+          ..quadraticBezierTo(
+            from.dx + w * 0.1,
+            from.dy - w * 0.02 + flap + k * w * 0.04,
+            from.dx + w * 0.2,
+            from.dy + flap * 1.6 + k * w * 0.07,
+          )
+          ..lineTo(
+            from.dx + w * 0.17,
+            from.dy + w * 0.035 + flap + k * w * 0.07,
+          )
+          ..quadraticBezierTo(
+            from.dx + w * 0.08,
+            from.dy + w * 0.02 + flap * 0.5,
+            from.dx,
+            from.dy + w * 0.02,
+          )
+          ..close(),
+        Paint()
+          ..color = Color.lerp(
+            red,
+            Colors.black,
+            0.15 * k,
+          )!.withValues(alpha: a),
+      );
+    }
+    canvas.drawRRect(band, Paint()..color = red.withValues(alpha: a));
+    canvas.drawCircle(
+      band.center,
+      w * 0.022,
+      Paint()..color = Colors.white.withValues(alpha: a),
+    );
+    final line = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = w * 0.03
+      ..color = ink;
+    for (final side in const [-1.0, 1.0]) {
+      // Brows down toward the middle: determined.
+      canvas.drawLine(
+        c.translate(side * w * 0.035, -w * 0.045),
+        c.translate(side * w * 0.14, -w * 0.075),
+        line,
+      );
+      final e = c.translate(side * w * 0.09, -w * 0.005);
+      canvas.drawOval(
+        Rect.fromCenter(center: e, width: w * 0.055, height: w * 0.05),
+        Paint()..color = ink,
+      );
+      canvas.drawCircle(
+        e.translate(-w * 0.01, -w * 0.01),
+        w * 0.01,
+        Paint()..color = Colors.white.withValues(alpha: a),
+      );
+    }
+    // A gritted, can-do grin.
+    final teeth = RRect.fromRectAndRadius(
+      Rect.fromCenter(
+        center: c.translate(0, w * 0.085),
+        width: w * 0.15,
+        height: w * 0.055,
+      ),
+      Radius.circular(w * 0.022),
+    );
+    canvas.drawRRect(teeth, Paint()..color = Colors.white.withValues(alpha: a));
+    canvas.drawRRect(
+      teeth,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w * 0.016
+        ..color = ink,
+    );
+    canvas.drawLine(
+      Offset(teeth.left + w * 0.01, teeth.center.dy),
+      Offset(teeth.right - w * 0.01, teeth.center.dy),
+      Paint()
+        ..strokeWidth = w * 0.01
+        ..color = ink,
+    );
+  }
+
+  /// Flames licking up behind a fired-up piece, and sparks rising off them.
+  void _flames(Canvas canvas, Offset g, double w, double s) {
+    final a = s.clamp(0.0, 1.0);
+    final base = g.translate(0, -w * 0.18);
+    final rect = Rect.fromCenter(
+      center: g.translate(0, -w * 0.6),
+      width: w,
+      height: w * 1.1,
+    );
+    final fire = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.bottomCenter,
+        end: Alignment.topCenter,
+        colors: [
+          const Color(0xFFFF4D2E).withValues(alpha: 0.9 * a),
+          const Color(0xFFFFB02E).withValues(alpha: 0.85 * a),
+          const Color(0x00FFE066),
+        ],
+        stops: const [0.0, 0.55, 1.0],
+      ).createShader(rect);
+    for (var k = 0; k < 5; k++) {
+      final x = (k - 2) * w * 0.16;
+      final lick = 0.75 + 0.25 * math.sin(t * 11 + k * 1.9);
+      final h =
+          w * (0.55 + 0.25 * (2 - (k - 2).abs()) / 2) * lick * (0.4 + 0.6 * a);
+      final half = w * 0.12;
+      final foot = base.translate(x, 0);
+      final sway = math.sin(t * 7 + k) * w * 0.04;
+      canvas.drawPath(
+        Path()
+          ..moveTo(foot.dx - half, foot.dy)
+          ..quadraticBezierTo(
+            foot.dx - half,
+            foot.dy - h * 0.6,
+            foot.dx + sway,
+            foot.dy - h,
+          )
+          ..quadraticBezierTo(
+            foot.dx + half,
+            foot.dy - h * 0.6,
+            foot.dx + half,
+            foot.dy,
+          )
+          ..close(),
+        fire,
+      );
+    }
+    final spark = Paint();
+    for (var k = 0; k < 6; k++) {
+      final life = (t * 1.5 + k / 6) % 1.0;
+      final p = base.translate(
+        (k - 2.5) * w * 0.13 + math.sin(t * 5 + k) * w * 0.03,
+        -w * (0.5 + 0.6 * life),
+      );
+      canvas.drawCircle(
+        p,
+        w * 0.018 * (1 - life),
+        spark
+          ..color = const Color(0xFFFFE066).withValues(alpha: a * (1 - life)),
+      );
     }
   }
 

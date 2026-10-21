@@ -8264,6 +8264,60 @@ abstract class L10n {
   /// **'You came {value}'**
   String ludoMatchYouCame(Object value);
 
+  /// Status line for a player who has finished while the others play on; value is their place, e.g. 1st.
+  ///
+  /// In en, this message translates to:
+  /// **'You came {value}! Watching the rest'**
+  String ludoMatchYouFinishedWatching(Object value);
+
+  /// Status line when the player's piece has just been captured and sent back to its yard.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent home! Tap your piece to react'**
+  String get ludoMatchSentHomeTapYourPiece;
+
+  /// Status line in pass-and-play when a friend's piece was sent home; value is their color.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} was sent home! Tap the piece to react'**
+  String ludoMatchSentHomeTapThePiece(Object value);
+
+  /// Under 'You won!' / 'You came 2nd' while the game goes on; value is the next place, e.g. 2nd.
+  ///
+  /// In en, this message translates to:
+  /// **'All four home! The others play on for {value} place.'**
+  String ludoMatchOthersPlayOn(Object value);
+
+  /// Next to the coins won, on the panel shown when the player finishes.
+  ///
+  /// In en, this message translates to:
+  /// **'Your prize'**
+  String get ludoMatchYourPrize;
+
+  /// Button: stay and watch the others finish the game.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch'**
+  String get ludoMatchWatch;
+
+  /// Button: leave the game after finishing (no penalty).
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get ludoMatchLeave;
+
+  /// Banner when another player gets all four pieces home; place is e.g. 1st.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} came {place}!'**
+  String ludoMatchFinished(String name, String place);
+
+  /// Menu item for a player who has finished: leaving costs nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave (your place stays)'**
+  String get ludoMatchLeaveFinished;
+
   /// features/ludo/presentation/screens/ludo_match_screen.dart
   ///
   /// In en, this message translates to:
@@ -11647,6 +11701,18 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Peace'**
   String get ludoCaptureBubblePeace;
+
+  /// A reaction for a piece just sent back home: sad about it.
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get ludoCaptureBubbleSad;
+
+  /// A reaction for a piece just sent back home: not giving up, going again.
+  ///
+  /// In en, this message translates to:
+  /// **'Again!'**
+  String get ludoCaptureBubbleAgain;
 
   /// features/guess_doodle/presentation/widgets/doodle_tools.dart
   ///

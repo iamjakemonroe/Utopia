@@ -614,9 +614,64 @@ def make_music():
     write(f"{OUT_MUSIC}/game.wav", render_loop(8, 100, MUSIC_SR, game), MUSIC_SR)
 
 
+def make_sfx_ludo_fun():
+    """Ludo's reactions for a piece sent home, the six and a finish. Seeded
+    on their own, so everything else renders exactly as before."""
+    random.seed(23)
+
+    # Sad: a wobbly falling "aww" on a muted horn, then a little sniffle.
+    x = buf(1.3)
+    for i, (n, dur) in enumerate((("E4", 0.36), ("C4", 0.7))):
+        aww = tone(
+            lambda t, f=note(n), i=i: f * (1 - 0.06 * min(1, t / dur)) * (1 + 0.018 * math.sin(t * 32)),
+            dur,
+            0.35 if i == 0 else 0.55,
+            "saw",
+            attack=0.03,
+        )
+        add(x, biquad(aww, "lp", lambda t: 450 + 900 * math.sin(min(1, t / 0.2) * math.pi / 2), 1.6), i * 0.34, 0.8)
+    for k in range(2):
+        sniff = biquad(noise(0.09, 0.03, attack=0.02), "bp", 3200 + 400 * k, 2.5)
+        add(x, sniff, 1.02 + k * 0.12, 0.35)
+    sfx("react_sad", x, 0.75)
+
+    # Again: a whoosh rising into a bright power chord, and a drum hit.
+    x = buf(1.2)
+    rise = biquad(noise(0.45, 0.35, attack=0.25), "bp", lambda t: 300 + 3200 * (t / 0.45) ** 1.5, 1.4)
+    add(x, rise, 0.0, 0.7)
+    add(x, tone(lambda t: 180 * 2 ** (t * 4), 0.42, 0.3, "tri", attack=0.2), 0.0, 0.3)
+    add(x, tone(lambda t: 90 * math.exp(-t * 9), 0.3, 0.12, attack=0.002), 0.42, 1.0)
+    add(x, biquad(noise(0.12, 0.05), "lp", 1800), 0.42, 0.5)
+    for n in ("D4", "A4", "D5", "F#5"):
+        add(x, biquad(tone(lambda t, f=note(n): f, 0.7, 0.4, "saw", attack=0.01), "lp", 3000), 0.42, 0.2)
+    add(x, bell(note("A6"), 0.6, 0.25), 0.46, 0.25)
+    sfx("react_again", delay_reverb(x), 0.8)
+
+    # Six: three quick rising sparkles.
+    x = buf(0.6)
+    for i, n in enumerate(("E6", "G#6", "B6")):
+        add(x, bell(note(n), 0.35, 0.12), i * 0.055, 0.45)
+    add(x, bubble(700, 0.12, 2.2, 0.04), 0.0, 0.4)
+    sfx("six", delay_reverb(x), 0.6)
+
+    # Finish: a short brass-and-bells "ta-da" for taking a place.
+    x = buf(1.6)
+    for i, (n, dur) in enumerate((("G4", 0.14), ("C5", 0.9))):
+        horn = tone(lambda t, f=note(n): f * (1 + 0.006 * math.sin(t * 30)), dur, dur * 0.7, "saw", attack=0.015)
+        add(x, biquad(horn, "lp", 2200, 1.1), i * 0.15, 0.5)
+        add(x, biquad(tone(lambda t, f=note(n) * 1.5: f, dur, dur * 0.7, "saw", attack=0.015), "lp", 2000), i * 0.15, 0.25)
+    for i, n in enumerate(("C6", "E6", "G6", "C7")):
+        add(x, bell(note(n), 0.7, 0.3), 0.15 + i * 0.06, 0.3)
+    sfx("finish", delay_reverb(x), 0.8)
+
+
 if __name__ == "__main__":
     import sys
 
+    if sys.argv[1:] == ["ludo"]:
+        # Only Ludo's newer sounds, leaving the rest as they are.
+        make_sfx_ludo_fun()
+        sys.exit(0)
     if sys.argv[1:] == ["hologram"]:
         # Only the hologram's sounds, leaving the rest as they are.
         make_sfx_hologram()
@@ -628,4 +683,5 @@ if __name__ == "__main__":
     make_sfx_drawer()
     make_sfx_hologram()
     make_sfx_hologram_ambience()
+    make_sfx_ludo_fun()
     # (coins_out, a gift sent, is a recording: tool/recorded_sfx.py.)

@@ -54,12 +54,18 @@ class _FakeRepo extends LudoRepository {
     required String result,
   }) async {}
 
+  /// Chat messages sent: (kind, body).
+  final chats = <(String, String)>[];
+
   @override
   Future<Map<String, dynamic>> sendChat({
     required String matchId,
     required String kind,
     required String body,
-  }) async => {};
+  }) async {
+    chats.add((kind, body));
+    return {};
+  }
 }
 
 const _me = 'user-red';
@@ -137,7 +143,12 @@ void main() {
 
     await controller.rollDice();
     await _settle();
-    expect(controller.state.pendingReaction, isNull);
+    expect(controller.state.choosingReaction, isFalse);
+    // Yellow, sent home, can still react.
+    expect(
+      controller.state.pendingReaction?.waitingOn(LudoColor.yellow),
+      isTrue,
+    );
     expect(repo.sent.map((s) => s.$1), contains('roll'));
   });
 
@@ -163,10 +174,73 @@ void main() {
       },
     ]);
     await _settle();
-    expect(controller.state.pendingReaction, isNull);
-    expect(controller.state.reaction?.kind, TokenReaction.war);
-    expect(controller.state.reaction?.color, LudoColor.yellow);
+    expect(controller.state.reactions.last.kind, TokenReaction.war);
+    expect(controller.state.reactions.last.color, LudoColor.yellow);
+    // Still waiting on me: my piece was the one sent home.
+    expect(
+      controller.state.pendingReaction?.waitingOn(LudoColor.yellow),
+      isFalse,
+    );
+    expect(controller.state.sentHomeChoosing, [LudoColor.red]);
   });
+
+  test('a piece sent home reacts sad or again, on that piece', () async {
+    repo.match.add(_row(_base()));
+    repo.chat.add([]);
+    await _settle();
+    repo.match.add(_row(_captured(_base(), 1), turnCount: 1));
+    await _settle();
+    expect(controller.state.sentHomeChoosing, [LudoColor.red]);
+    // Not the capturer: war isn't mine to pick.
+    await controller.chooseReaction(TokenReaction.war);
+    expect(controller.state.reactions, isEmpty);
+
+    await controller.chooseReaction(TokenReaction.again);
+    expect(controller.state.reactions.single.kind, TokenReaction.again);
+    expect(controller.state.reactions.single.color, LudoColor.red);
+    expect(controller.state.reactions.single.token, 0);
+    expect(repo.chats, [('reaction', 'again')]);
+    expect(controller.state.sentHomeChoosing, isEmpty);
+
+    // The capturer's war comes in after: everyone's reacted, nothing waits.
+    repo.chat.add([
+      {
+        'id': 1,
+        'sender_id': _them,
+        'kind': 'reaction',
+        'body': 'war',
+        'created_at': DateTime.now().toIso8601String(),
+      },
+    ]);
+    await _settle();
+    expect(controller.state.reactions.map((r) => r.kind), [
+      TokenReaction.again,
+      TokenReaction.war,
+    ]);
+    expect(controller.state.pendingReaction, isNull);
+  });
+
+  test(
+    "a sent-home reaction from someone who wasn't sent home is ignored",
+    () async {
+      repo.match.add(_row(_base()));
+      repo.chat.add([]);
+      await _settle();
+      repo.match.add(_row(_captured(_base(), 1), turnCount: 1));
+      await _settle();
+      repo.chat.add([
+        {
+          'id': 1,
+          'sender_id': _them,
+          'kind': 'reaction',
+          'body': 'sad',
+          'created_at': DateTime.now().toIso8601String(),
+        },
+      ]);
+      await _settle();
+      expect(controller.state.reactions, isEmpty);
+    },
+  );
 
   test('a late, older row never rolls the game back', () async {
     final rolled = _base().copyWith(
@@ -317,7 +391,7 @@ void main() {
       expect(controller.state.chat.length, 2);
       expect(controller.state.unread, 0);
       expect(controller.state.chatBaseline, 2);
-      expect(controller.state.reaction, isNull);
+      expect(controller.state.reactions, isEmpty);
 
       repo.chat.add([
         msg(1, 'text', 'hi'),
@@ -375,5 +449,51 @@ void main() {
     // ...and the bot carries on.
     await Future<void>.delayed(const Duration(milliseconds: 1700));
     expect(local.state.game.rollSeq, greaterThan(seq));
+  });
+
+  test('offline, I finish first and the bots play on for second', () async {
+    const id = 'local-podium';
+    final start = LudoState.initial(const [
+      LudoColor.red,
+      LudoColor.green,
+      LudoColor.yellow,
+    ]);
+    restoreLocalLudo('/ludo/$id', {
+      'players': [_me, 'bot:pip', 'bot:dot'],
+      'colors': ['red', 'green', 'yellow'],
+      'human': _me,
+      'game': start
+          .copyWith(
+            tokens: {
+              ...start.tokens,
+              LudoColor.red: [56, 56, 56, 55],
+            },
+            diceValue: 1,
+            hasRolled: true,
+            rollSeq: 1,
+          )
+          .toJson(),
+      'turn': 9,
+    });
+    final local = LudoMatchController.local(repo, id, _me, localLudoSetup(id)!);
+    addTearDown(local.dispose);
+
+    // The die has long landed: move the last piece home.
+    await Future<void>.delayed(kDiceReveal);
+    await local.selectToken(3);
+    await _settle();
+
+    final s = local.state;
+    expect(s.iFinished, isTrue);
+    expect(s.myPlace, 1);
+    expect(s.winnerId, _me);
+    // Not over: two bots are still racing, and it's their go.
+    expect(s.isActive, isTrue);
+    expect(s.playingOn, isTrue);
+    expect(s.game.turn, LudoColor.green);
+    expect(s.isMyTurn, isFalse);
+    expect(s.canRoll, isFalse);
+    // Leaving now is free (and doesn't end the game for them).
+    await local.leave();
   });
 }

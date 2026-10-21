@@ -66,9 +66,17 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
   bool _playedResult = false;
   bool _leaving = false;
 
-  /// The capture whose reaction card is open (its player tapped the piece
-  /// that took it).
-  int? _reactingTo;
+  /// The reaction card that's open: the capture, and whose piece in it
+  /// (the one that took it, or one sent home) its player tapped.
+  (int, LudoColor)? _reactingTo;
+
+  /// Finished while the others play on, and chose to stay and watch.
+  bool _watching = false;
+
+  /// Someone just finished while the game goes on: who, their place, and
+  /// when (a banner over the board for a moment).
+  (LudoColor, int, DateTime)? _finishBanner;
+  static const _bannerFor = Duration(milliseconds: 3200);
 
   // The roller keeps the die until everyone has seen what they got.
   static const _diceHold = Duration(milliseconds: 1200);
@@ -128,12 +136,35 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
         g.tokens.values.expand((t) => t).where(rules.isHome).length;
     if (home(next.game) > home(prev.game)) audio.play(Sfx.home);
 
-    if (next.reaction != null && next.reaction != prev.reaction) {
-      audio.play(
-        next.reaction!.kind == TokenReaction.war
-            ? Sfx.captureWar
-            : Sfx.capturePeace,
-      );
+    final reaction = next.reactions.lastOrNull;
+    if (reaction != null && reaction != prev.reactions.lastOrNull) {
+      audio.play(switch (reaction.kind) {
+        TokenReaction.war => Sfx.captureWar,
+        TokenReaction.peace => Sfx.capturePeace,
+        TokenReaction.sad => Sfx.reactSad,
+        TokenReaction.again => Sfx.reactAgain,
+        TokenReaction.none => Sfx.reaction,
+      });
+    }
+
+    // Someone got all four home while the others play on: a banner and a
+    // fanfare (the game's end has its own).
+    if (next.game.finished.length > prev.game.finished.length &&
+        !next.game.isOver) {
+      final who = next.game.finished.last;
+      final place = next.game.finished.length;
+      setState(() => _finishBanner = (who, place, DateTime.now()));
+      _refreshIn(_bannerFor);
+      audio.play(who == next.myColor && place == 1 ? Sfx.win : Sfx.finish);
+    }
+
+    // I've finished and the others play on: the game counts for me now
+    // (once the move is in), whether I watch or go.
+    if (next.iFinished && !next.busy && next.isActive && !_playedResult) {
+      _playedResult = true;
+      ref
+          .read(eventsProvider.notifier)
+          .gameFinished('ludo', matchId: next.isLocal ? null : widget.matchId);
     }
 
     if (next.chat.length > prev.chat.length) {
@@ -187,6 +218,12 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
   Future<void> _confirmLeave(LudoMatchState state) async {
     if (!state.isActive || state.iLeft) {
       context.go('/home');
+      return;
+    }
+    // Finished: going costs nothing, the place (and any prize) is kept.
+    if (state.iFinished) {
+      await _controller.leave();
+      if (mounted) context.go(state.isLocal ? '/ludo' : '/home');
       return;
     }
     final others = state.game.activePlayers.length - 1;
@@ -269,8 +306,10 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
                 if (state.isActive && !state.iLeft)
                   _MenuTile(
                     icon: Icons.logout_rounded,
-                    label: strings.ludoMatchLeaveGame,
-                    danger: true,
+                    label: state.iFinished
+                        ? strings.ludoMatchLeaveFinished
+                        : strings.ludoMatchLeaveGame,
+                    danger: !state.iFinished,
                     onTap: () {
                       Navigator.of(sheet).pop();
                       _confirmLeave(state);
@@ -281,6 +320,64 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  /// The thought bubble (or, once its player taps, the reaction card) over
+  /// [color]'s piece in [pending]'s capture.
+  LudoTokenAnchor _reactionAnchor(
+    LudoMatchState state,
+    PendingReaction pending,
+    LudoColor color,
+    String setId,
+  ) {
+    final mine = state.playsHere(color);
+    final capturer = color == pending.capture.by;
+    final key = (pending.capture.seq, color);
+    final open = mine && _reactingTo == key;
+    void toggle() => setState(() => _reactingTo = open ? null : key);
+    final tag = '${pending.capture.seq}${color.name}';
+    return LudoTokenAnchor(
+      color: color,
+      token: pending.tokenFor(color),
+      width: open ? LudoReactionCard.size.width : LudoCaptureBadge.size.width,
+      onTokenTap: mine ? toggle : null,
+      child: !open
+          ? LudoCaptureBadge(
+              key: ValueKey('badge$tag'),
+              deadline: pending.deadline,
+              window: kReactionWindow,
+              onTap: mine ? toggle : null,
+            )
+          : capturer
+          ? LudoReactionCard.capture(
+              key: ValueKey('card$tag'),
+              deadline: pending.deadline,
+              window: kReactionWindow,
+              onWar: () => _controller.chooseReaction(TokenReaction.war),
+              onPeace: () => _controller.chooseReaction(TokenReaction.peace),
+            )
+          : LudoReactionCard.sentHome(
+              key: ValueKey('card$tag'),
+              deadline: pending.deadline,
+              window: kReactionWindow,
+              color: color,
+              setId: setId,
+              onSad: () =>
+                  _controller.chooseReaction(TokenReaction.sad, color: color),
+              onAgain: () =>
+                  _controller.chooseReaction(TokenReaction.again, color: color),
+            ),
+    );
+  }
+
+  /// A player's name for a banner: theirs, or their color offline.
+  String _nameFor(LudoMatchState state, LudoColor color) {
+    final id = state.userFor(color);
+    if (state.isLocal || id == null) return ludoColorName(color);
+    return profileDisplayName(
+      ref.read(profileByIdProvider(id)).valueOrNull,
+      id,
     );
   }
 
@@ -324,7 +421,7 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
 
     final game = state.game;
     final done = !state.isActive;
-    final canPop = done || state.iLeft || _leaving;
+    final canPop = done || state.iLeft || state.iFinished || _leaving;
     // Everyone's piece sets, names and auras stay current during the game.
     // (Offline games have only bots and you: nothing to watch.)
     ref.watch(
@@ -345,39 +442,18 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
         ),
     };
 
-    // After a capture: a small badge on the piece that did it. Its player
-    // taps the piece (or the badge) to choose war or peace; the time runs
-    // either way, and rolling on passes.
+    // After a capture: a small badge on the piece that did it, and on each
+    // piece sent home once it's back in its yard. Their players tap the
+    // piece (or the badge) to react: war or peace for the one that took
+    // it, sad or "again" for one sent home. The time runs either way, and
+    // rolling on passes.
     final pending = state.pendingReaction;
-    final choosing = state.choosingReaction;
-    final cardOpen = choosing && _reactingTo == pending!.capture.seq;
-    final reactionAnchor = pending == null
-        ? null
-        : LudoTokenAnchor(
-            color: pending.capture.by,
-            token: pending.capture.token,
-            width: cardOpen
-                ? LudoReactionCard.size.width
-                : LudoCaptureBadge.size.width,
-            child: cardOpen
-                ? LudoReactionCard(
-                    key: ValueKey('card${pending.capture.seq}'),
-                    deadline: pending.deadline,
-                    window: kReactionWindow,
-                    onWar: () => controller.chooseReaction(TokenReaction.war),
-                    onPeace: () =>
-                        controller.chooseReaction(TokenReaction.peace),
-                  )
-                : LudoCaptureBadge(
-                    key: ValueKey('badge${pending.capture.seq}'),
-                    deadline: pending.deadline,
-                    window: kReactionWindow,
-                    onTap: choosing
-                        ? () =>
-                              setState(() => _reactingTo = pending.capture.seq)
-                        : null,
-                  ),
-          );
+    final anchors = <LudoTokenAnchor>[
+      if (pending != null)
+        for (final color in pending.reactors)
+          if (pending.waitingOn(color))
+            _reactionAnchor(state, pending, color, pieceSets[color]!),
+    ];
 
     final holding = DateTime.now().difference(_lastRollAt) < _diceHold;
     final diceOwner = holding && _lastRoller != null ? _lastRoller! : game.turn;
@@ -396,6 +472,7 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
         left: game.left.contains(color),
         home: game.tokens[color]!.where(game.rules.isHome).length,
         winner: done && userId != null && userId == state.winnerId,
+        place: game.placeOf(color),
         mirrored: mirrored,
         speech: fresh ? speech.$1 : null,
         msLeft: () => state.turnMsLeft,
@@ -498,37 +575,68 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
                   const SizedBox(height: AppSpacing.xs),
                   row(top),
                 ],
-                board: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xs,
-                    vertical: 4,
-                  ),
-                  child: LudoBoardView(
-                    game: game,
-                    myColor: state.myColor,
-                    movableTokens: state.movableTokens,
-                    onTokenTap: controller.selectToken,
-                    pieceSets: pieceSets,
-                    reaction: state.reaction,
-                    anchor: reactionAnchor,
-                    onAnchorTap: choosing
-                        ? () => setState(
-                            () => _reactingTo = cardOpen
+                board: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.xs,
+                          vertical: 4,
+                        ),
+                        child: LudoBoardView(
+                          game: game,
+                          myColor: state.myColor,
+                          movableTokens: state.movableTokens,
+                          onTokenTap: controller.selectToken,
+                          pieceSets: pieceSets,
+                          reactions: state.reactions,
+                          anchors: anchors,
+                        ),
+                      ),
+                    ),
+                    if (_finishBanner case (
+                      final who,
+                      final place,
+                      final at,
+                    ) when DateTime.now().difference(at) < _bannerFor)
+                      Positioned(
+                        top: 6,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: _FinishBanner(
+                            key: ValueKey('${who.name}$place'),
+                            color: who,
+                            place: place,
+                            name: state.playsHere(who) && who == state.myColor
                                 ? null
-                                : pending!.capture.seq,
-                          )
-                        : null,
-                  ),
+                                : _nameFor(state, who),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 below: [
                   row(bottom),
-                  _StatusLine(state: state),
+                  _StatusLine(
+                    state: state,
+                    onLeave: () => _confirmLeave(state),
+                  ),
                   const SizedBox(height: AppSpacing.xs),
                 ],
               ),
             ),
           ),
-          bottomSheet: done ? _GameOverPanel(state: state, myId: myId) : null,
+          bottomSheet: done
+              ? _GameOverPanel(state: state, myId: myId)
+              : state.iFinished && state.playingOn && !_watching
+              ? _FinishedPanel(
+                  state: state,
+                  onWatch: () => setState(() => _watching = true),
+                  onLeave: () => _confirmLeave(state),
+                )
+              : null,
         ),
       ),
     );
@@ -703,19 +811,32 @@ class _RoundButton extends StatelessWidget {
 }
 
 class _StatusLine extends StatelessWidget {
-  const _StatusLine({required this.state});
+  const _StatusLine({required this.state, required this.onLeave});
 
   final LudoMatchState state;
+
+  /// Leaving, for someone who's finished and is watching.
+  final VoidCallback onLeave;
 
   @override
   Widget build(BuildContext context) {
     final game = state.game;
     final passing = state.friendColors.isNotEmpty;
+    final sentHome = state.sentHomeChoosing;
     String text;
     if (!state.isActive) {
       text = '';
     } else if (state.iLeft) {
       text = strings.ludoMatchYouLeftThisGame;
+    } else if (state.iFinished && !passing) {
+      return _WatchingLine(
+        text: strings.ludoMatchYouFinishedWatching(placeLabel(state.myPlace!)),
+        onLeave: onLeave,
+      );
+    } else if (sentHome.isNotEmpty && !state.isMyTurn) {
+      text = passing
+          ? strings.ludoMatchSentHomeTapThePiece(ludoColorName(sentHome.first))
+          : strings.ludoMatchSentHomeTapYourPiece;
     } else if (state.choosingReaction) {
       text = passing
           ? strings.ludoMatchCapturedTapThePieceTo(
@@ -800,6 +921,255 @@ class _MenuTile extends StatelessWidget {
   }
 }
 
+/// For someone who's finished: where they came, and a way out.
+class _WatchingLine extends StatelessWidget {
+  const _WatchingLine({required this.text, required this.onLeave});
+
+  final String text;
+  final VoidCallback onLeave;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 4, 4, 4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: AppColors.surface.withValues(alpha: 0.9),
+        border: Border.all(color: AppColors.goldBorder, width: 1.4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.visibility_rounded,
+            size: 16,
+            color: AppColors.coinGold,
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.body(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: onLeave,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: AppColors.accent,
+              ),
+              child: Text(
+                strings.ludoMatchLeave,
+                style: AppTextStyles.body(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// "Red came 2nd!": a medal and a name dropping in over the board when
+/// someone finishes while the others play on.
+class _FinishBanner extends StatelessWidget {
+  const _FinishBanner({
+    super.key,
+    required this.color,
+    required this.place,
+    required this.name,
+  });
+
+  final LudoColor color;
+  final int place;
+
+  /// Null when it's me.
+  final String? name;
+
+  @override
+  Widget build(BuildContext context) {
+    final seat = ludoColorPalette[color]!;
+    final medal = kPlaceMedals[place] ?? kPlaceMedals[3]!;
+    final text = name == null
+        ? (place == 1
+              ? strings.ludoMatchYouWon
+              : strings.ludoMatchYouCame(placeLabel(place)))
+        : strings.ludoMatchFinished(name!, placeLabel(place));
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.elasticOut,
+      builder: (context, v, child) => Transform.translate(
+        offset: Offset(0, -30 * (1 - v)),
+        child: Transform.scale(scale: 0.6 + 0.4 * v, child: child),
+      ),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(6, 6, 16, 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(26),
+          color: AppColors.surfaceElevated,
+          border: Border.all(color: seat, width: 2),
+          boxShadow: [
+            BoxShadow(color: seat.withValues(alpha: 0.5), blurRadius: 16),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  center: const Alignment(-0.3, -0.4),
+                  colors: medal,
+                ),
+                border: Border.all(color: Colors.white, width: 1.5),
+              ),
+              child: place == 1
+                  ? const CrownIcon(size: 20)
+                  : Text(
+                      '$place',
+                      style: AppTextStyles.display(
+                        fontSize: 16,
+                        color: AppColors.faceInk,
+                      ),
+                    ),
+            ),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.display(fontSize: 17),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown to someone who's just got all four home while the others play
+/// on: where they came, any prize, and the choice to watch or go.
+class _FinishedPanel extends StatelessWidget {
+  const _FinishedPanel({
+    required this.state,
+    required this.onWatch,
+    required this.onLeave,
+  });
+
+  final LudoMatchState state;
+  final VoidCallback onWatch;
+  final VoidCallback onLeave;
+
+  @override
+  Widget build(BuildContext context) {
+    final place = state.myPlace ?? 1;
+    final first = place == 1;
+    final commissionBps =
+        (state.matchRow?['commission_bps'] as num?)?.toInt() ?? 0;
+    final prize = first && state.stake > 0
+        ? (state.pot * (1 - commissionBps / 10000)).floor()
+        : null;
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      child: Stack(
+        children: [
+          PopCard(
+            borderRadius: 28,
+            tint: first ? AppColors.success : null,
+            glow: first ? AppColors.success : AppColors.accent,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.lg,
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CoinBuddy(mood: BuddyMood.happy, size: 64),
+                  Text(
+                    first
+                        ? strings.ludoMatchYouWon
+                        : strings.ludoMatchYouCame(placeLabel(place)),
+                    style: AppTextStyles.display(fontSize: 26),
+                  ),
+                  Text(
+                    strings.ludoMatchOthersPlayOn(placeLabel(place + 1)),
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.body(color: AppColors.textSecondary),
+                  ),
+                  if (prize != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          strings.ludoMatchYourPrize,
+                          style: AppTextStyles.body(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        CoinAmount(
+                          prize,
+                          prefix: '+',
+                          size: 16,
+                          color: AppColors.readable(AppColors.success),
+                        ),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: PrimaryButton(
+                          label: strings.ludoMatchWatch,
+                          onPressed: onWatch,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: PrimaryButton(
+                          label: strings.ludoMatchLeave,
+                          color: AppColors.success,
+                          onPressed: onLeave,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (first) const Positioned.fill(child: ConfettiBurst()),
+        ],
+      ),
+    );
+  }
+}
+
 /// One player's place when the game ends.
 class LudoStanding {
   const LudoStanding({
@@ -821,9 +1191,10 @@ class LudoStanding {
   final bool left;
 }
 
-/// Final places: the winner first, then everyone still playing by pieces
-/// home and then by how far their pieces got, then players who left (the
-/// last to leave ranks highest among them).
+/// Final places: everyone who finished, in the order they did; then
+/// everyone still racing by pieces home and then by how far their pieces
+/// got; then players who left (the last to leave ranks highest among
+/// them).
 List<LudoStanding> ludoStandings(LudoState game) {
   final finish = game.rules.finish;
   int homeOf(LudoColor c) => game.tokens[c]!.where(game.rules.isHome).length;
@@ -831,18 +1202,18 @@ List<LudoStanding> ludoStandings(LudoState game) {
       game.tokens[c]!.fold<int>(0, (sum, p) => sum + (p < 0 ? 0 : p + 1)) /
       (4 * (finish + 1));
 
-  final stayed =
-      [
-        for (final c in game.players)
-          if (!game.left.contains(c)) c,
-      ]..sort((a, b) {
-        if (a == game.winner) return -1;
-        if (b == game.winner) return 1;
-        final byHome = homeOf(b).compareTo(homeOf(a));
-        if (byHome != 0) return byHome;
-        return progressOf(b).compareTo(progressOf(a));
-      });
-  final order = [...stayed, ...game.left.reversed];
+  final racing = [...game.racing]
+    ..sort((a, b) {
+      final byHome = homeOf(b).compareTo(homeOf(a));
+      if (byHome != 0) return byHome;
+      return progressOf(b).compareTo(progressOf(a));
+    });
+  final order = [
+    ...game.finished,
+    ...racing,
+    for (final c in game.left.reversed)
+      if (!game.finished.contains(c)) c,
+  ];
   return [
     for (final (i, c) in order.indexed)
       LudoStanding(
@@ -850,17 +1221,10 @@ List<LudoStanding> ludoStandings(LudoState game) {
         place: i + 1,
         home: homeOf(c),
         progress: progressOf(c),
-        left: game.left.contains(c),
+        left: game.left.contains(c) && !game.finished.contains(c),
       ),
   ];
 }
-
-String placeLabel(int place) => switch (place) {
-  1 => '1st',
-  2 => '2nd',
-  3 => '3rd',
-  _ => '${place}th',
-};
 
 class _GameOverPanel extends ConsumerWidget {
   const _GameOverPanel({required this.state, required this.myId});
@@ -1013,12 +1377,6 @@ class _StandingRow extends ConsumerWidget {
   final int? prize;
   final int index;
 
-  static const _medals = {
-    1: [Color(0xFFFFF0B8), Color(0xFFFFC94D), Color(0xFFD9962A)],
-    2: [Color(0xFFFFFFFF), Color(0xFFD5DCE8), Color(0xFF9AA6B8)],
-    3: [Color(0xFFFFD9B8), Color(0xFFE09A5E), Color(0xFFA8622E)],
-  };
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = userId;
@@ -1031,7 +1389,7 @@ class _StandingRow extends ConsumerWidget {
         ? ludoColorName(standing.color)
         : profileDisplayName(profile, id);
     final seat = ludoColorPalette[standing.color]!;
-    final medal = _medals[standing.place];
+    final medal = kPlaceMedals[standing.place];
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),

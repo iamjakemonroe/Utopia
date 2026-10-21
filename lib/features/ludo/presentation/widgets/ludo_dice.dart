@@ -93,6 +93,12 @@ class _LudoDiceState extends ConsumerState<LudoDice>
     duration: const Duration(milliseconds: 1400),
   )..repeat();
 
+  /// A six: golden rays burst out from behind the die.
+  late final AnimationController _six = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+
   double _rotX = 0, _rotY = 0; // continuous, not wrapped
   double _fromX = 0, _fromY = 0, _toX = 0, _toY = 0;
   bool _tumbling = false;
@@ -162,6 +168,10 @@ class _LudoDiceState extends ConsumerState<LudoDice>
     _toY = _nearestEquivalent(_fromY, ry);
     _settle.forward(from: 0);
     ref.read(gameAudioProvider).play(Sfx.diceLand);
+    if (value == 6) {
+      _six.forward(from: 0);
+      ref.read(gameAudioProvider).play(Sfx.six);
+    }
   }
 
   (double, double) _tumbleAngles() => (
@@ -193,6 +203,7 @@ class _LudoDiceState extends ConsumerState<LudoDice>
     _tumble.dispose();
     _settle.dispose();
     _idle.dispose();
+    _six.dispose();
     super.dispose();
   }
 
@@ -209,7 +220,7 @@ class _LudoDiceState extends ConsumerState<LudoDice>
         child: FrameIsland(
           size: Size.square(s * 1.6),
           child: AnimatedBuilder(
-            animation: Listenable.merge([_tumble, _idle]),
+            animation: Listenable.merge([_tumble, _idle, _six]),
             builder: (context, child) {
               final (rotX, rotY) = _tumbling ? _tumbleAngles() : (_rotX, _rotY);
               final ready = widget.enabled && !_tumbling;
@@ -226,7 +237,13 @@ class _LudoDiceState extends ConsumerState<LudoDice>
                 height: s * 1.6,
                 child: Stack(
                   alignment: Alignment.center,
+                  clipBehavior: Clip.none,
                   children: [
+                    if (_six.isAnimating)
+                      CustomPaint(
+                        size: Size.square(s * 1.6),
+                        painter: _SixBurstPainter(_six.value),
+                      ),
                     if (ready)
                       Container(
                         width: s * (1.3 + 0.12 * pulse),
@@ -277,6 +294,59 @@ class _LudoDiceState extends ConsumerState<LudoDice>
       ),
     );
   }
+}
+
+/// Golden rays and a ring bursting out from behind a die that landed on
+/// six, at [f] (0 to 1) of the way through.
+class _SixBurstPainter extends CustomPainter {
+  _SixBurstPainter(this.f);
+
+  final double f;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero);
+    final unit = size.width / 1.6;
+    final grow = Curves.easeOutBack.transform(math.min(1.0, f / 0.4));
+    final fade = f < 0.5 ? 1.0 : 1 - (f - 0.5) / 0.5;
+    final reach = unit * (0.6 + 0.75 * grow);
+    final rays = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.coinGoldBright.withValues(alpha: 0.85 * fade),
+          AppColors.coinGold.withValues(alpha: 0),
+        ],
+      ).createShader(Rect.fromCircle(center: c, radius: reach));
+    const n = 10;
+    for (var k = 0; k < n; k++) {
+      final a = f * 1.2 + k * 2 * math.pi / n;
+      canvas.drawPath(
+        Path()
+          ..moveTo(c.dx, c.dy)
+          ..lineTo(
+            c.dx + math.cos(a - 0.13) * reach,
+            c.dy + math.sin(a - 0.13) * reach,
+          )
+          ..lineTo(
+            c.dx + math.cos(a + 0.13) * reach,
+            c.dy + math.sin(a + 0.13) * reach,
+          )
+          ..close(),
+        rays,
+      );
+    }
+    canvas.drawCircle(
+      c,
+      unit * (0.55 + 0.6 * Curves.easeOut.transform(f)),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = unit * 0.07 * (1 - f)
+        ..color = Colors.white.withValues(alpha: 0.9 * (1 - f)),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _SixBurstPainter old) => old.f != f;
 }
 
 class _Face {

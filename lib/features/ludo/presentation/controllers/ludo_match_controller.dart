@@ -26,7 +26,7 @@ final ludoRepositoryProvider = Provider<LudoRepository>((ref) {
 
 const _engine = LudoEngine();
 
-/// How long the capturing player has to pick a reaction.
+/// How long the players in a capture have to pick a reaction.
 const kReactionWindow = Duration(seconds: 6);
 
 /// Time for each action (a roll, then picking a token) in a public game.
@@ -93,14 +93,61 @@ void restoreLocalLudo(String route, Map<String, dynamic> data) {
 
 bool isLocalLudo(String matchId) => matchId.startsWith('local-');
 
-/// A capture waiting on its reaction: the capturing player is choosing
-/// war or peace (everyone else sees a thought bubble).
+/// A capture waiting on its reactions: the player who captured picks war
+/// or peace, and each player whose piece was sent home picks sad or again
+/// (everyone else sees a thought bubble over each of them).
 class PendingReaction {
-  const PendingReaction({required this.capture, required this.deadline});
+  const PendingReaction({
+    required this.capture,
+    required this.deadline,
+    this.done = const {},
+  });
 
   final LudoCapture capture;
   final DateTime deadline;
+
+  /// The players who've reacted (or passed on it).
+  final Set<LudoColor> done;
+
+  /// Everyone who can react: the one who captured, then each player who
+  /// had a piece sent home.
+  List<LudoColor> get reactors => [
+    capture.by,
+    for (final c in {for (final (color, _) in capture.victims) color})
+      if (c != capture.by) c,
+  ];
+
+  /// [color] can still react to this capture.
+  bool waitingOn(LudoColor color) =>
+      !done.contains(color) &&
+      reactors.contains(color) &&
+      DateTime.now().isBefore(deadline);
+
+  /// The piece [color] reacts on: the one that captured, or its first
+  /// piece sent home.
+  int tokenFor(LudoColor color) => color == capture.by
+      ? capture.token
+      : capture.victims.firstWhere((v) => v.$1 == color).$2;
+
+  /// The reactions a player in this capture can pick from.
+  static List<TokenReaction> choicesFor(bool capturer) => capturer
+      ? const [TokenReaction.war, TokenReaction.peace]
+      : const [TokenReaction.sad, TokenReaction.again];
+
+  PendingReaction withDone(LudoColor color) => PendingReaction(
+    capture: capture,
+    deadline: deadline,
+    done: {...done, color},
+  );
 }
+
+/// How a reaction goes in the chat, and back.
+const Map<TokenReaction, String> kReactionBodies = {
+  TokenReaction.war: 'war',
+  TokenReaction.peace: 'peace',
+  TokenReaction.sad: 'sad',
+  TokenReaction.again: 'again',
+};
 
 class LudoMatchState {
   const LudoMatchState({
@@ -113,7 +160,7 @@ class LudoMatchState {
     this.chat = const [],
     this.unread = 0,
     this.pendingReaction,
-    this.reaction,
+    this.reactions = const [],
     this.chatBaseline = -1,
     this.turnStartedAt,
     this.rollShownAt,
@@ -130,7 +177,9 @@ class LudoMatchState {
   final List<ChatMessage> chat;
   final int unread;
   final PendingReaction? pendingReaction;
-  final LudoTokenReaction? reaction;
+
+  /// Reactions playing on the board now.
+  final List<LudoTokenReaction> reactions;
 
   /// The newest chat message already there when the match opened; anything
   /// at or below it is history, not news.
@@ -150,7 +199,7 @@ class LudoMatchState {
   /// Time left for the player on turn, or null when no clock is running.
   int? get turnMsLeft {
     final started = turnStartedAt;
-    if (started == null || !isActive || game.winner != null) return null;
+    if (started == null || !isActive || game.isOver) return null;
     final left =
         turnTime.inMilliseconds -
         DateTime.now().difference(started).inMilliseconds;
@@ -197,6 +246,15 @@ class LudoMatchState {
 
   bool get iLeft => myColor != null && game.left.contains(myColor);
 
+  /// I've got all four pieces home: free to watch the rest or go.
+  bool get iFinished => myColor != null && game.finished.contains(myColor);
+
+  /// My finishing place (1 for first), or null while I'm racing.
+  int? get myPlace => myColor == null ? null : game.placeOf(myColor!);
+
+  /// Someone's finished but the others are still racing.
+  bool get playingOn => isActive && game.finished.isNotEmpty && !game.isOver;
+
   /// Colours played by friends passing this phone around (offline games).
   Set<LudoColor> get friendColors => {
     if (isLocal)
@@ -214,17 +272,26 @@ class LudoMatchState {
 
   /// Someone on this phone can react to their capture (tap the piece that
   /// took it). The die doesn't wait: rolling on passes on reacting.
-  bool get choosingReaction =>
-      pendingReaction != null &&
-      playsHere(pendingReaction!.capture.by) &&
-      DateTime.now().isBefore(pendingReaction!.deadline);
+  bool get choosingReaction {
+    final pending = pendingReaction;
+    return pending != null &&
+        playsHere(pending.capture.by) &&
+        pending.waitingOn(pending.capture.by);
+  }
+
+  /// Players on this phone who had a piece sent home and can still react
+  /// to it (tap the piece in its yard).
+  List<LudoColor> get sentHomeChoosing {
+    final pending = pendingReaction;
+    if (pending == null) return const [];
+    return [
+      for (final c in pending.reactors.skip(1))
+        if (playsHere(c) && pending.waitingOn(c)) c,
+    ];
+  }
 
   bool get canRoll =>
-      isMyTurn &&
-      !game.hasRolled &&
-      !busy &&
-      rollShowing &&
-      game.winner == null;
+      isMyTurn && !game.hasRolled && !busy && rollShowing && !game.isOver;
 
   List<int> get movableTokens {
     final dice = game.diceValue;
@@ -245,8 +312,7 @@ class LudoMatchState {
     int? unread,
     PendingReaction? pendingReaction,
     bool clearPendingReaction = false,
-    LudoTokenReaction? reaction,
-    bool clearReaction = false,
+    List<LudoTokenReaction>? reactions,
     int? chatBaseline,
     DateTime? turnStartedAt,
     DateTime? rollShownAt,
@@ -263,7 +329,7 @@ class LudoMatchState {
       pendingReaction: clearPendingReaction
           ? null
           : (pendingReaction ?? this.pendingReaction),
-      reaction: clearReaction ? null : (reaction ?? this.reaction),
+      reactions: reactions ?? this.reactions,
       chatBaseline: chatBaseline ?? this.chatBaseline,
       turnStartedAt: turnStartedAt ?? this.turnStartedAt,
       rollShownAt: rollShownAt ?? this.rollShownAt,
@@ -356,7 +422,7 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     final setup = _local;
     if (store == null || setup == null) return;
     final g = state.game;
-    if (g.winner != null) {
+    if (g.isOver) {
       store.clear(route: _localRoute);
       return;
     }
@@ -383,6 +449,9 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
   final _rng = Random();
   Timer? _botTimer;
   String? _botKey;
+
+  /// The bot reactions already lined up (`capture seq:color`).
+  final Set<String> _botReacting = {};
 
   StreamSubscription<Map<String, dynamic>?>? _matchSub;
   StreamSubscription<List<Map<String, dynamic>>>? _chatSub;
@@ -630,26 +699,44 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     state = state.copyWith(chat: messages, unread: unread);
   }
 
+  /// Someone in the capture reacted: the one who captured (war or peace)
+  /// or someone whose piece was sent home (sad or again).
   void _onReaction(ChatMessage m) {
     final pending = state.pendingReaction;
-    if (pending == null) return;
-    if (state.userFor(pending.capture.by) != m.senderId) return;
-    _startReaction(
-      pending.capture,
-      m.body == 'war' ? TokenReaction.war : TokenReaction.peace,
-    );
+    final color = state.colorOf(m.senderId);
+    if (pending == null || color == null) return;
+    final kind = kReactionBodies.entries
+        .where((e) => e.value == m.body)
+        .firstOrNull
+        ?.key;
+    if (kind == null) return;
+    final capturer = color == pending.capture.by;
+    if (!PendingReaction.choicesFor(capturer).contains(kind)) return;
+    _startReaction(color, kind);
   }
 
-  void _startReaction(LudoCapture capture, TokenReaction kind) {
-    _reactionTimer?.cancel();
+  /// [color] reacts with [kind] on its piece in the capture. Once everyone
+  /// in it has, there's nothing left to wait for.
+  void _startReaction(LudoColor color, TokenReaction kind) {
+    final pending = state.pendingReaction;
+    if (pending == null || !pending.waitingOn(color)) return;
+    final now = LudoBoardView.clockNow();
+    final after = pending.withDone(color);
+    final allIn = after.reactors.every(after.done.contains);
+    if (allIn) _reactionTimer?.cancel();
     state = state.copyWith(
-      clearPendingReaction: true,
-      reaction: LudoTokenReaction(
-        color: capture.by,
-        token: capture.token,
-        kind: kind,
-        startedAt: LudoBoardView.clockNow(),
-      ),
+      pendingReaction: allIn ? null : after,
+      clearPendingReaction: allIn,
+      reactions: [
+        for (final r in state.reactions)
+          if (now - r.startedAt < LudoTokenReaction.duration) r,
+        LudoTokenReaction(
+          color: color,
+          token: pending.tokenFor(color),
+          kind: kind,
+          startedAt: now,
+        ),
+      ],
     );
   }
 
@@ -705,26 +792,44 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     }
   }
 
-  /// The capturing player's choice: war or peace.
-  Future<void> chooseReaction(TokenReaction kind) async {
+  /// A choice from a player on this phone: war or peace for the one who
+  /// captured, sad or again for one sent home ([color], or the first one
+  /// here still deciding).
+  Future<void> chooseReaction(TokenReaction kind, {LudoColor? color}) async {
     final pending = state.pendingReaction;
-    if (pending == null || !state.playsHere(pending.capture.by)) return;
-    _startReaction(pending.capture, kind);
+    if (pending == null) return;
+    final capturer = kind == TokenReaction.war || kind == TokenReaction.peace;
+    final who = capturer
+        ? pending.capture.by
+        : (color ?? state.sentHomeChoosing.firstOrNull);
+    if (who == null || !state.playsHere(who) || !pending.waitingOn(who)) {
+      return;
+    }
+    _startReaction(who, kind);
     if (_isLocal) return;
     try {
       await _repository.sendChat(
         matchId: _matchId,
         kind: 'reaction',
-        body: kind == TokenReaction.war ? 'war' : 'peace',
+        body: kReactionBodies[kind]!,
       );
     } catch (_) {
       // The reaction already played here; others just won't see it.
     }
   }
 
+  /// The one who captured rolls on instead of reacting: they pass on it
+  /// (anyone sent home can still react).
   void skipReaction() {
-    _reactionTimer?.cancel();
-    state = state.copyWith(clearPendingReaction: true);
+    final pending = state.pendingReaction;
+    if (pending == null) return;
+    final after = pending.withDone(pending.capture.by);
+    if (after.reactors.every(after.done.contains)) {
+      _reactionTimer?.cancel();
+      state = state.copyWith(clearPendingReaction: true);
+    } else {
+      state = state.copyWith(pendingReaction: after);
+    }
   }
 
   // ── playing ──────────────────────────────────────────────────────────────
@@ -888,11 +993,12 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
         matchRow: {
           ...?state.matchRow,
           'turn_count': turnNumber,
+          // The first home wins; the game ends once no one's left to race.
           if (winner != null) ...{
-            'status': 'completed',
             'winner_id': state.userFor(winner),
             'result': 'win',
           },
+          if (next.isOver) 'status': 'completed',
         },
       );
       _noticeCapture(next, firstLoad: false);
@@ -934,11 +1040,14 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
   }
 
   /// Leaves the game for good (a forfeit). Offline, the game just ends.
+  /// Someone who's finished just goes: their place (and any prize) is
+  /// theirs whatever happens next.
   Future<void> leave() async {
     if (_isLocal) {
       _botTimer?.cancel();
       return;
     }
+    if (state.iFinished) return;
     await _repository.resignMatch(_matchId);
   }
 
@@ -951,27 +1060,34 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
   void _driveBots() {
     if (!_isLocal || !mounted || _hiddenAt != null) return;
     final g = state.game;
-    if (g.winner != null || !state.isActive) {
+    if (g.isOver || !state.isActive) {
       _botTimer?.cancel();
       return;
     }
-    // A bot that just captured picks war or peace first.
+    // Bots in a capture react too: war or peace for the one that took a
+    // piece, sad or again for one sent home (once it's back in its yard).
     final pending = state.pendingReaction;
-    if (pending != null && _isBot(pending.capture.by)) {
-      final key = 'react:${pending.capture.seq}';
-      if (key == _botKey) return;
-      _botKey = key;
-      _botTimer?.cancel();
-      _botTimer = Timer(Duration(milliseconds: 900 + _rng.nextInt(600)), () {
-        if (!mounted) return;
-        final p = state.pendingReaction;
-        if (p == null || p.capture.seq != pending.capture.seq) return;
-        _startReaction(
-          p.capture,
-          _rng.nextBool() ? TokenReaction.war : TokenReaction.peace,
+    if (pending != null) {
+      for (final color in pending.reactors) {
+        if (!_isBot(color) || !pending.waitingOn(color)) continue;
+        final key = '${pending.capture.seq}:${color.name}';
+        if (!_botReacting.add(key)) continue;
+        final capturer = color == pending.capture.by;
+        Timer(
+          Duration(milliseconds: (capturer ? 900 : 1500) + _rng.nextInt(700)),
+          () {
+            if (!mounted) return;
+            final p = state.pendingReaction;
+            if (p == null || p.capture.seq != pending.capture.seq) return;
+            final choices = PendingReaction.choicesFor(capturer);
+            _startReaction(color, choices[_rng.nextInt(choices.length)]);
+          },
         );
-      });
-      return;
+      }
+      // A bot that just captured picks first, then plays on.
+      if (pending.waitingOn(pending.capture.by) && _isBot(pending.capture.by)) {
+        return;
+      }
     }
     if (!_isBot(g.turn)) return;
     final key =
@@ -996,9 +1112,11 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
   void _botRoll() {
     if (!mounted) return;
     final g = state.game;
-    if (!_isBot(g.turn) || g.hasRolled || g.winner != null) return;
-    // Wait for a reaction still being chosen.
-    if (state.pendingReaction != null) {
+    if (!_isBot(g.turn) || g.hasRolled || g.isOver) return;
+    // Wait while the one who captured is still choosing (whoever was sent
+    // home reacts while play goes on).
+    if (state.pendingReaction?.waitingOn(state.pendingReaction!.capture.by) ??
+        false) {
       _botKey = null;
       _botTimer = Timer(const Duration(milliseconds: 500), _driveBots);
       return;

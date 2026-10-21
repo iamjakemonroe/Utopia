@@ -37,6 +37,18 @@ enum Sfx {
   chat('chat'),
   reaction('reaction'),
 
+  /// A piece sent home, sad about it: a wobbly little "aww" and a sniffle.
+  reactSad('react_sad'),
+
+  /// A piece sent home and not giving up: a whoosh up into a power chord.
+  reactAgain('react_again'),
+
+  /// A six: a quick bright sparkle (another roll's coming).
+  six('six'),
+
+  /// Someone got all four pieces home and took their place.
+  finish('finish'),
+
   /// A drawer, menu or panel opening: soft rising bubbles.
   drawer('drawer'),
   purchase('purchase'),

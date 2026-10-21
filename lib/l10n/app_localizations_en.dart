@@ -4683,6 +4683,42 @@ class L10nEn extends L10n {
   }
 
   @override
+  String ludoMatchYouFinishedWatching(Object value) {
+    return 'You came $value! Watching the rest';
+  }
+
+  @override
+  String get ludoMatchSentHomeTapYourPiece =>
+      'Sent home! Tap your piece to react';
+
+  @override
+  String ludoMatchSentHomeTapThePiece(Object value) {
+    return '$value was sent home! Tap the piece to react';
+  }
+
+  @override
+  String ludoMatchOthersPlayOn(Object value) {
+    return 'All four home! The others play on for $value place.';
+  }
+
+  @override
+  String get ludoMatchYourPrize => 'Your prize';
+
+  @override
+  String get ludoMatchWatch => 'Watch';
+
+  @override
+  String get ludoMatchLeave => 'Leave';
+
+  @override
+  String ludoMatchFinished(String name, String place) {
+    return '$name came $place!';
+  }
+
+  @override
+  String get ludoMatchLeaveFinished => 'Leave (your place stays)';
+
+  @override
   String get ludoMatchGameOver => 'Game over';
 
   @override
@@ -6580,6 +6616,12 @@ class L10nEn extends L10n {
 
   @override
   String get ludoCaptureBubblePeace => 'Peace';
+
+  @override
+  String get ludoCaptureBubbleSad => 'Sad';
+
+  @override
+  String get ludoCaptureBubbleAgain => 'Again!';
 
   @override
   String get doodleToolsEraser => 'Eraser';

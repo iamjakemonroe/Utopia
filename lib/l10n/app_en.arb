@@ -6214,6 +6214,65 @@
       }
     }
   },
+  "ludoMatchYouFinishedWatching": "You came {value}! Watching the rest",
+  "@ludoMatchYouFinishedWatching": {
+    "description": "Status line for a player who has finished while the others play on; value is their place, e.g. 1st.",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchSentHomeTapYourPiece": "Sent home! Tap your piece to react",
+  "@ludoMatchSentHomeTapYourPiece": {
+    "description": "Status line when the player's piece has just been captured and sent back to its yard."
+  },
+  "ludoMatchSentHomeTapThePiece": "{value} was sent home! Tap the piece to react",
+  "@ludoMatchSentHomeTapThePiece": {
+    "description": "Status line in pass-and-play when a friend's piece was sent home; value is their color.",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchOthersPlayOn": "All four home! The others play on for {value} place.",
+  "@ludoMatchOthersPlayOn": {
+    "description": "Under 'You won!' / 'You came 2nd' while the game goes on; value is the next place, e.g. 2nd.",
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "ludoMatchYourPrize": "Your prize",
+  "@ludoMatchYourPrize": {
+    "description": "Next to the coins won, on the panel shown when the player finishes."
+  },
+  "ludoMatchWatch": "Watch",
+  "@ludoMatchWatch": {
+    "description": "Button: stay and watch the others finish the game."
+  },
+  "ludoMatchLeave": "Leave",
+  "@ludoMatchLeave": {
+    "description": "Button: leave the game after finishing (no penalty)."
+  },
+  "ludoMatchFinished": "{name} came {place}!",
+  "@ludoMatchFinished": {
+    "description": "Banner when another player gets all four pieces home; place is e.g. 1st.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "ludoMatchLeaveFinished": "Leave (your place stays)",
+  "@ludoMatchLeaveFinished": {
+    "description": "Menu item for a player who has finished: leaving costs nothing."
+  },
   "ludoMatchGameOver": "Game over",
   "@ludoMatchGameOver": {
     "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
@@ -8775,6 +8834,14 @@
   "ludoCaptureBubblePeace": "Peace",
   "@ludoCaptureBubblePeace": {
     "description": "features/ludo/presentation/widgets/ludo_capture_bubble.dart"
+  },
+  "ludoCaptureBubbleSad": "Sad",
+  "@ludoCaptureBubbleSad": {
+    "description": "A reaction for a piece just sent back home: sad about it."
+  },
+  "ludoCaptureBubbleAgain": "Again!",
+  "@ludoCaptureBubbleAgain": {
+    "description": "A reaction for a piece just sent back home: not giving up, going again."
   },
   "doodleToolsEraser": "Eraser",
   "@doodleToolsEraser": {

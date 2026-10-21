@@ -1,5 +1,7 @@
 // A capture on the Ludo board, for a look: the badge on the piece that took
-// it (yours, and someone else's), and the reaction card open. Run:
+// it (yours, and someone else's), the reaction cards open (war or peace for
+// the piece that took it, sad or again for one sent home), and all four
+// reactions playing on the pieces. Run:
 // flutter test --run-skipped --update-goldens test/tool/ludo_reaction_sheet_test.dart
 @Tags(['sheet'])
 library;
@@ -19,6 +21,7 @@ import 'package:utopia/core/widgets/app_background.dart';
 import 'package:utopia/features/ludo/domain/ludo_engine.dart';
 import 'package:utopia/features/ludo/presentation/widgets/ludo_board.dart';
 import 'package:utopia/features/ludo/presentation/widgets/ludo_capture_bubble.dart';
+import 'package:utopia/features/ludo/presentation/widgets/ludo_pieces.dart';
 
 LudoState _game() {
   final g = LudoState.initial(const [
@@ -38,7 +41,7 @@ LudoState _game() {
 
 void main() {
   testWidgets('a capture on the ludo board', (tester) async {
-    tester.view.physicalSize = const Size(1200, 460);
+    tester.view.physicalSize = const Size(1600, 880);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     SharedPreferences.setMockInitialValues({
@@ -49,7 +52,13 @@ void main() {
     final deadline = DateTime.now().add(const Duration(seconds: 4));
     const window = Duration(seconds: 6);
 
-    Widget board(String title, Widget badge, double width) => Expanded(
+    Widget board(
+      String title, {
+      Widget? badge,
+      double width = 0,
+      int token = 0,
+      List<LudoTokenReaction> reactions = const [],
+    }) => Expanded(
       child: Column(
         children: [
           Text(title, style: TextStyle(color: AppColors.textPrimary)),
@@ -63,18 +72,32 @@ void main() {
               movableTokens: const [],
               onTokenTap: (_) {},
               pieceSets: const {},
-              anchor: LudoTokenAnchor(
-                color: LudoColor.red,
-                token: 0,
-                width: width,
-                child: badge,
-              ),
-              onAnchorTap: () {},
+              reactions: reactions,
+              anchors: [
+                if (badge != null)
+                  LudoTokenAnchor(
+                    color: LudoColor.red,
+                    token: token,
+                    width: width,
+                    onTokenTap: () {},
+                    child: badge,
+                  ),
+              ],
             ),
           ),
         ],
       ),
     );
+
+    // Reactions halfway through, at full strength.
+    LudoTokenReaction playing(LudoColor color, int token, TokenReaction kind) =>
+        LudoTokenReaction(
+          color: color,
+          token: token,
+          kind: kind,
+          startedAt:
+              LudoBoardView.clockNow() - LudoTokenReaction.duration * 0.45,
+        );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -86,31 +109,80 @@ void main() {
             body: AppBackground(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
+                child: Column(
                   children: [
-                    board(
-                      'You captured',
-                      LudoCaptureBadge(
-                        deadline: deadline,
-                        window: window,
-                        onTap: () {},
-                      ),
-                      LudoCaptureBadge.size.width,
+                    Row(
+                      children: [
+                        board(
+                          'You captured',
+                          badge: LudoCaptureBadge(
+                            deadline: deadline,
+                            window: window,
+                            onTap: () {},
+                          ),
+                          width: LudoCaptureBadge.size.width,
+                        ),
+                        board(
+                          'Someone else is deciding',
+                          badge: LudoCaptureBadge(
+                            deadline: deadline,
+                            window: window,
+                          ),
+                          width: LudoCaptureBadge.size.width,
+                        ),
+                        board(
+                          'You tapped your piece',
+                          badge: LudoReactionCard.capture(
+                            deadline: deadline,
+                            window: window,
+                            onWar: () {},
+                            onPeace: () {},
+                          ),
+                          width: LudoReactionCard.size.width,
+                        ),
+                        board(
+                          'Your piece was sent home',
+                          token: 1,
+                          badge: LudoReactionCard.sentHome(
+                            deadline: deadline,
+                            window: window,
+                            color: LudoColor.red,
+                            setId: 'classic',
+                            onSad: () {},
+                            onAgain: () {},
+                          ),
+                          width: LudoReactionCard.size.width,
+                        ),
+                      ],
                     ),
-                    board(
-                      'Someone else captured',
-                      LudoCaptureBadge(deadline: deadline, window: window),
-                      LudoCaptureBadge.size.width,
-                    ),
-                    board(
-                      'You tapped your piece',
-                      LudoReactionCard(
-                        deadline: deadline,
-                        window: window,
-                        onWar: () {},
-                        onPeace: () {},
-                      ),
-                      LudoReactionCard.size.width,
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        board(
+                          'War',
+                          reactions: [
+                            playing(LudoColor.red, 0, TokenReaction.war),
+                          ],
+                        ),
+                        board(
+                          'Peace',
+                          reactions: [
+                            playing(LudoColor.red, 0, TokenReaction.peace),
+                          ],
+                        ),
+                        board(
+                          'Sad (sent home)',
+                          reactions: [
+                            playing(LudoColor.yellow, 0, TokenReaction.sad),
+                          ],
+                        ),
+                        board(
+                          'Again! (sent home)',
+                          reactions: [
+                            playing(LudoColor.yellow, 0, TokenReaction.again),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),

@@ -30,13 +30,16 @@ class LudoTokenReaction {
   static const duration = 2.6;
 }
 
-/// Something to float above one token (the capture thought bubble).
+/// Something to float above one token (the capture thought bubble). It
+/// shows once the token has stopped moving (a piece sent home gets its
+/// bubble when it lands in its yard).
 class LudoTokenAnchor {
   const LudoTokenAnchor({
     required this.color,
     required this.token,
     required this.child,
     this.width = 200,
+    this.onTokenTap,
   });
 
   final LudoColor color;
@@ -45,13 +48,19 @@ class LudoTokenAnchor {
 
   /// How wide [child] is: it's kept on the board by that.
   final double width;
+
+  /// Tapping the token itself, when it can't move (the piece that
+  /// captured, or the one sent home, to react).
+  final VoidCallback? onTokenTap;
 }
 
 /// The Ludo board for any table size: the painted board (classic cross or
 /// six-arm star, rotated so your own yard is bottom-left) with every token
 /// on top. Tokens hop square by square when they move, with a bubbly
 /// squash on each landing and a rising note per step; captured tokens fly
-/// back to their yard spinning.
+/// back to their yard spinning. Little bursts mark the moments: a comic
+/// "pow" where a capture lands, a puff as a piece leaves its yard, a
+/// firework as one gets home, and light rays when a player finishes.
 class LudoBoardView extends ConsumerStatefulWidget {
   const LudoBoardView({
     super.key,
@@ -60,9 +69,8 @@ class LudoBoardView extends ConsumerStatefulWidget {
     required this.movableTokens,
     required this.onTokenTap,
     required this.pieceSets,
-    this.reaction,
-    this.anchor,
-    this.onAnchorTap,
+    this.reactions = const [],
+    this.anchors = const [],
   });
 
   final LudoState game;
@@ -74,12 +82,12 @@ class LudoBoardView extends ConsumerStatefulWidget {
 
   /// Each color's piece set id.
   final Map<LudoColor, String> pieceSets;
-  final LudoTokenReaction? reaction;
-  final LudoTokenAnchor? anchor;
 
-  /// Tapping the [anchor]'s token, when it can't move (the piece that just
-  /// captured, to react).
-  final VoidCallback? onAnchorTap;
+  /// Reactions playing on tokens (the capturer's, the pieces sent home).
+  final List<LudoTokenReaction> reactions;
+
+  /// What's floating over tokens right now.
+  final List<LudoTokenAnchor> anchors;
 
   /// The board's clock, for timing reactions.
   static double clockNow() => _clock.elapsedMicroseconds / 1e6;
@@ -126,8 +134,13 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
     for (final m in _motions.values) {
       if (now <= m.end + 0.15) return true;
     }
-    return false;
+    _bursts.removeWhere((b) => now > b.end);
+    return _bursts.isNotEmpty;
   }
+
+  /// Bursts playing (or about to): see [_Burst].
+  final List<_Burst> _bursts = [];
+  final _rng = math.Random();
 
   final Map<String, int> _lastPos = {};
   final Map<String, _Motion> _motions = {};
@@ -193,19 +206,45 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
         );
         _motions[key] = motion;
         movesEnd = math.max(movesEnd, motion.end);
+        final rules = widget.game.rules;
+        if (before == kLudoBase) {
+          // Out of the yard on a six: a puff where it lands.
+          _burst(_BurstKind.launch, steps.last, motion.end - 0.05, color);
+        } else if (rules.isHome(after) && !rules.isHome(before)) {
+          _burst(_BurstKind.home, steps.last, motion.end, color);
+          // The last one home: this player's finished.
+          if (ps.every(rules.isHome)) {
+            _burst(_BurstKind.finish, Offset.zero, motion.end + 0.1, color);
+          }
+        }
       }
     }
 
     // Captured tokens wait for the capturing hop to land, then fly home.
+    final by = widget.game.capture?.by;
     for (final (key, color, i, before) in victims) {
+      final at = g.positionOf(color, i, before);
       _motions[key] = _Motion(
-        origin: g.positionOf(color, i, before),
+        origin: at,
         points: [g.yardSlots[color]![i]],
         start: movesEnd,
         stepSeconds: 0.8,
         fly: true,
       );
+      _burst(_BurstKind.pow, at, movesEnd - 0.04, by ?? color);
     }
+  }
+
+  void _burst(_BurstKind kind, Offset at, double start, LudoColor color) {
+    _bursts.add(
+      _Burst(
+        kind: kind,
+        at: at,
+        start: start,
+        color: ludoColorPalette[color]!,
+        seed: _rng.nextDouble() * 2 * math.pi,
+      ),
+    );
   }
 
   Offset _restingOrDisplayed(String key, LudoColor color, int i, int pos) {
@@ -260,6 +299,7 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
             center + LudoGeometry.rotate(model, rotation) * cellPx;
 
         final active = widget.game.activePlayers.toSet();
+        final hub = center;
 
         return Center(
           child: SizedBox.fromSize(
@@ -300,12 +340,33 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
                   child: LayoutIsland(
                     child: ValueListenableBuilder<double>(
                       valueListenable: _now,
-                      builder: (context, now, _) => _tokens(
-                        now: now,
-                        width: size.width,
-                        cellPx: cellPx,
-                        toScreen: toScreen,
-                        audio: audio,
+                      builder: (context, now, _) => Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Positioned.fill(
+                            child: _tokens(
+                              now: now,
+                              width: size.width,
+                              cellPx: cellPx,
+                              toScreen: toScreen,
+                              audio: audio,
+                            ),
+                          ),
+                          if (_bursts.isNotEmpty)
+                            Positioned.fill(
+                              child: IgnorePointer(
+                                child: CustomPaint(
+                                  painter: _BurstPainter(
+                                    bursts: _bursts,
+                                    now: now,
+                                    cellPx: cellPx,
+                                    toScreen: toScreen,
+                                    hub: hub,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ),
@@ -320,24 +381,36 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
 
   /// What's anchored over a token, kept on the board (a piece by its edge
   /// had its card hanging off the screen), its point still on the piece.
-  Widget _anchored(Offset top, double width) {
-    final w = widget.anchor!.width;
+  Widget _anchored(LudoTokenAnchor anchor, Offset top, double width) {
+    final w = anchor.width;
     final childLeft = (top.dx - w / 2)
         .clamp(-6.0, math.max(-6.0, width - w + 6))
         .toDouble();
     return Positioned(
+      key: ValueKey('anchor-${anchor.color.name}${anchor.token}'),
       left: childLeft - (200 - w) / 2,
       top: top.dy - 120,
       width: 200,
       height: 120,
       child: LudoAnchorTail(
         dx: top.dx - (childLeft + w / 2),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: widget.anchor!.child,
-        ),
+        child: Align(alignment: Alignment.bottomCenter, child: anchor.child),
       ),
     );
+  }
+
+  LudoTokenAnchor? _anchorOn(LudoColor color, int token) {
+    for (final a in widget.anchors) {
+      if (a.color == color && a.token == token) return a;
+    }
+    return null;
+  }
+
+  LudoTokenReaction? _reactionOn(LudoColor color, int token) {
+    for (final r in widget.reactions) {
+      if (r.color == color && r.token == token) return r;
+    }
+    return null;
   }
 
   Widget _tokens({
@@ -389,7 +462,7 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
     }
 
     final items = <(double, Widget)>[];
-    Offset? anchorTop;
+    final anchorTops = <(LudoTokenAnchor, Offset)>[];
     for (final color in game.players) {
       if (game.left.contains(color)) continue;
       final ps = game.tokens[color]!;
@@ -440,9 +513,8 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
             (grouped ?? Offset.zero) -
             Offset(0, (lift + bounce) * cellPx);
 
-        final reaction = widget.reaction;
-        final reacting =
-            reaction != null && reaction.color == color && reaction.token == i;
+        final reaction = _reactionOn(color, i);
+        final reacting = reaction != null;
         final progress = reacting
             ? ((now - reaction.startedAt) / LudoTokenReaction.duration).clamp(
                 0.0,
@@ -459,12 +531,10 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
         }
         final w = tokenW * scale;
         final h = tokenH * scale;
-        final anchored =
-            widget.anchor?.color == color &&
-            widget.anchor?.token == i &&
-            widget.onAnchorTap != null;
-        if (widget.anchor?.color == color && widget.anchor?.token == i) {
-          anchorTop = ground - Offset(0, h * 0.95);
+        final anchor = motion == null ? _anchorOn(color, i) : null;
+        final anchored = anchor?.onTokenTap != null;
+        if (anchor != null) {
+          anchorTops.add((anchor, ground - Offset(0, h * 0.95)));
         }
         Widget token = CustomPaint(
           size: Size(w, h),
@@ -506,7 +576,7 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
               onTap: movable
                   ? () => widget.onTokenTap(i)
                   : anchored
-                  ? widget.onAnchorTap
+                  ? anchor!.onTokenTap
                   : null,
               child: Semantics(
                 button: movable || anchored,
@@ -524,8 +594,7 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
       clipBehavior: Clip.none,
       children: [
         for (final (_, w) in items) w,
-        if (widget.anchor != null && anchorTop != null)
-          _anchored(anchorTop, width),
+        for (final (anchor, top) in anchorTops) _anchored(anchor, top, width),
       ],
     );
   }
@@ -1021,4 +1090,235 @@ class _BoardHubPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _BoardHubPainter old) =>
       old.center != center || old.radius != radius;
+}
+
+enum _BurstKind { pow, launch, home, finish }
+
+/// A moment worth a little burst, at [at] (board units; a [_BurstKind.finish]
+/// plays at the hub), starting at [start] on the board's clock.
+class _Burst {
+  _Burst({
+    required this.kind,
+    required this.at,
+    required this.start,
+    required this.color,
+    required this.seed,
+  });
+
+  final _BurstKind kind;
+  final Offset at;
+  final double start;
+  final Color color;
+
+  /// Turns each burst a little, so no two look the same.
+  final double seed;
+
+  double get length => switch (kind) {
+    _BurstKind.pow => 0.7,
+    _BurstKind.launch => 0.6,
+    _BurstKind.home => 0.95,
+    _BurstKind.finish => 1.7,
+  };
+
+  double get end => start + length;
+}
+
+/// Draws the bursts playing now, over the tokens.
+class _BurstPainter extends CustomPainter {
+  _BurstPainter({
+    required this.bursts,
+    required this.now,
+    required this.cellPx,
+    required this.toScreen,
+    required this.hub,
+  });
+
+  final List<_Burst> bursts;
+  final double now;
+  final double cellPx;
+  final Offset Function(Offset) toScreen;
+  final Offset hub;
+
+  /// A ten-point comic star, one unit across.
+  static final Path _star = () {
+    final path = Path();
+    for (var i = 0; i < 20; i++) {
+      final a = i * math.pi / 10 - math.pi / 2;
+      final r = i.isEven ? 1.0 : 0.55;
+      final p = Offset(math.cos(a) * r, math.sin(a) * r);
+      i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
+    }
+    return path..close();
+  }();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final b in bursts) {
+      final f = (now - b.start) / b.length;
+      if (f < 0 || f > 1) continue;
+      switch (b.kind) {
+        case _BurstKind.pow:
+          _pow(canvas, toScreen(b.at), f, b);
+        case _BurstKind.launch:
+          _launch(canvas, toScreen(b.at), f, b);
+        case _BurstKind.home:
+          _firework(canvas, toScreen(b.at), f, b, cellPx * 1.3, 12);
+        case _BurstKind.finish:
+          _rays(canvas, hub, f, b);
+          _firework(canvas, hub, f, b, cellPx * 3.2, 22);
+      }
+    }
+  }
+
+  /// A comic "pow": a star slams in and fades, a ring goes out, and
+  /// little stars fly off.
+  void _pow(Canvas canvas, Offset c, double f, _Burst b) {
+    final grow = Curves.easeOutBack.transform(math.min(1.0, f / 0.35));
+    final fade = f < 0.55 ? 1.0 : 1 - (f - 0.55) / 0.45;
+    final r = cellPx * 0.75 * grow;
+    canvas.drawCircle(
+      c,
+      cellPx * (0.4 + 1.1 * f),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = cellPx * 0.12 * (1 - f)
+        ..color = Colors.white.withValues(alpha: 0.8 * (1 - f)),
+    );
+    canvas.save();
+    canvas.translate(c.dx, c.dy);
+    canvas.rotate(b.seed * 0.2 - 0.1);
+    canvas.scale(r);
+    canvas.drawPath(
+      _star,
+      Paint()..color = b.color.withValues(alpha: 0.95 * fade),
+    );
+    canvas.scale(0.72);
+    canvas.drawPath(
+      _star,
+      Paint()..color = const Color(0xFFFFF3B0).withValues(alpha: fade),
+    );
+    canvas.restore();
+    final spark = Paint()..color = Colors.white.withValues(alpha: fade);
+    for (var k = 0; k < 7; k++) {
+      final a = b.seed + k * 2 * math.pi / 7;
+      final d = cellPx * (0.5 + 1.2 * Curves.easeOut.transform(f));
+      final p = c + Offset(math.cos(a), math.sin(a)) * d;
+      canvas.save();
+      canvas.translate(p.dx, p.dy);
+      canvas.rotate(f * 4 + k);
+      canvas.scale(cellPx * 0.14 * (1 - f));
+      canvas.drawPath(_star, spark);
+      canvas.restore();
+    }
+  }
+
+  /// A puff of dust as a piece hops out of its yard, and sparks of its
+  /// color going up.
+  void _launch(Canvas canvas, Offset c, double f, _Burst b) {
+    final e = Curves.easeOut.transform(f);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: c.translate(0, cellPx * 0.1),
+        width: cellPx * (0.6 + 1.3 * e),
+        height: cellPx * (0.25 + 0.45 * e),
+      ),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = cellPx * 0.1 * (1 - f)
+        ..color = Colors.white.withValues(alpha: 0.7 * (1 - f)),
+    );
+    final dot = Paint();
+    for (var k = 0; k < 6; k++) {
+      final a = -math.pi / 2 + (k - 2.5) * 0.35 + math.sin(b.seed + k) * 0.1;
+      final d = cellPx * (0.3 + 1.1 * e);
+      canvas.drawCircle(
+        c + Offset(math.cos(a), math.sin(a)) * d,
+        cellPx * 0.09 * (1 - f),
+        dot
+          ..color = (k.isEven ? b.color : Colors.white).withValues(
+            alpha: 1 - f,
+          ),
+      );
+    }
+  }
+
+  /// A firework of [n] sparks in the player's color, with a white flash.
+  void _firework(
+    Canvas canvas,
+    Offset c,
+    double f,
+    _Burst b,
+    double reach,
+    int n,
+  ) {
+    final e = Curves.easeOutCubic.transform(f);
+    if (f < 0.25) {
+      canvas.drawCircle(
+        c,
+        reach * 0.35 * (f / 0.25),
+        Paint()
+          ..shader = RadialGradient(
+            colors: [
+              Colors.white.withValues(alpha: 0.9 * (1 - f / 0.25)),
+              Colors.white.withValues(alpha: 0),
+            ],
+          ).createShader(Rect.fromCircle(center: c, radius: reach * 0.35)),
+      );
+    }
+    final spark = Paint()..strokeCap = StrokeCap.round;
+    for (var k = 0; k < n; k++) {
+      final a = b.seed + k * 2 * math.pi / n;
+      final dir = Offset(math.cos(a), math.sin(a));
+      // A little gravity as they fall away.
+      final p = c + dir * reach * e + Offset(0, reach * 0.25 * f * f);
+      final tail =
+          c +
+          dir * reach * math.max(0.0, e - 0.18) +
+          Offset(0, reach * 0.25 * f * f * 0.8);
+      final light = k.isEven
+          ? b.color
+          : Color.lerp(b.color, Colors.white, 0.6)!;
+      canvas.drawLine(
+        tail,
+        p,
+        spark
+          ..strokeWidth = cellPx * 0.1 * (1 - f * 0.7)
+          ..color = light.withValues(alpha: 1 - f),
+      );
+    }
+  }
+
+  /// Soft light rays turning out from the hub, in the finisher's color.
+  void _rays(Canvas canvas, Offset c, double f, _Burst b) {
+    final alpha = f < 0.2 ? f / 0.2 : 1 - (f - 0.2) / 0.8;
+    final reach = cellPx * (3 + 4 * Curves.easeOut.transform(f));
+    final paint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          b.color.withValues(alpha: 0.55 * alpha),
+          b.color.withValues(alpha: 0),
+        ],
+      ).createShader(Rect.fromCircle(center: c, radius: reach));
+    const n = 12;
+    for (var k = 0; k < n; k++) {
+      final a = b.seed + f * 0.8 + k * 2 * math.pi / n;
+      canvas.drawPath(
+        Path()
+          ..moveTo(c.dx, c.dy)
+          ..lineTo(
+            c.dx + math.cos(a - 0.09) * reach,
+            c.dy + math.sin(a - 0.09) * reach,
+          )
+          ..lineTo(
+            c.dx + math.cos(a + 0.09) * reach,
+            c.dy + math.sin(a + 0.09) * reach,
+          )
+          ..close(),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _BurstPainter old) => true;
 }

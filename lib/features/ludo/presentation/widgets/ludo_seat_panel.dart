@@ -37,6 +37,7 @@ class LudoSeatPanel extends ConsumerWidget {
     this.speech,
     this.mirrored = false,
     this.winner = false,
+    this.place,
     this.msLeft,
     this.totalMs = 15000,
     this.missedTurns = 0,
@@ -63,6 +64,9 @@ class LudoSeatPanel extends ConsumerWidget {
   final bool mirrored;
   final bool winner;
 
+  /// This player's finishing place, once all four of their pieces are home.
+  final int? place;
+
   /// The turn timer while it's this seat's turn (drawn around the avatar).
   final int? Function()? msLeft;
   final int totalMs;
@@ -88,8 +92,9 @@ class LudoSeatPanel extends ConsumerWidget {
       child: _AvatarFrame(
         color: seat,
         active: isTurn && !left,
-        dim: left,
-        winner: winner,
+        dim: left && place == null,
+        winner: winner || place == 1,
+        place: place,
         msLeft: isTurn && !left ? msLeft : null,
         totalMs: totalMs,
         onWarnSecond: onWarnSecond,
@@ -135,7 +140,23 @@ class LudoSeatPanel extends ConsumerWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (left)
+            if (place != null) ...[
+              // Finished: their place, in its medal's color.
+              Icon(
+                Icons.emoji_events_rounded,
+                size: 13,
+                color: (kPlaceMedals[place] ?? kPlaceMedals[3]!)[1],
+              ),
+              const SizedBox(width: 2),
+              Text(
+                placeLabel(place!),
+                style: AppTextStyles.body(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: (kPlaceMedals[place] ?? kPlaceMedals[3]!)[1],
+                ),
+              ),
+            ] else if (left)
               Text(
                 strings.ludoSeatPanelLeft,
                 style: AppTextStyles.body(fontSize: 11, color: AppColors.error),
@@ -209,6 +230,7 @@ class _AvatarFrame extends StatefulWidget {
     required this.dim,
     required this.winner,
     required this.child,
+    this.place,
     this.msLeft,
     this.totalMs = 15000,
     this.onWarnSecond,
@@ -219,6 +241,7 @@ class _AvatarFrame extends StatefulWidget {
   final bool dim;
   final bool winner;
   final Widget child;
+  final int? place;
   final int? Function()? msLeft;
   final int totalMs;
   final ValueChanged<int>? onWarnSecond;
@@ -320,6 +343,12 @@ class _AvatarFrameState extends State<_AvatarFrame>
                   child!,
                   if (widget.winner)
                     const Positioned(top: -18, child: CrownIcon(size: 22)),
+                  if (widget.place != null && widget.place! > 1)
+                    Positioned(
+                      top: -12,
+                      right: -12,
+                      child: _PlaceMedal(place: widget.place!),
+                    ),
                 ],
               ),
             ),
@@ -340,6 +369,46 @@ class _AvatarFrameState extends State<_AvatarFrame>
           );
         },
         child: widget.child,
+      ),
+    );
+  }
+}
+
+/// A medal with the place on it, popping onto the avatar of someone who's
+/// just finished (first place gets the crown instead).
+class _PlaceMedal extends StatelessWidget {
+  const _PlaceMedal({required this.place});
+
+  final int place;
+
+  @override
+  Widget build(BuildContext context) {
+    final medal = kPlaceMedals[place];
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 700),
+      curve: Curves.elasticOut,
+      builder: (context, v, child) => Transform.scale(scale: v, child: child),
+      child: Container(
+        width: 22,
+        height: 22,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            center: const Alignment(-0.3, -0.4),
+            colors: medal ?? [Colors.white24, Colors.white12],
+          ),
+          border: Border.all(color: Colors.white, width: 1.4),
+          boxShadow: const [BoxShadow(color: Color(0x66000000), blurRadius: 4)],
+        ),
+        child: Text(
+          '$place',
+          style: AppTextStyles.display(
+            fontSize: 12,
+            color: medal == null ? AppColors.textPrimary : AppColors.faceInk,
+          ),
+        ),
       ),
     );
   }

@@ -37,17 +37,19 @@ void main() {
                 movableTokens: const [],
                 onTokenTap: (_) => moved++,
                 pieceSets: const {},
-                anchor: LudoTokenAnchor(
-                  color: LudoColor.red,
-                  token: 0,
-                  width: LudoCaptureBadge.size.width,
-                  child: LudoCaptureBadge(
-                    deadline: DateTime.now().add(const Duration(seconds: 6)),
-                    window: const Duration(seconds: 6),
-                    onTap: () => opened++,
+                anchors: [
+                  LudoTokenAnchor(
+                    color: LudoColor.red,
+                    token: 0,
+                    width: LudoCaptureBadge.size.width,
+                    onTokenTap: () => opened++,
+                    child: LudoCaptureBadge(
+                      deadline: DateTime.now().add(const Duration(seconds: 6)),
+                      window: const Duration(seconds: 6),
+                      onTap: () => opened++,
+                    ),
                   ),
-                ),
-                onAnchorTap: () => opened++,
+                ],
               ),
             ),
           ),
