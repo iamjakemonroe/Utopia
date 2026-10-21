@@ -6,11 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/bots/bots.dart';
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../../core/widgets/game_card_art.dart';
 import '../../../../l10n/strings.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../chat/domain/chat_filter.dart';
 import '../../../chat/domain/chat_message.dart';
 import '../../../chat/domain/voice_note.dart';
+import '../../../home/data/offline_game.dart';
 import '../../data/eights_repository.dart';
 import '../../domain/eights_engine.dart';
 import '../widgets/eights_table_view.dart';
@@ -27,9 +29,6 @@ const kEightsTurnTime = Duration(seconds: 20);
 
 /// Friends get longer to think.
 const kEightsFriendsTurnTime = Duration(seconds: 40);
-
-/// Three missed turns in a row and a player is out.
-const kEightsMaxMissed = 3;
 
 /// An offline game on this phone: who sits where. [humanId] is the phone's
 /// owner; every other id is a bot.
@@ -50,6 +49,25 @@ String startLocalEights(LocalEightsSetup setup) {
 }
 
 LocalEightsSetup? localEightsSetup(String matchId) => _localGames[matchId];
+
+/// Saved offline games to pick back up, every card where it was.
+final Map<String, EightsGame> _localResume = {};
+
+/// Brings back an offline game saved before the app closed (see
+/// OfflineGame), ready to open at its route.
+void restoreLocalEights(String route, Map<String, dynamic> data) {
+  final id = route.split('/').last;
+  final players = (data['players'] as List?)?.cast<String>();
+  final human = data['human'] as String?;
+  final game = data['game'];
+  if (players == null || human == null || game is! Map) return;
+  try {
+    _localResume[id] = EightsGame.fromJson(game.cast<String, dynamic>());
+  } catch (_) {
+    return;
+  }
+  _localGames[id] = LocalEightsSetup(playerIds: players, humanId: human);
+}
 
 class EightsMatchState {
   const EightsMatchState({
@@ -183,6 +201,7 @@ class EightsMatchState {
 class EightsMatchController extends StateNotifier<EightsMatchState> {
   EightsMatchController(this._repository, this._matchId, this._myUserId)
     : _local = null,
+      _store = null,
       super(const EightsMatchState()) {
     _matchSub = _repository
         .watchMatch(_matchId)
@@ -205,15 +224,21 @@ class EightsMatchController extends StateNotifier<EightsMatchState> {
     this._myUserId,
     LocalEightsSetup setup, {
     Random? random,
+    OfflineGameStore? store,
   }) : _local = setup,
+       // ignore: prefer_initializing_formals
+       _store = store,
        super(const EightsMatchState()) {
     _rng = random ?? Random();
     final me = setup.playerIds.indexOf(setup.humanId);
-    _game = _engine.deal(
-      setup.playerIds.length,
-      random: _rng,
-      firstTurn: _rng.nextInt(setup.playerIds.length),
-    );
+    // A game saved before the app closed carries on where it was.
+    _game =
+        _localResume.remove(_matchId) ??
+        _engine.deal(
+          setup.playerIds.length,
+          random: _rng,
+          firstTurn: _rng.nextInt(setup.playerIds.length),
+        );
     state = EightsMatchState(
       table: _game!.table,
       hand: _game!.hands[me],
@@ -229,7 +254,10 @@ class EightsMatchController extends StateNotifier<EightsMatchState> {
       },
     );
     _restartClock();
-    addListener((_) => _driveBots());
+    addListener((_) {
+      _driveBots();
+      _saveLocal();
+    });
     _clock = Timer.periodic(
       const Duration(milliseconds: 400),
       (_) => _checkTurnTimer(),
@@ -241,6 +269,40 @@ class EightsMatchController extends StateNotifier<EightsMatchState> {
   final String _myUserId;
   final LocalEightsSetup? _local;
   bool get _isLocal => _local != null;
+
+  /// Where an offline game is saved after every move, so it comes back if
+  /// the app closes.
+  final OfflineGameStore? _store;
+  String? _savedKey;
+
+  String get _localRoute => '/eights/$_matchId';
+
+  void _saveLocal() {
+    final store = _store;
+    final setup = _local;
+    final game = _game;
+    if (store == null || setup == null || game == null) return;
+    final t = game.table;
+    if (t.winner != null) {
+      store.clear(route: _localRoute);
+      return;
+    }
+    final key = '${t.seq}:${t.turn}:${t.drawn}:${t.drawCount}';
+    if (key == _savedKey) return;
+    _savedKey = key;
+    store.save(
+      OfflineGame(
+        kind: GameKind.eights,
+        route: _localRoute,
+        opponent: 'bots',
+        data: {
+          'players': setup.playerIds,
+          'human': setup.humanId,
+          'game': game.toJson(),
+        },
+      ),
+    );
+  }
 
   Random _rng = Random();
   EightsGame? _game;
@@ -630,6 +692,9 @@ class EightsMatchController extends StateNotifier<EightsMatchState> {
 
   @override
   void dispose() {
+    // Leaving an offline game on purpose ends it (a closed app never gets
+    // here, so that game comes back).
+    if (_isLocal) _store?.clear(route: _localRoute);
     _matchSub?.cancel();
     _chatSub?.cancel();
     _clock?.cancel();
@@ -649,6 +714,7 @@ final eightsMatchControllerProvider = StateNotifierProvider.autoDispose
           matchId,
           local.humanId,
           local,
+          store: ref.read(offlineGameStoreProvider),
         );
       }
       return EightsMatchController(

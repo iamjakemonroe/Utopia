@@ -196,12 +196,10 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
     if (mine != null &&
         next.missedTurns(mine) > prev.missedTurns(mine) &&
         next.isActive) {
-      final left = kMaxMissedTurns - next.missedTurns(mine);
+      // Played for them by the server; they stay in.
       showUtopiaToast(
         context,
-        left == 1
-            ? strings.ludoMatchOutOfTimeMissOne
-            : strings.ludoMatchOutOfTimeYourTurn,
+        strings.ludoMatchOutOfTimeYourTurn,
         kind: ToastKind.warning,
       );
     }

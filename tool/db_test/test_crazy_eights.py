@@ -1,6 +1,7 @@
 """Crazy Eights (20261021350000_crazy_eights.sql): the server deals and
 keeps the cards, each player sees only their own hand, every move is
-checked, time-outs draw and pass, leaving hands the cards back, and the
+checked, time-outs are played for whoever's away (they stay in), leaving
+hands the cards back, and the
 winner takes the pot. Rooms, quick match, chat and events too."""
 import json
 import sys
@@ -203,7 +204,7 @@ attempt(cy, "select join_eights_room(%s)", room["code"])
 m2 = str(attempt(ada, "select start_eights_room(%s)", room["id"])[0][0])
 st = match(m2)[2]
 check("three players get five each", st["counts"] == [5, 5, 5])
-rig(m2, turn=0)
+rig(m2, hands={ada: ["2C", "3C", "KS"]}, top="9H", suit="H", turn=0, draw=["4S", "5D"])
 
 
 def go_quiet(mm, seconds=25):
@@ -219,24 +220,40 @@ check("not yet: time isn't up",
 go_quiet(m2, 45)
 attempt(bo, "select skip_eights_turn(%s, %s)", m2, seq)
 st, missed = match(m2)[2], match(m2)[3]
-check("ada's time ran out: she drew one and it's bo's go",
-      st["counts"][0] == 6 and len(hand(m2, ada)) == 6 and st["turn"] == 1)
+check("ada's time ran out: nothing went, so she drew one (it didn't go) and it's bo's go",
+      st["counts"][0] == 4 and sorted(hand(m2, ada)) == ["2C", "3C", "5D", "KS"]
+      and st["turn"] == 1, (st, hand(m2, ada)))
 check("…shown as a time-out", st["last"]["kind"] == "timeout" and missed.get("0") == 1)
 check("a late call for the same turn does nothing",
       attempt(cy, "select skip_eights_turn(%s, %s)", m2, seq)[0][0] is True and match(m2)[2]["turn"] == 1)
 
-for _ in range(2):
-    rig(m2, turn=0)
-    go_quiet(m2, 45)
-    attempt(bo, "select skip_eights_turn(%s, %s)", m2, match(m2)[2]["seq"])
-st = match(m2)[2]
-check("three in a row and ada's out", st["left"] == [0] and st["counts"][0] == 0)
-check("…her cards went back to the pile", hand(m2, ada) == [] and st["draw"] == len(deck(m2)[0]))
-check("…and the other two play on", match(m2)[0] == "active" and st["turn"] in (1, 2))
+rig(m2, top="9D", suit="D", turn=0, draw=["4S", "6D"])
+go_quiet(m2, 45)
+attempt(bo, "select skip_eights_turn(%s, %s)", m2, match(m2)[2]["seq"])
+st, missed = match(m2)[2], match(m2)[3]
+check("away again: the diamond she holds goes for her",
+      st["last"]["kind"] == "play" and st["last"]["card"] == "5D" and st["top"] == "5D"
+      and sorted(hand(m2, ada)) == ["2C", "3C", "KS"] and st["turn"] == 1, st)
+check("…and she's counted away twice", missed.get("0") == 2)
+
+rig(m2, top="9H", suit="H", turn=0, draw=["4S", "6H"])
+go_quiet(m2, 45)
+attempt(bo, "select skip_eights_turn(%s, %s)", m2, match(m2)[2]["seq"])
+st, missed = match(m2)[2], match(m2)[3]
+check("a third time: nothing went, the card she drew did, so it's played",
+      st["top"] == "6H" and sorted(hand(m2, ada)) == ["2C", "3C", "KS"] and st["turn"] == 1, st)
+check("three in a row and ada's still in", st["left"] == [] and match(m2)[0] == "active"
+      and missed.get("0") == 3, (st["left"], missed))
+
+rig(m2, top="9C", suit="C", turn=0)
+check("back, she plays her own card", attempt(ada, "select play_eights_card(%s, '2C')", m2) != "ok"
+      and match(m2)[2]["top"] == "2C")
+check("…and she's not away any more", match(m2)[3].get("0") is None)
 
 attempt(cy, "select resign_eights_match(%s)", m2)
+attempt(ada, "select resign_eights_match(%s)", m2)
 status, winner, st, _, _ = match(m2)
-check("cy leaves too: bo wins", status == "completed" and winner == bo and st["winner"] == 1)
+check("ada and cy leave: bo wins", status == "completed" and winner == bo and st["winner"] == 1)
 
 # ── quick match ───────────────────────────────────────────────────────────
 r1 = attempt(cy, "select join_eights_matchmaking_queue(0, 2)")

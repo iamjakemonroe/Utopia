@@ -7,7 +7,7 @@ import '../../../core/theme/theme_controller.dart'
     show sharedPreferencesProvider;
 import '../../../core/widgets/game_card_art.dart';
 
-/// A game being played on this phone (against Chip, Robo or Ludo bots, or
+/// A game being played on this phone (against Chip, Robo, Ludo or card bots, or
 /// checkers between two people on one phone), saved after every move so it
 /// picks up where it left off if the app closes, the way online games do.
 /// Leaving the game on purpose ends it and forgets it.
@@ -31,7 +31,7 @@ class OfflineGame {
   final String? opponent;
 
   /// Opens it again from the saved moves.
-  String get resumeRoute => kind == GameKind.ludo
+  String get resumeRoute => kind == GameKind.ludo || kind == GameKind.eights
       ? route
       : '$route${route.contains('?') ? '&' : '?'}resume=1';
 

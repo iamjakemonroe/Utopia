@@ -8111,13 +8111,7 @@ abstract class L10n {
   /// features/ludo/presentation/screens/ludo_match_screen.dart
   ///
   /// In en, this message translates to:
-  /// **'Out of time! Miss one more turn and you leave the game.'**
-  String get ludoMatchOutOfTimeMissOne;
-
-  /// features/ludo/presentation/screens/ludo_match_screen.dart
-  ///
-  /// In en, this message translates to:
-  /// **'Out of time! Your turn passed.'**
+  /// **'Out of time! Your turn was played for you.'**
   String get ludoMatchOutOfTimeYourTurn;
 
   /// features/ludo/presentation/screens/ludo_match_screen.dart
@@ -10901,7 +10895,7 @@ abstract class L10n {
   /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
   ///
   /// In en, this message translates to:
-  /// **'The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn passes. Miss three turns in a row and you leave the game.'**
+  /// **'The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn is played for you, and you stay in the game: come back any time and carry on.'**
   String get ludoRulesTheRingAroundYourPicture;
 
   /// features/ludo/presentation/widgets/ludo_rules_sheet.dart
@@ -12266,11 +12260,11 @@ abstract class L10n {
   /// **'Crazy Eights wins'**
   String get ludoPlayerEightsWins;
 
-  /// Crazy Eights toast when the player's turn timed out.
+  /// Under a player at the Ludo or Crazy Eights table whose turns are being played for them while they're away.
   ///
   /// In en, this message translates to:
-  /// **'Out of time: you drew a card and your turn passed.'**
-  String get eightsOutOfTimeDrew;
+  /// **'Away'**
+  String get seatAway;
 
   /// Crazy Eights: confirm leaving a game with an entry.
   ///
@@ -12431,7 +12425,7 @@ abstract class L10n {
   /// Crazy Eights rule.
   ///
   /// In en, this message translates to:
-  /// **'The ring around your timer is your clock. Run out and you draw a card and your turn passes. Three in a row and you\'re out.'**
+  /// **'The ring around your timer is your clock. Run out and your turn is played for you (a card that goes, or a draw), and you stay in the game: come back any time and carry on.'**
   String get eightsRulesTimeBody;
 
   /// Crazy Eights rule title.

@@ -8,6 +8,7 @@ import '../../../../core/profiles/profile_providers.dart';
 import '../../../../core/profiles/profile_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/away_mark.dart';
 import '../../../../core/widgets/countdown_border.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../../../core/widgets/utopia_icons.dart';
@@ -173,18 +174,8 @@ class LudoSeatPanel extends ConsumerWidget {
               ),
               if (missedTurns > 0) ...[
                 const SizedBox(width: 6),
-                // Missed turns: three and they're out.
-                for (var i = 0; i < 3; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 2),
-                    child: Icon(
-                      Icons.hourglass_bottom_rounded,
-                      size: 11,
-                      color: i < missedTurns
-                          ? const Color(0xFFFF4D5E)
-                          : AppColors.textSecondary.withValues(alpha: 0.35),
-                    ),
-                  ),
+                // Their time ran out: their turns are played for them.
+                const AwayMark(),
               ],
             ],
           ],

@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:utopia/core/widgets/game_card_art.dart';
 import 'package:utopia/features/eights/data/eights_repository.dart';
 import 'package:utopia/features/eights/domain/eights_engine.dart';
 import 'package:utopia/features/eights/presentation/controllers/eights_match_controller.dart';
+import 'package:utopia/features/home/data/offline_game.dart';
 
 PlayingCard c(String code) => PlayingCard.fromCode(code);
 
@@ -184,6 +187,44 @@ void main() {
     await _settle();
     expect(repo.calls.where((x) => x == 'hand').length, before + 1);
     expect(controller.state.hand.length, 4);
+  });
+
+  test('offline: saved as it goes, and back as it was after the app '
+      'closes', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = OfflineGameStore(await SharedPreferences.getInstance());
+    final repo = _FakeRepo();
+    final id = startLocalEights(
+      const LocalEightsSetup(playerIds: [_me, 'bot:pip'], humanId: _me),
+    );
+    final first = EightsMatchController.local(
+      repo,
+      id,
+      _me,
+      localEightsSetup(id)!,
+      random: Random(5),
+      store: store,
+    );
+    final saved = store.load()!;
+    expect(saved.kind, GameKind.eights);
+    expect(saved.resumeRoute, '/eights/$id');
+    final hand = [for (final card in first.state.hand) card.code];
+    final top = first.state.table!.top.code;
+    first.dispose();
+    expect(store.load(), isNull, reason: 'leaving on purpose ends it');
+
+    // Had the app closed instead, the save sets the same table back up.
+    restoreLocalEights(saved.route, saved.data);
+    final again = EightsMatchController.local(
+      repo,
+      id,
+      _me,
+      localEightsSetup(id)!,
+      store: store,
+    );
+    addTearDown(again.dispose);
+    expect([for (final card in again.state.hand) card.code], hand);
+    expect(again.state.table!.top.code, top);
   });
 
   test('offline: the game is dealt and the bots play', () async {

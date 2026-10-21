@@ -125,12 +125,29 @@ check("red's game counts for events now",
 check("cy's doesn't yet (still racing)",
       attempt(cy, "select event_count_game('ludo', %s)", m) == "not a finished game of yours")
 
+# Time running out plays the turn for them (all in the yard: a six brings
+# one out and goes again; anything else passes).
+harness.as_admin(db)
+with db.cursor() as c:
+    c.execute("update ludo_matches set state = jsonb_set(state, '{turn}', '\"green\"')"
+              " where id = %s", (m,))
 go_quiet(m)
 skip(bo, m)
-check("green's time runs out: the turn goes to yellow", row(m)[2]["turn"] == "yellow")
+st = row(m)[2]
+six = st["last_roll"]["value"] == 6
+check("green's time runs out: rolled for green, then on to yellow (or green after a six)",
+      st["last_roll"]["color"] == "green" and st["turn"] == ("green" if six else "yellow"), st)
+harness.as_admin(db)
+with db.cursor() as c:
+    c.execute("update ludo_matches set state = state || '{\"turn\": \"yellow\",\"tokens\": "
+              "{\"red\": [56,56,56,56], \"green\": [-1,-1,-1,-1], \"yellow\": [-1,-1,-1,-1]}}'"
+              " where id = %s", (m,))
 go_quiet(m)
 skip(bo, m)
-check("yellow's runs out: back to green, past red", row(m)[2]["turn"] == "green")
+st = row(m)[2]
+six = st["last_roll"]["value"] == 6
+check("yellow's runs out: back to green, past red (or yellow after a six)",
+      st["turn"] == ("yellow" if six else "green"), st)
 
 # A turn stuck on someone who's finished passes on, and no one missed it.
 harness.as_admin(db)

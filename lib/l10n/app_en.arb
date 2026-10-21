@@ -6072,11 +6072,7 @@
   "@ludoPlayerCouldnTSendTheReport": {
     "description": "features/ludo/presentation/widgets/ludo_player_card.dart"
   },
-  "ludoMatchOutOfTimeMissOne": "Out of time! Miss one more turn and you leave the game.",
-  "@ludoMatchOutOfTimeMissOne": {
-    "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
-  },
-  "ludoMatchOutOfTimeYourTurn": "Out of time! Your turn passed.",
+  "ludoMatchOutOfTimeYourTurn": "Out of time! Your turn was played for you.",
   "@ludoMatchOutOfTimeYourTurn": {
     "description": "features/ludo/presentation/screens/ludo_match_screen.dart"
   },
@@ -8203,7 +8199,7 @@
   "@ludoRulesTimedTurns": {
     "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
   },
-  "ludoRulesTheRingAroundYourPicture": "The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn passes. Miss three turns in a row and you leave the game.",
+  "ludoRulesTheRingAroundYourPicture": "The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn is played for you, and you stay in the game: come back any time and carry on.",
   "@ludoRulesTheRingAroundYourPicture": {
     "description": "features/ludo/presentation/widgets/ludo_rules_sheet.dart"
   },
@@ -9277,9 +9273,9 @@
   "@ludoPlayerEightsWins": {
     "description": "Player card stat at the card table."
   },
-  "eightsOutOfTimeDrew": "Out of time: you drew a card and your turn passed.",
-  "@eightsOutOfTimeDrew": {
-    "description": "Crazy Eights toast when the player's turn timed out."
+  "seatAway": "Away",
+  "@seatAway": {
+    "description": "Under a player at the Ludo or Crazy Eights table whose turns are being played for them while they're away."
   },
   "eightsLeaveLoseEntry": "You'll lose your {coins} coin entry and the game goes on without you.",
   "@eightsLeaveLoseEntry": {
@@ -9413,7 +9409,7 @@
   "@eightsRulesDrawBody": {
     "description": "Crazy Eights rule."
   },
-  "eightsRulesTimeBody": "The ring around your timer is your clock. Run out and you draw a card and your turn passes. Three in a row and you're out.",
+  "eightsRulesTimeBody": "The ring around your timer is your clock. Run out and your turn is played for you (a card that goes, or a draw), and you stay in the game: come back any time and carry on.",
   "@eightsRulesTimeBody": {
     "description": "Crazy Eights rule."
   },

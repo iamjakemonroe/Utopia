@@ -11,10 +11,12 @@ import '../../../core/theme/theme_controller.dart';
 import '../../../core/widgets/app_background.dart';
 import '../../../core/widgets/coin_buddy.dart';
 import '../../../core/widgets/confetti_burst.dart';
+import '../../../core/widgets/game_card_art.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../events/presentation/events_controller.dart';
+import '../../home/data/offline_game.dart';
 import '../data/chip_doodle_repository.dart';
 import '../domain/chip_doodle.dart';
 import 'chip_doodle_game.dart';
@@ -37,6 +39,7 @@ class ChipDoodleScreen extends ConsumerStatefulWidget {
 class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
     with SingleTickerProviderStateMixin {
   static const _bestKey = 'chip_doodle.best';
+  static const _route = '/guess-my-doodle/chip';
 
   late final ChipDoodleGame _game = ChipDoodleGame(
     ref.read(chipDoodleRepositoryProvider).round,
@@ -50,16 +53,44 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
   int _best = 0;
   bool _newBest = false;
 
+  /// The game so far, kept after every doodle so it carries on (at the
+  /// same round, with the same points) if the app closes.
+  late final OfflineGameStore _store = ref.read(offlineGameStoreProvider);
+
   @override
   void initState() {
     super.initState();
     _best = ref.read(sharedPreferencesProvider).getInt(_bestKey) ?? 0;
+    final saved = _store.load();
+    if (saved != null && saved.route == _route) {
+      _game.round = ((saved.data['round'] as num?)?.toInt() ?? 1).clamp(
+        1,
+        _game.rounds,
+      );
+      _game.score = (saved.data['score'] as num?)?.toInt() ?? 0;
+      _game.guessedCount = (saved.data['guessed'] as num?)?.toInt() ?? 0;
+    }
     _game.addListener(_changed);
     _game.start();
   }
 
+  void _save({required int round}) => _store.save(
+    OfflineGame(
+      kind: GameKind.doodle,
+      route: _route,
+      opponent: 'Chip',
+      data: {
+        'round': round,
+        'score': _game.score,
+        'guessed': _game.guessedCount,
+      },
+    ),
+  );
+
   @override
   void dispose() {
+    // Leaving on purpose ends it (a closed app never gets here).
+    _store.clear(route: _route);
     _game.removeListener(_changed);
     _ticker.dispose();
     _game.dispose();
@@ -76,6 +107,7 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
       _phase = phase;
       switch (phase) {
         case ChipDoodlePhase.drawing:
+          _save(round: _game.round);
           _endsAt = DateTime.now().add(Duration(seconds: _game.seconds));
           _last = Duration.zero;
           if (!_ticker.isActive) _ticker.start();
@@ -85,11 +117,18 @@ class _ChipDoodleScreenState extends ConsumerState<ChipDoodleScreen>
             (_) => mounted ? focusIfAllowed(_focus) : null,
           );
         case ChipDoodlePhase.reveal:
+          // This doodle's points are in: back, it's the next one.
+          if (_game.lastRound) {
+            _store.clear(route: _route);
+          } else {
+            _save(round: _game.round + 1);
+          }
           _ticker.stop();
           _endsAt = null;
           _input.clear();
           if (!_game.guessed) _audio.play(Sfx.drop);
         case ChipDoodlePhase.over:
+          _store.clear(route: _route);
           _finished();
         case ChipDoodlePhase.loading || ChipDoodlePhase.error:
           _ticker.stop();

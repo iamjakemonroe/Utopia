@@ -1,3 +1,4 @@
+import '../../../../core/widgets/away_mark.dart';
 import '../../../../core/widgets/leave_guard.dart';
 import 'dart:async';
 
@@ -148,11 +149,10 @@ class _EightsMatchScreenState extends ConsumerState<EightsMatchScreen> {
     if (mine != null &&
         next.missedTurns(mine) > prev.missedTurns(mine) &&
         next.isActive) {
+      // Played for them by the server; they stay in.
       showUtopiaToast(
         context,
-        kEightsMaxMissed - next.missedTurns(mine) == 1
-            ? strings.ludoMatchOutOfTimeMissOne
-            : strings.eightsOutOfTimeDrew,
+        strings.ludoMatchOutOfTimeYourTurn,
         kind: ToastKind.warning,
       );
     }
@@ -716,19 +716,7 @@ class _EightsSeat extends ConsumerWidget {
                     ),
                   )
                 else if (missed > 0)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (var i = 0; i < kEightsMaxMissed; i++)
-                        Icon(
-                          Icons.hourglass_bottom_rounded,
-                          size: 11,
-                          color: i < missed
-                              ? const Color(0xFFFF4D5E)
-                              : AppColors.textSecondary.withValues(alpha: 0.35),
-                        ),
-                    ],
-                  ),
+                  const AwayMark(),
               ],
             ),
             if (lastCard) const Positioned(top: -26, child: _LastCardTag()),

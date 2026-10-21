@@ -36,9 +36,6 @@ const kTurnTime = Duration(seconds: 15);
 /// Friends' rooms get longer to think.
 const kFriendsTurnTime = Duration(seconds: 40);
 
-/// Three missed turns in a row and a player is out.
-const kMaxMissedTurns = 3;
-
 /// An offline game on this phone: who sits where. The phone's owner is
 /// [humanId]; `friend:` ids are friends taking turns on the same phone, and
 /// every other id is a bot (see bots.dart).

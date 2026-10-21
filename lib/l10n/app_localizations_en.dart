@@ -4588,11 +4588,8 @@ class L10nEn extends L10n {
       'Couldn\'t send the report. Try again.';
 
   @override
-  String get ludoMatchOutOfTimeMissOne =>
-      'Out of time! Miss one more turn and you leave the game.';
-
-  @override
-  String get ludoMatchOutOfTimeYourTurn => 'Out of time! Your turn passed.';
+  String get ludoMatchOutOfTimeYourTurn =>
+      'Out of time! Your turn was played for you.';
 
   @override
   String get ludoMatchLeaveThisGame => 'Leave this game?';
@@ -6159,7 +6156,7 @@ class L10nEn extends L10n {
 
   @override
   String get ludoRulesTheRingAroundYourPicture =>
-      'The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn passes. Miss three turns in a row and you leave the game.';
+      'The ring around your picture shows your time: 15 seconds a move in public games, 40 with friends. Run out and your turn is played for you, and you stay in the game: come back any time and carry on.';
 
   @override
   String get ludoRulesCaptureToSendThemHome => 'Capture to send them home';
@@ -6935,8 +6932,7 @@ class L10nEn extends L10n {
   String get ludoPlayerEightsWins => 'Crazy Eights wins';
 
   @override
-  String get eightsOutOfTimeDrew =>
-      'Out of time: you drew a card and your turn passed.';
+  String get seatAway => 'Away';
 
   @override
   String eightsLeaveLoseEntry(int coins) {
@@ -7033,7 +7029,7 @@ class L10nEn extends L10n {
 
   @override
   String get eightsRulesTimeBody =>
-      'The ring around your timer is your clock. Run out and you draw a card and your turn passes. Three in a row and you\'re out.';
+      'The ring around your timer is your clock. Run out and your turn is played for you (a card that goes, or a draw), and you stay in the game: come back any time and carry on.';
 
   @override
   String get eightsRulesWinTitle => 'First to empty their hand wins';
