@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../platform/web_fullscreen.dart';
 import '../theme/theme_controller.dart';
 
 @immutable
@@ -16,6 +17,7 @@ class GameplaySettings {
     this.reminders = true,
     this.showNowPlaying = true,
     this.floatingChip = true,
+    this.fullScreen = false,
   });
 
   /// Little buzzes on dice, captures, your turn and wins.
@@ -39,6 +41,9 @@ class GameplaySettings {
   /// Chip floats over the app's screens, ready to chat when tapped.
   final bool floatingChip;
 
+  /// In a browser: the game goes full screen at the first tap.
+  final bool fullScreen;
+
   GameplaySettings copyWith({
     bool? haptics,
     bool? moveHints,
@@ -47,6 +52,7 @@ class GameplaySettings {
     bool? reminders,
     bool? showNowPlaying,
     bool? floatingChip,
+    bool? fullScreen,
   }) {
     return GameplaySettings(
       haptics: haptics ?? this.haptics,
@@ -56,6 +62,7 @@ class GameplaySettings {
       reminders: reminders ?? this.reminders,
       showNowPlaying: showNowPlaying ?? this.showNowPlaying,
       floatingChip: floatingChip ?? this.floatingChip,
+      fullScreen: fullScreen ?? this.fullScreen,
     );
   }
 }
@@ -71,6 +78,9 @@ class GameplaySettingsController extends StateNotifier<GameplaySettings> {
           reminders: _prefs.getBool('play.reminders') ?? true,
           showNowPlaying: _prefs.getBool('play.nowPlaying') ?? true,
           floatingChip: _prefs.getBool('play.floatingChip') ?? true,
+          // On to start on phones and tablets, where the browser's bars
+          // take the most room; a computer chooses for itself.
+          fullScreen: _prefs.getBool('play.fullScreen') ?? WebFullscreen.touch,
         ),
       );
 
@@ -104,6 +114,11 @@ class GameplaySettingsController extends StateNotifier<GameplaySettings> {
   void setFloatingChip(bool on) {
     state = state.copyWith(floatingChip: on);
     _prefs.setBool('play.floatingChip', on);
+  }
+
+  void setFullScreen(bool on) {
+    state = state.copyWith(fullScreen: on);
+    _prefs.setBool('play.fullScreen', on);
   }
 
   void setTimerTicks(bool on) {

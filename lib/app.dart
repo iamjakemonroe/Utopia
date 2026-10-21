@@ -11,6 +11,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/widgets/utopia_toast.dart';
 import 'core/widgets/web_frame_watch.dart';
+import 'core/widgets/web_fullscreen_start.dart';
 import 'core/widgets/web_update_banner.dart';
 import 'features/auras/presentation/dragon_set.dart';
 import 'features/auras/presentation/world_set_providers.dart';
@@ -182,6 +183,8 @@ class UtopiaApp extends ConsumerWidget {
             if (kIsWeb) const WebPaymentReturn(),
             // In a browser: how fast each screen draws, for analytics.
             if (kIsWeb) const WebFrameWatch(),
+            // In a browser: full screen from the first tap, if chosen.
+            if (kIsWeb) const WebFullscreenStart(),
             // Tells friends the player's around while the app is open.
             const PresenceBeat(),
             // The Music world hearing the room, when the player lets it.

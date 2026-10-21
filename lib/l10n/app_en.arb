@@ -9469,5 +9469,17 @@
   "eightsRoomDeal": "Deal the cards",
   "@eightsRoomDeal": {
     "description": "Crazy Eights room: the host's start button."
+  },
+  "settingsPlayFullScreen": "Play full screen",
+  "@settingsPlayFullScreen": {
+    "description": "Settings (web): hide the browser's bars while playing."
+  },
+  "settingsPlayFullScreenTouch": "Hides the browser's bars from your first tap. Swipe down from the top, or go Back, to see them again.",
+  "@settingsPlayFullScreenTouch": {
+    "description": "Settings (web, phone or tablet): how full screen works and how to leave it."
+  },
+  "settingsPlayFullScreenKeys": "Hides the browser's bars from your first click. Press Esc to see them again.",
+  "@settingsPlayFullScreenKeys": {
+    "description": "Settings (web, computer): how full screen works and how to leave it."
   }
 }

@@ -12493,6 +12493,24 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Deal the cards'**
   String get eightsRoomDeal;
+
+  /// Settings (web): hide the browser's bars while playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Play full screen'**
+  String get settingsPlayFullScreen;
+
+  /// Settings (web, phone or tablet): how full screen works and how to leave it.
+  ///
+  /// In en, this message translates to:
+  /// **'Hides the browser\'s bars from your first tap. Swipe down from the top, or go Back, to see them again.'**
+  String get settingsPlayFullScreenTouch;
+
+  /// Settings (web, computer): how full screen works and how to leave it.
+  ///
+  /// In en, this message translates to:
+  /// **'Hides the browser\'s bars from your first click. Press Esc to see them again.'**
+  String get settingsPlayFullScreenKeys;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

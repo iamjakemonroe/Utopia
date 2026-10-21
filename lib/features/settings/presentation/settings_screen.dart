@@ -14,6 +14,7 @@ import '../../../core/audio/game_audio.dart';
 import '../../../core/audio/room_sound.dart';
 import '../../../core/settings/gameplay_settings.dart';
 import '../../../core/platform/web_install.dart';
+import '../../../core/platform/web_fullscreen.dart';
 import '../../../core/settings/web_scale.dart';
 import '../../install/presentation/install_sheet.dart';
 import '../../../core/theme/app_colors.dart';
@@ -144,6 +145,22 @@ class SettingsScreen extends ConsumerWidget {
                   title: strings.settingsScreen,
                   children: [
                     const _ScreenSize(),
+                    if (WebFullscreen.available)
+                      _ToggleRow(
+                        icon: Icons.fullscreen_rounded,
+                        color: AppColors.sky,
+                        title: strings.settingsPlayFullScreen,
+                        subtitle: WebFullscreen.touch
+                            ? strings.settingsPlayFullScreenTouch
+                            : strings.settingsPlayFullScreenKeys,
+                        value: play.fullScreen,
+                        onChanged: (v) {
+                          playCtl.setFullScreen(v);
+                          // From this tap: the browser allows it now.
+                          v ? WebFullscreen.enter() : WebFullscreen.exit();
+                          toggled(v);
+                        },
+                      ),
                     if (!WebInstall.installed)
                       _LinkRow(
                         icon: Icons.install_mobile_rounded,

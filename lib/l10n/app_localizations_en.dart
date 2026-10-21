@@ -7076,4 +7076,15 @@ class L10nEn extends L10n {
 
   @override
   String get eightsRoomDeal => 'Deal the cards';
+
+  @override
+  String get settingsPlayFullScreen => 'Play full screen';
+
+  @override
+  String get settingsPlayFullScreenTouch =>
+      'Hides the browser\'s bars from your first tap. Swipe down from the top, or go Back, to see them again.';
+
+  @override
+  String get settingsPlayFullScreenKeys =>
+      'Hides the browser\'s bars from your first click. Press Esc to see them again.';
 }
