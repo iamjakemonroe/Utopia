@@ -138,33 +138,12 @@ class _MaestroSheet extends ConsumerWidget {
                 Text(
                   member
                       ? strings.maestroYouReAChipMaestro
-                      : strings.maestroChipBecomesYourOwnArtist,
+                      : strings.maestroChipAtHisBest,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                _Perk(
-                  icon: Icons.auto_awesome_rounded,
-                  color: Color(0xFFFF5C9C),
-                  text: strings.maestroRealPortraitsAMonthAnyone(
-                    kMaestroPortraitsPerMonth,
-                  ),
-                ),
-                _Perk(
-                  icon: Icons.palette_rounded,
-                  color: Color(0xFF4DA3FF),
-                  text: strings.maestroColorWithChipAllDay,
-                ),
-                _Perk(
-                  icon: Icons.brush_rounded,
-                  color: Color(0xFF3DDC97),
-                  text: strings.maestro10OfChipSOwn,
-                ),
-                _Perk(
-                  icon: Icons.face_retouching_natural_rounded,
-                  color: Color(0xFFFFB020),
-                  text: strings.maestroChipSArtistLookAnd,
-                ),
+                _Compare(member: member),
                 const SizedBox(height: AppSpacing.lg),
                 if (member && status != null)
                   _MemberCard(status: status, onManage: _manage)
@@ -252,41 +231,154 @@ class _MaestroSheet extends ConsumerWidget {
   }
 }
 
-class _Perk extends StatelessWidget {
-  const _Perk({required this.icon, required this.color, required this.text});
+/// Free next to Chip Maestro, row by row, the Maestro column lit up.
+class _Compare extends StatelessWidget {
+  const _Compare({required this.member});
 
-  final IconData icon;
-  final Color color;
-  final String text;
+  /// Already a member: the Maestro column is theirs.
+  final bool member;
+
+  static const _pink = Color(0xFFFF5C9C);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color.withValues(alpha: 0.18),
-            ),
-            child: Icon(icon, color: color, size: 19),
+    final rows = <(IconData, String, String, String)>[
+      (
+        Icons.chat_bubble_rounded,
+        strings.maestroCompareChats,
+        '$kChipChatsFree',
+        '$kChipChatsMaestro',
+      ),
+      (
+        Icons.psychology_rounded,
+        strings.maestroCompareBrain,
+        strings.maestroCompareBrainFree,
+        strings.maestroCompareBrainMaestro,
+      ),
+      (
+        Icons.draw_rounded,
+        strings.maestroCompareDrawings,
+        '$kChipDrawsFree',
+        '$kChipDrawsMaestro',
+      ),
+      (
+        Icons.palette_rounded,
+        strings.maestroCompareColoring,
+        '$kChipPaintsFree',
+        '$kChipPaintsMaestro',
+      ),
+      (
+        Icons.auto_awesome_rounded,
+        strings.maestroComparePortraits,
+        strings.maestroComparePortraitsFree,
+        strings.maestroComparePortraitsMaestro(kMaestroPortraitsPerMonth),
+      ),
+      (
+        Icons.face_retouching_natural_rounded,
+        strings.maestroCompareLook,
+        '–',
+        '✓',
+      ),
+    ];
+    final line = AppColors.textSecondary.withValues(alpha: 0.18);
+    Widget cell(String text, {required bool maestro, bool head = false}) =>
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.body(
+            fontSize: head ? 12.5 : 13.5,
+            fontWeight: maestro || head ? FontWeight.w900 : FontWeight.w600,
+            color: maestro
+                ? AppColors.readable(_pink)
+                : AppColors.textSecondary,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Text(
-                text,
-                style: AppTextStyles.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+        );
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: line),
+        color: AppColors.surface.withValues(alpha: 0.5),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          // The Maestro column, lit.
+          Positioned.fill(
+            child: Row(
+              children: [
+                const Spacer(flex: 10),
+                const Spacer(flex: 5),
+                Expanded(
+                  flex: 6,
+                  child: Container(color: _pink.withValues(alpha: 0.1)),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 10, 0, 8),
+                child: Row(
+                  children: [
+                    const Spacer(flex: 10),
+                    Expanded(
+                      flex: 5,
+                      child: cell(
+                        strings.maestroCompareFree,
+                        maestro: false,
+                        head: true,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 6,
+                      child: cell(
+                        member
+                            ? strings.maestroCompareYours
+                            : strings.maestroBadge,
+                        maestro: true,
+                        head: true,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
+              for (final (icon, label, free, maestro) in rows)
+                Container(
+                  padding: const EdgeInsets.fromLTRB(14, 9, 0, 9),
+                  decoration: BoxDecoration(
+                    border: Border(top: BorderSide(color: line)),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 10,
+                        child: Row(
+                          children: [
+                            Icon(
+                              icon,
+                              size: 17,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                label,
+                                style: AppTextStyles.body(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(flex: 5, child: cell(free, maestro: false)),
+                      Expanded(flex: 6, child: cell(maestro, maestro: true)),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ],
       ),

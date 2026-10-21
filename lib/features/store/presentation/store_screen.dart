@@ -37,6 +37,7 @@ import '../../../core/widgets/ambient_tick.dart';
 import '../../events/presentation/event_widgets.dart';
 import '../../../core/layout/responsive.dart';
 import '../../../l10n/strings.dart';
+import '../../maestro/presentation/maestro_widgets.dart';
 
 /// The store: worlds (themes), Ludo piece sets and chess piece sets.
 class StoreScreen extends ConsumerStatefulWidget {
@@ -103,6 +104,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   icon: Icons.shield_rounded,
                   text: strings.storeSaveYourAccountSoYour,
                 ),
+              const MaestroStrip(),
               const Expanded(
                 child: TabBarView(
                   children: [

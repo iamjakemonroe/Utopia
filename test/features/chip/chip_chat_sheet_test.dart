@@ -10,6 +10,8 @@ import 'package:utopia/features/auth/presentation/providers/auth_providers.dart'
 import 'package:utopia/features/chip/presentation/chip_chat_controller.dart';
 import 'package:utopia/features/chip/presentation/chip_chat_sheet.dart';
 import 'package:utopia/features/doodle_studio/data/picture_library.dart';
+import 'package:utopia/features/maestro/data/maestro_repository.dart';
+import 'package:utopia/features/maestro/presentation/maestro_providers.dart';
 
 void main() {
   testWidgets('a kept chat comes back with its button and its picture', (
@@ -86,5 +88,68 @@ void main() {
     expect(find.text('Can I have a million coins?'), findsOneWidget);
     expect(find.text('Get coins'), findsOneWidget);
     await tester.pump(const Duration(seconds: 2));
+  });
+
+  testWidgets('out of chats: keep going for coins, or Chip Maestro', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 932);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    SharedPreferences.setMockInitialValues({'sound.sfx': false});
+    final prefs = await SharedPreferences.getInstance();
+    late BuildContext host;
+    Future<void> open({required bool member}) async {
+      // A fresh app each time (the last one's sheet closed with it).
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            isAnonymousProvider.overrideWithValue(false),
+            maestroProvider.overrideWith(
+              (ref) async => MaestroStatus(active: member),
+            ),
+            chipChatProvider.overrideWith(
+              (ref) =>
+                  ChipChatController(ref, prefs, 'me')
+                    ..debugLines = const [
+                      ChipLine(fromChip: false, text: 'One more?'),
+                      ChipLine(
+                        fromChip: true,
+                        text: 'My sprout is tired. 20 coins a message?',
+                        mood: 'sad',
+                        limit: 'coins',
+                        price: 20,
+                      ),
+                    ],
+            ),
+          ],
+          child: MaterialApp(
+            home: Builder(
+              builder: (context) {
+                host = context;
+                return const Scaffold();
+              },
+            ),
+          ),
+        ),
+      );
+      showChipChat(host);
+      for (var i = 0; i < 15; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+
+    await open(member: false);
+    expect(find.text('Keep chatting · 20 coins'), findsOneWidget);
+    expect(find.text('Chip Maestro: 200 chats a day'), findsOneWidget);
+    expect(find.text('Upgrade Chip'), findsOneWidget);
+
+    await open(member: true);
+    expect(find.text('Keep chatting · 20 coins'), findsOneWidget);
+    expect(find.text('Chip Maestro: 200 chats a day'), findsNothing);
+    expect(find.text('Maestro'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
   });
 }

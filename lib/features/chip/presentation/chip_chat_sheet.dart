@@ -31,6 +31,7 @@ import '../../maestro/presentation/maestro_providers.dart';
 import '../../maestro/presentation/maestro_sheet.dart';
 import 'chip_chat_controller.dart';
 import '../../../l10n/strings.dart';
+import '../../maestro/presentation/maestro_widgets.dart';
 
 /// Opens a chat with Chip: he sits on top making faces at what's said, the
 /// conversation floats underneath, and a few starter questions help when
@@ -368,9 +369,17 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              strings.chipChatChip,
-                              style: AppTextStyles.display(fontSize: 24),
+                            Row(
+                              children: [
+                                Text(
+                                  strings.chipChatChip,
+                                  style: AppTextStyles.display(fontSize: 24),
+                                ),
+                                const SizedBox(width: 10),
+                                // The way to Chip Maestro, right by his name
+                                // (it gives way on a narrow screen).
+                                const Flexible(child: MaestroPill()),
+                              ],
                             ),
                             AnimatedSwitcher(
                               duration: const Duration(milliseconds: 250),
@@ -476,6 +485,20 @@ class _ChipChatSheetState extends ConsumerState<_ChipChatSheet> {
                                     onTap: () => ref
                                         .read(chipChatProvider.notifier)
                                         .keepChattingForCoins(),
+                                  ),
+                                // Out of today's chats: Chip Maestro has
+                                // ten times as many.
+                                if (line.limit == 'coins' &&
+                                    i == chat.lines.length - 1 &&
+                                    !(ref
+                                            .watch(maestroProvider)
+                                            .valueOrNull
+                                            ?.active ??
+                                        false))
+                                  _GoButton(
+                                    label: strings.chipChatGetMaestro,
+                                    icon: Icons.auto_awesome_rounded,
+                                    onTap: () => showMaestroSheet(context),
                                   ),
                                 if (open != null &&
                                     _places.containsKey(open) &&

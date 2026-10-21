@@ -10,6 +10,12 @@ const kMaestroProductId = 'utopia.maestro.monthly';
 /// What Chip Maestro includes (the server holds the real limits).
 const kMaestroPortraitsPerMonth = 30;
 
+/// What a day with Chip allows, free and with Chip Maestro: the same as
+/// the server's chip_allow, shown when comparing the two.
+const kChipChatsFree = 20, kChipChatsMaestro = 200;
+const kChipDrawsFree = 4, kChipDrawsMaestro = 10;
+const kChipPaintsFree = 20, kChipPaintsMaestro = 100;
+
 /// The player's Chip Maestro plan, as the server knows it.
 @immutable
 class MaestroStatus {

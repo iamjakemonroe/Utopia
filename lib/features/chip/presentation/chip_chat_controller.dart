@@ -62,6 +62,10 @@ class ChipChatController extends StateNotifier<ChipChatState> {
 
   static const _maxLines = 40;
 
+  /// Tests put the chat in a moment that isn't kept (a live offer).
+  @visibleForTesting
+  set debugLines(List<ChipLine> lines) => state = ChipChatState(lines: lines);
+
   static String _key(String player) => 'chip_chat_$player';
 
   static ChipChatState _restore(SharedPreferences? prefs, String? player) {
