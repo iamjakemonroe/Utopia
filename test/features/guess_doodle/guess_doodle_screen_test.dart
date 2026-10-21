@@ -329,7 +329,10 @@ void main() {
     repo.game.add(_game(phase: DoodlePhase.drawing, drawer: 'me', mask: '___'));
     await _settle(tester);
     expect(find.text('CAT'), findsOneWidget);
-    expect(find.byTooltip('Eraser'), findsOneWidget);
+    // Every tool, named under it.
+    for (final tool in ['Brush', 'Fill', 'Line', 'Box', 'Circle', 'Eraser']) {
+      expect(find.text(tool), findsOneWidget, reason: tool);
+    }
 
     final canvas = find.byType(Listener).first;
     final center = tester.getCenter(canvas);
@@ -351,6 +354,39 @@ void main() {
     await _settle(tester);
     expect(repo.calls, contains('undo'));
     expect(repo.link.sent.last.$1, 'undo');
+    await _finish(tester);
+  });
+
+  testWidgets('the drawer pours paint and drags out a box', (tester) async {
+    final repo = await _pump(tester);
+    repo.secretValue = (turn: 1, choices: const [], word: 'cat');
+    repo.players.add([_player('me'), _player('mia', seq: 2)]);
+    repo.game.add(_game(phase: DoodlePhase.drawing, drawer: 'me', mask: '___'));
+    await _settle(tester);
+
+    final canvas = find.byType(Listener).first;
+    final center = tester.getCenter(canvas);
+
+    // The box: dragged out, then sent whole (nothing streamed meanwhile).
+    await tester.tap(find.text('Box'));
+    await tester.pump();
+    final gesture = await tester.startGesture(center - const Offset(40, 40));
+    for (var i = 1; i <= 8; i++) {
+      await gesture.moveBy(const Offset(10, 10));
+      await tester.pump(const Duration(milliseconds: 30));
+    }
+    await gesture.up();
+    await _settle(tester);
+    expect([for (final (e, _) in repo.link.sent) e], ['end']);
+    expect((repo.saved.single['p'] as List).length, 9 * 3);
+
+    // Fill: one tap pours, and it's sent and saved like a stroke.
+    await tester.tap(find.text('Fill'));
+    await tester.pump();
+    await tester.tapAt(center);
+    await _settle(tester);
+    expect(repo.link.sent.last.$1, 'spill');
+    expect(repo.saved.last['t'], 'b');
     await _finish(tester);
   });
 

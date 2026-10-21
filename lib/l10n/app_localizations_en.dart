@@ -6621,6 +6621,39 @@ class L10nEn extends L10n {
   String get ludoCaptureBubbleAgain => 'Again!';
 
   @override
+  String get doodleToolBrush => 'Brush';
+
+  @override
+  String get doodleToolBrushHint => 'Draw freely with your finger';
+
+  @override
+  String get doodleToolFill => 'Fill';
+
+  @override
+  String get doodleToolFillHint => 'Tap inside a shape to fill it with color';
+
+  @override
+  String get doodleToolLine => 'Line';
+
+  @override
+  String get doodleToolLineHint => 'Drag to draw a straight line';
+
+  @override
+  String get doodleToolBox => 'Box';
+
+  @override
+  String get doodleToolBoxHint => 'Drag to draw a box';
+
+  @override
+  String get doodleToolCircle => 'Circle';
+
+  @override
+  String get doodleToolCircleHint => 'Drag to draw a circle';
+
+  @override
+  String get doodleToolEraserHint => 'Rub out what you drew';
+
+  @override
   String get doodleToolsEraser => 'Eraser';
 
   @override

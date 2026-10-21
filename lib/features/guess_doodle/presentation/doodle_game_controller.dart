@@ -9,6 +9,7 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../doodle_studio/domain/art_doc.dart';
 import '../data/doodle_game_repository.dart';
 import '../domain/doodle_game.dart';
+import '../domain/doodle_shapes.dart';
 import 'doodle_ink.dart';
 
 @immutable
@@ -119,6 +120,10 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
   int _sid = 0;
   int _sent = 0;
 
+  /// A shape being dragged out, and where the drag began.
+  DoodleShape? _shape;
+  Offset _shapeFrom = Offset.zero;
+
   DateTime get serverNow => DateTime.now().add(state.clockOffset);
 
   bool get isDrawer => me != null && state.game?.drawerId == me;
@@ -153,6 +158,8 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
             _onInk(data);
           case 'end':
             _onEnd(data);
+          case 'spill':
+            _onSpill(data);
           case 'undo':
             _onUndo(data);
           case 'clear':
@@ -340,9 +347,45 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
     );
   }
 
+  /// A line, box or circle dragged out from [at]: it shows as it's
+  /// dragged, and goes to everyone whole when the finger lifts.
+  void shapeStart(Offset at, DoodleShape shape, int color, double size) {
+    if (!canDraw) return;
+    _sid++;
+    _shape = shape;
+    _shapeFrom = Offset(_r(at.dx), _r(at.dy));
+    ink.mine = LiveStroke(tool: ArtTool.marker, color: color, size: size)
+      ..points.addAll(shapePoints(shape, _shapeFrom, _shapeFrom, size));
+    ink.changed();
+  }
+
+  /// Paint poured into the shape at [at].
+  void spill(Offset at, int color) {
+    final game = state.game;
+    if (!canDraw || game == null) return;
+    final op = SpillOp(x: _r(at.dx), y: _r(at.dy), color: color);
+    ink.add(op);
+    final json = op.toJson();
+    _broadcast('spill', {
+      'by': me,
+      'turn': game.turn,
+      'epoch': ink.epoch,
+      'op': json,
+    });
+    _save(game.turn, ink.epoch, json);
+  }
+
   void strokeMove(Offset at) {
     final stroke = ink.mine;
     if (stroke == null) return;
+    final shape = _shape;
+    if (shape != null) {
+      stroke.points
+        ..clear()
+        ..addAll(shapePoints(shape, _shapeFrom, at, stroke.size));
+      ink.changed();
+      return;
+    }
     final n = stroke.points.length;
     final dx = at.dx - stroke.points[n - 3];
     final dy = at.dy - stroke.points[n - 2];
@@ -356,6 +399,7 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
     final stroke = ink.mine;
     if (stroke == null) return;
     _flush?.cancel();
+    _shape = null;
     ink.mine = null;
     final op = StrokeOp(
       tool: stroke.tool,
@@ -476,6 +520,14 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
     ink.receiveDone((p['sid'] as num).toInt(), stroke);
   }
 
+  void _onSpill(Map<String, dynamic> p) {
+    if (_disposed || !_current(p)) return;
+    final op = p['op'];
+    if (op is! Map) return;
+    final spill = SpillOp.fromJson(Map<String, Object?>.from(op));
+    if (spill != null) ink.receiveSpill(spill);
+  }
+
   void _onUndo(Map<String, dynamic> p) {
     if (_disposed || !_current(p)) return;
     ink.undo();
@@ -522,7 +574,10 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
       if (_disposed || ink.turn != turn) return;
       if (ink.epoch != epoch) ink.clear(epoch: epoch);
       ink.replaceAll([
-        for (final row in rows) ?StrokeOp.fromJson(row),
+        for (final row in rows)
+          if (ArtOp.fromJson(row) case final op?
+              when op is StrokeOp || op is SpillOp)
+            op,
       ], rev: math.max(rev, ink.rev));
     } catch (_) {}
   }

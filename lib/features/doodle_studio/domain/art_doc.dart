@@ -41,6 +41,7 @@ sealed class ArtOp {
     's' => StrokeOp.fromJson(json),
     'f' => FillOp.fromJson(json),
     'F' => FillsOp.fromJson(json),
+    'b' => SpillOp.fromJson(json),
     _ => null,
   };
 }
@@ -90,6 +91,35 @@ class StrokeOp extends ArtOp {
       size: (json['w'] as num?)?.toDouble() ?? 8,
       points: values,
     );
+  }
+}
+
+/// Paint poured where a freehand drawing was tapped, filling the shape
+/// there (Guess My Doodle's bucket; see SpillGrid).
+class SpillOp extends ArtOp {
+  const SpillOp({required this.x, required this.y, required this.color});
+
+  /// Where it was poured, in page units.
+  final double x;
+  final double y;
+
+  /// ARGB.
+  final int color;
+
+  @override
+  Map<String, Object?> toJson() => {
+    't': 'b',
+    'x': _round(x),
+    'y': _round(y),
+    'c': color,
+  };
+
+  static SpillOp? fromJson(Map<String, Object?> json) {
+    final x = (json['x'] as num?)?.toDouble();
+    final y = (json['y'] as num?)?.toDouble();
+    final color = (json['c'] as num?)?.toInt();
+    if (x == null || y == null || color == null) return null;
+    return SpillOp(x: x, y: y, color: color);
   }
 }
 

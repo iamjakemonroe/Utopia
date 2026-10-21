@@ -432,12 +432,26 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
                             child: DoodleCanvasView(
                               ink: ctrl.ink,
                               canDraw: drawing,
-                              onStart: (p) => ctrl.strokeStart(
-                                p,
-                                _pen.tool,
-                                _pen.color,
-                                _pen.size,
-                              ),
+                              onStart: (p) {
+                                final shape = _pen.tool.shape;
+                                if (_pen.tool == DoodleTool.fill) {
+                                  ctrl.spill(p, _pen.color);
+                                } else if (shape != null) {
+                                  ctrl.shapeStart(
+                                    p,
+                                    shape,
+                                    _pen.color,
+                                    _pen.size,
+                                  );
+                                } else {
+                                  ctrl.strokeStart(
+                                    p,
+                                    _pen.brush,
+                                    _pen.color,
+                                    _pen.size,
+                                  );
+                                }
+                              },
                               onMove: ctrl.strokeMove,
                               onEnd: ctrl.strokeEnd,
                               overlay: AnimatedSwitcher(

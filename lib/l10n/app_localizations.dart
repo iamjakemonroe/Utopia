@@ -11708,6 +11708,72 @@ abstract class L10n {
   /// **'Again!'**
   String get ludoCaptureBubbleAgain;
 
+  /// Guess My Doodle drawing tool: freehand brush.
+  ///
+  /// In en, this message translates to:
+  /// **'Brush'**
+  String get doodleToolBrush;
+
+  /// Tooltip for the brush tool.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw freely with your finger'**
+  String get doodleToolBrushHint;
+
+  /// Guess My Doodle drawing tool: paint bucket.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill'**
+  String get doodleToolFill;
+
+  /// Tooltip for the fill (paint bucket) tool.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap inside a shape to fill it with color'**
+  String get doodleToolFillHint;
+
+  /// Guess My Doodle drawing tool: straight line.
+  ///
+  /// In en, this message translates to:
+  /// **'Line'**
+  String get doodleToolLine;
+
+  /// Tooltip for the line tool.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to draw a straight line'**
+  String get doodleToolLineHint;
+
+  /// Guess My Doodle drawing tool: rectangle.
+  ///
+  /// In en, this message translates to:
+  /// **'Box'**
+  String get doodleToolBox;
+
+  /// Tooltip for the box tool.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to draw a box'**
+  String get doodleToolBoxHint;
+
+  /// Guess My Doodle drawing tool: circle or oval.
+  ///
+  /// In en, this message translates to:
+  /// **'Circle'**
+  String get doodleToolCircle;
+
+  /// Tooltip for the circle tool.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to draw a circle'**
+  String get doodleToolCircleHint;
+
+  /// Tooltip for the eraser tool.
+  ///
+  /// In en, this message translates to:
+  /// **'Rub out what you drew'**
+  String get doodleToolEraserHint;
+
   /// features/guess_doodle/presentation/widgets/doodle_tools.dart
   ///
   /// In en, this message translates to:

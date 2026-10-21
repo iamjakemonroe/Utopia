@@ -43,7 +43,14 @@ class LiveStroke {
 /// the game's canvas_rev, which says when this copy has fallen behind.
 class DoodleInk extends ChangeNotifier {
   DoodleInk() {
-    render = ArtRender(_doc, size: kDoodleGameSize);
+    render = ArtRender(_doc, size: kDoodleGameSize)..onReady = _ready;
+  }
+
+  bool _disposed = false;
+
+  /// Poured paint is made into pixels a moment after it's added.
+  void _ready() {
+    if (!_disposed) notifyListeners();
   }
 
   final _doc = ArtDoc(
@@ -88,7 +95,7 @@ class DoodleInk extends ChangeNotifier {
   }
 
   /// The canvas exactly as saved on the server.
-  void replaceAll(List<StrokeOp> ops, {required int rev}) {
+  void replaceAll(List<ArtOp> ops, {required int rev}) {
     this.rev = rev;
     incoming.clear();
     _doc.ops
@@ -98,19 +105,19 @@ class DoodleInk extends ChangeNotifier {
     notifyListeners();
   }
 
-  void add(StrokeOp op) {
+  void add(ArtOp op) {
     _doc.add(op);
     render.update();
     notifyListeners();
   }
 
-  StrokeOp? undo() {
+  ArtOp? undo() {
     _finishIncoming();
     final op = _doc.undo();
     _doc.redo.clear();
     render.update();
     notifyListeners();
-    return op as StrokeOp?;
+    return op;
   }
 
   void clear({required int epoch}) {
@@ -153,6 +160,16 @@ class DoodleInk extends ChangeNotifier {
       ..addAll(op.points);
     stroke.done = op;
     rev++;
+    notifyListeners();
+  }
+
+  /// Paint the drawer poured: after the strokes before it, which are put
+  /// down now if they're still playing back.
+  void receiveSpill(SpillOp op) {
+    _finishIncoming();
+    _doc.add(op);
+    rev++;
+    render.update();
     notifyListeners();
   }
 
@@ -215,6 +232,7 @@ class DoodleInk extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     render.dispose();
     super.dispose();
   }

@@ -8839,6 +8839,28 @@
   "@ludoCaptureBubbleAgain": {
     "description": "A reaction for a piece just sent back home: not giving up, going again."
   },
+  "doodleToolBrush": "Brush",
+  "@doodleToolBrush": {"description": "Guess My Doodle drawing tool: freehand brush."},
+  "doodleToolBrushHint": "Draw freely with your finger",
+  "@doodleToolBrushHint": {"description": "Tooltip for the brush tool."},
+  "doodleToolFill": "Fill",
+  "@doodleToolFill": {"description": "Guess My Doodle drawing tool: paint bucket."},
+  "doodleToolFillHint": "Tap inside a shape to fill it with color",
+  "@doodleToolFillHint": {"description": "Tooltip for the fill (paint bucket) tool."},
+  "doodleToolLine": "Line",
+  "@doodleToolLine": {"description": "Guess My Doodle drawing tool: straight line."},
+  "doodleToolLineHint": "Drag to draw a straight line",
+  "@doodleToolLineHint": {"description": "Tooltip for the line tool."},
+  "doodleToolBox": "Box",
+  "@doodleToolBox": {"description": "Guess My Doodle drawing tool: rectangle."},
+  "doodleToolBoxHint": "Drag to draw a box",
+  "@doodleToolBoxHint": {"description": "Tooltip for the box tool."},
+  "doodleToolCircle": "Circle",
+  "@doodleToolCircle": {"description": "Guess My Doodle drawing tool: circle or oval."},
+  "doodleToolCircleHint": "Drag to draw a circle",
+  "@doodleToolCircleHint": {"description": "Tooltip for the circle tool."},
+  "doodleToolEraserHint": "Rub out what you drew",
+  "@doodleToolEraserHint": {"description": "Tooltip for the eraser tool."},
   "doodleToolsEraser": "Eraser",
   "@doodleToolsEraser": {
     "description": "features/guess_doodle/presentation/widgets/doodle_tools.dart"

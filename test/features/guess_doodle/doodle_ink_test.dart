@@ -58,7 +58,7 @@ void main() {
       }
       // Undo takes the last one off: stroke 2.
       final undone = ink.undo();
-      expect(undone?.points.first, 200);
+      expect((undone as StrokeOp?)?.points.first, 200);
     });
 
     test('undo puts strokes still arriving down first', () {
@@ -67,7 +67,7 @@ void main() {
       ink.receiveDone(2, _stroke(200));
       // No frames yet: both are pending. Undo removes the newest.
       final undone = ink.undo();
-      expect(undone?.points.first, 200);
+      expect((undone as StrokeOp?)?.points.first, 200);
       expect(ink.canUndo, isTrue);
       expect(ink.incoming, isEmpty);
     });
@@ -89,7 +89,7 @@ void main() {
       final ink = DoodleInk()..reset(turn: 3, epoch: 0);
       ink.replaceAll([_stroke(1), _stroke(2)], rev: 5);
       expect(ink.rev, 5);
-      expect(ink.undo()?.points.first, 2);
+      expect((ink.undo() as StrokeOp?)?.points.first, 2);
     });
   });
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -7,6 +8,7 @@ import '../domain/art_doc.dart';
 import '../domain/coloring_pages.dart';
 import '../domain/line_art.dart';
 import '../domain/regions.dart';
+import '../domain/spill.dart';
 
 /// The paper every page is drawn on, and the ink of a coloring page's lines.
 const kPaper = Color(0xFFFFFDF7);
@@ -191,6 +193,15 @@ class ArtRender {
 
   final _strokePictures = Expando<ui.Picture>();
   ui.Picture? _paint;
+
+  /// Paint poured into a freehand drawing (SpillOps), as pixels, and the
+  /// grid it's worked out on (carried on from as ops are added).
+  ui.Image? _spills;
+  SpillGrid? _grid;
+
+  /// Called when something drawn later than [update] returned is ready
+  /// (poured paint, made into pixels a moment after).
+  VoidCallback? onReady;
   ui.Image? _fills;
   Map<int, int>? _fillsFor;
 
@@ -235,6 +246,8 @@ class ArtRender {
     _paint?.dispose();
     _paint = rec.endRecording();
 
+    await _pour(generation);
+
     final p = page;
     if (p == null) return;
     final fills = doc.fills;
@@ -256,6 +269,52 @@ class ArtRender {
       _fills?.dispose();
     }
     _fills = image;
+  }
+
+  /// Brings the poured paint up to date: carried on from the grid as it
+  /// was when ops were only added, worked out again after an undo or a
+  /// clear.
+  Future<void> _pour(int generation) async {
+    final ops = doc.ops;
+    if (!ops.any((op) => op is SpillOp)) {
+      _grid = null;
+      _spills?.dispose();
+      _spills = null;
+      return;
+    }
+    var grid = _grid;
+    if (grid == null || !_carriesOn(grid.applied, ops)) {
+      grid = SpillGrid(size);
+    }
+    for (var i = grid.applied.length; i < ops.length; i++) {
+      grid.apply(ops[i]);
+    }
+    _grid = grid;
+    final done = Completer<ui.Image>();
+    ui.decodeImageFromPixels(
+      grid.rgba(),
+      grid.cols,
+      grid.rows,
+      ui.PixelFormat.rgba8888,
+      done.complete,
+    );
+    final image = await done.future;
+    if (_disposed || generation != _generation) {
+      image.dispose();
+      return;
+    }
+    _spills?.dispose();
+    _spills = image;
+    onReady?.call();
+  }
+
+  /// [applied] is the start of [ops], op for op.
+  static bool _carriesOn(List<ArtOp> applied, List<ArtOp> ops) {
+    if (applied.length > ops.length) return false;
+    for (var i = 0; i < applied.length; i++) {
+      if (!identical(applied[i], ops[i])) return false;
+    }
+    return true;
   }
 
   ui.Picture _record(StrokeOp op) {
@@ -299,6 +358,8 @@ class ArtRender {
     } else if (fills != null) {
       drawFills(fills);
     }
+    // Poured paint, under the lines that hold it in.
+    if (_spills case final spills?) drawFills(spills);
     // The paint gets a layer of its own, so the eraser takes away paint
     // only, never the paper or the fills under it.
     canvas.saveLayer(_pageRect, Paint());
@@ -339,6 +400,8 @@ class ArtRender {
     _disposed = true;
     _paint?.dispose();
     _paint = null;
+    _spills?.dispose();
+    _spills = null;
     _fills?.dispose();
     _fills = null;
     _before?.dispose();
