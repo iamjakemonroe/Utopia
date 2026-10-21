@@ -58,13 +58,23 @@ Future<void> main() async {
     _run(app);
     return;
   }
-  await SentryFlutter.init((options) {
+  void configure(SentryFlutterOptions options) {
     options
       ..dsn = Env.sentryDsn
       ..environment = kReleaseMode ? 'production' : 'debug'
       ..sendDefaultPii = false
       ..tracesSampleRate = 0;
-  }, appRunner: () => _run(app));
+  }
+
+  // In a browser, Sentry first fetches its script from its own CDN. The
+  // game doesn't wait for that (or for an ad blocker turning it away): it
+  // starts, and crash reports switch on a moment later.
+  if (kIsWeb) {
+    _run(app);
+    unawaited(SentryFlutter.init(configure));
+    return;
+  }
+  await SentryFlutter.init(configure, appRunner: () => _run(app));
 }
 
 void _run(Widget app) {
