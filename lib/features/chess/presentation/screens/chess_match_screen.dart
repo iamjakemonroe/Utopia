@@ -1,3 +1,4 @@
+import '../../../../core/widgets/leave_guard.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -406,11 +407,9 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
         state.outcome?.winnerId != null &&
         state.outcome?.winnerId == myId;
 
-    return PopScope(
-      canPop: !playing,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _confirmLeave(context, controller, playing);
-      },
+    return LeaveGuard(
+      canLeave: !playing,
+      onAsk: () => _confirmLeave(context, controller, playing),
       child: MusicTrackScope(
         track: MusicTrack.game,
         child: Stack(
@@ -462,6 +461,7 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
     bool playing,
   ) async {
     if (!playing) {
+      LeaveGuard.release();
       context.go('/home');
       return;
     }
@@ -484,6 +484,7 @@ class _ChessMatchScreenState extends ConsumerState<ChessMatchScreen> {
     } catch (_) {
       // Already over; head home either way.
     }
+    LeaveGuard.release();
     if (context.mounted) context.go('/home');
   }
 }

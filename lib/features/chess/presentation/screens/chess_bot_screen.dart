@@ -1,3 +1,4 @@
+import '../../../../core/widgets/leave_guard.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -539,7 +540,10 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
       ),
     );
     // Navigator.pop, not maybePop: the PopScope would only ask again.
-    if (leave && mounted) Navigator.of(context).pop();
+    if (leave && mounted) {
+      LeaveGuard.release();
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _confirmResign() async {
@@ -867,15 +871,10 @@ class _ChessBotScreenState extends ConsumerState<ChessBotScreen> {
 
     // A game in progress asks before going (close button and back gesture
     // alike); a finished or unstarted one just goes.
-    return PopScope(
-      canPop: !_inProgress,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) {
-          _gen++;
-        } else {
-          _confirmLeave();
-        }
-      },
+    return LeaveGuard(
+      canLeave: !_inProgress,
+      onAsk: _confirmLeave,
+      onPopped: () => _gen++,
       child: MusicTrackScope(
         track: MusicTrack.game,
         child: Stack(

@@ -1,3 +1,4 @@
+import '../../../../core/widgets/leave_guard.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -217,12 +218,14 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
 
   Future<void> _confirmLeave(LudoMatchState state) async {
     if (!state.isActive || state.iLeft) {
+      LeaveGuard.release();
       context.go('/home');
       return;
     }
     // Finished: going costs nothing, the place (and any prize) is kept.
     if (state.iFinished) {
       await _controller.leave();
+      LeaveGuard.release();
       if (mounted) context.go(state.isLocal ? '/ludo' : '/home');
       return;
     }
@@ -255,6 +258,7 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
     } catch (_) {
       // The game may have just ended; either way, head home.
     }
+    LeaveGuard.release();
     if (mounted) context.go(state.isLocal ? '/ludo' : '/home');
   }
 
@@ -548,11 +552,9 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
       );
     }
 
-    return PopScope(
-      canPop: canPop,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _confirmLeave(state);
-      },
+    return LeaveGuard(
+      canLeave: canPop,
+      onAsk: () => _confirmLeave(state),
       child: MusicTrackScope(
         track: MusicTrack.game,
         child: Scaffold(

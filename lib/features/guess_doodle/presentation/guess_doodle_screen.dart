@@ -1,3 +1,4 @@
+import '../../../core/widgets/leave_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -150,6 +151,7 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
       await _ctrl.leave();
     } catch (_) {}
     if (!mounted) return;
+    LeaveGuard.release();
     final navigator = Navigator.of(context);
     if (navigator.canPop()) {
       navigator.pop();
@@ -347,11 +349,9 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
         correct != null &&
         DateTime.now().difference(correct.at) < const Duration(seconds: 3);
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _askToLeave();
-      },
+    return LeaveGuard(
+      canLeave: false,
+      onAsk: _askToLeave,
       child: Scaffold(
         body: AppBackground(
           child: Stack(

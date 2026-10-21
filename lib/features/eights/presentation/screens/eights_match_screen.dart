@@ -1,3 +1,4 @@
+import '../../../../core/widgets/leave_guard.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -190,6 +191,7 @@ class _EightsMatchScreenState extends ConsumerState<EightsMatchScreen> {
 
   Future<void> _confirmLeave(EightsMatchState state) async {
     if (!state.isActive || state.iLeft) {
+      LeaveGuard.release();
       context.go(state.isLocal ? '/eights' : '/home');
       return;
     }
@@ -214,6 +216,7 @@ class _EightsMatchScreenState extends ConsumerState<EightsMatchScreen> {
     } catch (_) {
       // The game may have just ended; either way, go.
     }
+    LeaveGuard.release();
     if (mounted) context.go(state.isLocal ? '/eights' : '/home');
   }
 
@@ -363,11 +366,9 @@ class _EightsMatchScreenState extends ConsumerState<EightsMatchScreen> {
       );
     }
 
-    return PopScope(
-      canPop: done || state.iLeft || _leaving,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _confirmLeave(state);
-      },
+    return LeaveGuard(
+      canLeave: done || state.iLeft || _leaving,
+      onAsk: () => _confirmLeave(state),
       child: MusicTrackScope(
         track: MusicTrack.game,
         child: Scaffold(

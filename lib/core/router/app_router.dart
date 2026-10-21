@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../widgets/leave_guard.dart';
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/screens/auth_choice_screen.dart';
@@ -203,6 +204,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       // otherwise take "bot" for a match id.
       GoRoute(
         path: '/chess/bot',
+        // A game in progress asks before it's left, browser Back too.
+        onExit: LeaveGuard.onExit,
         builder: (context, state) {
           final q = state.uri.queryParameters;
           final color = switch (q['color']) {
@@ -228,6 +231,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/chess/:matchId',
+        // A game in progress asks before it's left, browser Back too.
+        onExit: LeaveGuard.onExit,
         builder: (context, state) =>
             ChessMatchScreen(matchId: state.pathParameters['matchId']!),
       ),
@@ -266,6 +271,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/checkers/:matchId',
+        // A game in progress asks before it's left, browser Back too.
+        onExit: LeaveGuard.onExit,
         builder: (context, state) =>
             CheckersMatchScreen(matchId: state.pathParameters['matchId']!),
       ),
@@ -280,6 +287,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/ludo/:matchId',
+        // A game in progress asks before it's left, browser Back too.
+        onExit: LeaveGuard.onExit,
         builder: (context, state) =>
             LudoMatchScreen(matchId: state.pathParameters['matchId']!),
       ),
@@ -294,6 +303,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/eights/:matchId',
+        // A game in progress asks before it's left, browser Back too.
+        onExit: LeaveGuard.onExit,
         builder: (context, state) =>
             EightsMatchScreen(matchId: state.pathParameters['matchId']!),
       ),
@@ -315,6 +326,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/doodle-game/:gameId',
+        // A game in progress asks before it's left, browser Back too.
+        onExit: LeaveGuard.onExit,
         builder: (context, state) =>
             GuessDoodleScreen(gameId: state.pathParameters['gameId']!),
       ),
