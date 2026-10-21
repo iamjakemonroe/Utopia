@@ -61,9 +61,11 @@ Deno.serve(async (req) => {
   // Pictures Chip drew from their photos are theirs alone: gone with them.
   await admin.from("coloring_pages").delete().eq("owner", user.id);
 
-  // Their files: profile pictures, bug-report screenshots and portrait
-  // line art live in a folder named after them.
-  for (const bucket of ["avatars", "bug-screenshots", "coloring-art"]) {
+  // Their files: profile pictures, bug-report screenshots, portrait line
+  // art and their sketchbook live in a folder named after them.
+  for (
+    const bucket of ["avatars", "bug-screenshots", "coloring-art", "sketchbook"]
+  ) {
     const { data: files } = await admin.storage.from(bucket).list(user.id, {
       limit: 1000,
     });

@@ -7,8 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/supabase/supabase_providers.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../domain/art_doc.dart';
+import 'art_cloud.dart';
 
 /// A piece of art in the list: enough to show it without loading it.
 class ArtSummary {
@@ -261,10 +263,21 @@ class WebArtStore implements ArtStore {
 }
 
 /// This player's art store (art is kept per player, so two people sharing a
-/// phone each see their own).
-final artStoreProvider = FutureProvider<ArtStore>((ref) {
-  final player = ref.watch(currentUserProvider.select((u) => u?.id)) ?? 'guest';
-  return ArtStore.open(player);
+/// phone each see their own), kept with their account too (see
+/// CloudArtStore).
+final artStoreProvider = FutureProvider<ArtStore>((ref) async {
+  final player = ref.watch(currentUserProvider.select((u) => u?.id));
+  final local = await ArtStore.open(player ?? 'guest');
+  if (player == null) return local;
+  return CloudArtStore(
+    local,
+    SupabaseArtCloud(ref.read(supabaseClientProvider)),
+    player,
+    await SharedPreferences.getInstance(),
+    // A browser's storage is small: it holds a piece only until it's up.
+    keepLocal: !kIsWeb,
+    guestStores: ArtStore.open,
+  );
 });
 
 /// Everything this player has made, newest first.
