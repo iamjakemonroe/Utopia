@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../../../core/widgets/leave_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -358,6 +360,19 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
             children: [
               SafeArea(
                 child: GameStage(
+                  // An upright tablet gets the phone's column (the drawing
+                  // as wide as the screen); side by side, the chat fills
+                  // the panel instead of squeezing under the drawing.
+                  tabletsUpright: false,
+                  panelFill: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
+                    child: DoodleChatFeed(
+                      messages: state.messages,
+                      me: me,
+                      colorOf: colorOf,
+                      filter: game?.isPublic ?? true,
+                    ),
+                  ),
                   above: [
                     _TopBar(
                       round: game?.round ?? 0,
@@ -418,9 +433,18 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
                   ],
                   board: LayoutBuilder(
                     builder: (context, c) {
+                      final beside = GameStage.sideBySideOf(context);
                       // While typing, the drawing gives up room so the
-                      // chat still shows a few lines.
-                      final room = c.maxHeight - (typing ? 116 : 70);
+                      // chat still shows a few lines; on a tall screen
+                      // (an upright tablet) it keeps a good part of it.
+                      // Side by side, the chat's in the panel.
+                      final chatRoom = beside
+                          ? 8.0
+                          : math.max(
+                              typing ? 116.0 : 70.0,
+                              c.maxHeight > 700 ? c.maxHeight * 0.26 : 0.0,
+                            );
+                      final room = c.maxHeight - chatRoom;
                       final side = (c.maxWidth - 24)
                           .clamp(0.0, room < 0 ? 0.0 : room)
                           .toDouble();
@@ -464,19 +488,20 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
                               ),
                             ),
                           ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: DoodleChatFeed(
-                                messages: state.messages,
-                                me: me,
-                                colorOf: colorOf,
-                                filter: game?.isPublic ?? true,
+                          if (!beside)
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                child: DoodleChatFeed(
+                                  messages: state.messages,
+                                  me: me,
+                                  colorOf: colorOf,
+                                  filter: game?.isPublic ?? true,
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       );
                     },
