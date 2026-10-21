@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:utopia/features/chat/domain/voice_note.dart';
+import 'package:utopia/features/chat/presentation/voice_notes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:utopia/core/profiles/profile_providers.dart';
@@ -39,6 +43,14 @@ class _FakeLink implements DoodleInkLink {
 }
 
 class _FakeRepo implements DoodleGameRepository {
+  final voices = <String>[];
+
+  @override
+  Future<void> uploadVoice(String path, Uint8List bytes) async {}
+
+  @override
+  Future<void> sendVoice(String gameId, VoiceNote note) async =>
+      voices.add(note.encode());
   final game = StreamController<DoodleGame?>.broadcast();
   final players = StreamController<List<DoodlePlayer>>.broadcast();
   final messages = StreamController<List<DoodleMessage>>.broadcast();
@@ -198,6 +210,16 @@ DoodlePlayer _player(
   left: false,
 );
 
+/// Voice notes that never play (tests have no audio, nor a server to
+/// fetch them from).
+class _QuietPlayback extends StateNotifier<VoicePlaybackState>
+    implements VoicePlayback {
+  _QuietPlayback() : super(const VoicePlaybackState());
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => null;
+}
+
 Future<_FakeRepo> _pump(WidgetTester tester) async {
   tester.view.physicalSize = const Size(1170, 2532);
   tester.view.devicePixelRatio = 3;
@@ -218,6 +240,7 @@ Future<_FakeRepo> _pump(WidgetTester tester) async {
           },
         ),
         publicCoinsProvider.overrideWith((ref, id) async => null),
+        voicePlaybackProvider.overrideWith((ref) => _QuietPlayback()),
       ],
       child: const MaterialApp(home: GuessDoodleScreen(gameId: 'g1')),
     ),
@@ -354,6 +377,44 @@ void main() {
     await _settle(tester);
     expect(repo.calls, contains('undo'));
     expect(repo.link.sent.last.$1, 'undo');
+    await _finish(tester);
+  });
+
+  testWidgets('voice notes: between turns, and once you know the word', (
+    tester,
+  ) async {
+    final repo = await _pump(tester);
+    final mic = find.byIcon(Icons.mic_rounded);
+    repo.players.add([_player('me'), _player('mia', seq: 2)]);
+    repo.game.add(_game());
+    await _settle(tester);
+    expect(mic, findsOneWidget, reason: 'the lobby: anyone talks');
+
+    // Mia draws; still guessing, I can't talk (I might say the word).
+    repo.game.add(
+      _game(phase: DoodlePhase.drawing, drawer: 'mia', mask: '______'),
+    );
+    await _settle(tester);
+    expect(mic, findsNothing);
+
+    // Guessed it: now I can, with Mia and the others who know it.
+    repo.players.add([_player('me', guessed: 1), _player('mia', seq: 2)]);
+    await _settle(tester);
+    expect(mic, findsOneWidget);
+
+    // A note arrives in the chat as a voice bubble.
+    repo.messages.add([
+      DoodleMessage(
+        id: 1,
+        senderId: 'mia',
+        turn: 1,
+        kind: DoodleMessageKind.voice,
+        body: 'voice:g1/0b5c3a5e-6a77-4d1c-9a0e-2f1d7e3c9b11.m4a|3200|1234567',
+        guessedOnly: true,
+      ),
+    ]);
+    await _settle(tester);
+    expect(find.text('0:03'), findsOneWidget);
     await _finish(tester);
   });
 

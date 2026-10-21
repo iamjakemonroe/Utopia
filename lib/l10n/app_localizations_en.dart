@@ -6621,6 +6621,10 @@ class L10nEn extends L10n {
   String get ludoCaptureBubbleAgain => 'Again!';
 
   @override
+  String get doodleVoiceAfterYouGuess =>
+      'Voice notes open once you\'ve guessed the word';
+
+  @override
   String get doodleToolBrush => 'Brush';
 
   @override

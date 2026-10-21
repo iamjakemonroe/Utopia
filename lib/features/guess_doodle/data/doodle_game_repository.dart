@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import '../../chat/domain/voice_note.dart';
 import '../domain/doodle_game.dart';
 
 /// Guess My Doodle's server side (see the guess_my_doodle migration): the
@@ -97,6 +99,21 @@ class DoodleGameRepository {
   }
 
   /// A line typed into the chat: a guess while someone's drawing.
+  /// Uploads a recorded voice note to [path] (the game's folder).
+  Future<void> uploadVoice(String path, Uint8List bytes) => _client.storage
+      .from('voice-notes')
+      .uploadBinary(
+        path,
+        bytes,
+        fileOptions: FileOptions(contentType: VoiceNote.contentType(path)),
+      );
+
+  /// Posts an uploaded voice note to the game's chat.
+  Future<void> sendVoice(String gameId, VoiceNote note) => _client.rpc(
+    'send_doodle_voice',
+    params: {'p_game': gameId, 'p_body': note.encode()},
+  );
+
   Future<({GuessResult result, int points})> guess(
     String gameId,
     String text,

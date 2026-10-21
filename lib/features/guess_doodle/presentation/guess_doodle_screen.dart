@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/audio/game_audio.dart';
+import '../../chat/presentation/voice_notes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/share_invite.dart';
@@ -55,6 +56,11 @@ class GuessDoodleScreen extends ConsumerStatefulWidget {
 
 class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
   DoodlePen _pen = const DoodlePen();
+
+  /// A voice note being recorded (the recorder takes the guess field's
+  /// room meanwhile).
+  bool _recording = false;
+  final _recorderKey = GlobalKey();
   final _focus = FocusNode();
   DateTime? _lastChatSound;
 
@@ -116,6 +122,18 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
       }
     }
   }
+
+  Widget _recorder(DoodleGameController ctrl) => VoiceRecorderButton(
+    key: _recorderKey,
+    onSend: (bytes, {required ms, required wave}) async {
+      final error = await ctrl.sendVoice(bytes, ms: ms, wave: wave);
+      if (error != null && mounted) {
+        showUtopiaToast(context, error, kind: ToastKind.error);
+      }
+      return error;
+    },
+    onRecordingChanged: (r) => setState(() => _recording = r),
+  );
 
   Future<bool> _send(String text) async {
     try {
@@ -523,12 +541,32 @@ class _GuessDoodleScreenState extends ConsumerState<GuessDoodleScreen> {
                                   onClear: _confirmClear,
                                 ),
                               )
-                            : DoodleGuessField(
+                            : Row(
                                 key: const ValueKey('guess'),
-                                hint: hint,
-                                focusNode: _focus,
-                                glow: guessed ? const Color(0xFF2FD98E) : null,
-                                onSend: _send,
+                                children: [
+                                  // The recorder keeps its state (via the
+                                  // key) as it grows into the recording bar.
+                                  if (_recording)
+                                    Expanded(child: _recorder(ctrl))
+                                  else ...[
+                                    Expanded(
+                                      child: DoodleGuessField(
+                                        hint: hint,
+                                        focusNode: _focus,
+                                        glow: guessed
+                                            ? const Color(0xFF2FD98E)
+                                            : null,
+                                        onSend: _send,
+                                      ),
+                                    ),
+                                    // Talk is for those who know the word
+                                    // while someone draws.
+                                    if (ctrl.canTalk) ...[
+                                      const SizedBox(width: 6),
+                                      _recorder(ctrl),
+                                    ],
+                                  ],
+                                ],
                               ),
                       ),
                     ),

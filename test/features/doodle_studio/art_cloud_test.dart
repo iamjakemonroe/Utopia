@@ -115,7 +115,8 @@ void main() {
     guestStores: (p) async => WebArtStore(prefs, 'art/$p/'),
   );
 
-  Future<void> settle() => Future<void>.delayed(const Duration(milliseconds: 20));
+  Future<void> settle() =>
+      Future<void>.delayed(const Duration(milliseconds: 20));
 
   test('a save is on the device at once, and up a moment later', () async {
     final s = store();
@@ -138,11 +139,14 @@ void main() {
     expect(await s.thumbnailBytes('art-1'), _png);
   });
 
-  test("a full browser doesn't lose the painting: it goes up at once", () async {
-    final s = store(local: _FullBrowser(prefs, 'art/me/'), keepLocal: false);
-    await s.save(_doc('art-1'), thumbnail: _png);
-    expect(cloud.under('me'), contains('art-1.json'));
-  });
+  test(
+    "a full browser doesn't lose the painting: it goes up at once",
+    () async {
+      final s = store(local: _FullBrowser(prefs, 'art/me/'), keepLocal: false);
+      await s.save(_doc('art-1'), thumbnail: _png);
+      expect(cloud.under('me'), contains('art-1.json'));
+    },
+  );
 
   test('full and offline: the save says it failed', () async {
     cloud.down = true;
@@ -195,9 +199,7 @@ void main() {
       prefs,
       uploadAfter: Duration.zero,
     );
-    await other.save(
-      _doc('art-1', strokes: 5, at: DateTime(2026, 10, 21, 13)),
-    );
+    await other.save(_doc('art-1', strokes: 5, at: DateTime(2026, 10, 21, 13)));
     await settle();
     await s.list();
     expect((await s.load('art-1'))!.ops, hasLength(5));

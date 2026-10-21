@@ -7,6 +7,8 @@ import '../../../../core/profiles/profile_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../chat/domain/chat_filter.dart';
+import '../../../chat/domain/voice_note.dart';
+import '../../../chat/presentation/voice_notes.dart';
 import '../../domain/doodle_game.dart';
 import '../../../../core/platform/keyboard.dart';
 import '../../../../l10n/strings.dart';
@@ -125,6 +127,44 @@ class _Line extends ConsumerWidget {
     final name = doodleName(ref, message.senderId, me);
     final mine = message.senderId == me;
     switch (message.kind) {
+      case DoodleMessageKind.voice:
+        final note = VoiceNote.parse(message.body);
+        if (note == null) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 3),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(12, 6, 8, 6),
+              decoration: BoxDecoration(
+                color: message.guessedOnly
+                    ? const Color(0xFF1F8F55).withValues(alpha: 0.55)
+                    : AppColors.scrim(mine ? 0.42 : 0.3),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: message.guessedOnly
+                      ? const Color(0xFF6BF0B0).withValues(alpha: 0.5)
+                      : Colors.white.withValues(alpha: 0.08),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    name,
+                    style: AppTextStyles.body(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: color,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  VoiceNoteBubble(note: note, mine: mine),
+                ],
+              ),
+            ),
+          ),
+        );
       case DoodleMessageKind.chat:
         final text = filter ? ChatFilter.filter(message.body) : message.body;
         return Padding(

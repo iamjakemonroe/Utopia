@@ -5,7 +5,9 @@ import 'dart:ui' show Offset;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../l10n/strings.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
+import '../../chat/domain/voice_note.dart';
 import '../../doodle_studio/domain/art_doc.dart';
 import '../data/doodle_game_repository.dart';
 import '../domain/doodle_game.dart';
@@ -311,6 +313,44 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
       _loadSecret();
     }
     return result.result;
+  }
+
+  /// Whether this player may talk now: between turns anyone can; while
+  /// someone draws, only those who know the word (the drawer, and anyone
+  /// who's guessed it), heard only by each other.
+  bool get canTalk {
+    final phase = state.game?.phase;
+    if (phase != DoodlePhase.choosing && phase != DoodlePhase.drawing) {
+      return true;
+    }
+    return isDrawer || guessedThisTurn;
+  }
+
+  /// Uploads a recorded voice note and posts it. Returns an error to show,
+  /// or null.
+  Future<String?> sendVoice(
+    Uint8List bytes, {
+    required int ms,
+    required List<int> wave,
+  }) async {
+    final note = VoiceNote(
+      path: VoiceNote.newPath(gameId, wav: VoiceNote.isWav(bytes)),
+      ms: ms,
+      wave: wave,
+    );
+    try {
+      await _repo.uploadVoice(note.path, bytes);
+      await _repo.sendVoice(gameId, note);
+      return null;
+    } catch (e) {
+      if (e.toString().contains('slow down')) {
+        return strings.ludoMatchWhoaSlowDownALittle;
+      }
+      if (e.toString().contains('guess the word first')) {
+        return strings.doodleVoiceAfterYouGuess;
+      }
+      return strings.ludoMatchCouldnTSendYourVoice;
+    }
   }
 
   Future<void> choose(int index) async {

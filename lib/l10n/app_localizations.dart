@@ -11708,6 +11708,12 @@ abstract class L10n {
   /// **'Again!'**
   String get ludoCaptureBubbleAgain;
 
+  /// Guess My Doodle: a player still guessing tried to send a voice note while someone draws.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice notes open once you\'ve guessed the word'**
+  String get doodleVoiceAfterYouGuess;
+
   /// Guess My Doodle drawing tool: freehand brush.
   ///
   /// In en, this message translates to:

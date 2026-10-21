@@ -141,7 +141,10 @@ enum DoodleMessageKind {
   left,
 
   /// Someone started drawing.
-  drawing;
+  drawing,
+
+  /// A voice note (its body says where the recording is; see VoiceNote).
+  voice;
 
   static DoodleMessageKind? parse(String? s) =>
       values.where((k) => k.name == s).firstOrNull;

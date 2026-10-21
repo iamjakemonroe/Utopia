@@ -35,7 +35,14 @@ Deno.serve(async (req) => {
   // Their voice notes' files (the messages go with anonymize_account, so
   // find them first): "voice:<match>/<note>.m4a|<length>|<waveform>".
   const voicePaths: string[] = [];
-  for (const table of ["chess_chat_messages", "ludo_chat_messages"]) {
+  for (
+    const table of [
+      "chess_chat_messages",
+      "ludo_chat_messages",
+      "eights_chat_messages",
+      "doodle_messages",
+    ]
+  ) {
     const { data: notes } = await admin
       .from(table)
       .select("body")

@@ -8839,6 +8839,8 @@
   "@ludoCaptureBubbleAgain": {
     "description": "A reaction for a piece just sent back home: not giving up, going again."
   },
+  "doodleVoiceAfterYouGuess": "Voice notes open once you've guessed the word",
+  "@doodleVoiceAfterYouGuess": {"description": "Guess My Doodle: a player still guessing tried to send a voice note while someone draws."},
   "doodleToolBrush": "Brush",
   "@doodleToolBrush": {"description": "Guess My Doodle drawing tool: freehand brush."},
   "doodleToolBrushHint": "Draw freely with your finger",
