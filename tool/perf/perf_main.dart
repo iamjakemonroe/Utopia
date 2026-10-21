@@ -4,9 +4,10 @@
 //
 //   flutter build web --profile -t tool/perf/perf_main.dart \
 //     --dart-define-from-file=env/local.json -o build/perf
-//   then open /?scene=world|cards|chess|checkers|notifications&world=<theme id>
-//   [&pieces=<set>]. "notifications" is home's cards with
+//   then open /?scene=world|cards|chess|checkers|ludo|eights|notifications
+//   &world=<theme id> [&pieces=<set>]. "notifications" is home's cards with
 //   window.__push() opening the notifications (20 of every kind) over them.
+//   "ludo" and "eights" are offline tables where bots play every seat.
 //   (tool/perf/measure.mjs measures it in a throttled browser)
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
@@ -32,6 +33,11 @@ import 'package:utopia/features/chess/domain/chess_types.dart';
 import 'package:utopia/features/chess/presentation/screens/chess_bot_screen.dart';
 import 'package:utopia/features/notifications/data/notification_repository.dart';
 import 'package:utopia/features/notifications/presentation/notifications_screen.dart';
+import 'package:utopia/features/eights/presentation/controllers/eights_match_controller.dart';
+import 'package:utopia/features/eights/presentation/screens/eights_match_screen.dart';
+import 'package:utopia/features/ludo/domain/ludo_engine.dart';
+import 'package:utopia/features/ludo/presentation/controllers/ludo_match_controller.dart';
+import 'package:utopia/features/ludo/presentation/screens/ludo_match_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,6 +70,30 @@ Future<void> main() async {
       mySide: CheckersSide.dark,
     ),
     'cards' || 'notifications' => const _Cards(),
+    // Bots in every seat (the first is "this phone", played by a bot too),
+    // so the game goes on by itself.
+    'ludo' => LudoMatchScreen(
+      matchId: startLocalLudo(
+        LocalLudoSetup(
+          playerIds: [for (final b in kLudoBots.take(4)) b.id],
+          colors: const [
+            LudoColor.red,
+            LudoColor.green,
+            LudoColor.yellow,
+            LudoColor.blue,
+          ],
+          humanId: kLudoBots.first.id,
+        ),
+      ),
+    ),
+    'eights' => EightsMatchScreen(
+      matchId: startLocalEights(
+        LocalEightsSetup(
+          playerIds: [for (final b in kLudoBots.take(4)) b.id],
+          humanId: kLudoBots.first.id,
+        ),
+      ),
+    ),
     _ => const AppBackground(child: SizedBox.expand()),
   };
   runApp(
