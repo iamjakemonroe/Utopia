@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/app_background.dart';
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../domain/ludo_engine.dart';
 import 'ludo_board_geometry.dart';
 import 'ludo_pieces.dart';
@@ -60,7 +61,9 @@ class LudoTokenAnchor {
 /// squash on each landing and a rising note per step; captured tokens fly
 /// back to their yard spinning. Little bursts mark the moments: a comic
 /// "pow" where a capture lands, a puff as a piece leaves its yard, a
-/// firework as one gets home, and light rays when a player finishes.
+/// firework as one gets home, and light rays when a player finishes. A
+/// player who's finished gets a trophy over their yard with their place on
+/// it (gold, silver, bronze), there while they watch the rest race on.
 class LudoBoardView extends ConsumerStatefulWidget {
   const LudoBoardView({
     super.key,
@@ -145,6 +148,10 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
   final Map<String, int> _lastPos = {};
   final Map<String, _Motion> _motions = {};
 
+  /// When each finished player's trophy pops up over their yard (on the
+  /// board's clock): just after their last piece gets home.
+  final Map<LudoColor, double> _trophyAt = {};
+
   LudoGeometry get _geometry => LudoGeometry.of(widget.game.board);
 
   @override
@@ -155,6 +162,10 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
   }
 
   void _remember(LudoState game) {
+    // Finished before the board was shown (a game come back to): already up.
+    for (final color in game.finished) {
+      _trophyAt.putIfAbsent(color, () => -100);
+    }
     for (final color in game.players) {
       final ps = game.tokens[color]!;
       for (var i = 0; i < ps.length; i++) {
@@ -169,6 +180,7 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
     if (oldWidget.game.board != widget.game.board) {
       _motions.clear();
       _lastPos.clear();
+      _trophyAt.clear();
       _remember(widget.game);
       return;
     }
@@ -215,6 +227,7 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
           // The last one home: this player's finished.
           if (ps.every(rules.isHome)) {
             _burst(_BurstKind.finish, Offset.zero, motion.end + 0.1, color);
+            _trophyAt[color] = motion.end + 0.7;
           }
         }
       }
@@ -232,6 +245,12 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
         fly: true,
       );
       _burst(_BurstKind.pow, at, movesEnd - 0.04, by ?? color);
+    }
+
+    final finished = widget.game.finished;
+    _trophyAt.removeWhere((color, _) => !finished.contains(color));
+    for (final color in finished) {
+      _trophyAt.putIfAbsent(color, () => now);
     }
   }
 
@@ -463,6 +482,33 @@ class _LudoBoardViewState extends ConsumerState<LudoBoardView>
 
     final items = <(double, Widget)>[];
     final anchorTops = <(LudoTokenAnchor, Offset)>[];
+
+    // Trophies over the finished players' yards, under every piece.
+    final trophyW =
+        cellPx * (g.rules.kind == LudoBoardKind.classic ? 4.4 : 3.6);
+    for (final (i, color) in game.finished.indexed) {
+      final at = _trophyAt[color] ?? -100;
+      if (now < at) continue;
+      final c = toScreen(g.yardCenter[color]!);
+      items.add((
+        -1e6 + i,
+        Positioned(
+          key: ValueKey('trophy-${color.name}'),
+          left: c.dx - trophyW / 2,
+          top: c.dy - trophyW * 0.65,
+          width: trophyW,
+          height: trophyW * 1.3,
+          child: IgnorePointer(
+            child: Semantics(
+              label: '${ludoColorName(color)}: ${placeLabel(i + 1)}',
+              child: CustomPaint(
+                painter: _TrophyPainter(place: i + 1, age: now - at, now: now),
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
     for (final color in game.players) {
       if (game.left.contains(color)) continue;
       final ps = game.tokens[color]!;
@@ -1321,4 +1367,218 @@ class _BurstPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _BurstPainter old) => true;
+}
+
+/// A trophy over a finished player's yard: a cup in their place's metal
+/// (gold, silver, bronze) on a ribbon saying the place, with a glow behind
+/// it so it reads on any yard color. It springs up when they finish
+/// ([age] 0), then floats, a glint crossing it now and then.
+class _TrophyPainter extends CustomPainter {
+  _TrophyPainter({required this.place, required this.age, required this.now});
+
+  final int place;
+
+  /// Seconds since it appeared.
+  final double age;
+  final double now;
+
+  static final Map<(int, int), TextPainter> _labels = {};
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final pop = Curves.elasticOut.transform((age / 0.9).clamp(0.0, 1.0));
+    if (pop <= 0.01) return;
+    final metal = kPlaceMedals[place] ?? kPlaceMedals[3]!;
+    final w = size.width;
+    canvas.save();
+    canvas.translate(w / 2, size.height / 2 + math.sin(now * 2.1) * w * 0.02);
+    canvas.scale(pop);
+
+    // The glow behind it.
+    final halo = Rect.fromCircle(
+      center: Offset(0, -w * 0.12),
+      radius: w * 0.56,
+    );
+    canvas.drawOval(
+      halo,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.85),
+            metal[0].withValues(alpha: 0.45),
+            metal[0].withValues(alpha: 0),
+          ],
+          stops: const [0, 0.45, 1],
+        ).createShader(halo),
+    );
+
+    final ink = Color.lerp(metal[2], Colors.black, 0.45)!;
+    final outline = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w * 0.022
+      ..strokeJoin = StrokeJoin.round
+      ..color = ink;
+
+    // Handles.
+    for (final side in const [-1.0, 1.0]) {
+      final handle = Path()
+        ..moveTo(side * w * 0.27, -w * 0.38)
+        ..cubicTo(
+          side * w * 0.47,
+          -w * 0.4,
+          side * w * 0.47,
+          -w * 0.12,
+          side * w * 0.14,
+          -w * 0.07,
+        );
+      canvas.drawPath(
+        handle,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = w * 0.085
+          ..color = ink,
+      );
+      canvas.drawPath(
+        handle,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = w * 0.045
+          ..color = metal[1],
+      );
+    }
+
+    // Stem and base.
+    final stem = RRect.fromRectAndRadius(
+      Rect.fromLTRB(-w * 0.055, -w * 0.02, w * 0.055, w * 0.14),
+      Radius.circular(w * 0.02),
+    );
+    final knot = Rect.fromCenter(
+      center: Offset(0, w * 0.04),
+      width: w * 0.17,
+      height: w * 0.07,
+    );
+    final base = RRect.fromRectAndRadius(
+      Rect.fromLTRB(-w * 0.2, w * 0.13, w * 0.2, w * 0.21),
+      Radius.circular(w * 0.025),
+    );
+    final metalShader = LinearGradient(
+      colors: [metal[2], metal[0], metal[1], metal[2]],
+      stops: const [0, 0.32, 0.62, 1],
+    ).createShader(Rect.fromLTRB(-w * 0.32, 0, w * 0.32, 1));
+    for (final part in [stem, base]) {
+      canvas.drawRRect(part, Paint()..shader = metalShader);
+      canvas.drawRRect(part, outline);
+    }
+    canvas.drawOval(knot, Paint()..shader = metalShader);
+    canvas.drawOval(knot, outline);
+
+    // The cup.
+    final bowl = Path()
+      ..moveTo(-w * 0.3, -w * 0.42)
+      ..lineTo(w * 0.3, -w * 0.42)
+      ..cubicTo(w * 0.3, -w * 0.13, w * 0.16, -w * 0.01, 0, -w * 0.01)
+      ..cubicTo(-w * 0.16, -w * 0.01, -w * 0.3, -w * 0.13, -w * 0.3, -w * 0.42)
+      ..close();
+    canvas.drawPath(bowl, Paint()..shader = metalShader);
+    // A glint crossing it every few seconds.
+    final glint = (now % 3.4) / 0.6;
+    if (glint < 1) {
+      canvas.save();
+      canvas.clipPath(bowl);
+      final x = -w * 0.45 + glint * w * 0.9;
+      canvas.drawPath(
+        Path()
+          ..moveTo(x - w * 0.05, -w * 0.45)
+          ..lineTo(x + w * 0.05, -w * 0.45)
+          ..lineTo(x - w * 0.1, 0)
+          ..lineTo(x - w * 0.2, 0)
+          ..close(),
+        Paint()..color = Colors.white.withValues(alpha: 0.7),
+      );
+      canvas.restore();
+    }
+    canvas.drawPath(bowl, outline);
+    // Its rim, and a star on its front.
+    final rim = Rect.fromCenter(
+      center: Offset(0, -w * 0.42),
+      width: w * 0.6,
+      height: w * 0.09,
+    );
+    canvas.drawOval(rim, Paint()..color = metal[2]);
+    canvas.drawOval(rim.deflate(w * 0.018), Paint()..color = ink);
+    canvas.drawOval(rim, outline);
+    final star = Path();
+    for (var k = 0; k < 10; k++) {
+      final r = k.isEven ? w * 0.085 : w * 0.036;
+      final a = -math.pi / 2 + k * math.pi / 5;
+      final p = Offset(math.cos(a) * r, -w * 0.22 + math.sin(a) * r);
+      k == 0 ? star.moveTo(p.dx, p.dy) : star.lineTo(p.dx, p.dy);
+    }
+    star.close();
+    canvas.drawPath(star, Paint()..color = Colors.white.withValues(alpha: 0.9));
+
+    // The ribbon with the place on it.
+    final ribbon = RRect.fromRectAndRadius(
+      Rect.fromLTRB(-w * 0.3, w * 0.22, w * 0.3, w * 0.4),
+      Radius.circular(w * 0.05),
+    );
+    for (final side in const [-1.0, 1.0]) {
+      canvas.drawPath(
+        Path()
+          ..moveTo(side * w * 0.26, w * 0.25)
+          ..lineTo(side * w * 0.42, w * 0.27)
+          ..lineTo(side * w * 0.36, w * 0.33)
+          ..lineTo(side * w * 0.42, w * 0.41)
+          ..lineTo(side * w * 0.26, w * 0.38)
+          ..close(),
+        Paint()..color = const Color(0xFF1B1036),
+      );
+    }
+    canvas.drawRRect(ribbon, Paint()..color = const Color(0xFF2A1B4D));
+    canvas.drawRRect(
+      ribbon,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w * 0.018
+        ..color = metal[1],
+    );
+    final label = _labels.putIfAbsent(
+      (place, (w * 0.14).round()),
+      () => TextPainter(
+        text: TextSpan(
+          text: placeLabel(place),
+          style: AppTextStyles.display(fontSize: w * 0.14, color: metal[0]),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout(),
+    );
+    label.paint(canvas, Offset(-label.width / 2, w * 0.31 - label.height / 2));
+
+    // Twinkles around it.
+    for (var k = 0; k < 3; k++) {
+      final phase = (now * 0.9 + k * 0.37) % 1;
+      final s = math.sin(phase * math.pi) * w * 0.05;
+      if (s <= 0) continue;
+      final at = [
+        Offset(-w * 0.4, -w * 0.5),
+        Offset(w * 0.42, -w * 0.3),
+        Offset(-w * 0.36, w * 0.05),
+      ][k];
+      final twinkle = Path()
+        ..moveTo(at.dx, at.dy - s)
+        ..quadraticBezierTo(at.dx, at.dy, at.dx + s, at.dy)
+        ..quadraticBezierTo(at.dx, at.dy, at.dx, at.dy + s)
+        ..quadraticBezierTo(at.dx, at.dy, at.dx - s, at.dy)
+        ..quadraticBezierTo(at.dx, at.dy, at.dx, at.dy - s)
+        ..close();
+      canvas.drawPath(twinkle, Paint()..color = Colors.white);
+    }
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _TrophyPainter old) =>
+      old.place != place || old.age != age || old.now != now;
 }
