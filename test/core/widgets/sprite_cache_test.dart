@@ -78,4 +78,116 @@ void main() {
     expect([for (final s in spies) s.drawn], [1, 1, 1, 1]);
     cache.clear();
   });
+
+  group('where making pixels reads back (CanvasKit: Safari, iPhones)', () {
+    setUp(() => SpriteCache.debugReadsBack = true);
+    tearDown(() {
+      SpriteCache.debugReadsBack = null;
+      SpriteCache.debugFailPixels = false;
+    });
+
+    void dot(SpriteCache cache, String key, _Spy spy, {double x = 0}) =>
+        cache.draw(
+          Canvas(ui.PictureRecorder()),
+          key,
+          bounds: const Rect.fromLTRB(-11, -11, 11, 11),
+          dpr: 3,
+          at: Offset(x, 20),
+          paint: spy.paint,
+        );
+
+    test('pixels while they fit in half the budget', () {
+      final cache = SpriteCache(maxBytes: 2 * 66 * 66 * 4 + 100);
+      final spy = _Spy();
+      dot(cache, 'dot', spy);
+      expect(cache.bytes, 66 * 66 * 4);
+      cache.clear();
+    });
+
+    test('past half the budget, pictures: shapes still built once', () {
+      final cache = SpriteCache(maxBytes: 2 * 66 * 66 * 4 + 100);
+      final a = _Spy();
+      final b = _Spy();
+      for (var i = 0; i < 4; i++) {
+        dot(cache, 'a', a, x: i * 3.1);
+        dot(cache, 'b', b, x: i * 3.1);
+      }
+      expect(a.drawn, 1);
+      expect(b.drawn, 1, reason: 'kept as a picture, not drawn each time');
+      expect(
+        cache.bytes,
+        lessThan(2 * 66 * 66 * 4),
+        reason: 'b holds no pixels',
+      );
+      cache.clear();
+    });
+
+    test('pixels that fail become a picture, not a try every frame', () {
+      SpriteCache.debugFailPixels = true;
+      final cache = SpriteCache();
+      final spy = _Spy();
+      for (var i = 0; i < 5; i++) {
+        dot(cache, 'dot', spy);
+      }
+      expect(spy.drawn, 1);
+      SpriteCache.debugFailPixels = false;
+      cache.clear();
+    });
+
+    test(
+      'a picture looks exactly as drawn directly, moved and turned',
+      () async {
+        void shape(Canvas canvas) {
+          canvas.drawPath(
+            Path()
+              ..moveTo(-9, -4)
+              ..cubicTo(-3, -12, 8, -6, 9, 3)
+              ..lineTo(-2, 9)
+              ..close(),
+            Paint()..color = const Color(0xFF5B2DD8),
+          );
+          canvas.drawCircle(
+            const Offset(3, -2),
+            3.3,
+            Paint()..color = Colors.amber,
+          );
+        }
+
+        Future<List<int>> render(void Function(Canvas) draw) async {
+          final recorder = ui.PictureRecorder();
+          draw(Canvas(recorder));
+          final image = await recorder.endRecording().toImage(64, 64);
+          final data = await image.toByteData();
+          return data!.buffer.asUint8List().toList();
+        }
+
+        // No room for pixels at all: a picture.
+        final cache = SpriteCache(maxBytes: 100);
+        const at = Offset(31.37, 27.81);
+        const angle = 0.61;
+        final direct = await render((canvas) {
+          canvas.save();
+          canvas.translate(at.dx, at.dy);
+          canvas.rotate(angle);
+          shape(canvas);
+          canvas.restore();
+        });
+        for (var i = 0; i < 2; i++) {
+          final cached = await render(
+            (canvas) => cache.draw(
+              canvas,
+              'shape',
+              bounds: const Rect.fromLTRB(-13, -13, 13, 13),
+              dpr: 2,
+              at: at,
+              angle: angle,
+              paint: shape,
+            ),
+          );
+          expect(cached, direct, reason: i == 0 ? 'made' : 'kept');
+        }
+        cache.clear();
+      },
+    );
+  });
 }
