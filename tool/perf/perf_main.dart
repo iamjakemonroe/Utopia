@@ -53,11 +53,15 @@ import 'package:utopia/features/ludo/domain/ludo_engine.dart';
 import 'package:utopia/features/ludo/presentation/controllers/ludo_match_controller.dart';
 import 'package:utopia/features/ludo/presentation/screens/ludo_match_screen.dart';
 
+import 'cinema.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final query = Uri.base.queryParameters;
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString('utopia.theme', query['world'] ?? 'utopia');
+  // The film has Chip in it already: no floating one over it.
+  await prefs.setBool('play.floatingChip', query['scene'] != 'cinema');
   AppTextStyles.preloadFonts();
   await Supabase.initialize(
     url: Env.supabaseUrl,
@@ -85,10 +89,25 @@ Future<void> main() async {
     ),
     'cards' || 'notifications' => const _Cards(),
     'chipshow' => const _ChipShow(),
+    // For filming: Chip in one mood (&mood=), big; one game's diorama
+    // (&game=) filling the screen.
+    'hero' => _Hero(
+      mood:
+          BuddyMood.values.where((m) => m.name == query['mood']).firstOrNull ??
+          BuddyMood.happy,
+    ),
+    'diorama' => _Diorama(
+      game:
+          GameKind.values.where((g) => g.name == query['game']).firstOrNull ??
+          GameKind.ludo,
+    ),
     // A Ludo table halfway through: pieces all over the board, so pieces
     // are taken (and react) within moments.
     'ludomid' => LudoMatchScreen(matchId: _midGame()),
     'chipdraws' => const ChipDoodleScreen(),
+    // The trailer, played as a film (tool/perf/cinema.dart); window.__start()
+    // rolls it.
+    'cinema' => const Cinema(),
     // Home itself, as a signed-in player sees it (their profile made up;
     // friends, invites and games come back empty).
     'home' => const HomeScreen(),
@@ -144,6 +163,9 @@ Future<void> main() async {
           globalContext['__where'] =
               (() => router.routerDelegate.currentConfiguration.uri.path.toJS)
                   .toJS;
+          globalContext['__start'] = (() {
+            cinemaStart.value = true;
+          }).toJS;
           globalContext['__push'] = (() {
             router.push('/notifications');
           }).toJS;
@@ -265,6 +287,42 @@ class _ChipShowState extends State<_ChipShow> {
   Widget build(BuildContext context) => Scaffold(
     body: AppBackground(
       child: Center(child: CoinBuddy(mood: _moods[_at], size: 240)),
+    ),
+  );
+}
+
+/// Chip in [mood], big, in the world (for filming).
+class _Hero extends StatelessWidget {
+  const _Hero({required this.mood});
+
+  final BuddyMood mood;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: AppBackground(
+      child: Align(
+        alignment: const Alignment(0, 0.15),
+        child: CoinBuddy(mood: mood, size: 260),
+      ),
+    ),
+  );
+}
+
+/// One game's diorama, filling the screen's width (for filming).
+class _Diorama extends StatelessWidget {
+  const _Diorama({required this.game});
+
+  final GameKind game;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: AppBackground(
+      child: Center(
+        child: LayoutBuilder(
+          builder: (context, c) =>
+              GameSceneArt(game: game, height: c.maxWidth * 1.2),
+        ),
+      ),
     ),
   );
 }

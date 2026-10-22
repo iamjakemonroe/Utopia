@@ -1,12 +1,14 @@
 // Films one scene of the perf harness (tool/ads/shoot.sh) as the screen paints it: JPEG frames
 // with their timestamps, for tool assembly into video.
-//   node record.mjs <build dir> <out dir> <query> <seconds> [WxH@dpr] [warmup s]
+//   node record.mjs <build dir> <out dir> <query> <seconds> [WxH@dpr] [warmup s] [roll]
+// "roll" calls window.__start() once filming begins (the cinema scene), and
+// notes when, in start.json, so the cut lines up with the film's clock.
 import { chromium } from 'playwright';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const [root, out, query, secs, view = '405x720@2.6667', warm = '4'] = process.argv.slice(2);
+const [root, out, query, secs, view = '405x720@2.6667', warm = '4', roll] = process.argv.slice(2);
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript',
   '.wasm': 'application/wasm', '.json': 'application/json', '.png': 'image/png',
   '.ttf': 'font/ttf', '.otf': 'font/otf', '.wav': 'audio/wav', '.m4a': 'audio/mp4', '.jpg': 'image/jpeg' };
@@ -41,6 +43,11 @@ cdp.on('Page.screencastFrame', async (f) => {
 });
 await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92,
   maxWidth: Math.round(vw * vd), maxHeight: Math.round(vh * vd), everyNthFrame: 1 });
+if (roll === 'roll') {
+  await page.waitForTimeout(500);
+  const at = await page.evaluate(() => { window.__start(); return Date.now() / 1000; });
+  fs.writeFileSync(path.join(out, 'start.json'), JSON.stringify(at));
+}
 await page.waitForTimeout(Number(secs) * 1000);
 await cdp.send('Page.stopScreencast');
 fs.writeFileSync(path.join(out, 'times.json'), JSON.stringify(frames));
