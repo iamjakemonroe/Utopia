@@ -6,9 +6,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SITE=../utopia-landingpage
-# --wasm: Chrome and Edge run the faster WebAssembly build, other browsers
-# the JavaScript one (the loader picks; ?js forces JavaScript). The engine
-# files are served from our own site rather than Google's.
+# --wasm: Chrome, Edge, Safari and every iPhone and iPad browser run the
+# faster WebAssembly build, others the JavaScript one (web/flutter_bootstrap.js
+# tells the loader; ?js forces JavaScript). The engine files are served from
+# our own site rather than Google's.
 # Each build is stamped; the game checks build.json for a newer one and
 # offers to refresh (lib/core/widgets/web_update_banner.dart).
 BUILD=$(date -u +%Y%m%d%H%M%S)
@@ -22,16 +23,6 @@ rm -rf "$SITE/public/game"
 cp -R build/web "$SITE/public/game"
 du -sh "$SITE/public/game"
 
-# A trial copy of the same build at /game-test/: Safari (and Firefox) are
-# allowed the WebAssembly renderer, which Flutter's loader keeps to Chrome
-# and Edge, and the page is served isolated with require-corp (the site's
-# _headers), which Safari needs before it can draw on a background thread.
-# /game/ is untouched. Remove once iPhones have been tried on it.
-TEST="$SITE/public/game-test"
-rm -rf "$TEST"
-cp -R build/web "$TEST"
-grep -q '<base href="/game/">' "$TEST/index.html"
-sed -i '' 's#<base href="/game/">#<base href="/game-test/">#' "$TEST/index.html"
-grep -q "config: useJs ? { renderer: 'canvaskit' } : {}," "$TEST/flutter_bootstrap.js"
-sed -i '' "s#config: useJs ? { renderer: 'canvaskit' } : {},#config: useJs ? { renderer: 'canvaskit' } : { wasmAllowList: { blink: true, gecko: true, webkit: true } },#" "$TEST/flutter_bootstrap.js"
-echo "trial copy at /game-test/"
+# The trial copy that once lived at /game-test/ (Safari on the WebAssembly
+# renderer) is now how /game/ itself is served.
+rm -rf "$SITE/public/game-test"
