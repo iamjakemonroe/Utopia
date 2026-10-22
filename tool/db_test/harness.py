@@ -76,6 +76,13 @@ create or replace function cron.schedule(name text, sched text, cmd text) return
   language sql as $f$ insert into cron.job (jobname, schedule, command) values (name, sched, cmd) returning jobid $f$;
 create or replace function cron.unschedule(name text) returns boolean
   language sql as $f$ delete from cron.job where jobname = name returning true $f$;
+-- pg_net isn't either: calls to the web are noted, not made.
+create schema if not exists net;
+create table if not exists net.calls (id serial, url text, body jsonb);
+create or replace function net.http_post(url text, body jsonb default '{}'::jsonb,
+  params jsonb default '{}'::jsonb, headers jsonb default '{}'::jsonb,
+  timeout_milliseconds int default 5000) returns bigint
+  language sql as $f$ insert into net.calls (url, body) values (url, body) returning id $f$;
 do $$ begin
   create publication supabase_realtime; exception when duplicate_object then null; end $$;
 grant usage on schema public to anon, authenticated, service_role;
@@ -89,9 +96,9 @@ grant usage on schema auth to anon, authenticated, service_role;
 
 
 def _prepare(sql):
-    # pg_cron and pgcrypto aren't in the bundled Postgres; the cron schema
-    # and the crypt functions above stand in.
-    return re.sub(r"create extension if not exists (pg_cron|pgcrypto)[^;]*;", "",
+    # pg_cron, pgcrypto and pg_net aren't in the bundled Postgres; the cron
+    # and net schemas and the crypt functions above stand in.
+    return re.sub(r"create extension if not exists (pg_cron|pgcrypto|pg_net)[^;]*;", "",
                   sql, flags=re.I)
 
 

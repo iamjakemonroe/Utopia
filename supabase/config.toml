@@ -455,3 +455,7 @@ verify_jwt = false
 # Flutterwave's webhook: checked by its secret hash, not a player's sign-in.
 [functions.web-pay-hook]
 verify_jwt = false
+
+# The house league: called by pg_cron; all it can do is play due moves.
+[functions.house-league]
+verify_jwt = false

@@ -38,10 +38,10 @@ def raises(sql, *args):
 
 
 houses = one("select count(*) from house_players")
-check("forty house players, each a profile with a frame and ratings", houses == 40
+check("eighty house players, each a profile with a frame and ratings", houses == 80
       and one("select count(*) from house_players h join profiles p on p.id = h.id "
-              "where p.equipped_aura is not null and p.display_name is not null and p.avatar_kind is not null") == 40
-      and one("select count(*) from player_ratings r join house_players h on h.id = r.user_id") == 80, houses)
+              "where p.equipped_aura is not null and p.display_name is not null and p.avatar_kind is not null") == 80
+      and one("select count(*) from player_ratings r join house_players h on h.id = r.user_id") == 160, houses)
 
 me = harness.new_user(db, "me@example.com")
 harness.as_user(db, me)

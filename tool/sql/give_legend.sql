@@ -78,14 +78,16 @@ begin
     raise exception '"%" is a house player', v_who;
   end if;
 
-  -- The opponents: the house players, weakest to strongest. The rival is
-  -- met most; the nemesis (the strongest) wins most against them.
+  -- The opponents: the first forty house players (the league's stronger
+  -- ones, with a set strength, would crowd the top), weakest to strongest.
+  -- The rival is met most; the nemesis (the strongest) wins most against
+  -- them.
   select array_agg(r.user_id order by r.rating), array_agg(r.rating order by r.rating),
          array_agg(r.games order by r.rating)
     into v_opp, v_opp_rating, v_opp_games
     from public.player_ratings r
     join public.house_players h on h.id = r.user_id
-   where r.game = v_game;
+   where r.game = v_game and h.strength is null;
   if coalesce(cardinality(v_opp), 0) < 5 then
     raise exception 'Not enough house players rated in % to play against', v_game;
   end if;
