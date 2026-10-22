@@ -30,6 +30,7 @@ import 'package:utopia/core/theme/theme_controller.dart';
 import 'package:utopia/core/widgets/app_background.dart';
 import 'package:utopia/core/widgets/coin_buddy.dart';
 import 'package:utopia/core/widgets/game_card_art.dart';
+import 'package:utopia/core/widgets/sprite_cache.dart';
 import 'package:utopia/features/checkers/presentation/screens/checkers_bot_screen.dart';
 import 'package:utopia/features/checkers/domain/checkers_engine.dart';
 import 'package:utopia/features/chess/domain/chess_bot.dart';
@@ -64,6 +65,14 @@ Future<void> main() async {
   // The film has Chip in it already: no floating one over it.
   await prefs.setBool('play.floatingChip', query['scene'] != 'cinema');
   AppTextStyles.preloadFonts();
+  // &sprites=pixels|readback: how drawings are kept (see SpriteCache):
+  // as on Skwasm, or as where making pixels reads them back (CanvasKit),
+  // whatever this browser would choose.
+  SpriteCache.debugReadsBack = switch (query['sprites']) {
+    'pixels' => false,
+    'readback' => true,
+    _ => null,
+  };
   await Supabase.initialize(
     url: Env.supabaseUrl,
     publishableKey: Env.supabasePublishableKey,
