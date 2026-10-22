@@ -1,6 +1,7 @@
 """Utopia's trailer: about 76 seconds, vertical, and you're in it. A film
 made in the game's own art (tool/perf/cinema.dart, filmed frame by frame
-by tool/ads/film.mjs into build/ads/raw/cinema): you wake on an island at
+at 60 fps, drawn at 4K and shrunk, by tool/ads/film.mjs into
+build/ads/raw/cinema.mkv): you wake on an island at
 night, Chip finds you, and you go through the gateway, the worlds and the
 games, into the dark where something is watching, and back to the gate.
 Over it: titles, an original score (tool/ads/score.py), the worlds' own
@@ -17,7 +18,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from compose import FF, FPS, GOLD, H, SFX, W, Shot, font  # noqa: E402
+from compose import FF, GOLD, H, RAW, SFX, W, font  # noqa: E402
 from voice import LINES  # noqa: E402
 
 OUT = os.path.expanduser('~/Desktop/Utopia Ads')
@@ -25,6 +26,8 @@ WORK = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.absp
                     'build', 'ads', 'trailer')
 LENGTH = 76.0
 END = 68.3
+FPS = 60
+FILM = os.path.join(RAW, 'cinema.mkv')
 
 # ── the cut ────────────────────────────────────────────────────────────────
 
@@ -108,27 +111,15 @@ def vignette():
     def make():
         y, x = np.mgrid[0:H, 0:W]
         d = np.sqrt(((x - W / 2) / (W * 0.62)) ** 2 + ((y - H / 2) / (H * 0.62)) ** 2)
-        return np.clip(1.08 - 0.42 * d ** 2, 0.45, 1.0).astype(np.float32)[:, :, None]
+        return np.clip(1.05 - 0.3 * d ** 2, 0.62, 1.0).astype(np.float32)[:, :, None]
     return cached('vignette', make)
 
 
-def grain(n):
-    def make():
-        rng = np.random.default_rng(3)
-        tiles = []
-        for _ in range(6):
-            g = rng.normal(0, 1, (H // 2, W // 2)).astype(np.float32)
-            img = Image.fromarray(np.uint8(np.clip(128 + g * 40, 0, 255))).resize((W, H), Image.BILINEAR)
-            tiles.append((np.asarray(img, dtype=np.float32) - 128)[:, :, None] * 0.18)
-        return tiles
-    return cached('grain', make)[n % 6]
-
-
-def finish(img, t):
-    """Grade, vignette and grain over a finished frame."""
+def finish(img):
+    """A light grade and a soft vignette over a finished frame (no grain:
+    on clean drawn art it reads as noise, and apps smear it)."""
     a = np.asarray(img, dtype=np.float32)
-    a = (a - 128) * 1.07 + 128 + np.array([4, 0, -3], dtype=np.float32)
-    a = a * vignette() + grain(int(t * FPS))
+    a = ((a - 128) * 1.04 + 128) * vignette()
     return Image.fromarray(np.uint8(np.clip(a, 0, 255)))
 
 
@@ -197,9 +188,21 @@ def text_layer(text, style, k, life, ink=False):
     return out
 
 
-def film_frame(t):
-    """The film, as cinema.dart drew it at [t]."""
-    return Image.open(Shot.get('cinema').frame_at(t + 1e-6)).convert('RGB')
+class Film:
+    """The film's frames in order from frame [first], read from FILM."""
+
+    def __init__(self, first):
+        self.proc = subprocess.Popen(
+            [FF, '-loglevel', 'error', '-ss', f'{first / FPS:.6f}', '-i', FILM, '-f', 'rawvideo',
+             '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
+
+    def next(self):
+        data = self.proc.stdout.read(W * H * 3)
+        return Image.frombytes('RGB', (W, H), data)
+
+    def close(self):
+        self.proc.stdout.close()
+        self.proc.kill()
 
 
 def _end_shade():
@@ -213,10 +216,10 @@ def _end_shade():
     return shade
 
 
-def end_frame(t):
+def end_frame(t, film):
     """The gate ahead of you, waiting: the name, and how to step inside."""
     local = t - END
-    img = film_frame(t).convert('RGBA')
+    img = film.convert('RGBA')
     shade = cached('endshade', _end_shade)
     k = min(1, local / 0.8)
     if k < 1:
@@ -256,10 +259,10 @@ def end_frame(t):
     return out
 
 
-def frame(t, texts):
+def frame(t, texts, film):
     if t >= END:
-        return finish(end_frame(t), t)
-    img = film_frame(t)
+        return finish(end_frame(t, film))
+    img = film
     live = [x for x in texts if x[0] <= t < x[1]]
     if live:
         base = img.convert('RGBA')
@@ -268,18 +271,26 @@ def frame(t, texts):
             if layer is not None:
                 base.alpha_composite(layer)
         img = base.convert('RGB')
-    return finish(img, t)
+    return finish(img)
 
 
 def render_part(args):
     first, last, path = args
     texts, _ = timeline()
+    film = Film(first)
+    # High quality, tuned for drawn art, in HD's colors (BT.709) and tagged
+    # so, which players and apps expect of 1080p.
     proc = subprocess.Popen(
         [FF, '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}',
-         '-r', str(FPS), '-i', '-', '-c:v', 'libx264', '-crf', '17', '-preset', 'medium',
-         '-pix_fmt', 'yuv420p', path], stdin=subprocess.PIPE)
+         '-r', str(FPS), '-i', '-',
+         '-vf', 'scale=out_color_matrix=bt709:out_range=tv,format=yuv420p',
+         '-c:v', 'libx264', '-preset', 'slow', '-tune', 'animation', '-crf', '12',
+         '-profile:v', 'high', '-level', '4.2',
+         '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709',
+         '-color_range', 'tv', path], stdin=subprocess.PIPE)
     for n in range(first, last):
-        proc.stdin.write(frame(n / FPS, texts).tobytes())
+        proc.stdin.write(frame(n / FPS, texts, film.next()).tobytes())
+    film.close()
     proc.stdin.close()
     proc.wait()
     return path
@@ -300,13 +311,8 @@ def main():
             done = pool.map(render_part, jobs)
         listing = os.path.join(WORK, 'parts.txt')
         open(listing, 'w').write(''.join(f"file '{p}'\n" for p in done))
-        master = os.path.join(WORK, 'master.mp4')
         subprocess.run([FF, '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', listing,
-                        '-c', 'copy', master], check=True)
-        # For posting: the grain kept, the size an app will take (~110 MB).
-        subprocess.run([FF, '-y', '-loglevel', 'error', '-i', master, '-c:v', 'libx264',
-                        '-preset', 'slow', '-tune', 'grain', '-crf', '18', '-maxrate', '12M',
-                        '-bufsize', '24M', '-pix_fmt', 'yuv420p', video], check=True)
+                        '-c', 'copy', video], check=True)
     score = os.path.join(WORK, 'score.wav')
     subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), 'score.py'), score],
                    check=True)
@@ -334,7 +340,11 @@ def main():
             parts_a.append('[bed]alimiter=limit=0.95[a]')
         out = os.path.join(OUT, name)
         subprocess.run([FF, '-y', '-loglevel', 'error', *inputs, '-filter_complex', ';'.join(parts_a),
-                        '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '256k',
+                        '-map', '0:v', '-map', '[a]', '-c:v', 'copy',
+                        # Say BT.709 for all three, so no player guesses.
+                        '-bsf:v', 'h264_metadata=colour_primaries=1:transfer_characteristics=1'
+                        ':matrix_coefficients=1',
+                        '-c:a', 'aac', '-b:a', '256k',
                         '-ar', '48000', '-ac', '2', '-t', str(LENGTH), '-movflags', '+faststart', out],
                        check=True)
     print('made the trailer in', OUT)
