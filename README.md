@@ -8,8 +8,6 @@ behaves.
 
 Play it in the browser: https://utopia.kaivon.app/game/
 
-Built by Emmanuel Jake Okeowo, with Claude (Anthropic) as an AI coding agent.
-
 ## Highlights
 
 - **Real-time multiplayer games**: Chess, Checkers, Ludo (2 to 6 players,
