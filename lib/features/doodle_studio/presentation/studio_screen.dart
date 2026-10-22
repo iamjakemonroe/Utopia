@@ -365,7 +365,10 @@ class _StudioScreenState extends ConsumerState<StudioScreen>
         _updatePinch();
       case _Gesture.drawing when e.pointer == _drawPointer:
         if (_tool == ArtTool.bucket) {
-          if ((e.localPosition - _tapAt!).distance > 14) _tapAt = null;
+          // Moved off: no pour. (Once it's off it stays off: moves after
+          // that have no tap left to measure from.)
+          final at = _tapAt;
+          if (at != null && (e.localPosition - at).distance > 14) _tapAt = null;
         } else {
           _extendStroke(e);
         }

@@ -23,12 +23,21 @@ class LineArt {
   static final _images = <String, ui.Image>{};
   static final _loading = <String, Future<ui.Image>>{};
 
+  /// When a page's ink last failed to come (offline, say): [of] waits a
+  /// while before asking again, rather than on every frame drawn.
+  static final _failedAt = <String, DateTime>{};
+  static const _retryAfter = Duration(seconds: 30);
+
   /// [page]'s ink if it's ready (and starts getting it if not).
   static ui.Image? of(ColoringPage page) {
     final path = page.artPath;
     if (path == null) return null;
     final image = _images[path];
-    if (image == null) unawaited(load(page).then((_) {}, onError: (_) {}));
+    final failed = _failedAt[path];
+    if (image == null &&
+        (failed == null || DateTime.now().difference(failed) > _retryAfter)) {
+      unawaited(load(page).then((_) {}, onError: (_) {}));
+    }
     return image;
   }
 
@@ -38,11 +47,13 @@ class LineArt {
     return _loading[path] ??= _make(path).then(
       (image) {
         _images[path] = image;
+        _failedAt.remove(path);
         ready.value++;
         return image;
       },
       onError: (Object e) {
         _loading.remove(path);
+        _failedAt[path] = DateTime.now();
         throw e;
       },
     );
