@@ -69,6 +69,8 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
+        <!-- PostHog is set up from Dart (lib/core/analytics/posthog.dart). -->
+        <meta-data android:name="com.posthog.posthog.AUTO_INIT" android:value="false" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../friends/data/presence.dart';
 
 /// Thin wrapper around Supabase auth calls used by this app.
@@ -18,9 +22,60 @@ import '../../friends/data/presence.dart';
 ///    email already has an account, the guest signs in to that instead, and
 ///    [startGuestTransfer] / [finishGuestTransfer] bring the guest's things.
 class AuthRepository {
-  AuthRepository(this._client);
+  AuthRepository(this._client) {
+    _authSubscription = _client.auth.onAuthStateChange.listen((state) {
+      unawaited(_syncPostHogIdentity(state.session?.user));
+    });
+    // Supabase restores persisted sessions before this repository is created.
+    // Sync it immediately so startup errors and screens have the same person.
+    unawaited(_syncPostHogIdentity(_client.auth.currentUser));
+  }
 
   final SupabaseClient _client;
+  late final StreamSubscription<AuthState> _authSubscription;
+  String? _postHogUserId;
+  String? _postHogEmail;
+  bool? _postHogIsAnonymous;
+
+  /// Keeps PostHog identity at the auth boundary, rather than repeating it
+  /// at event and error call sites. Supabase [User.id] is a stable UUID; email
+  /// remains a person property and is never used as the distinct ID.
+  Future<void> _syncPostHogIdentity(User? user) async {
+    if (user == null) {
+      if (_postHogUserId == null) {
+        // A clean launch with no Supabase session must not retain a previous
+        // device user's PostHog identity.
+        await Posthog().reset();
+        return;
+      }
+      _postHogUserId = null;
+      _postHogEmail = null;
+      _postHogIsAnonymous = null;
+      await Posthog().reset();
+      return;
+    }
+
+    final email = user.email;
+    if (_postHogUserId == user.id &&
+        _postHogEmail == email &&
+        _postHogIsAnonymous == user.isAnonymous) {
+      return;
+    }
+    _postHogUserId = user.id;
+    _postHogEmail = email;
+    _postHogIsAnonymous = user.isAnonymous;
+
+    await Posthog().identify(
+      userId: user.id,
+      userProperties: {
+        'is_anonymous': user.isAnonymous,
+        if (email != null && email.isNotEmpty) r'$email': email,
+      },
+    );
+  }
+
+  /// Stops the auth listener when Riverpod disposes this repository.
+  void dispose() => _authSubscription.cancel();
 
   Session? get currentSession => _client.auth.currentSession;
 

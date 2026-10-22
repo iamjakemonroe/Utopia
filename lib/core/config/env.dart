@@ -31,6 +31,13 @@ class Env {
   /// env/local.json). Empty: no crash reporting at all.
   static const String sentryDsn = String.fromEnvironment('SENTRY_DSN');
 
+  /// PostHog's public client configuration, passed at build time alongside
+  /// the other values in env/local.json.
+  static const String posthogProjectToken = String.fromEnvironment(
+    'POSTHOG_PROJECT_TOKEN',
+  );
+  static const String posthogHost = String.fromEnvironment('POSTHOG_HOST');
+
   /// Non-null when the app was built without `--dart-define-from-file`.
   /// main.dart shows this on screen instead of throwing: a throw before
   /// runApp leaves the device on the blank native launch screen, which

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:posthog_flutter/posthog_flutter.dart';
 
 import '../widgets/leave_guard.dart';
 import '../../features/auth/data/auth_repository.dart';
@@ -71,7 +72,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: '/splash',
-    observers: [PopupTracker.instance],
+    observers: [PopupTracker.instance, PosthogObserver()],
     refreshListenable: GoRouterRefreshStream(authRepository.onAuthStateChange),
     redirect: (context, state) => _redirect(authRepository, state),
     routes: [
