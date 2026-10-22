@@ -65,6 +65,11 @@ class DoodleInk extends ChangeNotifier {
   int epoch = 0;
   int rev = 0;
 
+  /// Bumped by everything that changes the canvas (a stroke, paint, an
+  /// undo, a clear), so a copy loaded from the server can tell that it's
+  /// from before something that's happened since.
+  int changes = 0;
+
   /// The drawer's own stroke changed (it's drawn straight from [mine]).
   void changed() => notifyListeners();
 
@@ -86,6 +91,7 @@ class DoodleInk extends ChangeNotifier {
     this.turn = turn;
     this.epoch = epoch;
     this.rev = rev;
+    changes++;
     incoming.clear();
     mine = null;
     _doc.ops.clear();
@@ -94,10 +100,12 @@ class DoodleInk extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// The canvas exactly as saved on the server.
+  /// The canvas exactly as saved on the server. A stroke still being drawn
+  /// stays (it isn't saved until it's finished).
   void replaceAll(List<ArtOp> ops, {required int rev}) {
     this.rev = rev;
-    incoming.clear();
+    changes++;
+    incoming.removeWhere((_, stroke) => stroke.done != null);
     _doc.ops
       ..clear()
       ..addAll(ops);
@@ -106,12 +114,14 @@ class DoodleInk extends ChangeNotifier {
   }
 
   void add(ArtOp op) {
+    changes++;
     _doc.add(op);
     render.update();
     notifyListeners();
   }
 
   ArtOp? undo() {
+    changes++;
     _finishIncoming();
     final op = _doc.undo();
     _doc.redo.clear();
@@ -122,6 +132,7 @@ class DoodleInk extends ChangeNotifier {
 
   void clear({required int epoch}) {
     this.epoch = epoch;
+    changes++;
     incoming.clear();
     _doc.ops.clear();
     render.update();
@@ -160,6 +171,7 @@ class DoodleInk extends ChangeNotifier {
       ..addAll(op.points);
     stroke.done = op;
     rev++;
+    changes++;
     notifyListeners();
   }
 
@@ -169,6 +181,7 @@ class DoodleInk extends ChangeNotifier {
     _finishIncoming();
     _doc.add(op);
     rev++;
+    changes++;
     render.update();
     notifyListeners();
   }

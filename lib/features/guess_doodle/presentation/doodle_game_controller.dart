@@ -605,6 +605,7 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
     final turn = game.turn;
     final epoch = game.canvasEpoch;
     final rev = game.canvasRev;
+    final changes = ink.changes;
     try {
       final rows = await _repo.strokes(
         gameId: gameId,
@@ -612,13 +613,23 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
         epoch: epoch,
       );
       if (_disposed || ink.turn != turn) return;
+      // Something was drawn, undone or cleared while it loaded: this copy
+      // could be from before it (an undone stroke would come back, a new
+      // one would vanish) and the canvas would stay unlike everyone
+      // else's. Look again once things are quiet instead.
+      if (ink.changes != changes) {
+        _scheduleResync();
+        return;
+      }
       if (ink.epoch != epoch) ink.clear(epoch: epoch);
+      // Counted as of when it was asked for: anything saved after that
+      // shows up as the game's revision moving past it, and is loaded then.
       ink.replaceAll([
         for (final row in rows)
           if (ArtOp.fromJson(row) case final op?
               when op is StrokeOp || op is SpillOp)
             op,
-      ], rev: math.max(rev, ink.rev));
+      ], rev: rev);
     } catch (_) {}
   }
 

@@ -141,12 +141,22 @@ class _FakeRepo implements DoodleGameRepository {
     return 0;
   }
 
+  /// The canvas as saved, and (when set) a load held back until the test
+  /// lets it through: it returns the canvas as it was when it was asked.
+  List<Map<String, Object?>> savedStrokes = const [];
+  Completer<void>? holdStrokes;
+
   @override
   Future<List<Map<String, Object?>>> strokes({
     required String gameId,
     required int turn,
     required int epoch,
-  }) async => const [];
+  }) async {
+    final rows = List.of(savedStrokes);
+    calls.add('strokes');
+    await holdStrokes?.future;
+    return rows;
+  }
 
   @override
   Future<String> quickPlay() async => 'g1';
@@ -492,6 +502,73 @@ void main() {
     expect(ink.canUndo, isTrue);
     ink.undo();
     expect(ink.canUndo, isFalse, reason: "only the drawer's stroke landed");
+    await _finish(tester);
+  });
+
+  testWidgets('a canvas loaded while the drawer undoes never brings it back', (
+    tester,
+  ) async {
+    final repo = await _pump(tester);
+    repo.players.add([_player('me'), _player('mia', seq: 2)]);
+    repo.game.add(
+      _game(phase: DoodlePhase.drawing, drawer: 'mia', mask: '___'),
+    );
+    await _settle(tester);
+    final ink = ProviderScope.containerOf(
+      tester.element(find.byType(GuessDoodleScreen)),
+    ).read(doodleGameControllerProvider('g1').notifier).ink;
+
+    // Mia pours red over the empty page and draws a white line...
+    const spill = {'t': 'b', 'x': 50, 'y': 50, 'c': 0xFFD9493E};
+    const line = {
+      't': 's',
+      'tool': 'marker',
+      'c': 0xFFFFFFFF,
+      'w': 12,
+      'p': [100, 100, 12, 300, 300, 12],
+    };
+    repo.link.onEvent!('spill', {
+      'by': 'mia',
+      'turn': 1,
+      'epoch': 0,
+      'op': spill,
+    });
+    repo.link.onEvent!('end', {
+      'by': 'mia',
+      'turn': 1,
+      'epoch': 0,
+      'sid': 1,
+      'op': line,
+    });
+    await _settle(tester);
+    // ...the game says more happened than came through, so this phone
+    // loads the canvas from the server...
+    repo.savedStrokes = [spill, line];
+    repo.holdStrokes = Completer();
+    repo.game.add(
+      _game(phase: DoodlePhase.drawing, drawer: 'mia', mask: '___', rev: 3),
+    );
+    await tester.pump(const Duration(milliseconds: 1600));
+    expect(repo.calls, contains('strokes'));
+    // ...and while it loads, she undoes both.
+    repo.link.onEvent!('undo', {'by': 'mia', 'turn': 1, 'epoch': 0});
+    repo.link.onEvent!('undo', {'by': 'mia', 'turn': 1, 'epoch': 0});
+    repo.holdStrokes!.complete();
+    repo.holdStrokes = null;
+    await _settle(tester);
+    expect(ink.isEmpty, isTrue, reason: 'what she undid stays gone');
+
+    // A load with nothing happening meanwhile still puts the canvas right.
+    repo.savedStrokes = [line];
+    repo.game.add(
+      _game(phase: DoodlePhase.drawing, drawer: 'mia', mask: '___', rev: 9),
+    );
+    await tester.pump(const Duration(milliseconds: 1600));
+    await _settle(tester);
+    expect(ink.canUndo, isTrue);
+    ink.undo();
+    expect(ink.canUndo, isFalse, reason: 'exactly the saved canvas');
+    expect(ink.rev, 9);
     await _finish(tester);
   });
 
