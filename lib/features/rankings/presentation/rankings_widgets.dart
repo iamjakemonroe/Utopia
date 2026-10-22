@@ -685,11 +685,6 @@ class _Step extends StatelessWidget {
               color: e == null ? AppColors.textSecondary : null,
             ),
           ),
-          if (e != null && e.house)
-            const Padding(
-              padding: EdgeInsets.only(top: 2, bottom: 2),
-              child: HouseTag(),
-            ),
           if (e != null)
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -894,10 +889,6 @@ class BoardRow extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (entry.house) ...[
-                          const SizedBox(width: 6),
-                          const HouseTag(),
-                        ],
                       ],
                     ),
                     Row(
@@ -931,7 +922,8 @@ class BoardRow extends StatelessWidget {
   }
 }
 
-/// Marks one of Utopia's house players on a board.
+/// Marks one of Utopia's house players, on their card (the board itself
+/// says some players are, once, under it).
 class HouseTag extends StatelessWidget {
   const HouseTag({super.key, this.big = false});
 

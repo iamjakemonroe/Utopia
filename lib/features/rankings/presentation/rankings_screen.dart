@@ -230,7 +230,7 @@ class _BoardState extends ConsumerState<_Board> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
-                      strings.rankingsPlayersTaggedHouseAreUtopia,
+                      strings.rankingsSomePlayersAreHouse,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body(
                         fontSize: 12,

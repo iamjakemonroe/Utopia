@@ -2531,8 +2531,8 @@
   "@rankingsTopPlayers": {
     "description": "features/rankings/presentation/rankings_screen.dart"
   },
-  "rankingsPlayersTaggedHouseAreUtopia": "Players tagged House are Utopia's own: they keep the board busy until more players join, and never win prizes.",
-  "@rankingsPlayersTaggedHouseAreUtopia": {
+  "rankingsSomePlayersAreHouse": "Some players here are Utopia's house players (tap a player to see). They keep the boards busy and never win prizes.",
+  "@rankingsSomePlayersAreHouse": {
     "description": "features/rankings/presentation/rankings_screen.dart"
   },
   "rankingsRatingsComeFromOnlineGames": "Ratings come from online games. Pull down to refresh.",

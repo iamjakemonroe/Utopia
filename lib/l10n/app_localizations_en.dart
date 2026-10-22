@@ -1901,8 +1901,8 @@ class L10nEn extends L10n {
   String get rankingsTopPlayers => 'Top players';
 
   @override
-  String get rankingsPlayersTaggedHouseAreUtopia =>
-      'Players tagged House are Utopia\'s own: they keep the board busy until more players join, and never win prizes.';
+  String get rankingsSomePlayersAreHouse =>
+      'Some players here are Utopia\'s house players (tap a player to see). They keep the boards busy and never win prizes.';
 
   @override
   String get rankingsRatingsComeFromOnlineGames =>

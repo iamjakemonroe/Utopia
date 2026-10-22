@@ -1159,10 +1159,6 @@ class _Person extends StatelessWidget {
                         style: _value(tier, 17),
                       ),
                     ),
-                    if (person.house) ...[
-                      const SizedBox(width: 6),
-                      const HouseTag(),
-                    ],
                   ],
                 ),
                 Text(detail, style: _small(tier)),

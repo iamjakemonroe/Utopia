@@ -145,7 +145,7 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
   void _houseSoon([Duration? after]) {
     _houseTimer?.cancel();
     _houseTimer = Timer(
-      after ?? Duration(seconds: 20 + math.Random().nextInt(9)),
+      after ?? Duration(seconds: 12 + math.Random().nextInt(6)),
       () async {
         if (!mounted || !_searching) return;
         try {
@@ -162,7 +162,7 @@ class _ChessLobbyScreenState extends ConsumerState<ChessLobbyScreen> {
             return;
           }
         } catch (_) {}
-        if (mounted && _searching) _houseSoon(const Duration(seconds: 10));
+        if (mounted && _searching) _houseSoon(const Duration(seconds: 6));
       },
     );
   }

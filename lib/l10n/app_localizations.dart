@@ -3395,8 +3395,8 @@ abstract class L10n {
   /// features/rankings/presentation/rankings_screen.dart
   ///
   /// In en, this message translates to:
-  /// **'Players tagged House are Utopia\'s own: they keep the board busy until more players join, and never win prizes.'**
-  String get rankingsPlayersTaggedHouseAreUtopia;
+  /// **'Some players here are Utopia\'s house players (tap a player to see). They keep the boards busy and never win prizes.'**
+  String get rankingsSomePlayersAreHouse;
 
   /// features/rankings/presentation/rankings_screen.dart
   ///
