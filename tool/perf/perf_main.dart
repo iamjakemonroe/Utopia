@@ -41,6 +41,7 @@ import 'package:utopia/features/guess_doodle/domain/chip_doodle.dart';
 import 'package:utopia/features/guess_doodle/presentation/chip_doodle_screen.dart';
 import 'package:utopia/features/notifications/presentation/notifications_screen.dart';
 import 'package:utopia/features/settings/presentation/settings_screen.dart';
+import 'package:utopia/features/welcome/presentation/welcome_week.dart';
 import 'package:utopia/core/profiles/profile_providers.dart';
 import 'package:utopia/features/auth/presentation/providers/auth_providers.dart';
 import 'package:utopia/features/coins/presentation/providers/coin_balance_provider.dart';
@@ -165,6 +166,20 @@ Future<void> main() async {
                   .toJS;
           globalContext['__start'] = (() {
             cinemaStart.value = true;
+          }).toJS;
+          // window.__welcome() opens the welcome week's sheet (three live
+          // worlds in it) over the scene.
+          globalContext['__welcome'] = (() {
+            final context = router.routerDelegate.navigatorKey.currentContext;
+            if (context == null) return;
+            showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (_) => WelcomeWeekSheet(
+                until: DateTime.now().add(const Duration(days: 3)),
+              ),
+            );
           }).toJS;
           globalContext['__push'] = (() {
             router.push('/notifications');
