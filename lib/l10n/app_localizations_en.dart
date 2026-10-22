@@ -1848,6 +1848,16 @@ class L10nEn extends L10n {
   String get welcomeWeekDec => 'Dec';
 
   @override
+  String get welcomePictureTitle => 'Choose your picture';
+
+  @override
+  String get welcomePictureBody =>
+      'It\'s what friends see in games and chats. Pick one, or upload a photo of your own.';
+
+  @override
+  String get welcomePictureSkip => 'Skip for now';
+
+  @override
   String welcomeWeekEverythingSYoursForDays(Object days) {
     return 'Everything’s yours for $days days';
   }

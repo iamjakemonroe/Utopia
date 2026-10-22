@@ -2459,6 +2459,15 @@
   "@welcomeWeekDec": {
     "description": "features/welcome/presentation/welcome_week.dart"
   },
+  "welcomePictureTitle": "Choose your picture",
+  "@welcomePictureTitle": {
+    "description": "A new player's first step: picking the picture friends see."
+  },
+  "welcomePictureBody": "It's what friends see in games and chats. Pick one, or upload a photo of your own.",
+  "welcomePictureSkip": "Skip for now",
+  "@welcomePictureSkip": {
+    "description": "Passes over choosing a picture; they keep the one they were given at random."
+  },
   "welcomeWeekEverythingSYoursForDays": "Everything’s yours for {days} days",
   "@welcomeWeekEverythingSYoursForDays": {
     "description": "features/welcome/presentation/welcome_week.dart",

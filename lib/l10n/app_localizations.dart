@@ -3302,6 +3302,24 @@ abstract class L10n {
   /// **'Dec'**
   String get welcomeWeekDec;
 
+  /// A new player's first step: picking the picture friends see.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your picture'**
+  String get welcomePictureTitle;
+
+  /// No description provided for @welcomePictureBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s what friends see in games and chats. Pick one, or upload a photo of your own.'**
+  String get welcomePictureBody;
+
+  /// Passes over choosing a picture; they keep the one they were given at random.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get welcomePictureSkip;
+
   /// features/welcome/presentation/welcome_week.dart
   ///
   /// In en, this message translates to:

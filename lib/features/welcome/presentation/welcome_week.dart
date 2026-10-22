@@ -23,6 +23,7 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../store/presentation/store_controller.dart';
 import '../data/welcome_repository.dart';
 import '../../../l10n/strings.dart';
+import 'picture_step.dart';
 
 /// Once a session on home: starts a new player's welcome pass (everything
 /// in the store, free for three days) and welcomes them to it, reminds
@@ -42,6 +43,9 @@ Future<void> showWelcomeIfDue(BuildContext context, WidgetRef ref) async {
   if (!context.mounted) return;
 
   if (week.fresh) {
+    // First, their picture (a drawn one, or a photo of their own).
+    await showPictureStep(context, ref);
+    if (!context.mounted) return;
     // Everything lent, and the halo on, shown straight away.
     unawaited(ref.read(storeControllerProvider.notifier).refresh());
     ref.invalidate(profileByIdProvider(me));

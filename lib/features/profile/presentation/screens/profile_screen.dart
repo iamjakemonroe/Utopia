@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/audio/game_audio.dart';
 import '../../../../core/profiles/profile_providers.dart';
@@ -16,7 +15,6 @@ import '../../../../core/theme/utopia_themes.dart';
 import '../../../../core/widgets/app_background.dart';
 import '../../../../core/widgets/doodle_ink.dart';
 import '../../../../core/widgets/coin_buddy.dart';
-import '../../../../core/widgets/generated_avatar.dart';
 import '../../../../core/widgets/pop_card.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/tilt_3d.dart';
@@ -44,6 +42,7 @@ import '../username_dialog.dart';
 import '../../../../core/widgets/ambient_tick.dart';
 import '../../../../core/layout/responsive.dart';
 import '../../../../l10n/strings.dart';
+import '../widgets/avatar_picker.dart';
 
 final _myStatsProvider = FutureProvider.autoDispose
     .family<Map<String, dynamic>, String>(
@@ -161,11 +160,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _openAvatarPicker(Map<String, dynamic>? profile) async {
     ref.read(gameAudioProvider).play(Sfx.drawer);
-    final choice = await showModalBottomSheet<_AvatarChoice>(
+    final choice = await showModalBottomSheet<AvatarChoice>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => _AvatarPickerSheet(
+      builder: (context) => AvatarPickerSheet(
         currentKind: profile?['avatar_url'] == null
             ? (profile?['avatar_kind'] as String?)
             : null,
@@ -188,23 +187,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _uploadPhoto() async {
-    final picked = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1024,
-      maxHeight: 1024,
-      imageQuality: 85,
-    );
-    if (picked == null || !mounted) return;
-
-    final bytes = await picked.readAsBytes();
-    final dot = picked.name.lastIndexOf('.');
-    final ext = dot == -1 ? 'jpg' : picked.name.substring(dot + 1);
-
+    final photo = await pickAvatarPhoto();
+    if (photo == null || !mounted) return;
     await _save(
       (repository, myId) => repository.replaceAvatarPhoto(
         userId: myId,
-        bytes: bytes,
-        fileExtension: ext,
+        bytes: photo.$1,
+        fileExtension: photo.$2,
       ),
     );
   }
@@ -1440,238 +1429,6 @@ class _CompanionCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// What the picker sheet returns: a null [kind] means "upload a photo".
-class _AvatarChoice {
-  const _AvatarChoice.photo() : kind = null, seed = null;
-  const _AvatarChoice.generated(String this.kind, int this.seed);
-
-  final String? kind;
-  final int? seed;
-}
-
-/// Avatars by kind, picked with icon tabs, plus "upload your own".
-class _AvatarPickerSheet extends StatefulWidget {
-  const _AvatarPickerSheet({
-    required this.currentKind,
-    required this.currentSeed,
-  });
-
-  final String? currentKind;
-  final int? currentSeed;
-
-  @override
-  State<_AvatarPickerSheet> createState() => _AvatarPickerSheetState();
-}
-
-class _AvatarPickerSheetState extends State<_AvatarPickerSheet> {
-  static const _kinds = [
-    ('plant', Icons.eco_rounded, Color(0xFF3DDC97)),
-    ('animal', Icons.pets_rounded, Color(0xFFFF8A3D)),
-    ('human', Icons.face_rounded, Color(0xFF4DA3FF)),
-  ];
-
-  late String _kind = _kinds.any((k) => k.$1 == widget.currentKind)
-      ? widget.currentKind!
-      : _kinds.first.$1;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.surfaceElevated, AppColors.background],
-        ),
-        border: sheetBorder(AppColors.goldBorder),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.sm,
-            AppSpacing.lg,
-            AppSpacing.lg,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 44,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: AppColors.textSecondary.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Row(
-                children: [
-                  for (final (kind, icon, color) in _kinds) ...[
-                    Expanded(
-                      child: _KindTab(
-                        icon: icon,
-                        color: color,
-                        selected: kind == _kind,
-                        onTap: () => setState(() => _kind = kind),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                  ],
-                  Expanded(
-                    child: _KindTab(
-                      icon: Icons.add_a_photo_rounded,
-                      color: AppColors.coral,
-                      selected: false,
-                      onTap: () => Navigator.of(
-                        context,
-                      ).pop(const _AvatarChoice.photo()),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
-                child: GridView.count(
-                  key: ValueKey(_kind),
-                  crossAxisCount: 4,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: AppSpacing.md,
-                  crossAxisSpacing: AppSpacing.md,
-                  children: [
-                    for (var seed = 0; seed < kAvatarChoicesPerKind; seed++)
-                      _AvatarOption(
-                        kind: _kind,
-                        seed: seed,
-                        index: seed,
-                        selected:
-                            _kind == widget.currentKind &&
-                            seed == widget.currentSeed,
-                        onTap: () => Navigator.of(
-                          context,
-                        ).pop(_AvatarChoice.generated(_kind, seed)),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _KindTab extends StatelessWidget {
-  const _KindTab({
-    required this.icon,
-    required this.color,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final Color color;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedScale(
-        scale: selected ? 1 : 0.9,
-        duration: const Duration(milliseconds: 380),
-        curve: Curves.elasticOut,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          height: 56,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: selected
-                  ? [Color.lerp(color, Colors.white, 0.3)!, color]
-                  : [AppColors.surfaceElevated, AppColors.surface],
-            ),
-            border: Border.all(
-              color: selected ? Colors.white70 : color.withValues(alpha: 0.4),
-              width: selected ? 2 : 1.2,
-            ),
-            boxShadow: selected
-                ? [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.45),
-                      blurRadius: 12,
-                    ),
-                  ]
-                : null,
-          ),
-          child: Icon(icon, color: selected ? Colors.white : color, size: 28),
-        ),
-      ),
-    );
-  }
-}
-
-class _AvatarOption extends StatelessWidget {
-  const _AvatarOption({
-    required this.kind,
-    required this.seed,
-    required this.index,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String kind;
-  final int seed;
-  final int index;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: Duration(milliseconds: 380 + index * 50),
-      curve: Curves.elasticOut,
-      builder: (context, v, child) => Transform.scale(scale: v, child: child),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: selected ? AppColors.goldBorderBright : Colors.transparent,
-              width: 3,
-            ),
-            boxShadow: selected
-                ? [
-                    BoxShadow(
-                      color: AppColors.goldBorderBright.withValues(alpha: 0.5),
-                      blurRadius: 12,
-                    ),
-                  ]
-                : null,
-          ),
-          child: LayoutBuilder(
-            builder: (context, c) =>
-                GeneratedAvatar(kind: kind, seed: seed, size: c.maxWidth),
-          ),
-        ),
       ),
     );
   }
