@@ -16,13 +16,15 @@
 import Anthropic from "npm:@anthropic-ai/sdk@0.135.0";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-// Chip Maestro members get the smartest brain; everyone else the middle
-// one (replies are the whole product, so not the fastest).
-const SMART_MODEL = Deno.env.get("CHIP_MODEL") ?? "claude-opus-5-5";
-const MID_MODEL = Deno.env.get("CHIP_MID_MODEL") ?? "claude-sonnet-5-5";
+// Which brain: Smart Chip (the stronger model) for Chip Rizz Pro members
+// and sets paid for with coins; Quick Chip (the fast one, about 20 times
+// cheaper) for guests' and free accounts' daily sets. See docs/PRICING.md.
+const SMART_MODEL = Deno.env.get("RIZZ_SMART_MODEL") ?? "claude-sonnet-5-5";
+const QUICK_MODEL = Deno.env.get("RIZZ_QUICK_MODEL") ?? "claude-haiku-5-5";
 
-type Tier = "guest" | "free" | "maestro";
-const modelFor = (tier: Tier) => tier === "maestro" ? SMART_MODEL : MID_MODEL;
+type Tier = "guest" | "free" | "pro";
+const modelFor = (a: { tier: Tier; paid: boolean }) =>
+  a.tier === "pro" || a.paid ? SMART_MODEL : QUICK_MODEL;
 
 /** Dollars per million tokens: input, output, cache read, cache write. */
 const PRICES: [string, [number, number, number, number]][] = [
@@ -33,8 +35,10 @@ const PRICES: [string, [number, number, number, number]][] = [
 
 /** Refusal fallback: if a safety classifier declines, the API retries on
  * Anthropic's recommended fallback model inside the same call. */
+// Haiku has no fallback model, so it goes without.
 // deno-lint-ignore no-explicit-any
 function withFallback(params: any): any {
+  if (String(params.model).startsWith("claude-haiku")) return params;
   return { ...params, betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" };
 }
 
@@ -107,7 +111,7 @@ async function allow(who: Who, kind: "rizz" | "learn", pay: boolean): Promise<Al
   });
   if (error) throw error;
   const d = (data ?? {}) as Record<string, unknown>;
-  const tier = ["guest", "free", "maestro"].includes(d.tier as string) ? d.tier as Tier : "free";
+  const tier = ["guest", "free", "pro"].includes(d.tier as string) ? d.tier as Tier : "free";
   return {
     ok: d.ok === true,
     tier,
@@ -377,7 +381,7 @@ async function reply(who: Who, body: Record<string, unknown>): Promise<Response>
 
   let out: Record<string, unknown> | "refused";
   try {
-    out = await ask(modelFor(allowance.tier), REPLY_SYSTEM, content, replySchema, 1500, "rizz", allowance.tier);
+    out = await ask(modelFor(allowance), REPLY_SYSTEM, content, replySchema, 1500, "rizz", allowance.tier);
   } catch (e) {
     if (allowance.paid) await admin().rpc("chip_refund", { p_user: who.userId, p_kind: "rizz" });
     throw e;
@@ -403,6 +407,7 @@ async function reply(who: Who, body: Record<string, unknown>): Promise<Response>
       .filter((r) => r.text),
     remember: person ? clip(out.remember, 200) : "",
     paid: allowance.paid,
+    smart: modelFor(allowance) === SMART_MODEL,
   });
 }
 
@@ -476,7 +481,7 @@ async function learn(who: Who, body: Record<string, unknown>): Promise<Response>
   ].filter(Boolean).join("\n\n");
 
   const out = await ask(
-    modelFor(allowance.tier),
+    modelFor(allowance),
     LEARN_SYSTEM,
     [{ type: "text", text: notes }],
     learnSchema,

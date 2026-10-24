@@ -99,16 +99,16 @@ for i in range(100):
 check("at most 100 people each", raises("insert into rizz_people (name) values ('One more')") == "too many people")
 
 # Allowances.
-got = [allow(guest, device=PHONE) for _ in range(6)]
-check("a guest gets 5 sets of replies a day", all(r["ok"] for r in got[:5]) and got[5]["why"] == "guest", got[5])
+got = [allow(guest, device=PHONE) for _ in range(4)]
+check("a guest gets 3 sets of replies a day", all(r["ok"] for r in got[:3]) and got[3]["why"] == "guest", got[3])
 check("…shared by guests on the same device", allow(guest2, device=PHONE)["why"] == "guest")
 check("rizz_me counts the device's", me(guest2, PHONE)["rizz_left"] == 0 and me(guest2, PHONE)["guest"])
 check("a guest reads 1 chat a day", allow(guest2, "learn", "tablet-key-0123456789abcd")["ok"]
       and allow(guest2, "learn", "tablet-key-0123456789abcd")["why"] == "guest")
 
-check("a free account starts with 15", me(pat)["rizz_left"] == 15 and me(pat)["tier"] == "free")
-got = [allow(pat) for _ in range(16)]
-check("…and gets 15", all(r["ok"] for r in got[:15]) and got[15]["why"] == "limit" and got[15]["price"] == 300, got[15])
+check("a free account starts with 5", me(pat)["rizz_left"] == 5 and me(pat)["tier"] == "free")
+got = [allow(pat) for _ in range(6)]
+check("…and gets 5", all(r["ok"] for r in got[:5]) and got[5]["why"] == "limit" and got[5]["price"] == 300, got[5])
 check("…which rizz_me shows", me(pat)["rizz_left"] == 0)
 check("Utopia's chats are counted apart", allow(pat, "chat")["ok"])
 before = balance(pat)
@@ -119,16 +119,15 @@ check("…while Utopia's chats still cost 20", me(pat)["price"] == 300
 admin("select chip_refund(%s, 'rizz')", pat)
 check("a refund gives back 300", balance(pat) == before)
 check("a paid set that failed is refunded", balance(pat) == before
-      and admin("select rizzes from chip_usage where user_id = %s and day = (now() at time zone 'utc')::date", pat)[0][0] == 15)
+      and admin("select rizzes from chip_usage where user_id = %s and day = (now() at time zone 'utc')::date", pat)[0][0] == 5)
 admin("select _ledger_move(%s, 'admin_adjustment', %s, null)", sam, -(balance(sam) - 299))
-for _ in range(15):
+for _ in range(5):
     allow(sam)
 check("not without 300 coins", allow(sam, pay=True)["why"] == "coins" and allow(sam, pay=True)["price"] == 300)
-check("chat readings can't be bought", allow(pat, "learn")["ok"] and allow(pat, "learn")["ok"] and allow(pat, "learn")["ok"]
-      and allow(pat, "learn", pay=True)["why"] == "limit")
+check("chat readings can't be bought", allow(pat, "learn")["ok"] and allow(pat, "learn", pay=True)["why"] == "limit")
 harness.as_user(db, pat)
 check("only the server refunds", raises("select chip_refund(%s, 'rizz')", pat) is not None)
-check("a member gets plenty", me(member)["rizz_left"] == 300 and me(member)["tier"] == "maestro")
+check("Chip Maestro (Utopia's plan) doesn't change Chip Rizz", me(member)["rizz_left"] == 5 and me(member)["tier"] == "free")
 check("Utopia's kinds are unchanged", allow(sam, "chat")["ok"] and allow(sam, "draw")["ok"])
 check("an unknown kind is refused", raises("select chip_allow('nope')") == "unknown kind")
 
