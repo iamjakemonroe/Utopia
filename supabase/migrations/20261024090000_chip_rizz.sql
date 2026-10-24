@@ -2,9 +2,9 @@
 -- Kaivon account, coins and Chip Maestro membership as Utopia.
 --
 --   * rizz_ages: each user's date of birth, given once in Chip Rizz (Utopia
---     keeps birthdays without the year). Chip Rizz is for 16 and over and
---     its Bold tone for 18 and over. A date can be corrected for a day
---     after it's first given, like a birthday.
+--     keeps birthdays without the year). Chip Rizz is for adults: 18 and
+--     over (the chip-rizz function checks). A date can be corrected for a
+--     day after it's first given, like a birthday.
 --   * rizz_people: the people someone texts, with what they've told Chip
 --     about each and what Chip learned from a chat they shared (the chat
 --     itself is never kept). Only their owner sees them; at most 100 each.

@@ -7,8 +7,8 @@
 //          keeps Chip's notes on that person (rizz_people.memory). The
 //          chat itself is never stored.
 //
-// Chip Rizz is for 16 and over and its bold tone for 18 and over, by the
-// date of birth the user gave (rizz_ages). Every call takes one of the
+// Chip Rizz is for adults (18 and over), by the date of birth the user gave
+// (rizz_ages). Every call takes one of the
 // day's allowance first (chip_allow 'rizz' or 'learn', shared with Utopia's
 // Chip: the same tiers, budget and coins), and what it cost goes in the
 // day's log (chip_costs).
@@ -202,12 +202,13 @@ Tones
 - playful: funny and light; teasing, banter, a bit of mischief.
 - flirty: charming and confident; compliments with intent, a little
   suggestive in a tasteful way.
-- bold: (adults only; the app checks) daring and openly flirtatious, with
-  heat and innuendo, but never sexually explicit: no sex acts and no
-  graphic talk about bodies. The kind of thing someone screenshots to
-  their friends because it was smooth, not because it was crude. If the
-  other person hasn't shown that kind of interest yet, keep it to confident
-  flirting and say so in the tip.
+- bold: the spiciest tone (everyone on Chip Rizz is an adult). Heated,
+  daring and openly flirtatious: desire, teasing about what you'd do
+  together, bedroom innuendo, confident dirty-minded humour. Suggestive,
+  never graphic: no explicit descriptions of sex acts or private parts.
+  The kind of line someone screenshots to their friends because it was
+  that smooth. If the other person hasn't shown that kind of interest yet,
+  keep it to confident flirting and say so in the tip.
 
 Goals (when one is given, every option works toward it)
 - keep_going: keep the conversation alive and flowing.
@@ -345,8 +346,7 @@ async function reply(who: Who, body: Record<string, unknown>): Promise<Response>
 
   const age = await ageOf(who);
   if (age === null) return json({ status: "age" });
-  if (age < 16) return json({ status: "young" });
-  if (tone === "bold" && age < 18) return json({ status: "adult" });
+  if (age < 18) return json({ status: "young" });
 
   const person = await personOf(who, body.person);
   const allowance = await allow(who, "rizz", body.pay === true);
@@ -354,7 +354,6 @@ async function reply(who: Who, body: Record<string, unknown>): Promise<Response>
 
   const notes = [
     `Mode: ${mode}. Tone: ${tone}.${goal ? ` Goal: ${goal}.` : ""} Language: ${lang}.`,
-    age < 18 ? "The user is under 18: keep everything age-appropriate." : "",
     person
       ? [
         `This is about ${person.name}.`,
@@ -464,14 +463,13 @@ async function learn(who: Who, body: Record<string, unknown>): Promise<Response>
 
   const age = await ageOf(who);
   if (age === null) return json({ status: "age" });
-  if (age < 16) return json({ status: "young" });
+  if (age < 18) return json({ status: "young" });
 
   const allowance = await allow(who, "learn", false);
   if (!allowance.ok) return refused(allowance);
 
   const notes = [
     `The chat is with ${person.name}.${me ? ` In it, the user is "${me}".` : ""}`,
-    age < 18 ? "The user is under 18." : "",
     person.about ? `What the user says about ${person.name}: ${person.about}` : "",
     person.memory ? `Your notes on ${person.name} so far:\n${person.memory}` : "",
     `The chat (the most recent part, if it was long):\n${chat}`,
