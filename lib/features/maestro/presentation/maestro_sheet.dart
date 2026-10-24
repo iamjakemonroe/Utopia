@@ -55,6 +55,39 @@ class _MaestroSheet extends ConsumerWidget {
               '?sku=$kMaestroProductId&package=com.iamjakemonroe.utopia',
   );
 
+  /// On the web: cancelling the plan bought here, once they're sure.
+  Future<void> _cancelOnWeb(
+    BuildContext context,
+    WidgetRef ref,
+    MaestroStatus status,
+  ) async {
+    final until = status.until?.toLocal();
+    final sure = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(strings.maestroCancelTitle),
+        content: Text(
+          strings.maestroCancelBody(
+            until == null ? '' : '${until.day}/${until.month}/${until.year}',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(strings.maestroKeepMyPlan),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(strings.maestroCancelPlan),
+          ),
+        ],
+      ),
+    );
+    if (sure == true) {
+      await ref.read(storeControllerProvider.notifier).cancelWebMaestro();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final status = ref.watch(maestroProvider).valueOrNull;
@@ -66,7 +99,10 @@ class _MaestroSheet extends ConsumerWidget {
         : ref.watch(profileByIdProvider(me)).valueOrNull;
     final name = profile?['display_name'] as String? ?? 'U';
     final member = status?.active ?? false;
-    final price = controller.maestroPrice;
+    final price = kIsWeb
+        ? ref.watch(webMaestroPriceProvider).valueOrNull
+        : controller.maestroPrice;
+    final canBuy = kIsWeb || Env.realMoneyStore;
     final busy = store.busyProduct == kMaestroProductId;
 
     ref.listen(storeControllerProvider.select((s) => s.message), (_, next) {
@@ -146,16 +182,21 @@ class _MaestroSheet extends ConsumerWidget {
                 _Compare(member: member),
                 const SizedBox(height: AppSpacing.lg),
                 if (member && status != null)
-                  _MemberCard(status: status, onManage: _manage)
+                  _MemberCard(
+                    status: status,
+                    onManage: kIsWeb
+                        ? () => _cancelOnWeb(context, ref, status)
+                        : _manage,
+                  )
                 else ...[
                   PrimaryButton(
-                    label: !Env.realMoneyStore
+                    label: !canBuy
                         ? strings.maestroComingSoon
                         : price == null
                         ? strings.maestroJoinChipMaestro
                         : strings.maestroJoinForAMonth(price),
                     isLoading: busy,
-                    onPressed: !Env.realMoneyStore || busy
+                    onPressed: !canBuy || busy
                         ? null
                         : () {
                             HapticFeedback.mediumImpact();
@@ -172,7 +213,7 @@ class _MaestroSheet extends ConsumerWidget {
                       ),
                     ),
                   ],
-                  if (Env.realMoneyStore)
+                  if (Env.realMoneyStore && !kIsWeb)
                     TextButton(
                       onPressed: controller.restore,
                       child: Text(
@@ -186,11 +227,13 @@ class _MaestroSheet extends ConsumerWidget {
                 ],
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  strings.maestroRenewsEveryMonthUntilYou(
-                    !kIsWeb && Platform.isIOS
-                        ? strings.maestroAppStore
-                        : strings.maestroGooglePlay,
-                  ),
+                  kIsWeb
+                      ? strings.maestroRenewsOnTheWeb
+                      : strings.maestroRenewsEveryMonthUntilYou(
+                          Platform.isIOS
+                              ? strings.maestroAppStore
+                              : strings.maestroGooglePlay,
+                        ),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(
                     fontSize: 12,

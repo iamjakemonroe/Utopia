@@ -10,6 +10,7 @@ import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_toast.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../notifications/presentation/notification_actions.dart';
+import '../../maestro/presentation/maestro_providers.dart';
 import 'store_controller.dart';
 import '../../../l10n/strings.dart';
 
@@ -31,7 +32,11 @@ class _WebPaymentReturnState extends ConsumerState<WebPaymentReturn> {
     super.initState();
     final query = WebPage.query;
     final payment = query['tx_ref'];
-    if (!kIsWeb || payment == null || !payment.startsWith('utopia-')) return;
+    if (!kIsWeb ||
+        payment == null ||
+        !(payment.startsWith('utopia-') || payment.startsWith('kaivon-sub-'))) {
+      return;
+    }
     unawaited(_settle(payment, query['transaction_id'], query['status']));
   }
 
@@ -58,6 +63,10 @@ class _WebPaymentReturnState extends ConsumerState<WebPaymentReturn> {
         .webConfirm(payment, transactionId);
     if (!mounted) return;
     switch (result.status) {
+      case 'paid' when result.product == 'maestro':
+        ref.read(gameAudioProvider).play(Sfx.purchase);
+        ref.invalidate(maestroProvider);
+        _say(strings.webPaymentReturnWelcomeToChipMaestro, ToastKind.success);
       case 'paid':
         ref.read(gameAudioProvider).play(Sfx.purchase);
         _say(
