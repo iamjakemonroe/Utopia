@@ -7,14 +7,13 @@
 //     project, reached through this proxy at http://localhost:54321.
 //
 // Point an app at http://localhost:54321 instead of the project's URL (the
-// game: --dart-define=SUPABASE_URL=http://localhost:54321; Chip Rizz:
-// VITE_SUPABASE_URL in .env.development.local) and pay with Flutterwave's
-// test cards. Flutterwave's webhook can't reach this Mac, so a payment is
+// game: --dart-define-from-file=env/local_pay.json, which this writes; Chip
+// Rizz: npm run dev:local) and pay with Flutterwave's test cards. Flutterwave's webhook can't reach this Mac, so a payment is
 // credited when the app comes back from checkout (the "confirm" step).
 //
 // Run from the repo: node tool/local_backend/serve.mjs
-import { spawn } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { execSync, spawn } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
 import tls from 'node:tls';
@@ -23,8 +22,13 @@ const root = new URL('../../', import.meta.url).pathname;
 const PORT = 54321;
 const FUNCTIONS = { 'web-pay': 54401, 'web-pay-hook': 54402, 'chip-rizz': 54403 };
 
+// The env files are git-ignored, so a worktree has none of its own: they're
+// read from here or, failing that, from the main checkout.
+const main = `${execSync('git rev-parse --path-format=absolute --git-common-dir', { cwd: root }).toString().trim().replace(/\.git$/, '')}`;
+const envPath = (file) => [`${root}${file}`, `${main}${file}`].find((p) => existsSync(p)) ?? `${root}${file}`;
+
 function readEnv(file) {
-  const path = `${root}${file}`;
+  const path = envPath(file);
   if (!existsSync(path)) return {};
   return Object.fromEntries(
     readFileSync(path, 'utf8')
@@ -35,13 +39,14 @@ function readEnv(file) {
   );
 }
 
-const project = JSON.parse(readFileSync(`${root}env/local.json`, 'utf8')).SUPABASE_URL;
+const game = JSON.parse(readFileSync(envPath('env/local.json'), 'utf8'));
+const project = game.SUPABASE_URL;
 const remote = new URL(project);
 const keys = readEnv('env/local_backend.env');
 const pay = readEnv('env/flutterwave.test.env');
 const missing = ['SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY'].filter((k) => !keys[k]);
 if (missing.length) {
-  console.error(`Fill in ${missing.join(' and ')} in env/local_backend.env (see env/local_backend.env.example).`);
+  console.error(`Fill in ${missing.join(' and ')} in ${main}env/local_backend.env (copy env/local_backend.env.example; see tool/local_backend/README.md).`);
   process.exit(1);
 }
 if (!pay.FLW_SECRET_KEY?.includes('_TEST')) {
@@ -60,6 +65,9 @@ const env = {
   UTOPIA_RETURN_URL: keys.UTOPIA_RETURN_URL || 'http://localhost:8080/',
   CHIP_RETURN_URL: keys.CHIP_RETURN_URL || 'http://localhost:5180/',
 };
+
+// The game's settings, pointed at this proxy (flutter run ... --dart-define-from-file=env/local_pay.json).
+writeFileSync(`${root}env/local_pay.json`, `${JSON.stringify({ ...game, SUPABASE_URL: `http://localhost:${PORT}` }, null, 2)}\n`);
 
 const children = Object.entries(FUNCTIONS).map(([name, port]) =>
   spawn('deno', ['run', '--allow-net', '--allow-env', '--allow-read', 'tool/local_backend/boot.ts'], {
