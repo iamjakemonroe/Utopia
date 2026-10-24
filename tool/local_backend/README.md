@@ -23,7 +23,7 @@ cd ~/Desktop/Projects/ProjectX/.worktrees/utopia-chip-rizz
 supabase db push --linked        # chip_rizz + web_plans (Utopia's project)
 
 cd ~/Desktop/Projects/ProjectX/Wavee
-supabase db push --linked        # genres (pending since Oct 23) + money
+supabase db push --linked        # money (Boost, Artist Pro)
 ```
 
 ## 2. Keys (once)
