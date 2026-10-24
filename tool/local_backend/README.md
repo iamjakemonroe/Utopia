@@ -28,16 +28,20 @@ supabase db push --linked        # genres (pending since Oct 23) + money
 
 ## 2. Keys (once)
 
-- **Utopia / Chip Rizz:** copy `env/local_backend.env.example` to
-  `~/Desktop/Projects/ProjectX/utopia/env/local_backend.env`.
-  - Fill in the anon and service_role keys from Utopia's Supabase dashboard
-    (Project settings > API keys > Legacy).
-  - For Chip Rizz's replies, also add an Anthropic API key.
-  - The Flutterwave test keys are already in `utopia/env/flutterwave.test.env`.
-- **Wavee:** in `Wavee/apps/frontend/.dev.vars`, paste the service_role key
-  from Wavee's Supabase dashboard. Everything else is filled in.
+These scripts save the Supabase keys into git-ignored files without printing
+them:
 
-All of these files are git-ignored.
+```sh
+cd ~/Desktop/Projects/ProjectX/.worktrees/utopia-chip-rizz
+node tool/local_backend/keys.mjs           # Utopia's keys, for the game and Chip Rizz
+
+cd ~/Desktop/Projects/ProjectX/Wavee/apps/frontend
+npm run keys                               # Wavee's service key
+```
+
+The Flutterwave test keys are already in place. For Chip Rizz to write
+replies, add `ANTHROPIC_API_KEY=` to `utopia/env/local_backend.env`;
+payments work without it.
 
 ## 3. Run them
 
@@ -56,7 +60,8 @@ cd ~/Desktop/Projects/ProjectX/chip
 npm run dev:local                          # http://localhost:5180
 ```
 
-**Wavee:**
+**Wavee** (stop any other dev server on port 5173 first: a plain `npm run dev`
+sends payments to the live site, which doesn't have them yet):
 
 ```sh
 cd ~/Desktop/Projects/ProjectX/Wavee/apps/frontend
@@ -65,6 +70,9 @@ npm run dev:local                          # the app, http://localhost:5173
 ```
 
 ## 4. Paying (test mode)
+
+Every price is in US dollars; Flutterwave converts for cards in other
+currencies.
 
 Flutterwave's test card: **5531 8866 5214 2950**, expiry **09/32**, CVV
 **564**, PIN **3310**, OTP **12345**. More test cards are in Flutterwave's
