@@ -11,7 +11,9 @@
 --   * Two new kinds of Chip call in chip_allow: 'rizz' (a set of replies)
 --     and 'learn' (reading a shared chat), with allowances by tier like the
 --     others. An account out of replies can pay coins for more, as it can
---     for chats; chip_refund gives back a paid call that failed.
+--     for chats, at its own price (chip_settings.rizz_coins: a set costs
+--     about ten times a chat to make); chip_refund gives back a paid call
+--     that failed.
 --   * rizz_me(): what the app shows (age, tier, what's left today, coins).
 --   * A guest who signs in to an existing account takes their people and
 --     date of birth along (guest_transfer_finish, before the guest retires).
@@ -20,6 +22,11 @@
 alter table public.chip_usage
   add column if not exists rizzes int not null default 0,
   add column if not exists learns int not null default 0;
+
+-- 300 coins: about 3 US cents at the pouch's rate, a little over twice what
+-- a set of replies costs to make.
+alter table public.chip_settings
+  add column if not exists rizz_coins int not null default 300 check (rizz_coins > 0);
 
 -- ── Dates of birth ──────────────────────────────────────────────────────
 
@@ -222,12 +229,14 @@ declare
   v_guest_spent numeric := 0;
   v_busy boolean := false;
   v_balance bigint;
+  v_price int;
 begin
   if v_me is null then raise exception 'not authenticated'; end if;
   if p_kind not in ('chat', 'vibe', 'draw', 'paint', 'doodle', 'rizz', 'learn') then
     raise exception 'unknown kind';
   end if;
   select * into v_settings from public.chip_settings;
+  v_price := case when p_kind = 'rizz' then v_settings.rizz_coins else v_settings.chat_coins end;
   v_tier := public._chip_tier(v_me);
   v_limit := public._chip_limit(p_kind, v_tier);
   if v_tier = 'guest' and p_device ~ '^[A-Za-z0-9_-]{16,64}$' then
@@ -283,18 +292,16 @@ begin
   if not p_pay then
     return jsonb_build_object('ok', false, 'tier', v_tier,
                               'why', case when v_busy then 'busy' else 'limit' end,
-                              'price', v_settings.chat_coins);
+                              'price', v_price);
   end if;
   select balance into v_balance from public.profiles where id = v_me for update;
-  if coalesce(v_balance, 0) < v_settings.chat_coins then
-    return jsonb_build_object('ok', false, 'tier', v_tier, 'why', 'coins',
-                              'price', v_settings.chat_coins);
+  if coalesce(v_balance, 0) < v_price then
+    return jsonb_build_object('ok', false, 'tier', v_tier, 'why', 'coins', 'price', v_price);
   end if;
-  perform public._ledger_move(v_me, 'chip_chat', -v_settings.chat_coins, null,
+  perform public._ledger_move(v_me, 'chip_chat', -v_price, null,
                               jsonb_build_object('kind', p_kind));
   perform public._chip_count(v_me, v_today, p_kind, null);
-  return jsonb_build_object('ok', true, 'tier', v_tier, 'paid', true,
-                            'price', v_settings.chat_coins);
+  return jsonb_build_object('ok', true, 'tier', v_tier, 'paid', true, 'price', v_price);
 end;
 $$;
 
@@ -308,7 +315,8 @@ as $$
 begin
   if p_kind not in ('chat', 'rizz') then raise exception 'unknown kind'; end if;
   perform public._ledger_move(p_user, 'chip_chat',
-                              (select chat_coins from public.chip_settings), null,
+                              (select case when p_kind = 'rizz' then rizz_coins else chat_coins end
+                                 from public.chip_settings), null,
                               jsonb_build_object('refund', true, 'kind', p_kind));
   update public.chip_usage set
     chats = case when p_kind = 'chat' then greatest(chats - 1, 0) else chats end,
@@ -360,7 +368,7 @@ begin
     'rizz_left', greatest(public._chip_limit('rizz', v_tier) - greatest(coalesce(v_rizzes, 0), v_device_rizzes), 0),
     'learn_left', greatest(public._chip_limit('learn', v_tier) - greatest(coalesce(v_learns, 0), v_device_learns), 0),
     'coins', (select balance from public.profiles where id = v_me),
-    'price', (select chat_coins from public.chip_settings)
+    'price', (select rizz_coins from public.chip_settings)
   );
 end;
 $$;

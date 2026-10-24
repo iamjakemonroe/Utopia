@@ -50,6 +50,7 @@ export async function hostedCheckout(p: {
   name?: string;
   title: string;
   description: string;
+  logo?: string;
   redirectUrl: string;
   meta: Record<string, unknown>;
 }): Promise<string> {
@@ -64,7 +65,7 @@ export async function hostedCheckout(p: {
       customizations: {
         title: p.title,
         description: p.description,
-        logo: "https://utopia.kaivon.app/logo.png",
+        logo: p.logo ?? "https://utopia.kaivon.app/logo.png",
       },
       meta: p.meta,
     }),

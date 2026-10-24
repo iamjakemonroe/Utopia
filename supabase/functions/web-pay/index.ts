@@ -1,9 +1,13 @@
-// Coins bought on the web (the web game's coin shop), through Flutterwave.
+// Coins bought on the web, through Flutterwave: in the web game's coin shop,
+// and in Chip Rizz (the same Kaivon account and coins).
 //
-//   { action: "status" }: { on } whether payments are switched on.
-//   { action: "checkout", product, currency }: starts paying for a pack, in
-//     the player's currency where it has a price (web_checkout_start), and
-//     answers { link } to Flutterwave's checkout page. Accounts only.
+//   { action: "status" }: { on, test } whether payments are switched on,
+//     and whether they're Flutterwave's test mode (no real money).
+//   { action: "checkout", product, currency, app }: starts paying for a
+//     pack, in the player's currency where it has a price
+//     (web_checkout_start), and answers { link } to Flutterwave's checkout
+//     page, which comes back to the app it was started from ("utopia", the
+//     default, or "chip"). Accounts only.
 //   { action: "confirm", ref, transaction_id }: back from checkout, the
 //     game asks: Flutterwave is asked about the payment, and a successful
 //     one is paid out (once: the webhook may have done it already).
@@ -12,9 +16,25 @@
 // 503 { error: "off" } until the Flutterwave keys are set
 // (tool/push_payment_keys.sh).
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { credit, hostedCheckout, PaymentsOff, transaction } from "../_shared/flutterwave.ts";
+import { credit, environment, hostedCheckout, PaymentsOff, transaction } from "../_shared/flutterwave.ts";
 
-const GAME_URL = Deno.env.get("WEB_GAME_URL") ?? "https://utopia.kaivon.app/game/";
+/** Each app's checkout: where it comes back to, and how it's named. Local
+ * testing (tool/local_backend) points the returns at localhost. */
+const APPS = {
+  utopia: {
+    returnUrl: Deno.env.get("UTOPIA_RETURN_URL") ?? Deno.env.get("WEB_GAME_URL") ??
+      "https://utopia.kaivon.app/game/",
+    title: "Utopia coins",
+    description: (coins: string) => `${coins} coins for your Utopia account`,
+    logo: "https://utopia.kaivon.app/logo.png",
+  },
+  chip: {
+    returnUrl: Deno.env.get("CHIP_RETURN_URL") ?? "https://chip.kaivon.app/",
+    title: "Chip Rizz coins",
+    description: (coins: string) => `${coins} coins for your Kaivon account (Chip Rizz and Utopia)`,
+    logo: "https://chip.kaivon.app/icon-192.png",
+  },
+};
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -48,7 +68,8 @@ Deno.serve(async (req: Request) => {
 
   try {
     if (body.action === "status") {
-      return json({ on: !!Deno.env.get("FLW_SECRET_KEY") });
+      const on = !!Deno.env.get("FLW_SECRET_KEY");
+      return json({ on, test: on && environment() === "sandbox" });
     }
 
     if (body.action === "checkout") {
@@ -68,16 +89,19 @@ Deno.serve(async (req: Request) => {
       const start = data as Record<string, unknown>;
       if (!user.email) return json({ error: "account" }, 400);
       const coins = Number(start.coins).toLocaleString("en-US");
+      const app = body.app === "chip" ? "chip" : "utopia";
+      const look = APPS[app];
       const link = await hostedCheckout({
         ref: String(start.ref),
         amount: Number(start.amount),
         currency: String(start.currency),
         email: user.email,
         name: typeof start.name === "string" ? start.name : undefined,
-        title: "Utopia coins",
-        description: `${coins} coins for your Utopia account`,
-        redirectUrl: GAME_URL,
-        meta: { user_id: user.id, product: String(body.product) },
+        title: look.title,
+        description: look.description(coins),
+        logo: look.logo,
+        redirectUrl: look.returnUrl,
+        meta: { user_id: user.id, product: String(body.product), app },
       });
       return json({ link, ref: start.ref });
     }

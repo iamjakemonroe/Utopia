@@ -108,15 +108,22 @@ check("a guest reads 1 chat a day", allow(guest2, "learn", "tablet-key-012345678
 
 check("a free account starts with 15", me(pat)["rizz_left"] == 15 and me(pat)["tier"] == "free")
 got = [allow(pat) for _ in range(16)]
-check("…and gets 15", all(r["ok"] for r in got[:15]) and got[15]["why"] == "limit" and got[15]["price"] == 20, got[15])
+check("…and gets 15", all(r["ok"] for r in got[:15]) and got[15]["why"] == "limit" and got[15]["price"] == 300, got[15])
 check("…which rizz_me shows", me(pat)["rizz_left"] == 0)
 check("Utopia's chats are counted apart", allow(pat, "chat")["ok"])
 before = balance(pat)
 paid = allow(pat, pay=True)
-check("then replies for 20 coins", paid["ok"] and paid["paid"] and balance(pat) == before - 20, paid)
+check("then replies for 300 coins", paid["ok"] and paid["paid"] and balance(pat) == before - 300, paid)
+check("…while Utopia's chats still cost 20", me(pat)["price"] == 300
+      and admin("select chat_coins from chip_settings")[0][0] == 20)
 admin("select chip_refund(%s, 'rizz')", pat)
+check("a refund gives back 300", balance(pat) == before)
 check("a paid set that failed is refunded", balance(pat) == before
       and admin("select rizzes from chip_usage where user_id = %s and day = (now() at time zone 'utc')::date", pat)[0][0] == 15)
+admin("select _ledger_move(%s, 'admin_adjustment', %s, null)", sam, -(balance(sam) - 299))
+for _ in range(15):
+    allow(sam)
+check("not without 300 coins", allow(sam, pay=True)["why"] == "coins" and allow(sam, pay=True)["price"] == 300)
 check("chat readings can't be bought", allow(pat, "learn")["ok"] and allow(pat, "learn")["ok"] and allow(pat, "learn")["ok"]
       and allow(pat, "learn", pay=True)["why"] == "limit")
 harness.as_user(db, pat)
