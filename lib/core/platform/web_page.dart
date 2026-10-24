@@ -18,14 +18,7 @@ abstract final class WebPage {
     if (_query.isNotEmpty) impl.clearPageQuery();
   }
 
-  /// The player's currency, from their time zone: naira in Nigeria, cedis
-  /// in Ghana... and US dollars elsewhere (or in the apps).
-  static String currency() => switch (impl.timeZone()) {
-    'Africa/Lagos' => 'NGN',
-    'Africa/Accra' => 'GHS',
-    'Africa/Nairobi' => 'KES',
-    'Africa/Johannesburg' => 'ZAR',
-    'Europe/London' => 'GBP',
-    _ => 'USD',
-  };
+  /// The currency prices are shown and charged in: US dollars, everywhere.
+  /// Flutterwave converts for cards in other currencies.
+  static String currency() => 'USD';
 }

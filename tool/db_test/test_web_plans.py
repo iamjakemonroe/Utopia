@@ -52,36 +52,38 @@ cy = harness.new_user(db, "cy@example.com")
 
 # The shop.
 as_(ada)
-rows = q("select plan_id, currency, amount, until from web_plan_shop('NGN')")
-check("three plans, in naira", [r[0] for r in rows] == ["utopia.maestro.monthly", "rizz.pro.weekly", "rizz.pro.monthly"]
-      and all(r[1] == "NGN" for r in rows), rows)
-check("a currency without prices falls back to dollars", one("select currency from web_plan_shop('GHS') limit 1") == "USD")
+rows = q("select plan_id, currency, amount, until from web_plan_shop('USD')")
+check("three plans, in dollars", [r[0] for r in rows] == ["utopia.maestro.monthly", "rizz.pro.weekly", "rizz.pro.monthly"]
+      and [float(r[2]) for r in rows] == [7.99, 3.99, 9.99] and all(r[1] == "USD" for r in rows), rows)
+check("asking in naira still gets dollars", all(r[1] == "USD" for r in q("select plan_id, currency from web_plan_shop('NGN')")))
+check("coins are in dollars too", admin("select count(*) from web_coin_prices where currency <> 'USD'")[0][0] == 0)
+
 check("nobody's a member yet", all(r[3] is None for r in rows))
 
 # Starting one.
 as_(guest)
-check("a guest can't subscribe", raises("select web_subscribe_start('rizz.pro.monthly', 'NGN')") == "save your account first")
+check("a guest can't subscribe", raises("select web_subscribe_start('rizz.pro.monthly', 'USD')") == "save your account first")
 as_(ada)
-start = one("select web_subscribe_start('rizz.pro.monthly', 'NGN')")
-check("an account can", start["ref"].startswith("kaivon-sub-") and float(start["amount"]) == 14900
-      and start["currency"] == "NGN" and start["email"] == "ada@example.com" and start["flw_plan_id"] is None, start)
-check("unknown plans are refused", raises("select web_subscribe_start('nope', 'NGN')") == "unknown plan")
+start = one("select web_subscribe_start('rizz.pro.monthly', 'USD')")
+check("an account can", start["ref"].startswith("kaivon-sub-") and float(start["amount"]) == 9.99
+      and start["currency"] == "USD" and start["email"] == "ada@example.com" and start["flw_plan_id"] is None, start)
+check("unknown plans are refused", raises("select web_subscribe_start('nope', 'USD')") == "unknown plan")
 check("players can't read subscriptions directly", raises("select * from web_subscriptions") is not None)
 
 # The function makes Flutterwave's plan and pays.
-admin("select web_plan_flw('rizz.pro.monthly', 'NGN', 'flw-111', %s)", start["ref"])
-check("the plan is kept for the price", admin("select flw_plan_id from web_plan_prices where plan_id = 'rizz.pro.monthly' and currency = 'NGN'")[0][0] == "flw-111")
+admin("select web_plan_flw('rizz.pro.monthly', 'USD', 'flw-111', %s)", start["ref"])
+check("the plan is kept for the price", admin("select flw_plan_id from web_plan_prices where plan_id = 'rizz.pro.monthly' and currency = 'USD'")[0][0] == "flw-111")
 check("…and on the checkout", admin("select flw_plan_id from web_subscriptions where ref = %s", start["ref"])[0][0] == "flw-111")
 as_(bo)
-check("the next checkout gets it straight away", one("select web_subscribe_start('rizz.pro.monthly', 'NGN')")["flw_plan_id"] == "flw-111")
+check("the next checkout gets it straight away", one("select web_subscribe_start('rizz.pro.monthly', 'USD')")["flw_plan_id"] == "flw-111")
 
 check("paying less is refused", admin("select 1 from (select 1) x") is not None
-      and (harness.as_admin(db), raises("select credit_web_subscription(%s, 'tx-1', 100, 'NGN', 'sandbox')", start["ref"]))[1] is not None)
-paid = admin("select credit_web_subscription(%s, 'tx-1', 14900, 'NGN', 'sandbox')", start["ref"])[0][0]
+      and (harness.as_admin(db), raises("select credit_web_subscription(%s, 'tx-1', 1, 'USD', 'sandbox')", start["ref"]))[1] is not None)
+paid = admin("select credit_web_subscription(%s, 'tx-1', 9.99, 'USD', 'sandbox')", start["ref"])[0][0]
 check("the first payment starts it", paid["product"] == "rizz_pro" and paid["user_id"] == ada)
 sub = admin("select status, period_end > now() + interval '30 days', period_end < now() + interval '32 days', environment from web_subscriptions where ref = %s", start["ref"])[0]
 check("…for a month and a day's grace, in test mode", sub == ("active", True, True, "sandbox"), sub)
-again = admin("select credit_web_subscription(%s, 'tx-1', 14900, 'NGN', 'sandbox')", start["ref"])[0][0]
+again = admin("select credit_web_subscription(%s, 'tx-1', 9.99, 'USD', 'sandbox')", start["ref"])[0][0]
 check("the same payment twice counts once", again.get("again") is True)
 
 # Chip Rizz Pro.
@@ -89,7 +91,7 @@ as_(ada)
 m = one("select rizz_me(null)")
 check("a Pro member", m["tier"] == "pro" and m["pro_until"] is not None and m["rizz_left"] == 40 and m["learn_left"] == 3, m)
 check("…can't subscribe again", raises("select web_subscribe_start('rizz.pro.weekly', 'USD')") == "already a member")
-check("…sees it in the shop", one("select until from web_plan_shop('NGN') where plan_id = 'rizz.pro.monthly'") is not None)
+check("…sees it in the shop", one("select until from web_plan_shop('USD') where plan_id = 'rizz.pro.monthly'") is not None)
 got = [one("select chip_allow('rizz', null, false)") for _ in range(41)]
 check("40 sets a day", all(r["ok"] and r["tier"] == "pro" for r in got[:40]) and got[40]["why"] == "limit", got[40])
 # Fair use across the period: 600 a month. (Ten days into the month.)
@@ -107,10 +109,10 @@ admin("update web_subscriptions set period_end = now() + interval '31 days' wher
 
 # Renewals and cancelling.
 before = admin("select period_end from web_subscriptions where ref = %s", start["ref"])[0][0]
-renew = admin("select renew_web_subscription('flw-111', 'ADA@example.com', 'tx-2', 14900, 'NGN', 'sandbox')")[0][0]
+renew = admin("select renew_web_subscription('flw-111', 'ADA@example.com', 'tx-2', 9.99, 'USD', 'sandbox')")[0][0]
 after = admin("select period_end from web_subscriptions where ref = %s", start["ref"])[0][0]
 check("a renewal adds a month to the end", (after - before).days == 31 and renew["product"] == "rizz_pro", (before, after))
-check("an unknown renewal is refused", (harness.as_admin(db), raises("select renew_web_subscription('flw-999', 'x@example.com', 'tx-3', 1, 'NGN')"))[1] == "unknown subscription")
+check("an unknown renewal is refused", (harness.as_admin(db), raises("select renew_web_subscription('flw-999', 'x@example.com', 'tx-3', 1, 'USD')"))[1] == "unknown subscription")
 ended = admin("select end_web_subscription('flw-111', 'ada@example.com')")[0][0]
 check("cancelling keeps what's paid for", ended["ended"] is True
       and admin("select status from web_subscriptions where ref = %s", start["ref"])[0][0] == "cancelled")

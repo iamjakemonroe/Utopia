@@ -5,6 +5,11 @@ its daily or monthly limit, after Flutterwave's fees, except where noted.
 The prices live in database tables, so they can change without a release
 (see "Changing a price" below).
 
+**Everything is priced and charged in US dollars**, in all three apps.
+Flutterwave converts for cards in other currencies (a Nigerian card pays the
+dollar price in naira at its bank's rate). Margins below assume Flutterwave's
+international card fee on every payment, the worst case.
+
 ## What things cost us
 
 | Cost | Amount |
@@ -47,8 +52,8 @@ users are asked to come back later; paying users never notice.
 
 | Plan | Price | What we keep after fees | At the limit | Typical use* |
 | --- | --- | --- | --- | --- |
-| Pro weekly | **$3.99 / ₦5,900** | $3.78 / ≈$3.85 | +$1.55 (40%) | +$3.27 (87%) |
-| Pro monthly | **$9.99 / ₦14,900** | $9.47 / ≈$9.72 | +$1.13 (12%) | +$7.36 (78%) |
+| Pro weekly | **$3.99** | $3.78 | +$1.55 (40%) | +$3.27 (87%) |
+| Pro monthly | **$9.99** | $9.47 | +$1.13 (12%) | +$7.36 (78%) |
 | 300 coins (one set) | $0.03 at the pouch rate, $0.019 at the biggest pack | | +$0.007 to +$0.018 | |
 
 \* Typical: 5 sets a day and a couple of chats learned a week.
@@ -61,8 +66,8 @@ shows it isn't, raise `chip_settings.rizz_coins`.
 
 | Product | Price (web) | Notes |
 | --- | --- | --- |
-| Coin packs | $0.99 to $99.99, ₦1,500 to ₦150,000 | The same as the stores. The web keeps 2–5% for Flutterwave instead of 15% for the store. |
-| **Chip Maestro** (monthly) | **$7.99 / ₦11,900** | The same membership as the stores. **Set the store price to $7.99 too.** |
+| Coin packs | $0.99 to $99.99 | The same as the stores. The web keeps about 5% for Flutterwave instead of 15% for the store. |
+| **Chip Maestro** (monthly) | **$7.99** | The same membership as the stores. **Set the store price to $7.99 too.** |
 
 Chip Maestro's fair use per day is now 60 chats, 6 drawings and 40 colorings
 (was 200, 10 and 100). Even so:
@@ -83,10 +88,10 @@ Chip Maestro's fair use per day is now 60 chats, 6 drawings and 40 colorings
 
 | Product | Price | What it costs us | Margin |
 | --- | --- | --- | --- |
-| Boost, 100 listeners | $2.99 / ₦4,500 | almost nothing (a slot in the feed) | ~95% |
-| Boost, 500 listeners | $9.99 / ₦14,900 | almost nothing | ~95% |
-| Boost, 2,000 listeners | $29.99 / ₦44,900 | almost nothing | ~95% |
-| **Artist Pro** (monthly) | **$4.99 / ₦7,500** | storage for bigger uploads (~$0.015 a GB a month on R2) and a free 100-listener Boost | ~95% |
+| Boost, 100 listeners | $2.99 | almost nothing (a slot in the feed) | ~95% |
+| Boost, 500 listeners | $9.99 | almost nothing | ~95% |
+| Boost, 2,000 listeners | $29.99 | almost nothing | ~95% |
+| **Artist Pro** (monthly) | **$4.99** | storage for bigger uploads (~$0.015 a GB a month on R2) and a free 100-listener Boost | ~95% |
 
 Boosted plays never count toward the charts or trending. That keeps the
 charts honest, which is what makes them worth climbing and Boost worth buying.
@@ -117,9 +122,9 @@ update chip_settings set rizz_coins = 400;          -- coins for one set
 update chip_settings set daily_free_usd = 30;       -- free users' daily budget
 
 -- Wavee project
-update boost_prices set amount = 5000 where pack = 'wavee.boost.100' and currency = 'NGN';
-update wavee_plan_prices set amount = 9000, flw_plan_id = null
- where plan_id = 'wavee.pro.monthly' and currency = 'NGN';
+update boost_prices set amount = 3.49 where pack = 'wavee.boost.100' and currency = 'USD';
+update wavee_plan_prices set amount = 5.99, flw_plan_id = null
+ where plan_id = 'wavee.pro.monthly' and currency = 'USD';
 ```
 
 Setting `flw_plan_id = null` makes a new Flutterwave plan at the new price the

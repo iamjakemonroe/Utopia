@@ -2,8 +2,9 @@
 -- charged again each period until cancelled), and Chip priced to pay for
 -- itself.
 --
---   * web_plans / web_plan_prices: what's sold and for how much, per
---     currency (naira and dollars to start, at about 1,500 to the dollar).
+--   * web_plans / web_plan_prices: what's sold and for how much, in US
+--     dollars (Flutterwave converts for cards in other currencies). The
+--     coin packs' naira prices go too: everything on the web is in dollars.
 --     Change a price in the SQL editor; the Flutterwave plan for it is made
 --     by the web-pay function the first time someone pays that price
 --     (web_plan_prices.flw_plan_id), so a new price gets a new plan.
@@ -72,11 +73,11 @@ create table public.web_plan_prices (
 -- costs a fraction. See docs/PRICING.md.
 insert into public.web_plan_prices (plan_id, currency, amount) values
   ('utopia.maestro.monthly', 'USD', 7.99),
-  ('utopia.maestro.monthly', 'NGN', 11900),
   ('rizz.pro.weekly', 'USD', 3.99),
-  ('rizz.pro.weekly', 'NGN', 5900),
-  ('rizz.pro.monthly', 'USD', 9.99),
-  ('rizz.pro.monthly', 'NGN', 14900);
+  ('rizz.pro.monthly', 'USD', 9.99);
+
+-- Dollars only on the web, coins included.
+delete from public.web_coin_prices where currency <> 'USD';
 
 alter table public.web_plans enable row level security;
 alter table public.web_plan_prices enable row level security;
