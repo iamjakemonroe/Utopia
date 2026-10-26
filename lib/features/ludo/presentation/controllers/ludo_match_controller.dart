@@ -845,8 +845,8 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     final dice = _engine.rollDie();
     final outcome = _engine.registerRoll(before, dice);
 
-    if (outcome.forfeited || outcome.movableTokens.isEmpty) {
-      await _showThenPass(before, dice, outcome);
+    if (outcome.movableTokens.isEmpty) {
+      await _showThenPass(dice, outcome);
       return;
     }
 
@@ -919,22 +919,11 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     selectToken(legal.contains(pick) ? pick : legal.first);
   }
 
-  /// Offline, a roll that can't be played (no piece can move, or a third
-  /// six in a row): the die lands on it first, the number holds a moment,
-  /// and only then does the turn pass. (Online the server passes it.)
-  Future<void> _showThenPass(
-    LudoState before,
-    int dice,
-    LudoRollOutcome outcome,
-  ) async {
-    // On a third six nothing may move while it shows: no dice value.
-    final shown = outcome.forfeited
-        ? before.copyWith(
-            rollSeq: outcome.state.rollSeq,
-            lastRoll: outcome.state.lastRoll,
-            hasRolled: true,
-          )
-        : outcome.state;
+  /// Offline, a roll no piece can use: the die lands on it first, the number
+  /// holds a moment, and only then does the turn pass. (Online the server
+  /// passes it.)
+  Future<void> _showThenPass(int dice, LudoRollOutcome outcome) async {
+    final shown = outcome.state;
     final rolledAt = DateTime.now();
     _rolledAt = rolledAt;
     state = state.copyWith(game: shown);
@@ -948,9 +937,7 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     if (state.game.rollSeq != shown.rollSeq || state.game.turn != shown.turn) {
       return;
     }
-    final next = outcome.forfeited
-        ? outcome.state
-        : _engine.passTurnNoMove(outcome.state);
+    final next = _engine.passTurnNoMove(outcome.state);
     await _commitMove(
       next,
       diceValue: dice,
@@ -1128,8 +1115,8 @@ class LudoMatchController extends StateNotifier<LudoMatchState> {
     }
     final dice = _engine.rollDie(_rng);
     final outcome = _engine.registerRoll(g, dice);
-    if (outcome.forfeited || outcome.movableTokens.isEmpty) {
-      _showThenPass(g, dice, outcome);
+    if (outcome.movableTokens.isEmpty) {
+      _showThenPass(dice, outcome);
       return;
     }
     state = state.copyWith(game: outcome.state);

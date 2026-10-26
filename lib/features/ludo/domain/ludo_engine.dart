@@ -332,17 +332,13 @@ class LudoState {
   }
 }
 
-/// Outcome of rolling the die: either the roll stands (movable tokens
-/// follow), or three sixes in a row void it and pass the turn immediately.
+/// Outcome of rolling the die: the roll, and the tokens it can move (none:
+/// the turn passes). A roll always stands, sixes included: three or more in
+/// a row don't void it, the player moves and rolls again.
 class LudoRollOutcome {
-  const LudoRollOutcome({
-    required this.state,
-    required this.forfeited,
-    required this.movableTokens,
-  });
+  const LudoRollOutcome({required this.state, required this.movableTokens});
 
   final LudoState state;
-  final bool forfeited;
   final List<int> movableTokens;
 }
 
@@ -410,38 +406,19 @@ class LudoEngine {
     LudoBoardRules rules = LudoBoardRules.classic,
   }) => rules.absoluteSquare(color, relativePosition);
 
-  /// Registers a die roll: records it for everyone to see, bumps the
-  /// consecutive-sixes counter, and if this is the third six in a row,
-  /// voids the roll and passes the turn without letting any token move.
+  /// Registers a die roll: records it for everyone to see and counts sixes
+  /// in a row. Every roll stands: a third (or fourth…) six in a row is played
+  /// like any other, and earns another roll after the move.
   LudoRollOutcome registerRoll(LudoState state, int diceValue) {
-    final streak = diceValue == 6 ? state.consecutiveSixes + 1 : 0;
-    final seen = state.copyWith(
+    final rolled = state.copyWith(
       rollSeq: state.rollSeq + 1,
       lastRoll: LudoRoll(state.turn, diceValue),
-    );
-
-    if (diceValue == 6 && streak >= 3) {
-      final next = seen.copyWith(
-        turn: seen.nextPlayer(),
-        clearDiceValue: true,
-        hasRolled: false,
-        consecutiveSixes: 0,
-      );
-      return LudoRollOutcome(
-        state: next,
-        forfeited: true,
-        movableTokens: const [],
-      );
-    }
-
-    final rolled = seen.copyWith(
       diceValue: diceValue,
       hasRolled: true,
-      consecutiveSixes: streak,
+      consecutiveSixes: diceValue == 6 ? state.consecutiveSixes + 1 : 0,
     );
     return LudoRollOutcome(
       state: rolled,
-      forfeited: false,
       movableTokens: legalTokenMoves(rolled, diceValue),
     );
   }

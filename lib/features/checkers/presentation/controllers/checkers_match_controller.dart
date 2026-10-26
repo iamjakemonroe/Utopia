@@ -85,8 +85,7 @@ class CheckersMatchState {
     required this.position,
     this.matchRow,
     this.mySide,
-    this.selected,
-    this.targets = const [],
+    this.pick = CheckersPick.none,
     this.lastMove,
     this.fly,
     this.loading = true,
@@ -100,8 +99,12 @@ class CheckersMatchState {
 
   /// Dark is player_white (it moves first).
   final CheckersSide? mySide;
-  final int? selected;
-  final List<CheckersMove> targets;
+  /// The piece picked, and its hops so far in a capture still going.
+  final CheckersPick pick;
+  int? get selected => pick.selected;
+
+  /// The hops open to the picked piece.
+  List<CheckersMove> get targets => pick.targets(legalMoves);
   final CheckersMove? lastMove;
 
   /// The move the board should animate (a new object each time).
@@ -135,9 +138,14 @@ class CheckersMatchState {
 
   CheckersPosition get displayPosition {
     final ply = reviewPly;
-    if (ply == null) return position;
+    if (ply == null) return pick.board(position, legalMoves);
     return _positionAt(ply);
   }
+
+  /// Pieces that can move now: only the jumping one partway through a capture.
+  Set<int> get movable => pick.hopping
+      ? {pick.selected!}
+      : checkersEngine.movablePieces(position);
 
   CheckersPosition _positionAt(int ply) =>
       ply == 0 ? CheckersPosition.initial() : history[ply - 1].positionAfter;
@@ -227,9 +235,8 @@ class CheckersMatchState {
     CheckersPosition? position,
     Map<String, dynamic>? matchRow,
     CheckersSide? mySide,
-    int? selected,
+    CheckersPick? pick,
     bool clearSelected = false,
-    List<CheckersMove>? targets,
     CheckersMove? lastMove,
     CheckersMove? fly,
     bool clearFly = false,
@@ -243,8 +250,7 @@ class CheckersMatchState {
       position: position ?? this.position,
       matchRow: matchRow ?? this.matchRow,
       mySide: mySide ?? this.mySide,
-      selected: clearSelected ? null : (selected ?? this.selected),
-      targets: targets ?? this.targets,
+      pick: clearSelected ? CheckersPick.none : (pick ?? this.pick),
       lastMove: lastMove ?? this.lastMove,
       fly: clearFly ? null : (fly ?? this.fly),
       loading: loading ?? this.loading,
@@ -400,7 +406,6 @@ class CheckersMatchController extends StateNotifier<CheckersMatchState> {
       fly: fly,
       clearReview: leaveReview,
       clearSelected: moved || statusChanged,
-      targets: moved || statusChanged ? const [] : state.targets,
     );
 
     if (row['status'] == 'active') _maybeReportTermination(position, row);
@@ -449,7 +454,6 @@ class CheckersMatchController extends StateNotifier<CheckersMatchState> {
       // Back along the same path; the jumped pieces are simply there again.
       fly: CheckersMove(path: move.path.reversed.toList(), piece: move.piece),
       clearSelected: true,
-      targets: const [],
     );
   }
 
@@ -476,7 +480,6 @@ class CheckersMatchController extends StateNotifier<CheckersMatchState> {
       clearReview: ply == state.history.length,
       clearFly: true,
       clearSelected: true,
-      targets: const [],
     );
   }
 
@@ -484,33 +487,22 @@ class CheckersMatchController extends StateNotifier<CheckersMatchState> {
 
   // ── playing ──────────────────────────────────────────────────────────────
 
+  /// A tap on the board: picks a piece, makes one hop of a capture (as on a
+  /// real board, jump by jump), or plays the move once it's whole.
   void selectSquare(int square) {
     if (!state.isMyTurn || state.reviewing) return;
-    final legal = state.legalMoves;
-
-    final chosen = [
-      for (final m in state.targets)
-        if (m.to == square) m,
-    ];
-    if (chosen.isNotEmpty) {
-      // Two jump routes can end on the same square: take the bigger one.
-      chosen.sort((a, b) => b.captured.length.compareTo(a.captured.length));
-      _commitMove(chosen.first);
+    final tap = state.pick.tap(square, state.legalMoves);
+    final move = tap.play;
+    if (move != null) {
+      _commitMove(move, fly: tap.hop);
       return;
     }
-
-    final mine = [
-      for (final m in legal)
-        if (m.from == square) m,
-    ];
-    if (mine.isEmpty || square == state.selected) {
-      state = state.copyWith(clearSelected: true, targets: const []);
-      return;
-    }
-    state = state.copyWith(selected: square, targets: mine);
+    state = state.copyWith(pick: tap.pick, fly: tap.hop);
   }
 
-  void _commitMove(CheckersMove move) {
+  /// [fly]: what the board animates (just the last hop, when the capture was
+  /// made hop by hop); the whole move otherwise.
+  void _commitMove(CheckersMove move, {CheckersMove? fly}) {
     final after = state.position.apply(move);
     final code = after.encode();
     final ply = state.history.length + 1;
@@ -545,9 +537,8 @@ class CheckersMatchController extends StateNotifier<CheckersMatchState> {
       position: after,
       matchRow: optimisticRow,
       clearSelected: true,
-      targets: const [],
       lastMove: move,
-      fly: move,
+      fly: fly ?? move,
       history: [...state.history, _pending!],
     );
 

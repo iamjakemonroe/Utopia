@@ -37,7 +37,7 @@ class _FakeRepo extends LudoRepository {
   @override
   Stream<List<Map<String, dynamic>>> watchChat(String matchId) => chat.stream;
 
-  /// Rolls like the server: a third six, or a roll nothing can use, passes.
+  /// Rolls like the server: a roll nothing can use passes (sixes always stand).
   @override
   Future<Map<String, dynamic>> rollDice(String matchId) async {
     final row = current!;
@@ -46,9 +46,7 @@ class _FakeRepo extends LudoRepository {
     final outcome = const LudoEngine().registerRoll(game, value);
     var turns = row['turn_count'] as int;
     var next = outcome.state;
-    if (outcome.forfeited) {
-      turns++;
-    } else if (outcome.movableTokens.isEmpty) {
+    if (outcome.movableTokens.isEmpty) {
       next = const LudoEngine().passTurnNoMove(next);
       turns++;
     }

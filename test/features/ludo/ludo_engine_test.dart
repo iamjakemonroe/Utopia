@@ -175,22 +175,37 @@ void main() {
     });
   });
 
-  group('three sixes', () {
-    test('a third consecutive six forfeits the turn with no move applied', () {
-      var state = LudoState.initial(players);
-      state = state.copyWith(consecutiveSixes: 2);
+  group('sixes in a row', () {
+    test('a third six in a row stands: the player moves and rolls again', () {
+      final state = LudoState.initial(players).copyWith(consecutiveSixes: 2);
       final outcome = engine.registerRoll(state, 6);
-      expect(outcome.forfeited, isTrue);
-      expect(outcome.state.turn, LudoColor.yellow);
-      expect(outcome.state.consecutiveSixes, 0);
+      expect(outcome.state.turn, LudoColor.red);
+      expect(outcome.state.diceValue, 6);
+      expect(outcome.state.hasRolled, isTrue);
+      expect(outcome.state.consecutiveSixes, 3);
+      expect(outcome.movableTokens, [0, 1, 2, 3]);
+      final moved = engine.applyMove(outcome.state, 0, 6);
+      expect(moved.extraTurn, isTrue);
+      expect(moved.state.turn, LudoColor.red);
     });
 
-    test('a first or second six does not forfeit', () {
+    test('a fourth and fifth six still stand', () {
+      var state = LudoState.initial(players).copyWith(consecutiveSixes: 3);
+      for (var i = 0; i < 2; i++) {
+        final outcome = engine.registerRoll(state, 6);
+        expect(outcome.movableTokens, isNotEmpty);
+        state = engine.applyMove(outcome.state, outcome.movableTokens.first, 6).state;
+        expect(state.turn, LudoColor.red);
+      }
+    });
+
+    test('a first six counts one, anything else resets the count', () {
       final state = LudoState.initial(players);
-      final outcome = engine.registerRoll(state, 6);
-      expect(outcome.forfeited, isFalse);
-      expect(outcome.state.consecutiveSixes, 1);
-      expect(outcome.state.turn, LudoColor.red);
+      final six = engine.registerRoll(state, 6);
+      expect(six.state.consecutiveSixes, 1);
+      expect(six.state.turn, LudoColor.red);
+      final four = engine.registerRoll(state.copyWith(consecutiveSixes: 2), 4);
+      expect(four.state.consecutiveSixes, 0);
     });
   });
 
@@ -243,11 +258,11 @@ void main() {
       expect(second.lastRoll, const LudoRoll(LudoColor.yellow, 2));
     });
 
-    test('a third six is still shown as rolled even though it forfeits', () {
+    test('a third six is shown as rolled, and stands', () {
       final state = LudoState.initial(players).copyWith(consecutiveSixes: 2);
       final outcome = engine.registerRoll(state, 6);
-      expect(outcome.forfeited, isTrue);
       expect(outcome.state.lastRoll, const LudoRoll(LudoColor.red, 6));
+      expect(outcome.state.diceValue, 6);
     });
 
     test('a capture is recorded with who captured and who was sent home', () {

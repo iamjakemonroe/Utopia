@@ -274,3 +274,143 @@ class CheckersEngine {
     return CheckersStatus.ongoing;
   }
 }
+
+// ── Moving the way it's done on a real board ─────────────────────────────
+
+bool _startsWith(List<int> path, List<int> prefix) {
+  if (path.length < prefix.length) return false;
+  for (var i = 0; i < prefix.length; i++) {
+    if (path[i] != prefix[i]) return false;
+  }
+  return true;
+}
+
+/// The [i]th hop of [move]: one step, or one jump with the piece it takes.
+CheckersMove hopOf(CheckersMove move, int i) => CheckersMove(
+  path: [move.path[i], move.path[i + 1]],
+  piece: move.piece,
+  captured: move.isCapture ? [move.captured[i]] : const [],
+  promotes: move.promotes && i == move.path.length - 2,
+);
+
+/// The board partway through [move], after its first [hops] hops: the piece
+/// on the square it has reached, the pieces it has jumped already gone.
+/// Still the mover's turn: the move isn't over.
+CheckersPosition partway(CheckersPosition p, CheckersMove move, int hops) {
+  final next = [...p.squares];
+  final piece = next[move.from];
+  next[move.from] = null;
+  for (var i = 0; i < hops && i < move.captured.length; i++) {
+    next[move.captured[i]] = null;
+  }
+  next[move.path[hops]] = piece;
+  return CheckersPosition(
+    squares: next,
+    toMove: p.toMove,
+    quietPlies: p.quietPlies,
+  );
+}
+
+/// What the player has picked so far: nothing, a piece, or a piece and the
+/// hops it has made in a capture still going (jumping one piece, then the
+/// next, as on a real board). The move is played once the hops make a whole
+/// legal move. Tapping where a whole multi-jump ends still plays it at once.
+class CheckersPick {
+  const CheckersPick([this.path = const []]);
+
+  /// The piece's square, then each square it has hopped to.
+  final List<int> path;
+
+  static const none = CheckersPick();
+
+  /// The square the picked piece is on now (after any hops).
+  int? get selected => path.isEmpty ? null : path.last;
+
+  /// Partway through a capture: the piece has jumped and must jump again.
+  bool get hopping => path.length > 1;
+
+  /// The legal moves that carry on from what's been picked.
+  List<CheckersMove> _open(List<CheckersMove> legal) => [
+    for (final m in legal)
+      if (m.path.length > path.length && _startsWith(m.path, path)) m,
+  ];
+
+  /// The hops open next, one per square (each a short move, for the board
+  /// to mark), or none if nothing is picked.
+  List<CheckersMove> targets(List<CheckersMove> legal) {
+    if (path.isEmpty) return const [];
+    final seen = <int>{};
+    return [
+      for (final m in _open(legal))
+        if (seen.add(m.path[path.length])) hopOf(m, path.length - 1),
+    ];
+  }
+
+  /// The board to show: partway through the capture while hopping.
+  CheckersPosition board(CheckersPosition p, List<CheckersMove> legal) {
+    if (!hopping) return p;
+    final open = _open(legal);
+    return open.isEmpty ? p : partway(p, open.first, path.length - 1);
+  }
+
+  /// What tapping [square] does.
+  CheckersTap tap(int square, List<CheckersMove> legal) {
+    if (path.isNotEmpty) {
+      // The next hop.
+      final along = [...path, square];
+      final follow = [
+        for (final m in legal)
+          if (_startsWith(m.path, along)) m,
+      ];
+      if (follow.isNotEmpty) {
+        final hop = hopOf(follow.first, path.length - 1);
+        final whole = follow.where((m) => m.path.length == along.length);
+        if (whole.isNotEmpty) {
+          return CheckersTap(none, play: whole.first, hop: hop);
+        }
+        return CheckersTap(CheckersPick(along), hop: hop);
+      }
+      // Where a whole multi-jump ends, tapped straight away: play it.
+      final ends = [
+        for (final m in _open(legal))
+          if (m.to == square) m,
+      ]..sort((a, b) => b.captured.length.compareTo(a.captured.length));
+      if (ends.isNotEmpty) {
+        final m = ends.first;
+        // Partway through, only the rest of the jump flies.
+        final rest = hopping
+            ? CheckersMove(
+                path: m.path.sublist(path.length - 1),
+                piece: m.piece,
+                captured: m.captured.sublist(path.length - 1),
+                promotes: m.promotes,
+              )
+            : null;
+        return CheckersTap(none, play: m, hop: rest);
+      }
+      if (hopping) {
+        // Mid-capture: the piece itself takes the hops back (nothing is
+        // played until the capture is whole); any other square does nothing.
+        if (square == path.last) return CheckersTap(CheckersPick([path.first]));
+        return CheckersTap(this);
+      }
+    }
+    final canMove = legal.any((m) => m.from == square);
+    if (!canMove || square == selected) return const CheckersTap(none);
+    return CheckersTap(CheckersPick([square]));
+  }
+}
+
+/// The result of a tap: what's picked now, a hop to show, and the move to
+/// play if the hops have made a whole one.
+class CheckersTap {
+  const CheckersTap(this.pick, {this.play, this.hop});
+
+  final CheckersPick pick;
+
+  /// A whole legal move to play now.
+  final CheckersMove? play;
+
+  /// The hop just made, for the board to animate.
+  final CheckersMove? hop;
+}

@@ -85,7 +85,8 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
   /// While looking back through the game: how many moves in the board
   /// shows. Null when following the game live.
   int? _reviewPly;
-  int? _selected;
+  /// The piece picked, and its hops so far in a capture still going.
+  CheckersPick _pick = CheckersPick.none;
   CheckersMove? _fly;
   bool _thinking = false;
   bool _resigned = false;
@@ -348,32 +349,34 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
   bool get _myTurn =>
       !_over && !_thinking && !_reviewing && (_twoPlayer || _pos.toMove == _me);
 
+  /// A tap on the board: picks a piece, makes one hop of a capture (as on a
+  /// real board, jump by jump), or plays the move once it's whole.
   void _onSquare(int square) {
     if (!_myTurn) return;
-    final legal = _legal;
-    final from = _selected;
-    if (from != null) {
-      final moves = [
-        for (final m in legal)
-          if (m.from == from && m.to == square) m,
-      ]..sort((a, b) => b.captured.length.compareTo(a.captured.length));
-      if (moves.isNotEmpty) {
-        _play(moves.first);
-        return;
-      }
+    final tap = _pick.tap(square, _legal);
+    final move = tap.play;
+    if (move != null) {
+      _play(move, fly: tap.hop);
+      return;
     }
-    final movable = legal.any((m) => m.from == square);
-    setState(() => _selected = movable && square != from ? square : null);
-    if (_selected != null) HapticFeedback.selectionClick();
+    setState(() {
+      _pick = tap.pick;
+      if (tap.hop != null) _fly = tap.hop;
+    });
+    if (tap.hop == null && _pick.selected != null) {
+      HapticFeedback.selectionClick();
+    }
   }
 
-  void _play(CheckersMove move) {
+  /// [fly]: what the board animates (just the last hop, when the capture was
+  /// made hop by hop); the whole move otherwise.
+  void _play(CheckersMove move, {CheckersMove? fly}) {
     final after = _pos.apply(move);
     setState(() {
       _history.add(after);
       _moves.add(move);
-      _fly = move;
-      _selected = null;
+      _fly = fly ?? move;
+      _pick = CheckersPick.none;
       // A new move brings the board back to the game.
       _reviewPly = null;
     });
@@ -447,7 +450,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     _gen++;
     setState(() {
       _thinking = false;
-      _selected = null;
+      _pick = CheckersPick.none;
       _reviewPly = null;
       if (_twoPlayer) {
         _moves.removeLast();
@@ -492,7 +495,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
         ..add(CheckersPosition.initial());
       _moves.clear();
       _reviewPly = null;
-      _selected = null;
+      _pick = CheckersPick.none;
       _fly = null;
       _thinking = false;
       _resigned = false;
@@ -516,7 +519,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
       _reviewPly = ply - 1;
       // Back along the same path; jumped pieces are simply there again.
       _fly = CheckersMove(path: m.path.reversed.toList(), piece: m.piece);
-      _selected = null;
+      _pick = CheckersPick.none;
     });
   }
 
@@ -535,7 +538,7 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     setState(() {
       _reviewPly = ply == _moves.length ? null : ply;
       _fly = null;
-      _selected = null;
+      _pick = CheckersPick.none;
     });
   }
 
@@ -555,12 +558,11 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
     final audio = ref.read(gameAudioProvider);
     final legal = _legal;
     final mustCapture = legal.isNotEmpty && legal.first.isCapture;
-    final targets = _selected == null || !(hints || mustCapture)
+    // Mid-capture the next hop always shows.
+    final targets =
+        _pick.selected == null || !(hints || mustCapture || _pick.hopping)
         ? const <CheckersMove>[]
-        : [
-            for (final m in legal)
-              if (m.from == _selected) m,
-          ];
+        : _pick.targets(legal);
     final winner = _winner;
     final iWon = _over && (_twoPlayer ? winner != null : winner == _me);
     final last = _shownPly == 0 ? null : _moves[_shownPly - 1];
@@ -677,14 +679,19 @@ class _CheckersBotScreenState extends ConsumerState<CheckersBotScreen> {
                       : AppColors.accent,
                   padding: const EdgeInsets.all(10),
                   child: CheckersBoard(
-                    position: _history[_shownPly],
+                    // Partway through a capture, the board shows the hops so far.
+                    position: _reviewPly == null
+                        ? _pick.board(_history[_shownPly], legal)
+                        : _history[_shownPly],
                     lastMove: last,
                     fly: _fly,
-                    selected: _selected,
+                    selected: _pick.selected,
                     targets: targets,
-                    movable: _myTurn
-                        ? {for (final m in legal) m.from}
-                        : const {},
+                    movable: !_myTurn
+                        ? const {}
+                        : _pick.hopping
+                        ? {_pick.selected!}
+                        : {for (final m in legal) m.from},
                     mustCapture: mustCapture,
                     bottom: _twoPlayer ? CheckersSide.dark : _me,
                     // Face to face: Light sits across the table.

@@ -301,12 +301,12 @@ class _CheckersMatchScreenState extends ConsumerState<CheckersMatchScreen> {
                     lastMove: state.displayLastMove,
                     fly: state.fly,
                     selected: state.selected,
-                    targets: play.moveHints || state.mustCapture
+                    // Mid-capture the next hop always shows.
+                    targets:
+                        play.moveHints || state.mustCapture || state.pick.hopping
                         ? state.targets
                         : const [],
-                    movable: interactive
-                        ? checkersEngine.movablePieces(state.position)
-                        : const {},
+                    movable: interactive ? state.movable : const {},
                     mustCapture: state.mustCapture,
                     bottom: mySide,
                     interactive: interactive,

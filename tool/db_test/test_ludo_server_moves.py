@@ -125,17 +125,20 @@ check("the server's die isn't stuck on one number", len(seen) >= 4, seen)
 rig(m, turn="red", has_rolled=True, dice_value=4)
 check("one roll a turn", attempt(ada, "select roll_ludo_dice(%s)", m) == "ERR already rolled")
 
-# Three sixes in a row: void, and the turn passes.
+# Sixes in a row always stand: a third (or fourth) six is played, and earns another roll.
 for tries in range(300):
     rig(m, turn="red", has_rolled=False, dice_value=None, consecutive_sixes=2,
         tokens={"red": [5, -1, -1, -1]})
     st = attempt(ada, "select roll_ludo_dice(%s)", m)["state"]
     if st["last_roll"]["value"] == 6:
-        check("a third six is void and the turn passes",
-              st["turn"] == "yellow" and not st["has_rolled"] and st["consecutive_sixes"] == 0)
+        check("a third six stands: still red's turn, the six to play",
+              st["turn"] == "red" and st["has_rolled"] and st["dice_value"] == 6
+              and st["consecutive_sixes"] == 3, st)
+        after = attempt(ada, "select move_ludo_token(%s, 0)", m)["state"]
+        check("…and after the move red rolls again", after["turn"] == "red" and not after["has_rolled"], after)
         break
 else:
-    check("a third six is void and the turn passes", False, "never rolled a six")
+    check("a third six stands", False, "never rolled a six")
 
 # ── moving ────────────────────────────────────────────────────────────────
 rig(m, turn="red", has_rolled=True, dice_value=3, consecutive_sixes=0,

@@ -14,10 +14,8 @@ void main() {
       if (state.winner != null) return state.winner!;
       final dice = engine.rollDie(rng);
       final outcome = engine.registerRoll(state, dice);
-      if (outcome.forfeited || outcome.movableTokens.isEmpty) {
-        state = outcome.forfeited
-            ? outcome.state
-            : engine.passTurnNoMove(outcome.state);
+      if (outcome.movableTokens.isEmpty) {
+        state = engine.passTurnNoMove(outcome.state);
         continue;
       }
       final token = chooseLudoMove(outcome.state, dice, random: rng);
