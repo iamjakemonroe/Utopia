@@ -7,6 +7,8 @@
 //   then open /?scene=world|cards|chess|checkers|ludo|eights|notifications
 //   &world=<theme id> [&pieces=<set>]. "notifications" is home's cards with
 //   window.__push() opening the notifications (20 of every kind) over them.
+//   Any scene: window.__menu() opens the side menu, window.__go('/store')
+//   (or /collection, /profile) goes where it does, window.__back() closes.
 //   "ludo" and "eights" are offline tables where bots play every seat.
 //   "chipshow" is Chip going through his moods; "chipdraws" is Chip
 //   drawing an airplane in "Chip draws, you guess" (both for filming).
@@ -48,7 +50,11 @@ import 'package:utopia/features/auth/presentation/providers/auth_providers.dart'
 import 'package:utopia/features/coins/presentation/providers/coin_balance_provider.dart';
 import 'package:utopia/features/friends/data/presence.dart';
 import 'package:utopia/features/home/data/active_game.dart';
+import 'package:utopia/features/collection/presentation/collection_screen.dart';
 import 'package:utopia/features/home/presentation/screens/home_screen.dart';
+import 'package:utopia/features/home/presentation/widgets/side_menu.dart';
+import 'package:utopia/features/profile/presentation/screens/profile_screen.dart';
+import 'package:utopia/features/store/presentation/store_screen.dart';
 import 'package:utopia/features/eights/presentation/controllers/eights_match_controller.dart';
 import 'package:utopia/features/eights/presentation/screens/eights_match_screen.dart';
 import 'package:utopia/features/ludo/domain/ludo_engine.dart';
@@ -154,10 +160,20 @@ Future<void> main() async {
         goRouterProvider.overrideWith((ref) {
           final router = GoRouter(
             routes: [
-              GoRoute(path: '/', builder: (_, _) => scene),
+              GoRoute(path: '/', builder: (_, _) => _Hooks(child: scene)),
               GoRoute(
                 path: '/notifications',
                 builder: (_, _) => const NotificationsScreen(),
+              ),
+              // Where the side menu goes (tool/perf/journey.mjs).
+              GoRoute(
+                path: '/profile',
+                builder: (_, _) => const ProfileScreen(),
+              ),
+              GoRoute(path: '/store', builder: (_, _) => const StoreScreen()),
+              GoRoute(
+                path: '/collection',
+                builder: (_, _) => const CollectionScreen(),
               ),
               GoRoute(
                 path: '/settings',
@@ -192,6 +208,21 @@ Future<void> main() async {
           }).toJS;
           globalContext['__push'] = (() {
             router.push('/notifications');
+          }).toJS;
+          // window.__go(path) opens a screen as the side menu does (closing
+          // the menu, if it's open, as the screen opens); window.__back()
+          // closes the top one.
+          globalContext['__go'] = ((JSString path) {
+            final navigator = router.routerDelegate.navigatorKey.currentState;
+            if (navigator != null && navigator.canPop() && _menuOpen) {
+              _menuOpen = false;
+              navigator.pop();
+            }
+            router.push(path.toDart);
+          }).toJS;
+          globalContext['__back'] = (() {
+            _menuOpen = false;
+            router.routerDelegate.navigatorKey.currentState?.maybePop();
           }).toJS;
           return router;
         }),
@@ -235,6 +266,33 @@ Future<void> main() async {
 }
 
 const _perfUser = '00000000-0000-4000-8000-000000000001';
+
+bool _menuOpen = false;
+
+/// window.__menu() opens the side menu over the scene, as home's menu
+/// button does.
+class _Hooks extends ConsumerStatefulWidget {
+  const _Hooks({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_Hooks> createState() => _HooksState();
+}
+
+class _HooksState extends ConsumerState<_Hooks> {
+  @override
+  void initState() {
+    super.initState();
+    globalContext['__menu'] = (() {
+      _menuOpen = true;
+      showSideMenu(context, ref);
+    }).toJS;
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
 
 String _midGame() {
   const id = 'local-midgame';

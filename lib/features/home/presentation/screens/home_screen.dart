@@ -28,6 +28,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/coin_balance_pill.dart';
 import '../../../../core/widgets/coin_buddy.dart';
 import '../../../../core/widgets/app_background.dart';
+import '../../../../core/widgets/drawn_ahead.dart';
 import '../../../../core/widgets/doodle_ink.dart';
 import '../../../../core/widgets/game_card_art.dart';
 import '../../../../core/widgets/pop_card.dart';
@@ -391,6 +392,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: DoodleInk(
         child: AppBackground(
+          under: const DrawnAhead(ahead: SideMenuAhead()),
           child: SafeArea(
             child: RefreshIndicator(
               onRefresh: _refresh,

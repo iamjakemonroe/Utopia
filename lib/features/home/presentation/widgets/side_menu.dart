@@ -54,6 +54,17 @@ Future<void> showSideMenu(BuildContext context, WidgetRef ref) {
   );
 }
 
+/// The side menu as it is once open, to draw ahead of time where it can't
+/// be seen (see DrawnAhead): the first time it opens it took most of a
+/// second in a browser, working out how to draw it all.
+class SideMenuAhead extends StatelessWidget {
+  const SideMenuAhead({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      const _SideMenu(animation: kAlwaysCompleteAnimation);
+}
+
 class _SideMenu extends ConsumerWidget {
   const _SideMenu({required this.animation});
 

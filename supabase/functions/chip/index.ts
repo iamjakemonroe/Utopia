@@ -23,6 +23,8 @@
 // cost goes in the day's log (chip_costs).
 
 import Anthropic from "npm:@anthropic-ai/sdk@0.135.0";
+import { Anthropic as PostHogAnthropic } from "npm:@posthog/ai/anthropic";
+import { PostHog } from "npm:posthog-node";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 // Who gets which brain: Chip Maestro members the smartest; everyone else
@@ -94,6 +96,30 @@ async function logCost(
  * they're on (guests on one device share one allowance). */
 // deno-lint-ignore no-explicit-any
 type Who = { db: any; userId: string; device: string | null };
+
+type AiCall = {
+  posthogDistinctId: string;
+  posthogTraceId: string;
+  posthogProperties: { $ai_session_id: string };
+};
+
+const AI_SESSION_ID = /^[A-Za-z0-9_~.@()!':|-]+$/;
+
+function aiSessionId(userId: string, feature: string, conversationId?: unknown): string {
+  const conversation = typeof conversationId === "string" &&
+      conversationId.length <= 80 && AI_SESSION_ID.test(conversationId)
+    ? `-${conversationId}`
+    : "";
+  return `${feature}-${userId}${conversation}`;
+}
+
+function aiCall(userId: string, sessionId: string): AiCall {
+  return {
+    posthogDistinctId: userId,
+    posthogTraceId: crypto.randomUUID(),
+    posthogProperties: { $ai_session_id: sessionId },
+  };
+}
 
 type Allowance = { ok: boolean; tier: Tier; paid: boolean; why: string | null; price: number };
 
@@ -451,7 +477,33 @@ const vibeSchema = {
   additionalProperties: false,
 };
 
-const anthropic = new Anthropic();
+const posthogProjectToken = Deno.env.get("POSTHOG_PROJECT_TOKEN");
+const posthogHost = Deno.env.get("POSTHOG_HOST");
+const posthog = posthogProjectToken && posthogHost
+  ? new PostHog(posthogProjectToken, {
+    host: posthogHost,
+    privacyMode: false,
+    enableExceptionAutocapture: true,
+    flushAt: 1,
+    flushInterval: 0,
+  })
+  : null;
+if (!posthog) {
+  const missing = posthogProjectToken ? "POSTHOG_HOST" : "POSTHOG_PROJECT_TOKEN";
+  console.error(
+    `${missing} variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once ${missing} is configured`,
+  );
+}
+const anthropic = posthog ? new PostHogAnthropic({ posthog }) : new Anthropic();
+
+async function flushPosthog(): Promise<void> {
+  if (!posthog) return;
+  try {
+    await posthog.flush();
+  } catch (error) {
+    console.error("PostHog flush", error);
+  }
+}
 
 /** Asks Claude for JSON matching [schema]. Null on refusal or bad output. */
 async function ask(
@@ -460,6 +512,7 @@ async function ask(
   schema: Record<string, unknown>,
   feature: string,
   tier: Tier,
+  telemetry: AiCall,
 ): Promise<Record<string, unknown> | null> {
   const params = withFallback({
     model: FAST_MODEL,
@@ -471,7 +524,7 @@ async function ask(
     },
     messages,
   });
-  const response = await anthropic.beta.messages.create(params);
+  const response = await anthropic.beta.messages.create({ ...params, ...telemetry });
   await logCost(feature, tier, response);
   if (response.stop_reason === "refusal") return null;
   const text = response.content
@@ -623,6 +676,8 @@ Deno.serve(async (req: Request) => {
     }
     console.error(e);
     return json({ error: "Chip couldn't think just now." }, 500);
+  } finally {
+    await flushPosthog();
   }
 });
 
@@ -673,6 +728,7 @@ function searchTool(model: string) {
 async function talk(
   messages: Anthropic.Beta.BetaMessageParam[],
   tier: Tier,
+  telemetry: AiCall,
 ): Promise<string | null> {
   // Members' Chip can search the web; everyone else's answers from what he
   // knows (searching is the dearest part of a message).
@@ -689,14 +745,14 @@ async function talk(
   });
   let response: Anthropic.Beta.BetaMessage;
   try {
-    response = await anthropic.beta.messages.create(params);
+    response = await anthropic.beta.messages.create({ ...params, ...telemetry });
     await logCost("chat", tier, response);
   } catch (e) {
     // Web search can be switched off for the account: answer without it.
     if (!(e instanceof Anthropic.BadRequestError)) throw e;
     console.error("chat without search", e.message);
     delete params.tools;
-    response = await anthropic.beta.messages.create(params);
+    response = await anthropic.beta.messages.create({ ...params, ...telemetry });
     await logCost("chat", tier, response);
   }
   // A long search can pause the turn; let it carry on where it stopped.
@@ -705,7 +761,7 @@ async function talk(
       ...messages,
       { role: "assistant", content: response.content },
     ];
-    response = await anthropic.beta.messages.create(params);
+    response = await anthropic.beta.messages.create({ ...params, ...telemetry });
     await logCost("chat", tier, response);
   }
   if (response.stop_reason === "refusal") return null;
@@ -824,6 +880,10 @@ async function chat(who: Who, body: Record<string, unknown>): Promise<Response> 
 
   const allowance = await allow(who, "chat", body.pay === true);
   if (!allowance.ok) return json(outOfChats(allowance));
+  const telemetry = aiCall(
+    userId,
+    aiSessionId(userId, "chip-chat", body.conversation_id),
+  );
 
   const context = (body.context ?? {}) as Record<string, unknown>;
   const facts = [
@@ -927,7 +987,7 @@ async function chat(who: Who, body: Record<string, unknown>): Promise<Response> 
   // A chat paid for with coins that Chip can't answer is given back.
   let raw: string | null;
   try {
-    raw = await talk(messages, allowance.tier);
+    raw = await talk(messages, allowance.tier, telemetry);
   } catch (e) {
     if (allowance.paid) await service.rpc("chip_refund_chat", { p_user: userId });
     throw e;
@@ -978,10 +1038,12 @@ async function chat(who: Who, body: Record<string, unknown>): Promise<Response> 
   }
   if (out.draw) {
     const fromPhoto = out.usePhoto && photo ? photo : undefined;
-    const picture = await startDrawing(who, out.draw, {
-      look: out.look ?? undefined,
-      photo: fromPhoto,
-    });
+    const picture = await startDrawing(
+      who,
+      out.draw,
+      { look: out.look ?? undefined, photo: fromPhoto },
+      telemetry,
+    );
     if (picture.status !== "invalid") {
       result.picture = {
         ...picture,
@@ -1063,12 +1125,13 @@ async function startDrawing(
   who: Who,
   subject: unknown,
   extra: DrawExtra = {},
+  telemetry = aiCall(who.userId, aiSessionId(who.userId, "chip-draw")),
 ): Promise<{ id?: string; status: string }> {
   const { userId } = who;
   const key = tidySubject(subject);
   if (key.length < 2) return { status: "invalid" };
   const service = admin();
-  if (extra.photo) return await startPhotoDrawing(who, service, key, extra);
+  if (extra.photo) return await startPhotoDrawing(who, service, key, extra, telemetry);
   const asked = (id: string) =>
     service.from("coloring_asks").upsert(
       { user_id: userId, page_id: id },
@@ -1134,7 +1197,9 @@ async function startDrawing(
 
   // Drawing takes a while: it carries on after this answer goes back, and
   // the app watches the page.
-  await inBackground(drawPage(service, id, key, { look: extra.look }, allowance.tier));
+  await inBackground(
+    drawPage(service, id, key, { look: extra.look }, allowance.tier, telemetry),
+  );
   return { id, status: "drawing" };
 }
 
@@ -1146,6 +1211,7 @@ async function startPhotoDrawing(
   service: any,
   subject: string,
   extra: DrawExtra,
+  telemetry: AiCall,
 ): Promise<{ id?: string; status: string }> {
   const { userId } = who;
   const allowance = await allow(who, "draw");
@@ -1157,7 +1223,9 @@ async function startPhotoDrawing(
     .single();
   if (failed || !made) throw failed;
   await service.from("coloring_asks").insert({ user_id: userId, page_id: made.id });
-  await inBackground(drawPage(service, made.id, subject, extra, allowance.tier));
+  await inBackground(
+    drawPage(service, made.id, subject, extra, allowance.tier, telemetry),
+  );
   return { id: made.id, status: "drawing" };
 }
 
@@ -1206,6 +1274,7 @@ async function drawPage(
   subject: string,
   extra: DrawExtra,
   tier: Tier,
+  telemetry: AiCall,
 ): Promise<void> {
   const finish = (fields: Record<string, unknown>) =>
     service
@@ -1226,7 +1295,7 @@ async function drawPage(
       messages: [{ role: "user", content: drawRequest(subject, extra) }],
     });
     // Streamed, so a long drawing never trips a request timeout.
-    const response = await anthropic.beta.messages.stream(params).finalMessage();
+    const response = await anthropic.beta.messages.stream({ ...params, ...telemetry }).finalMessage();
     await logCost("draw", tier, response);
     if (response.stop_reason === "refusal") {
       await finish({ status: "refused" });
@@ -1265,6 +1334,8 @@ async function drawPage(
   } catch (e) {
     console.error("draw", e);
     await finish({ status: "failed" });
+  } finally {
+    await flushPosthog();
   }
 }
 
@@ -1329,7 +1400,14 @@ async function doodle(who: Who): Promise<Response> {
     if (!allowance.ok) return;
     const { data: word, error: claimError } = await service.rpc("_chip_doodle_claim");
     if (claimError) throw claimError;
-    if (word) await drawDoodle(service, word as string, allowance.tier);
+    if (word) {
+      await drawDoodle(
+        service,
+        word as string,
+        allowance.tier,
+        aiCall(userId, aiSessionId(userId, "chip-doodle")),
+      );
+    }
   };
   const deal = (r: Round) => json({ word: r.word, strokes: r.strokes });
 
@@ -1356,6 +1434,7 @@ async function drawDoodle(
   service: any,
   word: string,
   tier: Tier,
+  telemetry: AiCall,
 ): Promise<void> {
   const finish = (fields: Record<string, unknown>) =>
     service
@@ -1375,7 +1454,7 @@ async function drawDoodle(
       },
       messages: [{ role: "user", content: `The word: ${word}` }],
     });
-    const response = await anthropic.beta.messages.stream(params).finalMessage();
+    const response = await anthropic.beta.messages.stream({ ...params, ...telemetry }).finalMessage();
     await logCost("doodle", tier, response);
     if (response.stop_reason === "refusal") {
       await finish({ status: "refused" });
@@ -1401,6 +1480,8 @@ async function drawDoodle(
   } catch (e) {
     console.error("doodle draw", e);
     await finish({ status: "failed" });
+  } finally {
+    await flushPosthog();
   }
 }
 
@@ -1479,6 +1560,7 @@ async function paint(who: Who, body: Record<string, unknown>): Promise<Response>
 
   const allowance = await allow(who, "paint");
   if (!allowance.ok) return json({ status: "limited" });
+  const telemetry = aiCall(who.userId, aiSessionId(who.userId, "chip-paint"));
 
   const params = withFallback({
     model: artModel(allowance.tier),
@@ -1501,7 +1583,7 @@ async function paint(who: Who, body: Record<string, unknown>): Promise<Response>
       ],
     }],
   });
-  const response = await anthropic.beta.messages.stream(params).finalMessage();
+  const response = await anthropic.beta.messages.stream({ ...params, ...telemetry }).finalMessage();
   await logCost("paint", allowance.tier, response);
   if (response.stop_reason === "refusal") return json({ status: "refused" });
   if (response.stop_reason !== "end_turn") {
@@ -1528,6 +1610,36 @@ async function paint(who: Who, body: Record<string, unknown>): Promise<Response>
 // (chip_portrait_pay), and a failed one is refunded.
 const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta/interactions";
 const IMAGE_MODEL = Deno.env.get("GEMINI_IMAGE_MODEL") ?? "gemini-3.1-flash-image";
+
+function captureGeminiGeneration(
+  telemetry: AiCall,
+  prompt: string,
+  photo: Photo | undefined,
+  output: string,
+  startedAt: number,
+): void {
+  posthog?.capture({
+    distinctId: telemetry.posthogDistinctId,
+    event: "$ai_generation",
+    properties: {
+      $ai_model: IMAGE_MODEL,
+      $ai_provider: "google",
+      $ai_input: [{
+        role: "user",
+        content: [
+          { type: "text", text: prompt },
+          ...(photo ? [{ type: "image", media_type: photo.media }] : []),
+        ],
+      }],
+      // The response is binary image data, which is represented without
+      // sending its base64 bytes as an event property.
+      $ai_output_choices: [{ role: "assistant", content: output }],
+      $ai_latency: (Date.now() - startedAt) / 1000,
+      $ai_trace_id: telemetry.posthogTraceId,
+      ...telemetry.posthogProperties,
+    },
+  });
+}
 
 const PORTRAIT_STYLE = `Clean black line art on a plain white background, like a
 page from a good coloring book: bold, even outlines; every area fully closed
@@ -1634,8 +1746,20 @@ async function portrait(userId: string, body: Record<string, unknown>): Promise<
   }
   await asked(pageId);
   await service.from("chip_portraits").update({ page_id: pageId }).eq("id", took.id);
+  const telemetry = aiCall(
+    userId,
+    aiSessionId(userId, "chip-portrait", pageId),
+  );
   await inBackground(
-    drawPortrait(service, pageId, famous ? "shared" : userId, subject, photo, took.id),
+    drawPortrait(
+      service,
+      pageId,
+      famous ? "shared" : userId,
+      subject,
+      photo,
+      took.id,
+      telemetry,
+    ),
   );
   return json({ id: pageId, status: "drawing", left: took.left });
 }
@@ -1650,6 +1774,7 @@ async function drawPortrait(
   subject: string,
   photo: Photo | undefined,
   chargeId: number,
+  telemetry: AiCall,
 ): Promise<void> {
   const finish = (fields: Record<string, unknown>) =>
     service
@@ -1660,7 +1785,7 @@ async function drawPortrait(
     const prompt = photo
       ? `Turn this photo${subject ? ` (${subject})` : ""} into a coloring page. Keep every person's face, hairstyle, expression and clothes true to the photo, so they're clearly recognisable, and keep any pets and things in it. ${PORTRAIT_STYLE}`
       : `A coloring page portrait of ${subject}, who should be clearly recognisable as the real ${subject}: their face, hairstyle and signature look, friendly and flattering. ${PORTRAIT_STYLE}`;
-    const image = await generateImage(prompt, photo);
+    const image = await generateImage(prompt, photo, telemetry);
     if (image === "refused") {
       await finish({ status: "refused" });
       await service.rpc("chip_portrait_refund", { p_id: chargeId });
@@ -1677,6 +1802,8 @@ async function drawPortrait(
     console.error("portrait", e);
     await finish({ status: "failed" });
     await service.rpc("chip_portrait_refund", { p_id: chargeId });
+  } finally {
+    await flushPosthog();
   }
 }
 
@@ -1684,8 +1811,10 @@ async function drawPortrait(
  * or null when something went wrong. */
 async function generateImage(
   prompt: string,
-  photo?: Photo,
+  photo: Photo | undefined,
+  telemetry: AiCall,
 ): Promise<{ bytes: Uint8Array; media: string } | "refused" | null> {
+  const startedAt = Date.now();
   const headers = {
     "x-goog-api-key": Deno.env.get("GEMINI_API_KEY")!,
     "Content-Type": "application/json",
@@ -1711,6 +1840,7 @@ async function generateImage(
   if (!res.ok) {
     const text = await res.text();
     console.error("image model", res.status, text.slice(0, 500));
+    captureGeminiGeneration(telemetry, prompt, photo, `Request failed (${res.status})`, startedAt);
     return /safety|blocked|prohibited|policy/i.test(text) ? "refused" : null;
   }
   // deno-lint-ignore no-explicit-any
@@ -1722,12 +1852,22 @@ async function generateImage(
   }
   const found = lastImage(out);
   if (found) {
+    captureGeminiGeneration(telemetry, prompt, photo, "Generated image", startedAt);
     return {
       bytes: Uint8Array.from(atob(found.data), (c) => c.charCodeAt(0)),
       media: found.media,
     };
   }
   console.error("image model gave no image", out?.status, JSON.stringify(out?.errors ?? "").slice(0, 300));
+  captureGeminiGeneration(
+    telemetry,
+    prompt,
+    photo,
+    out?.status === "completed" || out?.status === "failed"
+      ? "Refused image request"
+      : "Image request incomplete",
+    startedAt,
+  );
   return out?.status === "completed" || out?.status === "failed" ? "refused" : null;
 }
 
@@ -1792,6 +1932,7 @@ async function vibe(who: Who, body: Record<string, unknown>): Promise<Response> 
     vibeSchema,
     "vibe",
     allowance.tier,
+    aiCall(who.userId, aiSessionId(who.userId, "chip-vibe")),
   );
   if (!out) return json({ error: "Couldn't read that one" }, 422);
 

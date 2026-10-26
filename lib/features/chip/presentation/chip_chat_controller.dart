@@ -67,6 +67,20 @@ class ChipChatController extends StateNotifier<ChipChatState> {
   set debugLines(List<ChipLine> lines) => state = ChipChatState(lines: lines);
 
   static String _key(String player) => 'chip_chat_$player';
+  static String _sessionKey(String player) => 'chip_chat_session_$player';
+
+  late String _conversationId = _restoreConversationId(_prefs, _player);
+
+  static String _newConversationId() =>
+      'chip-${DateTime.now().microsecondsSinceEpoch}';
+
+  static String _restoreConversationId(
+    SharedPreferences? prefs,
+    String? player,
+  ) {
+    if (prefs == null || player == null) return _newConversationId();
+    return prefs.getString(_sessionKey(player)) ?? _newConversationId();
+  }
 
   static ChipChatState _restore(SharedPreferences? prefs, String? player) {
     if (prefs == null || player == null) return const ChipChatState();
@@ -92,6 +106,7 @@ class ChipChatController extends StateNotifier<ChipChatState> {
         jsonEncode([for (final l in state.lines) l.toStore()]),
       ),
     );
+    unawaited(prefs.setString(_sessionKey(player), _conversationId));
   }
 
   /// Starts over: Chip forgets this chat (and the photos sent in it).
@@ -99,8 +114,12 @@ class ChipChatController extends StateNotifier<ChipChatState> {
     if (state.thinking) return;
     state = const ChipChatState();
     _photo = null;
+    _conversationId = _newConversationId();
     final prefs = _prefs, player = _player;
-    if (prefs != null && player != null) unawaited(prefs.remove(_key(player)));
+    if (prefs != null && player != null) {
+      unawaited(prefs.remove(_key(player)));
+      unawaited(prefs.remove(_sessionKey(player)));
+    }
     unawaited(_forgetPhotos());
   }
 
@@ -208,6 +227,7 @@ class ChipChatController extends StateNotifier<ChipChatState> {
           message,
           history: history,
           context: context,
+          conversationId: _conversationId,
           photo: sendPhoto,
           photoIsNew: photo != null,
           pay: _paying,

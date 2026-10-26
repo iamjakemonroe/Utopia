@@ -76,7 +76,7 @@ class PrivacyScreen extends StatelessWidget {
     (
       strings.privacyChangesAndContact,
       [
-        "If this policy changes, we'll update the date at the top. Questions or requests: use Settings > Report a bug and we'll reply.",
+        "If this policy changes, we'll update the date at the top. Questions or requests: email utopia@kaivon.app, or use Settings > Report a bug, and we'll reply.",
       ],
     ),
   ];

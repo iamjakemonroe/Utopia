@@ -295,6 +295,7 @@ class ChipBrain {
     String message, {
     List<ChipLine> history = const [],
     Map<String, String> context = const {},
+    required String conversationId,
     Uint8List? photo,
     bool photoIsNew = true,
     bool pay = false,
@@ -310,6 +311,7 @@ class ChipBrain {
               'message': message,
               'history': [for (final l in history) l.toJson()],
               'context': context,
+              'conversation_id': conversationId,
               if (photo != null) ...{
                 'photo': base64Encode(photo),
                 'photo_new': photoIsNew,

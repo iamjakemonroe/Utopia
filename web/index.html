@@ -55,21 +55,97 @@
       #loading img, #loading .dots span { animation: none; }
     }
   </style>
+  <!-- PostHog (web). Posthog().setup() is a no-op in a browser, so this
+       starts it; the token is public. -->
+  <script async>
+    !(function (t, e) {
+      var o, n, p, r;
+      e.__SV ||
+        ((window.posthog = e),
+        (e._i = []),
+        (e.init = function (i, s, a) {
+          function g(t, e) {
+            var o = e.split(".");
+            (2 == o.length && ((t = t[o[0]]), (e = o[1])),
+              (t[e] = function () {
+                t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
+              }));
+          }
+          (((p = t.createElement("script")).type = "text/javascript"),
+            (p.crossOrigin = "anonymous"),
+            (p.async = !0),
+            (p.src = s.api_host + "/static/array.js"),
+            (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r));
+          var u = e;
+          for (
+            void 0 !== a ? (u = e[a] = []) : (a = "posthog"),
+              u.people = u.people || [],
+              Object.defineProperty(u, "toString", {
+                configurable: !0,
+                enumerable: !0,
+                writable: !0,
+                value: function (t) {
+                  var e = "posthog";
+                  return ("posthog" !== a && (e += "." + a), t || (e += " (stub)"), e);
+                },
+              }),
+              Object.defineProperty(u.people, "toString", {
+                configurable: !0,
+                enumerable: !0,
+                writable: !0,
+                value: function () {
+                  return u.toString(1) + ".people (stub)";
+                },
+              }),
+              o =
+                "capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagResult reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(
+                  " ",
+                ),
+              n = 0;
+            n < o.length;
+            n++
+          )
+            g(u, o[n]);
+          e._i.push([i, s, a]);
+        }),
+        (e.__SV = 1));
+    })(document, window.posthog || []);
+    posthog.init("phc_pGiQZDQVejqvpPCuWYJuWeFo25bC6ZFhjbsJH9NPTvSX", {
+      api_host: "https://us.i.posthog.com",
+      defaults: "2026-08-30",
+      // Matches the native logsConfig identity in lib/core/analytics/posthog.dart.
+      logs: {serviceName: "utopia"},
+    });
+  </script>
 </head>
 <body>
   <!-- Shown while the game downloads, so the page never looks stuck; it
-       fades out on the game's first frame. -->
+       fades out on the game's first frame, or once the splash is ready to
+       move. -->
   <div id="loading" aria-label="Loading Utopia">
     <img src="icons/Icon-192.png" alt="" width="96" height="96">
     <div class="dots"><span></span><span></span><span></span></div>
   </div>
   <script>
-    window.addEventListener('flutter-first-frame', function () {
-      var el = document.getElementById('loading');
-      if (!el) return;
-      el.classList.add('done');
-      setTimeout(function () { el.remove(); }, 450);
-    });
+    (function () {
+      var held = false;
+      function hide() {
+        var el = document.getElementById('loading');
+        if (!el || el.classList.contains('done')) return;
+        el.classList.add('done');
+        setTimeout(function () { el.remove(); }, 450);
+      }
+      // The splash first draws everything out of sight while the browser
+      // learns how (a still moment on a first visit), and asks this page
+      // to stay over it meanwhile: never longer than 2.5 s past the first
+      // frame (lib/features/auth/presentation/screens/splash_screen.dart).
+      window.addEventListener('utopia-hold', function () { held = true; });
+      window.addEventListener('utopia-ready', hide);
+      window.addEventListener('flutter-first-frame', function () {
+        if (held) setTimeout(hide, 2500);
+        else hide();
+      });
+    })();
   </script>
   <script>
     // The game draws at the screen's full sharpness. (It once drew less

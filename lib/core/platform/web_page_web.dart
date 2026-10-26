@@ -17,6 +17,12 @@ void clearPageQuery() {
   } catch (_) {}
 }
 
+void pageEvent(String name) {
+  try {
+    web.window.dispatchEvent(web.Event(name));
+  } catch (_) {}
+}
+
 @JS('Intl.DateTimeFormat')
 external _DateFormat _dateFormat();
 

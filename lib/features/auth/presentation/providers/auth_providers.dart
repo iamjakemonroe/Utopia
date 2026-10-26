@@ -5,7 +5,9 @@ import '../../../../core/supabase/supabase_providers.dart';
 import '../../data/auth_repository.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository(ref.watch(supabaseClientProvider));
+  final repository = AuthRepository(ref.watch(supabaseClientProvider));
+  ref.onDispose(repository.dispose);
+  return repository;
 });
 
 /// Emits on every auth transition (sign in, sign out, token refresh, link).

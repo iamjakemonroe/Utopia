@@ -13,6 +13,7 @@ import '../../../core/theme/theme_controller.dart';
 import '../../../core/widgets/app_background.dart';
 import '../../../core/widgets/bouncy_dialog.dart';
 import '../../../core/widgets/coin_buddy.dart';
+import '../../../core/widgets/live_world_cards.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/primary_button.dart';
@@ -340,120 +341,123 @@ class _WorldsTab extends ConsumerWidget {
         .every(store.isOwned);
 
     // A lazy grid: only the live worlds on screen (and a little either
-    // side) exist and animate, rather than all of them at once.
-    return CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.md,
-            AppSpacing.md,
-            AppSpacing.sm,
-          ),
-          sliver: SliverList.list(
-            children: [
-              Text(
-                strings.storeUtopiaWorlds,
-                style: AppTextStyles.display(fontSize: 20),
-              ),
-              Text(
-                strings.storeEveryWorldHasItsOwn,
-                style: AppTextStyles.body(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
+    // side) exist and animate, rather than all of them at once; in a
+    // browser only the one nearest the middle moves.
+    return LiveWorldArea(
+      child: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
+            sliver: SliverList.list(
+              children: [
+                Text(
+                  strings.storeUtopiaWorlds,
+                  style: AppTextStyles.display(fontSize: 20),
                 ),
-              ),
-              const EventStoreBanner(),
-            ],
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          sliver: SliverGrid.count(
-            crossAxisCount: context.gridColumns(),
-            mainAxisSpacing: AppSpacing.sm,
-            crossAxisSpacing: AppSpacing.sm,
-            childAspectRatio: 0.78,
-            children: [
-              for (final t in UtopiaThemes.utopia)
-                if (UtopiaThemes.sold(t.id)) _WorldCard(theme: t, live: true),
-            ],
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            0,
-            AppSpacing.md,
-            AppSpacing.md,
-          ),
-          sliver: SliverList.list(
-            children: [
-              if (!ownsAll) ...[
-                const SizedBox(height: AppSpacing.md),
-                PopCard(
-                  borderRadius: 24,
-                  tint: AppColors.accentSecondary,
-                  glow: AppColors.goldBorderBright,
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Row(
-                    children: [
-                      GlossyBadge(
-                        icon: Icons.public_rounded,
-                        color: AppColors.mint,
-                        size: 46,
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              strings.storeEveryWorld,
-                              style: AppTextStyles.display(fontSize: 18),
-                            ),
-                            Text(
-                              strings.storeAllWorldsAndColorsNow(
-                                UtopiaThemes.utopia
-                                    .where((t) => UtopiaThemes.sold(t.id))
-                                    .length,
-                                UtopiaThemes.colors.length,
-                              ),
-                              style: AppTextStyles.body(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      _BuyButton(product: bundle),
-                    ],
+                Text(
+                  strings.storeEveryWorldHasItsOwn,
+                  style: AppTextStyles.body(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
                   ),
                 ),
+                const EventStoreBanner(),
               ],
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                strings.storeColorWorlds,
-                style: AppTextStyles.display(fontSize: 20),
-              ),
-              Text(
-                strings.store12ColorsEachAtDawn,
-                style: AppTextStyles.body(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              for (final family in _families())
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: _FamilyRow(family: family.$1, themes: family.$2),
-                ),
-            ],
+            ),
           ),
-        ),
-      ],
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            sliver: SliverGrid.count(
+              crossAxisCount: context.gridColumns(),
+              mainAxisSpacing: AppSpacing.sm,
+              crossAxisSpacing: AppSpacing.sm,
+              childAspectRatio: 0.78,
+              children: [
+                for (final t in UtopiaThemes.utopia)
+                  if (UtopiaThemes.sold(t.id)) _WorldCard(theme: t, live: true),
+              ],
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
+            sliver: SliverList.list(
+              children: [
+                if (!ownsAll) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  PopCard(
+                    borderRadius: 24,
+                    tint: AppColors.accentSecondary,
+                    glow: AppColors.goldBorderBright,
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Row(
+                      children: [
+                        GlossyBadge(
+                          icon: Icons.public_rounded,
+                          color: AppColors.mint,
+                          size: 46,
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                strings.storeEveryWorld,
+                                style: AppTextStyles.display(fontSize: 18),
+                              ),
+                              Text(
+                                strings.storeAllWorldsAndColorsNow(
+                                  UtopiaThemes.utopia
+                                      .where((t) => UtopiaThemes.sold(t.id))
+                                      .length,
+                                  UtopiaThemes.colors.length,
+                                ),
+                                style: AppTextStyles.body(
+                                  fontSize: 13,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _BuyButton(product: bundle),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  strings.storeColorWorlds,
+                  style: AppTextStyles.display(fontSize: 20),
+                ),
+                Text(
+                  strings.store12ColorsEachAtDawn,
+                  style: AppTextStyles.body(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                for (final family in _families())
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    child: _FamilyRow(family: family.$1, themes: family.$2),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -549,7 +553,10 @@ class _WorldCard extends ConsumerWidget {
             fit: StackFit.expand,
             children: [
               if (live)
-                UtopiaWorld(style: theme.world)
+                LiveWorldCard(
+                  id: theme.id,
+                  child: UtopiaWorld(style: theme.world),
+                )
               else
                 _Swatch(style: theme.world),
               DecoratedBox(

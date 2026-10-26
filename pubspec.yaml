@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  posthog_flutter: ^5.56.0
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -116,6 +117,10 @@ flutter:
     - assets/sfx/
     - assets/music/
     - assets/google_fonts/
+
+  # Drawn on the GPU: pool balls (lib/features/pool/presentation/pool_art.dart).
+  shaders:
+    - shaders/pool_ball.frag
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

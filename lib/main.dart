@@ -10,6 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'core/config/env.dart';
+import 'core/analytics/posthog.dart';
+import 'core/analytics/posthog_logs.dart';
 import 'core/platform/device_key.dart';
 import 'core/platform/view_focus.dart';
 import 'core/platform/web_page.dart';
@@ -46,6 +48,8 @@ Future<void> main() async {
   ]);
 
   DeviceKey.load(await prefs);
+  await setupPostHog();
+  PostHogAppLogger.appReady();
 
   final app = ProviderScope(
     overrides: [sharedPreferencesProvider.overrideWithValue(await prefs)],

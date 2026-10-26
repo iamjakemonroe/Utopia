@@ -7,15 +7,21 @@ import 'utopia_world.dart';
 /// world runs on one shared clock, so moving between screens never makes it
 /// jump.
 class AppBackground extends StatelessWidget {
-  const AppBackground({super.key, required this.child});
+  const AppBackground({super.key, required this.child, this.under});
 
   final Widget child;
+
+  /// Drawn under the world, where it can't be seen (see DrawnAhead).
+  final Widget? under;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
+        // Always there, so the world never moves along the list (it would
+        // be made again).
+        under ?? const SizedBox.shrink(),
         const UtopiaWorld(),
         LayoutIsland(child: child),
       ],

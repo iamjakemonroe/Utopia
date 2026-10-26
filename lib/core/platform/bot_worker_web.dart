@@ -9,7 +9,7 @@ import 'package:web/web.dart' as web;
 /// background, as the apps do in an isolate, so the board keeps moving.
 web.Worker? _worker;
 var _next = 0;
-final _waiting = <int, Completer<int?>>{};
+final _waiting = <int, Completer<Map<String, dynamic>>>{};
 
 web.Worker _start() {
   final worker = web.Worker('bot_worker.js'.toJS);
@@ -18,7 +18,7 @@ web.Worker _start() {
     if (data == null || !data.isA<JSString>()) return;
     final answer =
         jsonDecode((data as JSString).toDart) as Map<String, dynamic>;
-    _waiting.remove(answer['id'])?.complete(answer['move'] as int?);
+    _waiting.remove(answer['id'])?.complete(answer);
   }).toJS;
   worker.onerror = ((web.Event _) {
     final failed = StateError('The bot worker failed');
@@ -34,10 +34,18 @@ web.Worker _start() {
 /// The index of the bot's move among the position's legal moves (null when
 /// it has none), worked out by the worker for [job]: {game, position,
 /// level, seed}.
-Future<int?> botMoveInWorker(Map<String, Object> job) {
+Future<int?> botMoveInWorker(Map<String, Object> job) async =>
+    (await _ask(job))['move'] as int?;
+
+/// What the worker worked out for [job], for a game whose move isn't one of
+/// a list (pool: the shot, as JSON).
+Future<Object?> botResultInWorker(Map<String, Object> job) async =>
+    (await _ask(job))['result'];
+
+Future<Map<String, dynamic>> _ask(Map<String, Object> job) {
   final worker = _worker ??= _start();
   final id = _next++;
-  final done = Completer<int?>();
+  final done = Completer<Map<String, dynamic>>();
   _waiting[id] = done;
   worker.postMessage(jsonEncode({...job, 'id': id}).toJS);
   return done.future;

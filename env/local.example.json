@@ -1,5 +1,7 @@
 {
   "SUPABASE_URL": "https://your-project-ref.supabase.co",
   "SUPABASE_PUBLISHABLE_KEY": "your-publishable-key",
-  "SENTRY_DSN": ""
+  "SENTRY_DSN": "",
+  "POSTHOG_PROJECT_TOKEN": "",
+  "POSTHOG_HOST": "https://us.i.posthog.com"
 }

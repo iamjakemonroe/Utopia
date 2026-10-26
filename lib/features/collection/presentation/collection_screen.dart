@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +10,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_controller.dart';
 import '../../../core/theme/utopia_themes.dart';
 import '../../../core/widgets/app_background.dart';
+import '../../../core/widgets/live_world_cards.dart';
 import '../../../core/widgets/pop_card.dart';
 import '../../../core/widgets/user_avatar.dart';
 import '../../../core/widgets/utopia_toast.dart';
@@ -126,7 +126,7 @@ class _WorldsTab extends ConsumerWidget {
         if (s.isWorld && store.rentedUntil(s.itemId) == null) s,
     ];
 
-    return _LiveWorldArea(
+    return LiveWorldArea(
       child: CustomScrollView(
         slivers: [
           _Header(
@@ -195,130 +195,6 @@ class _WorldsTab extends ConsumerWidget {
         ],
       ),
     );
-  }
-}
-
-/// In a browser, only the world card nearest the middle of the screen
-/// moves; the rest hold still. Every live world is a whole scene to draw
-/// each frame, and a browser can't keep up with a screenful of them. The
-/// apps animate them all.
-class _LiveWorldArea extends StatefulWidget {
-  const _LiveWorldArea({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_LiveWorldArea> createState() => _LiveWorldAreaState();
-}
-
-class _LiveWorldAreaState extends State<_LiveWorldArea> {
-  final _live = _LiveWorld();
-
-  @override
-  void initState() {
-    super.initState();
-    if (kIsWeb) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _live.pick());
-    }
-  }
-
-  @override
-  void dispose() {
-    _live.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final scope = _LiveWorldScope(live: _live, child: widget.child);
-    if (!kIsWeb) return scope;
-    return NotificationListener<ScrollNotification>(
-      onNotification: (n) {
-        if (n is ScrollUpdateNotification || n is ScrollEndNotification) {
-          _live.pick();
-        }
-        return false;
-      },
-      child: scope,
-    );
-  }
-}
-
-/// The world cards on screen, and which one is live.
-class _LiveWorld extends ChangeNotifier {
-  final _cards = <Object, BuildContext>{};
-  Object? live;
-
-  void add(Object id, BuildContext context) => _cards[id] = context;
-
-  void remove(Object id) => _cards.remove(id);
-
-  /// The card nearest the middle of the screen goes live.
-  void pick() {
-    Object? best;
-    var nearest = double.infinity;
-    for (final MapEntry(key: id, value: context) in _cards.entries) {
-      final box = context.findRenderObject() as RenderBox?;
-      if (box == null || !box.attached || !box.hasSize) continue;
-      final middle = MediaQuery.sizeOf(context).height / 2;
-      final centre = box.localToGlobal(box.size.center(Offset.zero)).dy;
-      final away = (centre - middle).abs();
-      if (away < nearest) {
-        nearest = away;
-        best = id;
-      }
-    }
-    if (best != live) {
-      live = best;
-      notifyListeners();
-    }
-  }
-}
-
-class _LiveWorldScope extends InheritedNotifier<_LiveWorld> {
-  const _LiveWorldScope({required _LiveWorld live, required super.child})
-    : super(notifier: live);
-
-  static _LiveWorld? of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_LiveWorldScope>()?.notifier;
-}
-
-/// A world card's moving world: in a browser it moves only while it's the
-/// live one (and holds its last frame otherwise).
-class _LiveWorldCard extends StatefulWidget {
-  const _LiveWorldCard({required this.id, required this.child});
-
-  final Object id;
-  final Widget child;
-
-  @override
-  State<_LiveWorldCard> createState() => _LiveWorldCardState();
-}
-
-class _LiveWorldCardState extends State<_LiveWorldCard> {
-  _LiveWorld? _live;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final live = _LiveWorldScope.of(context);
-    if (live != _live) {
-      _live?.remove(widget.id);
-      _live = live?..add(widget.id, context);
-    }
-  }
-
-  @override
-  void dispose() {
-    _live?.remove(widget.id);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final live = _LiveWorldScope.of(context);
-    if (!kIsWeb || live == null) return widget.child;
-    return TickerMode(enabled: live.live == widget.id, child: widget.child);
   }
 }
 
@@ -391,7 +267,7 @@ class _WorldCard extends ConsumerWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                _LiveWorldCard(
+                LiveWorldCard(
                   id: theme.id,
                   child: UtopiaWorld(style: theme.world),
                 ),

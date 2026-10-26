@@ -18,6 +18,13 @@ abstract final class WebPage {
     if (_query.isNotEmpty) impl.clearPageQuery();
   }
 
+  /// The loading page (web/index.html) stays up past the game's first
+  /// frame, until [releaseLoading]: the splash draws everything once out
+  /// of sight first, a moment that page's own animation covers.
+  static void holdLoading() => impl.pageEvent('utopia-hold');
+
+  static void releaseLoading() => impl.pageEvent('utopia-ready');
+
   /// The player's currency, from their time zone: naira in Nigeria, cedis
   /// in Ghana... and US dollars elsewhere (or in the apps).
   static String currency() => switch (impl.timeZone()) {
