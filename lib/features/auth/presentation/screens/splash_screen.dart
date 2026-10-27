@@ -1,4 +1,5 @@
 import '../../../dev/sets_preview.dart';
+import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -10,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/audio/game_audio.dart';
+import '../../../../core/platform/web_page.dart';
 import '../../../../core/router/app_router.dart' show SplashHandoff;
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -67,6 +69,52 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late final Ticker _ticker = createTicker(_tick);
   bool _leaving = false;
 
+  /// In a browser, the first time anything is drawn the GPU has to work
+  /// out how (it builds a shader for it), and on a first visit that held
+  /// frames up by as much as half a second each as the world, the bubble,
+  /// the coin and the title first appeared: the splash juddered just as
+  /// it began. So before anything moves, all of it is drawn once behind
+  /// the launch color (the screen looks just as it did), and the splash
+  /// starts once frames come quickly again; on later visits the browser
+  /// has kept its shaders, and that's a frame or two. Meanwhile the web
+  /// page's own loading animation stays over it (see [WebPage.holdLoading]).
+  bool _warming = kIsWeb;
+  Timer? _warmLimit;
+  int _quickFrames = 0;
+
+  /// Frames drawn hidden. The world goes behind the bubble in turns, half
+  /// uncovered and whole: drawn through a round edge, everything in it is
+  /// drawn another way again.
+  int _warmFrames = 0;
+
+  void _nextWarmFrame(Duration _) {
+    if (!_warming || !mounted) return;
+    setState(() => _warmFrames++);
+    SchedulerBinding.instance.addPostFrameCallback(_nextWarmFrame);
+  }
+
+  void _onTimings(List<FrameTiming> timings) {
+    for (final t in timings) {
+      _quickFrames = t.rasterDuration < const Duration(milliseconds: 50)
+          ? _quickFrames + 1
+          : 0;
+    }
+    if (_quickFrames >= 2) _warmed();
+  }
+
+  void _warmed() {
+    if (!_warming) return;
+    _warmLimit?.cancel();
+    SchedulerBinding.instance.removeTimingsCallback(_onTimings);
+    WebPage.releaseLoading();
+    if (!mounted) return;
+    setState(() => _warming = false);
+    // From the frame that first shows it as it really is.
+    WidgetsBinding.instance.endOfFrame.then((_) {
+      if (mounted) _ticker.start();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -80,6 +128,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final onScreen = kIsWeb
         ? WidgetsBinding.instance.endOfFrame
         : WidgetsBinding.instance.waitUntilFirstFrameRasterized;
+    if (_warming) {
+      WebPage.holdLoading();
+      SchedulerBinding.instance.addTimingsCallback(_onTimings);
+      SchedulerBinding.instance.addPostFrameCallback(_nextWarmFrame);
+      // However slow this device always is, never longer than this.
+      onScreen.then((_) {
+        _warmLimit = Timer(const Duration(milliseconds: 1600), _warmed);
+      });
+      return;
+    }
     onScreen.then((_) {
       if (mounted) _ticker.start();
     });
@@ -157,6 +215,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   void dispose() {
+    if (_warming) {
+      SchedulerBinding.instance.removeTimingsCallback(_onTimings);
+      WebPage.releaseLoading();
+    }
+    _warmLimit?.cancel();
     _ticker.dispose();
     _seconds.dispose();
     super.dispose();
@@ -190,11 +253,63 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 children: [
                   Positioned.fill(
                     child: ClipPath(
-                      clipper: _CircleClipper(center, reveal * fullReveal),
+                      clipper: _CircleClipper(
+                        center,
+                        (_warming ? (_warmFrames.isEven ? 0.5 : 1) : reveal) *
+                            fullReveal,
+                      ),
                       child: world,
                     ),
                   ),
-                  if (reveal > 0 && reveal < 1)
+                  // Everything it'll show, part way through, under the
+                  // launch color (see [_warming]).
+                  if (_warming) ...[
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: _RevealRimPainter(
+                          center: center,
+                          radius: fullReveal / 2,
+                          fade: 0.5,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: center.dx - loaderBox.width / 2,
+                      top: center.dy - loaderBox.height / 2,
+                      width: loaderBox.width,
+                      height: loaderBox.height,
+                      child: const UtopiaLoaderView(
+                        size: kSplashLogoSize,
+                        progress: 0.4,
+                        shell: 0.6,
+                        brand: true,
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: center.dy + kSplashLogoSize * 0.67 + AppSpacing.xl,
+                      child: Opacity(
+                        opacity: 0.5,
+                        child: Transform.translate(
+                          offset: const Offset(0, 8),
+                          child: Column(
+                            children: [
+                              OutlinedHeading(
+                                strings.splashUtopia,
+                                fontSize: 36,
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              const _LoadingDots(phase: 0.3),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Positioned.fill(
+                      child: ColoredBox(color: _launchBackground),
+                    ),
+                  ] else if (reveal > 0 && reveal < 1)
                     Positioned.fill(
                       child: CustomPaint(
                         painter: _RevealRimPainter(

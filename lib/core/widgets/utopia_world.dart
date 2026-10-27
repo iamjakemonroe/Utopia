@@ -35,6 +35,10 @@ final Stopwatch _worldClock = Stopwatch()..start();
 @visibleForTesting
 double? debugWorldSeconds;
 
+/// Tests set this to draw the skies as a browser does (see [_Skies]).
+@visibleForTesting
+bool? debugShareSkies;
+
 double get worldSeconds =>
     debugWorldSeconds ?? _worldClock.elapsedMicroseconds / 1e6;
 
@@ -76,22 +80,18 @@ class _UtopiaWorldState extends State<UtopiaWorld>
     return box.localToGlobal(Offset.zero);
   }
 
-  /// In a browser, the sky is kept as a picture (see [_still]).
-  final _sky = SnapshotController(allowSnapshotting: true);
-
-  /// A layer that never moves. In the apps Flutter keeps it as a picture
-  /// by itself; a browser redraws everything every frame, so there it's
-  /// drawn once into a picture that's shown from then on (the same pixels,
-  /// a fraction of the work). A snapshot isn't retaken when what's in it
-  /// changes, so each world's sky is a snapshot of its own ([world]).
-  Widget _still(Object world, Widget child) => kIsWeb
-      ? SnapshotWidget(
-          key: ObjectKey(world),
-          controller: _sky,
-          autoresize: true,
-          child: child,
-        )
-      : RepaintBoundary(child: child);
+  /// A layer that never moves ([sky], for [world]). In the apps Flutter
+  /// keeps it as a picture by itself; a browser redraws everything every
+  /// frame, so there it's drawn once into pixels that are shown from then
+  /// on (the same pixels, a fraction of the work), shared by every copy of
+  /// that world at that size (see [_Skies]).
+  Widget _still(Object world, CustomPainter sky) => RepaintBoundary(
+    child: CustomPaint(
+      painter: debugShareSkies ?? kIsWeb
+          ? _SkyStill(world, sky, MediaQuery.devicePixelRatioOf(context))
+          : sky,
+    ),
+  );
 
   late final Ticker _ticker = createTicker(
     ambientTick((_) => _time.value = worldSeconds),
@@ -109,7 +109,6 @@ class _UtopiaWorldState extends State<UtopiaWorld>
   void dispose() {
     _ticker.dispose();
     _time.dispose();
-    _sky.dispose();
     super.dispose();
   }
 
@@ -128,17 +127,14 @@ class _UtopiaWorldState extends State<UtopiaWorld>
             // painted once into their own layer; only the scene on top
             // repaints per frame.
             if (style.biome == WorldBiome.doodle) ...[
-              _still(
-                WorldBiome.doodle,
-                const CustomPaint(painter: DoodleSkyPainter()),
-              ),
+              _still(WorldBiome.doodle, const DoodleSkyPainter()),
               RepaintBoundary(
                 child: CustomPaint(
                   painter: DoodleScenePainter(_time, dpr: dpr),
                 ),
               ),
             ] else ...[
-              _still(style, CustomPaint(painter: _SkyPainter(style))),
+              _still(style, _SkyPainter(style)),
               RepaintBoundary(
                 child: CustomPaint(
                   key: _sceneKey,
@@ -157,6 +153,73 @@ class _UtopiaWorldState extends State<UtopiaWorld>
     );
   }
 }
+
+/// The skies in a browser, each drawn into pixels once per world, size and
+/// sharpness and shared by every copy showing it: home's, a screen opening
+/// over it, the side menu's header, a card. Each copy once made its own,
+/// so every screen opened drew a whole sky again first. The pixels are
+/// those Flutter's SnapshotWidget made: drawn at the screen's sharpness
+/// and shown scaled back with medium filtering.
+abstract final class _Skies {
+  static const _maxBytes = 40 << 20;
+
+  /// Most recently shown last.
+  static final _images = <(Object, Size, double), ui.Image>{};
+  static int _bytes = 0;
+
+  static int get debugCount => _images.length;
+
+  static ui.Image of(Object world, Size size, double dpr, CustomPainter sky) {
+    final key = (world, size, dpr);
+    final kept = _images.remove(key);
+    if (kept != null) return _images[key] = kept;
+    final recorder = ui.PictureRecorder();
+    sky.paint(Canvas(recorder)..scale(dpr), size);
+    final picture = recorder.endRecording();
+    final image = picture.toImageSync(
+      (size.width * dpr).ceil(),
+      (size.height * dpr).ceil(),
+    );
+    picture.dispose();
+    final bytes = image.width * image.height * 4;
+    // What's on screen keeps its pixels in the pictures already drawn.
+    while (_images.isNotEmpty && _bytes + bytes > _maxBytes) {
+      final gone = _images.remove(_images.keys.first)!;
+      _bytes -= gone.width * gone.height * 4;
+      gone.dispose();
+    }
+    _bytes += bytes;
+    return _images[key] = image;
+  }
+}
+
+class _SkyStill extends CustomPainter {
+  const _SkyStill(this.world, this.sky, this.dpr);
+
+  final Object world;
+  final CustomPainter sky;
+  final double dpr;
+
+  static final _paint = Paint()..filterQuality = FilterQuality.medium;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (size.isEmpty) return;
+    canvas.drawImageRect(
+      _Skies.of(world, size, dpr, sky),
+      Rect.fromLTWH(0, 0, size.width * dpr, size.height * dpr),
+      Offset.zero & size,
+      _paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_SkyStill old) => old.world != world || old.dpr != dpr;
+}
+
+/// How many skies are kept as pixels (tests).
+@visibleForTesting
+int get debugSharedSkies => _Skies.debugCount;
 
 /// Stable pseudo-random 0-1 from an index, so every star, puff and firefly
 /// keeps the same size and place across frames and rebuilds.
