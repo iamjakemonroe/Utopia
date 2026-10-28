@@ -27,6 +27,7 @@ import '../../store/presentation/theme_teleport.dart';
 import '../../../core/profiles/profile_repository.dart';
 import '../../../core/layout/responsive.dart';
 import '../../../l10n/strings.dart';
+import '../../pool/presentation/pool_cue_cards.dart';
 
 /// Everything the player has, apart from the store: their worlds (bought,
 /// rented, free, and event or birthday worlds while they're open), their
@@ -40,7 +41,7 @@ class CollectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       initialIndex: initialTab,
       child: Scaffold(
         appBar: AppBar(
@@ -71,6 +72,10 @@ class CollectionScreen extends StatelessWidget {
                 icon: Icon(Icons.extension_rounded),
                 text: strings.collectionChess,
               ),
+              Tab(
+                icon: Icon(Icons.sports_baseball_rounded),
+                text: strings.poolPool,
+              ),
             ],
           ),
         ),
@@ -81,6 +86,7 @@ class CollectionScreen extends StatelessWidget {
               _FramesTab(),
               LudoPiecesTab(ownedOnly: true),
               ChessPiecesTab(ownedOnly: true),
+              PoolCuesTab(ownedOnly: true),
             ],
           ),
         ),

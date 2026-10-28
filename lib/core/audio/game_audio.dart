@@ -65,6 +65,22 @@ enum Sfx {
   /// Down to one card: a cheeky two-note call.
   lastCard('last_card'),
 
+  // Pool.
+  /// The cue's tip on the cue ball: a woody tock.
+  poolCue('pool_cue'),
+
+  /// Ball on ball: a bright click.
+  poolClick('pool_click'),
+
+  /// A ball off a cushion: a dull thud.
+  poolCushion('pool_cushion'),
+
+  /// A ball dropping into a pocket, rattling down.
+  poolPocket('pool_pocket'),
+
+  /// The break: the cue ball into the rack.
+  poolBreak('pool_break'),
+
   /// A drawer, menu or panel opening: soft rising bubbles.
   drawer('drawer'),
   purchase('purchase'),

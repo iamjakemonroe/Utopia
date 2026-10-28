@@ -659,9 +659,9 @@ class StoreController extends StateNotifier<StoreState> {
     }
   }
 
-  /// Chess or piece sets that were only lent (the welcome pass) and whose
-  /// time ran out: back to the classic ones, at once (the server does it
-  /// too, a little later).
+  /// Chess or piece sets (or a pool cue) that were only lent (the welcome
+  /// pass) and whose time ran out: back to the classic ones, at once (the
+  /// server does it too, a little later; a pool game checks the cue).
   Future<void> _takeOffExpiredSets() async {
     final me = _ref.read(currentUserProvider)?.id;
     if (me == null) return;
@@ -671,6 +671,7 @@ class StoreController extends StateNotifier<StoreState> {
       for (final (column, sets) in [
         ('equipped_ludo_pieces', StoreCatalog.ludoPieceSets),
         ('equipped_chess_pieces', StoreCatalog.chessPieceSets),
+        ('equipped_pool_cue', StoreCatalog.poolCues),
       ]) {
         final item = sets.where((i) => i.id == profile?[column]).firstOrNull;
         if (item == null || state.isOwned(item)) continue;

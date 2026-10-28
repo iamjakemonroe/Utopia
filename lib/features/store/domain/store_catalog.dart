@@ -1,10 +1,13 @@
 import '../../../core/theme/utopia_themes.dart';
 import '../../../l10n/strings.dart';
+import '../../pool/domain/pool_cues.dart';
+import '../../pool/presentation/pool_names.dart';
 
 enum ItemKind {
   theme('theme'),
   ludoPieces('ludo_pieces'),
-  chessPieces('chess_pieces');
+  chessPieces('chess_pieces'),
+  poolCue('pool_cue');
 
   const ItemKind(this.apiName);
 
@@ -12,7 +15,8 @@ enum ItemKind {
   final String apiName;
 }
 
-/// Something a player can own and equip: a theme or a piece set.
+/// Something a player can own and equip: a theme, a piece set or a pool
+/// cue.
 class StoreItem {
   const StoreItem({
     required this.id,
@@ -257,6 +261,23 @@ class StoreCatalog {
     ),
   ];
 
+  // ── Pool cues ────────────────────────────────────────────────────────────
+
+  /// Every cue (its stats and levels are in pool_cues.dart).
+  static final poolCues = [
+    for (final cue in kPoolCues)
+      StoreItem(
+        id: cue.id,
+        kind: ItemKind.poolCue,
+        name: cueName(cue),
+        tagline: cueTagline(cue),
+        free: cue.free,
+      ),
+  ];
+
+  static StoreItem cueItem(String id) =>
+      poolCues.where((c) => c.id == id).firstOrNull ?? poolCues.first;
+
   // ── Themes ───────────────────────────────────────────────────────────────
 
   /// Free for everyone: the three worlds new players start in, plus Noir
@@ -333,6 +354,9 @@ class StoreCatalog {
           title: strings.storeCatalogChess(set.name),
           itemIds: [set.id],
         ),
+    for (final cue in kPoolCues)
+      if (!cue.free)
+        StoreProduct(id: cue.productId, title: cueName(cue), itemIds: [cue.id]),
   ];
 
   static final _colorFamilies = [

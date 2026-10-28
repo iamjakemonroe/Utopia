@@ -704,11 +704,56 @@ def make_sfx_cards():
     sfx("last_card", delay_reverb(x), 0.65)
 
 
+def make_sfx_pool():
+    """The pool table's sounds. Seeded on their own, like the others."""
+    random.seed(47)
+
+    # Cue: the tip on the cue ball, a short woody tock.
+    x = buf(0.18)
+    add(x, biquad(noise(0.05, 0.012, attack=0.0005), "bp", 2400, 1.6), 0.0, 0.9)
+    add(x, tone(lambda t: 220 - 60 * t, 0.08, 0.02, attack=0.0005), 0.0, 0.55)
+    sfx("pool_cue", x, 0.7)
+
+    # Click: ball on ball, hard and bright, ringing a moment.
+    x = buf(0.16)
+    add(x, biquad(noise(0.02, 0.004, attack=0.0002), "hp", 3000, 0.7), 0.0, 0.8)
+    add(x, tone(lambda t: 3300, 0.1, 0.018, attack=0.0002), 0.0, 0.45)
+    add(x, tone(lambda t: 5200, 0.08, 0.01, attack=0.0002), 0.0, 0.2)
+    sfx("pool_click", x, 0.75)
+
+    # Cushion: a dull rubbery thud.
+    x = buf(0.2)
+    add(x, biquad(noise(0.08, 0.03, attack=0.001), "lp", 420, 0.9), 0.0, 1.0)
+    add(x, tone(lambda t: 120 - 40 * t, 0.12, 0.04, attack=0.001), 0.0, 0.5)
+    sfx("pool_cushion", x, 0.6)
+
+    # Pocket: the drop, a knock, and a rattle down the rails.
+    x = buf(0.55)
+    add(x, tone(lambda t: 140 - 60 * t, 0.15, 0.05, attack=0.001), 0.0, 0.8)
+    add(x, biquad(noise(0.06, 0.02), "bp", 800, 1.2), 0.0, 0.5)
+    for i, at in enumerate((0.09, 0.15, 0.2, 0.24, 0.27)):
+        add(x, biquad(noise(0.03, 0.008), "bp", 1500 + 300 * i, 2.0), at, 0.35 - 0.05 * i)
+    sfx("pool_pocket", x, 0.7)
+
+    # Break: the cue ball into the rack, many clicks at once.
+    x = buf(0.5)
+    add(x, biquad(noise(0.04, 0.008, attack=0.0002), "hp", 2600, 0.7), 0.0, 1.0)
+    for i in range(9):
+        at = 0.004 + random.random() * 0.06
+        add(x, tone(lambda t, f=2600 + random.random() * 1600: f, 0.08, 0.012 + random.random() * 0.01,
+                    attack=0.0002), at, 0.25 + random.random() * 0.2)
+    add(x, tone(lambda t: 160 - 70 * t, 0.2, 0.06, attack=0.001), 0.0, 0.5)
+    sfx("pool_break", delay_reverb(x, feedback=0.15), 0.85)
+
+
 if __name__ == "__main__":
     import sys
 
     if sys.argv[1:] == ["cards"]:
         make_sfx_cards()
+        sys.exit(0)
+    if sys.argv[1:] == ["pool"]:
+        make_sfx_pool()
         sys.exit(0)
 
     if sys.argv[1:] == ["ludo"]:
@@ -728,4 +773,5 @@ if __name__ == "__main__":
     make_sfx_hologram_ambience()
     make_sfx_ludo_fun()
     make_sfx_cards()
+    make_sfx_pool()
     # (coins_out, a gift sent, is a recording: tool/recorded_sfx.py.)

@@ -12595,6 +12595,858 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Hides the browser\'s bars from your first click. Press Esc to see them again.'**
   String get settingsPlayFullScreenKeys;
+
+  /// The game's short name (store, collection and How to play tabs).
+  ///
+  /// In en, this message translates to:
+  /// **'Pool'**
+  String get poolPool;
+
+  /// The game's name (home tile, lobby, screens).
+  ///
+  /// In en, this message translates to:
+  /// **'8-Ball Pool'**
+  String get poolEightBall;
+
+  /// A fact on the pool tile on home.
+  ///
+  /// In en, this message translates to:
+  /// **'Animated cues'**
+  String get poolTileCues;
+
+  /// A fact on the pool tile on home.
+  ///
+  /// In en, this message translates to:
+  /// **'Win coins'**
+  String get poolTileCoins;
+
+  /// The home "your game is still on" card, for a pool game.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shot at the pool table is waiting'**
+  String get poolTheTableIsWaiting;
+
+  /// A player card stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Pool wins'**
+  String get poolPoolWins;
+
+  /// A pool coin table's name (the easiest).
+  ///
+  /// In en, this message translates to:
+  /// **'Lagoon Table'**
+  String get poolTableLagoon;
+
+  /// A pool coin table's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Dunes Table'**
+  String get poolTableDunes;
+
+  /// A pool coin table's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Neon City Table'**
+  String get poolTableNeon;
+
+  /// A pool coin table's name (the hardest).
+  ///
+  /// In en, this message translates to:
+  /// **'Summit Table'**
+  String get poolTableSummit;
+
+  /// Chip's level at a pool table.
+  ///
+  /// In en, this message translates to:
+  /// **'easy'**
+  String get poolChipEasy;
+
+  /// Chip's level at a pool table.
+  ///
+  /// In en, this message translates to:
+  /// **'sharp'**
+  String get poolChipNormal;
+
+  /// Chip's level at a pool table.
+  ///
+  /// In en, this message translates to:
+  /// **'deadly'**
+  String get poolChipHard;
+
+  /// A cue tier.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get poolTierRegular;
+
+  /// A cue tier.
+  ///
+  /// In en, this message translates to:
+  /// **'Rare'**
+  String get poolTierRare;
+
+  /// A cue tier.
+  ///
+  /// In en, this message translates to:
+  /// **'Epic'**
+  String get poolTierEpic;
+
+  /// A cue tier.
+  ///
+  /// In en, this message translates to:
+  /// **'Legendary'**
+  String get poolTierLegendary;
+
+  /// A cue tier.
+  ///
+  /// In en, this message translates to:
+  /// **'Mythic'**
+  String get poolTierMythic;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Utopia Classic'**
+  String get poolCueClassic;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Maple and midnight, a gold ring at the joint.'**
+  String get poolCueClassicLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Old Oak'**
+  String get poolCueOak;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Walnut grain and brass rings, steady as a tree.'**
+  String get poolCueOakLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbon Strike'**
+  String get poolCueCarbon;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Woven carbon with a red racing stripe.'**
+  String get poolCueCarbonLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Ivory Royale'**
+  String get poolCueIvory;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Ivory points inlaid in ebony, made for the long game.'**
+  String get poolCueIvoryLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Neon Pulse'**
+  String get poolCueNeon;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthwave lines that breathe, and a strike that flashes pink and cyan.'**
+  String get poolCueNeonLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Frostbite'**
+  String get poolCueFrost;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Ice creeps along it and sparkles; every shot scatters frost.'**
+  String get poolCueFrostLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Inferno'**
+  String get poolCueInferno;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Molten cracks flow down the butt; the strike bursts into flame.'**
+  String get poolCueInfernoLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Thunderbolt'**
+  String get poolCueThunder;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning crawls along it; the strike cracks like thunder.'**
+  String get poolCueThunderLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Galaxy'**
+  String get poolCueGalaxy;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'A slice of night sky, a nebula swirling inside and stars that twinkle.'**
+  String get poolCueGalaxyLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Phoenix'**
+  String get poolCuePhoenix;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Crimson and gold feathers with a shine that sweeps; embers fly when it strikes.'**
+  String get poolCuePhoenixLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Prism'**
+  String get poolCuePrism;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Rainbow light pours through the glass, and every shot leaves a rainbow.'**
+  String get poolCuePrismLine;
+
+  /// A cue's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Jade Dragon'**
+  String get poolCueDragon;
+
+  /// A cue's tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald scales ripple with jade fire, and it breathes it on the strike.'**
+  String get poolCueDragonLine;
+
+  /// A cue stat: how hard it can hit.
+  ///
+  /// In en, this message translates to:
+  /// **'Power'**
+  String get poolStatPower;
+
+  /// A cue stat: how far the aiming guide reaches.
+  ///
+  /// In en, this message translates to:
+  /// **'Aim'**
+  String get poolStatAim;
+
+  /// A cue stat: how much the cue ball can curve and screw.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin'**
+  String get poolStatSpin;
+
+  /// The button to take a cue up a level.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade'**
+  String get poolUpgrade;
+
+  /// The upgrade button, before its price.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade for'**
+  String get poolUpgradeFor;
+
+  /// The upgrade sheet when a cue can't go higher.
+  ///
+  /// In en, this message translates to:
+  /// **'This cue is at its top level.'**
+  String get poolMaxedOut;
+
+  /// The upgrade sheet, for an animated cue.
+  ///
+  /// In en, this message translates to:
+  /// **'Every level makes it glow brighter and burst bigger.'**
+  String get poolLevelGlow;
+
+  /// The lobby button to the cue store.
+  ///
+  /// In en, this message translates to:
+  /// **'More cues'**
+  String get poolMoreCues;
+
+  /// The lobby's cue card.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cue'**
+  String get poolYourCue;
+
+  /// The lobby's tables heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Chip for coins'**
+  String get poolPlayChipForCoins;
+
+  /// Under the lobby's tables heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay the entry to sit down; win the game and the pot is yours.'**
+  String get poolTablesHelp;
+
+  /// A pool table's entry, before its coins.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry'**
+  String get poolEntry;
+
+  /// A pool table's pot, before its coins.
+  ///
+  /// In en, this message translates to:
+  /// **'Win'**
+  String get poolWin;
+
+  /// A button to start a pool game.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get poolPlay;
+
+  /// A pool table's button when the player can't pay the entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Get coins'**
+  String get poolGetCoins;
+
+  /// Pass and play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Two players, one phone'**
+  String get poolOnThisPhone;
+
+  /// Pass and play pool, explained.
+  ///
+  /// In en, this message translates to:
+  /// **'Free, no coins: take turns at the same table.'**
+  String get poolOnThisPhoneHelp;
+
+  /// Goes back into a pool game in play.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get poolResume;
+
+  /// Asks before a pool game in play is given up for a new one.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new game?'**
+  String get poolNewGameTitle;
+
+  /// Keeps the pool game in play.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get poolKeepIt;
+
+  /// Gives up the pool game in play for a new one.
+  ///
+  /// In en, this message translates to:
+  /// **'Start new'**
+  String get poolStartNew;
+
+  /// The player, at the pool table.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get poolYou;
+
+  /// Chip, at the pool table.
+  ///
+  /// In en, this message translates to:
+  /// **'Chip'**
+  String get poolChip;
+
+  /// Pass and play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Player 1'**
+  String get poolPlayerOne;
+
+  /// Pass and play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Player 2'**
+  String get poolPlayerTwo;
+
+  /// The coins the winner takes, at the pool table.
+  ///
+  /// In en, this message translates to:
+  /// **'Pot'**
+  String get poolPot;
+
+  /// Neither player has a group yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Open table'**
+  String get poolOpenTable;
+
+  /// A player's group.
+  ///
+  /// In en, this message translates to:
+  /// **'solids'**
+  String get poolSolids;
+
+  /// A player's group.
+  ///
+  /// In en, this message translates to:
+  /// **'stripes'**
+  String get poolStripes;
+
+  /// A player whose group is all potted.
+  ///
+  /// In en, this message translates to:
+  /// **'on the 8'**
+  String get poolOnTheEight;
+
+  /// Whose shot it is.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shot'**
+  String get poolYourShot;
+
+  /// Whose shot it is.
+  ///
+  /// In en, this message translates to:
+  /// **'Player 1\'s shot'**
+  String get poolPlayerOneShot;
+
+  /// Whose shot it is.
+  ///
+  /// In en, this message translates to:
+  /// **'Player 2\'s shot'**
+  String get poolPlayerTwoShot;
+
+  /// Chip's turn.
+  ///
+  /// In en, this message translates to:
+  /// **'Chip is lining up its shot…'**
+  String get poolChipIsLiningUp;
+
+  /// The pool game has ended.
+  ///
+  /// In en, this message translates to:
+  /// **'Game over'**
+  String get poolGameOver;
+
+  /// How the foul messages start (they begin with this word).
+  ///
+  /// In en, this message translates to:
+  /// **'Foul'**
+  String get poolFoulPrefix;
+
+  /// A foul.
+  ///
+  /// In en, this message translates to:
+  /// **'Foul: the cue ball went in'**
+  String get poolFoulScratch;
+
+  /// A foul.
+  ///
+  /// In en, this message translates to:
+  /// **'Foul: nothing was hit'**
+  String get poolFoulNoContact;
+
+  /// A foul.
+  ///
+  /// In en, this message translates to:
+  /// **'Foul: the wrong ball first'**
+  String get poolFoulWrongBall;
+
+  /// A foul.
+  ///
+  /// In en, this message translates to:
+  /// **'Foul: no ball reached a cushion'**
+  String get poolFoulNoCushion;
+
+  /// Groups decided.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re solids'**
+  String get poolYouAreSolids;
+
+  /// Groups decided.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re stripes'**
+  String get poolYouAreStripes;
+
+  /// Groups decided (pass and play).
+  ///
+  /// In en, this message translates to:
+  /// **'Player 1 is solids'**
+  String get poolPlayerOneSolids;
+
+  /// Groups decided (pass and play).
+  ///
+  /// In en, this message translates to:
+  /// **'Player 1 is stripes'**
+  String get poolPlayerOneStripes;
+
+  /// The player must call a pocket.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a pocket to call the 8'**
+  String get poolCallAPocket;
+
+  /// After a foul.
+  ///
+  /// In en, this message translates to:
+  /// **'Ball in hand: drag the white ball anywhere'**
+  String get poolBallInHand;
+
+  /// The power bar, for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Power: drag down, let go to shoot'**
+  String get poolPower;
+
+  /// The fine aim wheel, for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Fine aim'**
+  String get poolFineAim;
+
+  /// The spin control.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin'**
+  String get poolSpin;
+
+  /// Puts the spin back in the middle.
+  ///
+  /// In en, this message translates to:
+  /// **'Centre'**
+  String get poolCentre;
+
+  /// Closes a pool sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get poolDone;
+
+  /// Leaves the pool table.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get poolClose;
+
+  /// Gives up the pool game.
+  ///
+  /// In en, this message translates to:
+  /// **'Resign'**
+  String get poolResign;
+
+  /// Asks before resigning a pool game.
+  ///
+  /// In en, this message translates to:
+  /// **'Give up this game?'**
+  String get poolResignTitle;
+
+  /// Resigning at a coin table.
+  ///
+  /// In en, this message translates to:
+  /// **'Chip wins it, and the entry stays in the pot.'**
+  String get poolResignTableBody;
+
+  /// Resigning on one phone.
+  ///
+  /// In en, this message translates to:
+  /// **'The other player wins it.'**
+  String get poolResignFriendsBody;
+
+  /// Doesn't resign.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep playing'**
+  String get poolKeepPlaying;
+
+  /// The end of a pool game.
+  ///
+  /// In en, this message translates to:
+  /// **'You won!'**
+  String get poolYouWon;
+
+  /// The end of a pool game.
+  ///
+  /// In en, this message translates to:
+  /// **'Chip won'**
+  String get poolChipWon;
+
+  /// The end of a pool game on one phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Player 1 wins!'**
+  String get poolPlayerOneWins;
+
+  /// The end of a pool game on one phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Player 2 wins!'**
+  String get poolPlayerTwoWins;
+
+  /// Why a pool game ended.
+  ///
+  /// In en, this message translates to:
+  /// **'The 8 went in too soon.'**
+  String get poolWhyEightEarly;
+
+  /// Why a pool game ended.
+  ///
+  /// In en, this message translates to:
+  /// **'The 8 went in the wrong pocket.'**
+  String get poolWhyWrongPocket;
+
+  /// Why a pool game ended.
+  ///
+  /// In en, this message translates to:
+  /// **'A foul on the 8.'**
+  String get poolWhyEightFoul;
+
+  /// Why a pool game ended.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone gave up.'**
+  String get poolWhyResigned;
+
+  /// Plays pool again on one phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Rematch'**
+  String get poolRematch;
+
+  /// Back to the pool tables.
+  ///
+  /// In en, this message translates to:
+  /// **'Tables'**
+  String get poolTables;
+
+  /// Hides the result to look at the table.
+  ///
+  /// In en, this message translates to:
+  /// **'See the table'**
+  String get poolSeeTheTable;
+
+  /// Tries the server again.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get poolTryAgain;
+
+  /// When the server can't be reached during a pool game.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach Utopia. Your shot is safe: try again.'**
+  String get poolCouldNotReach;
+
+  /// How to play pool: the intro.
+  ///
+  /// In en, this message translates to:
+  /// **'Two players, sixteen balls: pot your group, then the 8, before the other player does.'**
+  String get poolGuideIntro;
+
+  /// How to play pool: a section.
+  ///
+  /// In en, this message translates to:
+  /// **'Shooting'**
+  String get poolGuideShooting;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Aim'**
+  String get poolGuideAimTitle;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag on the table to point the cue. The guide shows where the ball you hit goes; roll the wheel on the right to aim a hair at a time.'**
+  String get poolGuideAimBody;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Power'**
+  String get poolGuidePowerTitle;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag down on the bar at the left to draw the cue back, then let go to shoot. Slide back to the top to change your mind.'**
+  String get poolGuidePowerBody;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin'**
+  String get poolGuideSpinTitle;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the ball at the bottom to choose where the tip strikes: low to screw back, high to follow through, left or right to curve off the cushions.'**
+  String get poolGuideSpinBody;
+
+  /// How to play pool: a section.
+  ///
+  /// In en, this message translates to:
+  /// **'The rules'**
+  String get poolGuideRules;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Solids and stripes'**
+  String get poolGuideGroupsTitle;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'The first ball potted after the break decides: that group is yours, the other is theirs. Pot one of yours and you shoot again.'**
+  String get poolGuideGroupsBody;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Fouls'**
+  String get poolGuideFoulsTitle;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Potting the white, hitting nothing, hitting their ball first, or nothing reaching a cushion is a foul: the other player gets the ball in hand, anywhere.'**
+  String get poolGuideFoulsBody;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'The 8'**
+  String get poolGuideEightTitle;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Once your group is gone, call a pocket and pot the 8 to win. Pot it too soon, in another pocket, or with a foul, and you lose.'**
+  String get poolGuideEightBody;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Coin tables'**
+  String get poolGuideTablesTitle;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Chip at a table for its entry: win and you take the pot. The server plays every shot, so a game can\'t be faked.'**
+  String get poolGuideTablesBody;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Cues'**
+  String get poolGuideCuesTitle;
+
+  /// How to play pool.
+  ///
+  /// In en, this message translates to:
+  /// **'Every cue has Power, Aim and Spin. Upgrade it with coins to raise them. Animated cues climb to level 10 and shine brighter the higher they go.'**
+  String get poolGuideCuesBody;
+
+  /// A pool table, and Chip's level there.
+  ///
+  /// In en, this message translates to:
+  /// **'vs Chip ({level})'**
+  String poolAgainstChip(String level);
+
+  /// A cue's level, short.
+  ///
+  /// In en, this message translates to:
+  /// **'Lv {level}'**
+  String poolLevelShort(int level);
+
+  /// The upgrade sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {from} → {to}'**
+  String poolLevelUp(int from, int to);
+
+  /// The upgrade sheet, at the top level.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}, the top'**
+  String poolTopLevel(int level);
+
+  /// Asks before a pool game in play is given up.
+  ///
+  /// In en, this message translates to:
+  /// **'Your game at the {table} counts as lost if you start another.'**
+  String poolNewGameBody(String table);
+
+  /// Plays another game at the same coin table.
+  ///
+  /// In en, this message translates to:
+  /// **'Play again · {coins}'**
+  String poolPlayAgainFor(String coins);
+
+  /// The spin sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Where the tip strikes the cue ball. Your cue\'s spin: {spin}.'**
+  String poolSpinHelp(int spin);
+
+  /// The lobby, when a pool game is in play.
+  ///
+  /// In en, this message translates to:
+  /// **'Your game at the {table} is waiting.'**
+  String poolYourGameWaits(String table);
+
+  /// The status on the break shot.
+  ///
+  /// In en, this message translates to:
+  /// **'the break'**
+  String get poolTheBreak;
+
+  /// A tip shown as a pool game begins.
+  ///
+  /// In en, this message translates to:
+  /// **'The break: drag the white anywhere behind the line, or just shoot'**
+  String get poolBreakHint;
+
+  /// Chip's level at the hardest pool table (his best cue too).
+  ///
+  /// In en, this message translates to:
+  /// **'legendary'**
+  String get poolChipMaster;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

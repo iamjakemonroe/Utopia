@@ -17,7 +17,7 @@ import '../theme/utopia_themes.dart';
 import 'ambient_tick.dart';
 import 'sprite_cache.dart';
 
-enum GameKind { chess, ludo, checkers, doodle, eights }
+enum GameKind { chess, ludo, checkers, doodle, eights, pool }
 
 /// A game's banner art: a little living diorama in the current world. A
 /// floating island drifts in the theme's sky with the game set up on top:
@@ -264,6 +264,8 @@ class _DioramaPainter extends CustomPainter {
             _easel(canvas, Offset.zero, iw, h);
           case GameKind.eights:
             _eightsTable(canvas, Offset.zero, iw, h);
+          case GameKind.pool:
+            _poolTable(canvas, Offset.zero, iw, h);
         }
       },
     );
@@ -281,6 +283,8 @@ class _DioramaPainter extends CustomPainter {
         _doodle(canvas, top, iw, h, t);
       case GameKind.eights:
         _eights(canvas, top, iw, h, t);
+      case GameKind.pool:
+        _pool(canvas, top, iw, h, t);
     }
     canvas.restore();
 
@@ -912,6 +916,126 @@ class _DioramaPainter extends CustomPainter {
   /// out of the hand, flips and sails onto the pile; every fourth one is a
   /// wild eight, which flashes its suit.
   /// The card table's felt and the deck on it: still.
+  /// The pool table on the island: a wooden frame, the felt in the
+  /// world's accent, six pockets. Still.
+  void _poolTable(Canvas canvas, Offset top, double iw, double h) {
+    final bw = iw * 0.7;
+    canvas.drawPath(
+      _quad(top, bw, h, -0.07, -0.16, 1.07, 1.16),
+      Paint()..color = const Color(0xFF4A2A18),
+    );
+    canvas.drawPath(
+      _quad(top, bw, h, -0.05, -0.12, 1.05, 1.12),
+      Paint()..color = const Color(0xFF6B3D22),
+    );
+    final felt = HSLColor.fromColor(accent);
+    final cloth = felt.withSaturation(math.min(0.6, felt.saturation)).withLightness(0.34).toColor();
+    canvas.drawPath(
+      _quad(top, bw, h, 0, 0, 1, 1),
+      Paint()..color = cloth,
+    );
+    canvas.drawPath(
+      _quad(top, bw, h, 0.06, 0.12, 0.94, 0.88),
+      Paint()..color = Color.lerp(cloth, Colors.white, 0.06)!,
+    );
+    final hole = Paint()..color = const Color(0xFF120A08);
+    for (final (u, v) in const [(0.0, 0.0), (0.5, -0.03), (1.0, 0.0), (0.0, 1.0), (0.5, 1.03), (1.0, 1.0)]) {
+      final at = _board(top, bw, h, u, v);
+      final w = bw * 0.045 * (0.75 + 0.25 * v);
+      canvas.drawOval(Rect.fromCenter(center: at, width: w * 2, height: w * 1.2), hole);
+    }
+  }
+
+  /// A break, over and over: the cue draws back and strikes, the white
+  /// runs into the rack, the rack jumps and one ball rolls into a pocket.
+  void _pool(Canvas canvas, Offset top, double iw, double h, double t) {
+    final bw = iw * 0.7;
+    const period = 3.4;
+    final f = (t % period) / period;
+    Offset at(double u, double v) => _board(top, bw, h, u, v);
+    double radius(double v) => bw * 0.03 * (0.75 + 0.25 * v);
+
+    void ball(double u, double v, Color color, {bool stripe = false}) {
+      final c = at(u, v);
+      final r = radius(v);
+      canvas.drawOval(
+        Rect.fromCenter(center: c.translate(r * 0.2, r * 0.5), width: r * 2.2, height: r * 0.9),
+        Paint()..color = Colors.black.withValues(alpha: 0.3),
+      );
+      final rect = Rect.fromCircle(center: c, radius: r);
+      canvas.drawCircle(
+        c,
+        r,
+        Paint()
+          ..shader = RadialGradient(
+            center: const Alignment(-0.35, -0.45),
+            colors: [Color.lerp(stripe ? Colors.white : color, Colors.white, 0.45)!, stripe ? Colors.white : color, Color.lerp(color, Colors.black, 0.35)!],
+            stops: const [0, 0.5, 1],
+          ).createShader(rect),
+      );
+      if (stripe) {
+        canvas.save();
+        canvas.clipPath(Path()..addOval(rect));
+        canvas.drawRect(Rect.fromCenter(center: c, width: r * 2, height: r * 0.9), Paint()..color = color);
+        canvas.restore();
+      }
+    }
+
+    // The rack, at the far right; after the hit it jumps a little apart.
+    final hit = ((f - 0.42) / 0.12).clamp(0.0, 1.0);
+    final spread = Curves.easeOut.transform(hit) * (1 - Curves.easeIn.transform(((f - 0.7) / 0.3).clamp(0.0, 1.0)));
+    const rack = [
+      (0, 0.0, _red),
+      (1, -0.5, _blue),
+      (1, 0.5, _yellow),
+      (2, -1.0, Color(0xFF16141C)),
+      (2, 0.0, _green),
+      (2, 1.0, Color(0xFFFF7A1A)),
+    ];
+    for (final (row, side, color) in rack) {
+      final u = 0.68 + row * 0.055 + spread * (0.02 + row * 0.03);
+      final v = 0.5 + side * 0.11 * (1 + spread * 0.9);
+      ball(u, v, color, stripe: row == 2 && side > 0);
+    }
+
+    // One ball off the rack and into the far corner pocket.
+    final run = ((f - 0.48) / 0.3).clamp(0.0, 1.0);
+    if (run > 0 && run < 1) {
+      final k = Curves.easeOut.transform(run);
+      ball(0.84 + k * 0.16, 0.5 - k * 0.5, const Color(0xFF7A3FD1));
+    }
+
+    // The white: still until the strike, then into the rack, and back for
+    // the next break while the table resets.
+    final roll = ((f - 0.3) / 0.13).clamp(0.0, 1.0);
+    final back = ((f - 0.82) / 0.18).clamp(0.0, 1.0);
+    final cueU = 0.22 + Curves.easeIn.transform(roll) * 0.4 - Curves.easeInOut.transform(back) * 0.4;
+    ball(cueU, 0.5, const Color(0xFFF7F4EC));
+
+    // The cue: drawn back, then thrust in, then away after the strike.
+    if (f < 0.42) {
+      final draw = f < 0.26 ? math.sin(f / 0.26 * math.pi * 1.5).abs() : 0.0;
+      final thrust = ((f - 0.26) / 0.04).clamp(0.0, 1.0);
+      final gap = 0.04 + draw * 0.07 - thrust * 0.03;
+      final tip = at(0.22 - gap, 0.5);
+      final butt = at(-0.32 - gap, 0.62);
+      final fade = f > 0.32 ? 1 - ((f - 0.32) / 0.1).clamp(0.0, 1.0) : 1.0;
+      canvas.drawLine(
+        tip,
+        butt,
+        Paint()
+          ..shader = LinearGradient(
+            colors: [const Color(0xFFF3E7CF), const Color(0xFFD9B98A), Color.lerp(accent, Colors.black, 0.4)!],
+            stops: const [0, 0.55, 1],
+          ).createShader(Rect.fromPoints(tip, butt))
+          ..strokeWidth = h * 0.028
+          ..strokeCap = StrokeCap.round
+          ..color = Colors.white.withValues(alpha: fade),
+      );
+      canvas.drawCircle(tip, h * 0.015, Paint()..color = const Color(0xFF4A7BD8).withValues(alpha: fade));
+    }
+  }
+
   void _eightsTable(Canvas canvas, Offset top, double iw, double h) {
     canvas.drawOval(
       Rect.fromCenter(

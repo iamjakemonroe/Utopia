@@ -39,6 +39,7 @@ import '../../events/presentation/event_widgets.dart';
 import '../../../core/layout/responsive.dart';
 import '../../../l10n/strings.dart';
 import '../../maestro/presentation/maestro_widgets.dart';
+import '../../pool/presentation/pool_cue_cards.dart';
 
 /// The store: worlds (themes), Ludo piece sets and chess piece sets.
 class StoreScreen extends ConsumerStatefulWidget {
@@ -69,7 +70,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     final isGuest = ref.watch(isAnonymousProvider);
 
     return DefaultTabController(
-      length: 4,
+      length: 5,
       initialIndex: widget.initialTab,
       child: Scaffold(
         appBar: AppBar(
@@ -94,6 +95,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 icon: Icon(Icons.extension_rounded),
                 text: strings.storeChess,
               ),
+              Tab(
+                icon: Icon(Icons.sports_baseball_rounded),
+                text: strings.poolPool,
+              ),
             ],
           ),
         ),
@@ -113,6 +118,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     AurasTab(),
                     LudoPiecesTab(),
                     ChessPiecesTab(),
+                    PoolCuesTab(),
                   ],
                 ),
               ),

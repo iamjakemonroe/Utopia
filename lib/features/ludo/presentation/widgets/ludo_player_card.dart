@@ -173,6 +173,9 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
               profile?['equipped_chess_pieces'] as String? ?? 'classic',
             )?.name ??
             strings.ludoPlayerClassic,
+      GameKind.pool => StoreCatalog.cueItem(
+        profile?['equipped_pool_cue'] as String? ?? 'cue_classic',
+      ).name,
     };
     final stats = ref.watch(_statsProvider(widget.userId)).valueOrNull;
     // Their coins, if they show them.
@@ -305,6 +308,7 @@ class _PlayerCardState extends ConsumerState<_PlayerCard> {
                           GameKind.checkers => strings.ludoPlayerCheckersWins,
                           GameKind.doodle => strings.ludoPlayerDoodleWins,
                           GameKind.eights => strings.ludoPlayerEightsWins,
+                          GameKind.pool => strings.poolPoolWins,
                         },
                         value: won == null ? '–' : '$won',
                       ),

@@ -7130,4 +7130,472 @@ class L10nEn extends L10n {
   @override
   String get settingsPlayFullScreenKeys =>
       'Hides the browser\'s bars from your first click. Press Esc to see them again.';
+
+  @override
+  String get poolPool => 'Pool';
+
+  @override
+  String get poolEightBall => '8-Ball Pool';
+
+  @override
+  String get poolTileCues => 'Animated cues';
+
+  @override
+  String get poolTileCoins => 'Win coins';
+
+  @override
+  String get poolTheTableIsWaiting => 'Your shot at the pool table is waiting';
+
+  @override
+  String get poolPoolWins => 'Pool wins';
+
+  @override
+  String get poolTableLagoon => 'Lagoon Table';
+
+  @override
+  String get poolTableDunes => 'Dunes Table';
+
+  @override
+  String get poolTableNeon => 'Neon City Table';
+
+  @override
+  String get poolTableSummit => 'Summit Table';
+
+  @override
+  String get poolChipEasy => 'easy';
+
+  @override
+  String get poolChipNormal => 'sharp';
+
+  @override
+  String get poolChipHard => 'deadly';
+
+  @override
+  String get poolTierRegular => 'Regular';
+
+  @override
+  String get poolTierRare => 'Rare';
+
+  @override
+  String get poolTierEpic => 'Epic';
+
+  @override
+  String get poolTierLegendary => 'Legendary';
+
+  @override
+  String get poolTierMythic => 'Mythic';
+
+  @override
+  String get poolCueClassic => 'Utopia Classic';
+
+  @override
+  String get poolCueClassicLine =>
+      'Maple and midnight, a gold ring at the joint.';
+
+  @override
+  String get poolCueOak => 'Old Oak';
+
+  @override
+  String get poolCueOakLine =>
+      'Walnut grain and brass rings, steady as a tree.';
+
+  @override
+  String get poolCueCarbon => 'Carbon Strike';
+
+  @override
+  String get poolCueCarbonLine => 'Woven carbon with a red racing stripe.';
+
+  @override
+  String get poolCueIvory => 'Ivory Royale';
+
+  @override
+  String get poolCueIvoryLine =>
+      'Ivory points inlaid in ebony, made for the long game.';
+
+  @override
+  String get poolCueNeon => 'Neon Pulse';
+
+  @override
+  String get poolCueNeonLine =>
+      'Synthwave lines that breathe, and a strike that flashes pink and cyan.';
+
+  @override
+  String get poolCueFrost => 'Frostbite';
+
+  @override
+  String get poolCueFrostLine =>
+      'Ice creeps along it and sparkles; every shot scatters frost.';
+
+  @override
+  String get poolCueInferno => 'Inferno';
+
+  @override
+  String get poolCueInfernoLine =>
+      'Molten cracks flow down the butt; the strike bursts into flame.';
+
+  @override
+  String get poolCueThunder => 'Thunderbolt';
+
+  @override
+  String get poolCueThunderLine =>
+      'Lightning crawls along it; the strike cracks like thunder.';
+
+  @override
+  String get poolCueGalaxy => 'Galaxy';
+
+  @override
+  String get poolCueGalaxyLine =>
+      'A slice of night sky, a nebula swirling inside and stars that twinkle.';
+
+  @override
+  String get poolCuePhoenix => 'Phoenix';
+
+  @override
+  String get poolCuePhoenixLine =>
+      'Crimson and gold feathers with a shine that sweeps; embers fly when it strikes.';
+
+  @override
+  String get poolCuePrism => 'Prism';
+
+  @override
+  String get poolCuePrismLine =>
+      'Rainbow light pours through the glass, and every shot leaves a rainbow.';
+
+  @override
+  String get poolCueDragon => 'Jade Dragon';
+
+  @override
+  String get poolCueDragonLine =>
+      'Emerald scales ripple with jade fire, and it breathes it on the strike.';
+
+  @override
+  String get poolStatPower => 'Power';
+
+  @override
+  String get poolStatAim => 'Aim';
+
+  @override
+  String get poolStatSpin => 'Spin';
+
+  @override
+  String get poolUpgrade => 'Upgrade';
+
+  @override
+  String get poolUpgradeFor => 'Upgrade for';
+
+  @override
+  String get poolMaxedOut => 'This cue is at its top level.';
+
+  @override
+  String get poolLevelGlow =>
+      'Every level makes it glow brighter and burst bigger.';
+
+  @override
+  String get poolMoreCues => 'More cues';
+
+  @override
+  String get poolYourCue => 'Your cue';
+
+  @override
+  String get poolPlayChipForCoins => 'Play Chip for coins';
+
+  @override
+  String get poolTablesHelp =>
+      'Pay the entry to sit down; win the game and the pot is yours.';
+
+  @override
+  String get poolEntry => 'Entry';
+
+  @override
+  String get poolWin => 'Win';
+
+  @override
+  String get poolPlay => 'Play';
+
+  @override
+  String get poolGetCoins => 'Get coins';
+
+  @override
+  String get poolOnThisPhone => 'Two players, one phone';
+
+  @override
+  String get poolOnThisPhoneHelp =>
+      'Free, no coins: take turns at the same table.';
+
+  @override
+  String get poolResume => 'Resume';
+
+  @override
+  String get poolNewGameTitle => 'Start a new game?';
+
+  @override
+  String get poolKeepIt => 'Keep it';
+
+  @override
+  String get poolStartNew => 'Start new';
+
+  @override
+  String get poolYou => 'You';
+
+  @override
+  String get poolChip => 'Chip';
+
+  @override
+  String get poolPlayerOne => 'Player 1';
+
+  @override
+  String get poolPlayerTwo => 'Player 2';
+
+  @override
+  String get poolPot => 'Pot';
+
+  @override
+  String get poolOpenTable => 'Open table';
+
+  @override
+  String get poolSolids => 'solids';
+
+  @override
+  String get poolStripes => 'stripes';
+
+  @override
+  String get poolOnTheEight => 'on the 8';
+
+  @override
+  String get poolYourShot => 'Your shot';
+
+  @override
+  String get poolPlayerOneShot => 'Player 1\'s shot';
+
+  @override
+  String get poolPlayerTwoShot => 'Player 2\'s shot';
+
+  @override
+  String get poolChipIsLiningUp => 'Chip is lining up its shot…';
+
+  @override
+  String get poolGameOver => 'Game over';
+
+  @override
+  String get poolFoulPrefix => 'Foul';
+
+  @override
+  String get poolFoulScratch => 'Foul: the cue ball went in';
+
+  @override
+  String get poolFoulNoContact => 'Foul: nothing was hit';
+
+  @override
+  String get poolFoulWrongBall => 'Foul: the wrong ball first';
+
+  @override
+  String get poolFoulNoCushion => 'Foul: no ball reached a cushion';
+
+  @override
+  String get poolYouAreSolids => 'You\'re solids';
+
+  @override
+  String get poolYouAreStripes => 'You\'re stripes';
+
+  @override
+  String get poolPlayerOneSolids => 'Player 1 is solids';
+
+  @override
+  String get poolPlayerOneStripes => 'Player 1 is stripes';
+
+  @override
+  String get poolCallAPocket => 'Tap a pocket to call the 8';
+
+  @override
+  String get poolBallInHand => 'Ball in hand: drag the white ball anywhere';
+
+  @override
+  String get poolPower => 'Power: drag down, let go to shoot';
+
+  @override
+  String get poolFineAim => 'Fine aim';
+
+  @override
+  String get poolSpin => 'Spin';
+
+  @override
+  String get poolCentre => 'Centre';
+
+  @override
+  String get poolDone => 'Done';
+
+  @override
+  String get poolClose => 'Close';
+
+  @override
+  String get poolResign => 'Resign';
+
+  @override
+  String get poolResignTitle => 'Give up this game?';
+
+  @override
+  String get poolResignTableBody =>
+      'Chip wins it, and the entry stays in the pot.';
+
+  @override
+  String get poolResignFriendsBody => 'The other player wins it.';
+
+  @override
+  String get poolKeepPlaying => 'Keep playing';
+
+  @override
+  String get poolYouWon => 'You won!';
+
+  @override
+  String get poolChipWon => 'Chip won';
+
+  @override
+  String get poolPlayerOneWins => 'Player 1 wins!';
+
+  @override
+  String get poolPlayerTwoWins => 'Player 2 wins!';
+
+  @override
+  String get poolWhyEightEarly => 'The 8 went in too soon.';
+
+  @override
+  String get poolWhyWrongPocket => 'The 8 went in the wrong pocket.';
+
+  @override
+  String get poolWhyEightFoul => 'A foul on the 8.';
+
+  @override
+  String get poolWhyResigned => 'Someone gave up.';
+
+  @override
+  String get poolRematch => 'Rematch';
+
+  @override
+  String get poolTables => 'Tables';
+
+  @override
+  String get poolSeeTheTable => 'See the table';
+
+  @override
+  String get poolTryAgain => 'Try again';
+
+  @override
+  String get poolCouldNotReach =>
+      'Couldn\'t reach Utopia. Your shot is safe: try again.';
+
+  @override
+  String get poolGuideIntro =>
+      'Two players, sixteen balls: pot your group, then the 8, before the other player does.';
+
+  @override
+  String get poolGuideShooting => 'Shooting';
+
+  @override
+  String get poolGuideAimTitle => 'Aim';
+
+  @override
+  String get poolGuideAimBody =>
+      'Drag on the table to point the cue. The guide shows where the ball you hit goes; roll the wheel on the right to aim a hair at a time.';
+
+  @override
+  String get poolGuidePowerTitle => 'Power';
+
+  @override
+  String get poolGuidePowerBody =>
+      'Drag down on the bar at the left to draw the cue back, then let go to shoot. Slide back to the top to change your mind.';
+
+  @override
+  String get poolGuideSpinTitle => 'Spin';
+
+  @override
+  String get poolGuideSpinBody =>
+      'Tap the ball at the bottom to choose where the tip strikes: low to screw back, high to follow through, left or right to curve off the cushions.';
+
+  @override
+  String get poolGuideRules => 'The rules';
+
+  @override
+  String get poolGuideGroupsTitle => 'Solids and stripes';
+
+  @override
+  String get poolGuideGroupsBody =>
+      'The first ball potted after the break decides: that group is yours, the other is theirs. Pot one of yours and you shoot again.';
+
+  @override
+  String get poolGuideFoulsTitle => 'Fouls';
+
+  @override
+  String get poolGuideFoulsBody =>
+      'Potting the white, hitting nothing, hitting their ball first, or nothing reaching a cushion is a foul: the other player gets the ball in hand, anywhere.';
+
+  @override
+  String get poolGuideEightTitle => 'The 8';
+
+  @override
+  String get poolGuideEightBody =>
+      'Once your group is gone, call a pocket and pot the 8 to win. Pot it too soon, in another pocket, or with a foul, and you lose.';
+
+  @override
+  String get poolGuideTablesTitle => 'Coin tables';
+
+  @override
+  String get poolGuideTablesBody =>
+      'Play Chip at a table for its entry: win and you take the pot. The server plays every shot, so a game can\'t be faked.';
+
+  @override
+  String get poolGuideCuesTitle => 'Cues';
+
+  @override
+  String get poolGuideCuesBody =>
+      'Every cue has Power, Aim and Spin. Upgrade it with coins to raise them. Animated cues climb to level 10 and shine brighter the higher they go.';
+
+  @override
+  String poolAgainstChip(String level) {
+    return 'vs Chip ($level)';
+  }
+
+  @override
+  String poolLevelShort(int level) {
+    return 'Lv $level';
+  }
+
+  @override
+  String poolLevelUp(int from, int to) {
+    return 'Level $from → $to';
+  }
+
+  @override
+  String poolTopLevel(int level) {
+    return 'Level $level, the top';
+  }
+
+  @override
+  String poolNewGameBody(String table) {
+    return 'Your game at the $table counts as lost if you start another.';
+  }
+
+  @override
+  String poolPlayAgainFor(String coins) {
+    return 'Play again · $coins';
+  }
+
+  @override
+  String poolSpinHelp(int spin) {
+    return 'Where the tip strikes the cue ball. Your cue\'s spin: $spin.';
+  }
+
+  @override
+  String poolYourGameWaits(String table) {
+    return 'Your game at the $table is waiting.';
+  }
+
+  @override
+  String get poolTheBreak => 'the break';
+
+  @override
+  String get poolBreakHint =>
+      'The break: drag the white anywhere behind the line, or just shoot';
+
+  @override
+  String get poolChipMaster => 'legendary';
 }

@@ -10,6 +10,7 @@ import '../../guess_doodle/data/doodle_game_repository.dart';
 import '../../ludo/data/ludo_repository.dart';
 import 'offline_game.dart';
 import '../../ludo/presentation/controllers/ludo_match_controller.dart';
+import '../../pool/data/pool_repository.dart';
 
 /// A game the player is still in.
 class ActiveGame {
@@ -29,6 +30,7 @@ class ActiveGame {
         GameKind.ludo => '/ludo/$matchId',
         GameKind.doodle => '/doodle-game/$matchId',
         GameKind.eights => '/eights/$matchId',
+        GameKind.pool => '/pool/$matchId',
       };
 }
 
@@ -45,6 +47,7 @@ final activeGameProvider = FutureProvider.autoDispose<ActiveGame?>((ref) {
     offline: ref.read(offlineGameStoreProvider),
     eights: ref.read(eightsRepositoryProvider),
     doodle: ref.read(doodleGameRepositoryProvider),
+    pool: ref.read(poolRepositoryProvider),
   );
 });
 
@@ -55,6 +58,7 @@ Future<ActiveGame?> findActiveGame(
   OfflineGameStore? offline,
   EightsRepository? eights,
   DoodleGameRepository? doodle,
+  PoolRepository? pool,
 }) async {
   final board = await chess.activeMatch(userId).catchError((Object _) => null);
   if (board != null) {
@@ -80,6 +84,9 @@ Future<ActiveGame?> findActiveGame(
   if (doodleId != null) {
     return ActiveGame(kind: GameKind.doodle, matchId: doodleId);
   }
+  // A pool game against Chip at a coin table (it waits on the server).
+  final poolGame = await pool?.activeGame().catchError((Object _) => null);
+  if (poolGame != null) return ActiveGame(kind: GameKind.pool, matchId: poolGame.id);
   // Then a game against bots on this phone, if the app closed mid-game.
   final saved = offline?.load();
   if (saved == null) return null;

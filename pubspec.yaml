@@ -117,6 +117,12 @@ flutter:
     - assets/music/
     - assets/google_fonts/
 
+  # Drawn on the GPU: pool balls (lib/features/pool/presentation/pool_art.dart)
+  # and cues (pool_cue_art.dart).
+  shaders:
+    - shaders/pool_ball.frag
+    - shaders/pool_cue.frag
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

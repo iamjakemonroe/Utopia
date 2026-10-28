@@ -31,6 +31,7 @@ const _visibleColumns = [
   'equipped_theme',
   'equipped_ludo_pieces',
   'equipped_chess_pieces',
+  'equipped_pool_cue',
   'equipped_aura',
   'aura_expires_at',
 ];

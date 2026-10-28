@@ -49,6 +49,8 @@ import '../../features/support/presentation/report_bug_screen.dart';
 import '../widgets/game_card_art.dart';
 import 'go_router_refresh_stream.dart';
 import 'popup_tracker.dart';
+import '../../features/pool/presentation/pool_lobby_screen.dart';
+import '../../features/pool/presentation/pool_match_screen.dart';
 
 /// Where the player is right now: the path of the screen on top, whether
 /// it was gone to or pushed. (go_router keeps the match list's `uri` at the
@@ -119,6 +121,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             'auras' => 1,
             'ludo' => 2,
             'chess' => 3,
+            'pool' => 4,
             _ => 0,
           },
         ),
@@ -131,6 +134,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             'frames' => 1,
             'ludo' => 2,
             'chess' => 3,
+            'pool' => 4,
             _ => 0,
           },
         ),
@@ -295,6 +299,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/eights',
         builder: (context, state) => const EightsLobbyScreen(),
+      ),
+      // 8-ball pool: the coin tables (Chip), and two players on one phone.
+      GoRoute(
+        path: '/pool',
+        builder: (context, state) => const PoolLobbyScreen(),
+      ),
+      GoRoute(
+        path: '/pool/friends',
+        builder: (context, state) => const PoolMatchScreen.friends(),
+      ),
+      GoRoute(
+        path: '/pool/:gameId',
+        builder: (context, state) =>
+            PoolMatchScreen.table(gameId: state.pathParameters['gameId']!),
       ),
       GoRoute(
         path: '/eights/room/:roomId',

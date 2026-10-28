@@ -33,7 +33,7 @@ class ProfileRepository {
   static const _publicColumns =
       'id, display_name, username, avatar_url, avatar_kind, avatar_seed, '
       'equipped_theme, equipped_ludo_pieces, equipped_chess_pieces, '
-      'equipped_aura, aura_expires_at, show_coins, show_stats';
+      'equipped_aura, aura_expires_at, show_coins, show_stats, equipped_pool_cue';
 
   Future<Map<String, dynamic>?> fetchById(String id) {
     return _client

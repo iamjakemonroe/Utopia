@@ -27,6 +27,7 @@ class HowToPlayScreen extends StatelessWidget {
     (GameKind.chess, strings.howToPlayChess, Icons.extension_rounded),
     (GameKind.ludo, strings.howToPlayLudo, Icons.casino_rounded),
     (GameKind.checkers, strings.howToPlayCheckers, Icons.blur_circular_rounded),
+    (GameKind.pool, strings.poolPool, Icons.sports_baseball_rounded),
   ];
 
   @override
@@ -56,7 +57,12 @@ class HowToPlayScreen extends StatelessWidget {
           ),
           body: const AppBackground(
             child: TabBarView(
-              children: [_ChessGuide(), _LudoGuide(), _CheckersGuide()],
+              children: [
+                _ChessGuide(),
+                _LudoGuide(),
+                _CheckersGuide(),
+                _PoolGuide(),
+              ],
             ),
           ),
         ),
@@ -487,6 +493,89 @@ class _CheckersGuide extends StatelessWidget {
 }
 
 /// A rule with a checkers piece beside it.
+class _PoolGuide extends StatelessWidget {
+  const _PoolGuide();
+
+  @override
+  Widget build(BuildContext context) {
+    return _Guide(
+      game: GameKind.pool,
+      intro: strings.poolGuideIntro,
+      sections: [
+        _Section(
+          title: strings.poolGuideShooting,
+          icon: Icons.sports_baseball_rounded,
+          color: AppColors.sky,
+          children: [
+            RuleRow(
+              icon: Icons.touch_app_rounded,
+              color: AppColors.sky,
+              title: strings.poolGuideAimTitle,
+              body: strings.poolGuideAimBody,
+            ),
+            RuleRow(
+              icon: Icons.south_rounded,
+              color: Color(0xFF2FD98E),
+              title: strings.poolGuidePowerTitle,
+              body: strings.poolGuidePowerBody,
+            ),
+            RuleRow(
+              icon: Icons.adjust_rounded,
+              color: Color(0xFFFF5C6C),
+              title: strings.poolGuideSpinTitle,
+              body: strings.poolGuideSpinBody,
+            ),
+          ],
+        ),
+        _Section(
+          title: strings.poolGuideRules,
+          icon: Icons.rule_rounded,
+          color: Color(0xFFFFC94D),
+          children: [
+            RuleRow(
+              icon: Icons.blur_on_rounded,
+              color: Color(0xFFFFC94D),
+              title: strings.poolGuideGroupsTitle,
+              body: strings.poolGuideGroupsBody,
+            ),
+            RuleRow(
+              icon: Icons.warning_amber_rounded,
+              color: Color(0xFFFF7A45),
+              title: strings.poolGuideFoulsTitle,
+              body: strings.poolGuideFoulsBody,
+            ),
+            RuleRow(
+              icon: Icons.emoji_events_rounded,
+              color: Color(0xFFB45CFF),
+              title: strings.poolGuideEightTitle,
+              body: strings.poolGuideEightBody,
+            ),
+          ],
+        ),
+        _Section(
+          title: strings.howToPlayPlayingInUtopia,
+          icon: Icons.public_rounded,
+          color: Color(0xFF2DE0C2),
+          children: [
+            RuleRow(
+              icon: Icons.monetization_on_rounded,
+              color: Color(0xFFFFC94D),
+              title: strings.poolGuideTablesTitle,
+              body: strings.poolGuideTablesBody,
+            ),
+            RuleRow(
+              icon: Icons.auto_awesome_rounded,
+              color: Color(0xFFFF4F7B),
+              title: strings.poolGuideCuesTitle,
+              body: strings.poolGuideCuesBody,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class _DiscRule extends StatelessWidget {
   const _DiscRule({
     required this.king,
