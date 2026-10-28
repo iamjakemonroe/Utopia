@@ -42,20 +42,70 @@ class GameSceneArt extends StatefulWidget {
 class _GameSceneArtState extends State<GameSceneArt>
     with SingleTickerProviderStateMixin {
   final ValueNotifier<double> _t = ValueNotifier(0);
+
+  /// Where the scene had got to when it last stopped: it carries on from
+  /// there (a ticker counts from zero each time it starts).
+  double _from = 0;
   late final Ticker _ticker = createTicker(
-    ambientTick((elapsed) => _t.value = elapsed.inMicroseconds / 1e6),
+    ambientTick((elapsed) => _t.value = _from + elapsed.inMicroseconds / 1e6),
   );
+  bool _still = false;
+
+  /// Whether any of the scene is on screen: one scrolled out of sight
+  /// (home's game tiles below the fold) neither moves nor draws.
+  bool _inView = true;
+  final _scrolls = <ScrollPosition>[];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final still = MediaQuery.disableAnimationsOf(context);
-    if (still && _ticker.isActive) _ticker.stop();
-    if (!still && !_ticker.isActive) _ticker.start();
+    _still = MediaQuery.disableAnimationsOf(context);
+    _watchScrolls();
+    _sync();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _look());
+  }
+
+  /// Listens to every scrolling list the scene sits in.
+  void _watchScrolls() {
+    for (final p in _scrolls) {
+      p.removeListener(_look);
+    }
+    _scrolls.clear();
+    var scrollable = context.findAncestorStateOfType<ScrollableState>();
+    while (scrollable != null) {
+      _scrolls.add(scrollable.position..addListener(_look));
+      scrollable = scrollable.context.findAncestorStateOfType<ScrollableState>();
+    }
+  }
+
+  /// Whether it's on screen now.
+  void _look() {
+    if (!mounted) return;
+    final box = context.findRenderObject();
+    if (box is! RenderBox || !box.attached || !box.hasSize) return;
+    final top = box.localToGlobal(Offset.zero).dy;
+    final height = MediaQuery.sizeOf(context).height;
+    final inView = top + box.size.height > 0 && top < height;
+    if (inView == _inView) return;
+    _inView = inView;
+    _sync();
+  }
+
+  void _sync() {
+    final run = !_still && _inView;
+    if (run && !_ticker.isActive) {
+      _from = _t.value;
+      _ticker.start();
+    } else if (!run && _ticker.isActive) {
+      _ticker.stop();
+    }
   }
 
   @override
   void dispose() {
+    for (final p in _scrolls) {
+      p.removeListener(_look);
+    }
     _ticker.dispose();
     _t.dispose();
     super.dispose();
