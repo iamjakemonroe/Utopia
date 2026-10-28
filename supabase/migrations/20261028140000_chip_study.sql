@@ -1,11 +1,17 @@
--- Chip Study (study.kaivon.app): a calm study workspace where Chip tutors,
--- plans, checks and writes *with* the student, on their Kaivon account (the
--- same one as Utopia).
+-- Chip Study (study.kaivon.app): a calm place to study and really learn, with
+-- Chip as a tutor: it guides the student to the answer, explains step by
+-- step, checks their own work and says why, turns what they study into
+-- practice, and helps with assignments without doing them for them. On the
+-- student's Kaivon account (the same one as Utopia).
 --
---   * Each student's assignments, and in each: the brief and rubric, the
---     documents they write (a doc, code, or a small table), notes, sources
---     (with a reading's text, if they add one) and a task checklist with
---     dates. Only the owner sees or changes any of it.
+--   * Each student's study spaces: something they're learning (a topic) or
+--     an assignment, and in each: what it's about (an assignment's brief and
+--     rubric), the documents they write (a doc, code, or a small table),
+--     notes, sources (with a reading's text, if they add one) and a task
+--     checklist with dates. Only the owner sees or changes any of it.
+--   * A review deck of flashcards (study_cards), spaced out by how well the
+--     student knew each one, and their practice results (study_practice:
+--     quizzes taken and review sessions), for the progress view.
 --   * Chip's conversations (study_threads, study_messages) and the AI-use
 --     record (study_ai_log) are written by the chip-study function. The
 --     student reads them and can clear a conversation, but can't edit or
@@ -122,6 +128,8 @@ create table public.study_assignments (
   style         text not null default 'apa' check (style in ('apa', 'harvard')),
   status        text not null default 'active' check (status in ('active', 'submitted', 'archived')),
   color         text not null default 'sky' check (color in ('sky', 'lilac', 'mint', 'peach', 'rose', 'sand')),
+  -- Something the student is learning, or an assignment to hand in.
+  kind          text not null default 'assignment' check (kind in ('topic', 'assignment')),
   -- Kept for the dashboard: the main document's words, and focus minutes.
   words         int not null default 0 check (words >= 0),
   focus_minutes int not null default 0 check (focus_minutes >= 0),
@@ -208,6 +216,39 @@ create table public.study_focus (
 );
 create index study_focus_by_user on public.study_focus (user_id, started_at desc);
 
+-- The review deck: flashcards, each due again after an interval that grows
+-- as the student remembers it (the app moves it on as it's reviewed).
+create table public.study_cards (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  -- Where it came from (a card outlives its study space).
+  assignment_id uuid references public.study_assignments (id) on delete set null,
+  front         text not null check (char_length(front) between 1 and 600),
+  back          text not null check (char_length(back) between 1 and 2000),
+  created_by    text not null default 'me' check (created_by in ('me', 'chip')),
+  ease          numeric(4, 2) not null default 2.5 check (ease between 1.3 and 3.5),
+  interval_days int not null default 0 check (interval_days between 0 and 3650),
+  reps          int not null default 0 check (reps >= 0),
+  lapses        int not null default 0 check (lapses >= 0),
+  due_at        timestamptz not null default now(),
+  reviewed_at   timestamptz,
+  created_at    timestamptz not null default now()
+);
+create index study_cards_due on public.study_cards (user_id, due_at);
+
+-- Practice results: a quiz taken, or a review session, as right out of total.
+create table public.study_practice (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  assignment_id uuid references public.study_assignments (id) on delete set null,
+  kind          text not null check (kind in ('quiz', 'review')),
+  correct       int not null check (correct >= 0),
+  total         int not null check (total between 1 and 500),
+  at            timestamptz not null default now(),
+  check (correct <= total)
+);
+create index study_practice_by_user on public.study_practice (user_id, at desc);
+
 -- Chip's side (written by the chip-study function).
 create table public.study_threads (
   id            uuid primary key default gen_random_uuid(),
@@ -225,7 +266,7 @@ create table public.study_messages (
   assignment_id uuid not null references public.study_assignments (id) on delete cascade,
   user_id       uuid not null references public.profiles (id) on delete cascade,
   role          text not null check (role in ('user', 'chip')),
-  mode          text not null check (mode in ('explain', 'plan', 'write', 'check', 'cite', 'quiz')),
+  mode          text not null check (mode in ('guide', 'explain', 'plan', 'write', 'check', 'cite', 'quiz')),
   content       text not null check (char_length(content) <= 120000),
   -- The selection asked about, the model, and so on.
   meta          jsonb not null default '{}'::jsonb,
@@ -242,7 +283,7 @@ create table public.study_ai_log (
   -- What Chip was asked to do (a mode, or 'setup' for reading the brief),
   -- or what the student did with it.
   action        text not null check (action in (
-                  'explain', 'plan', 'write', 'check', 'cite', 'quiz', 'setup',
+                  'guide', 'explain', 'plan', 'write', 'check', 'cite', 'quiz', 'setup',
                   'inserted', 'replaced', 'added_tasks', 'added_sources')),
   summary       text not null default '' check (char_length(summary) <= 600),
   prompt        text not null default '' check (char_length(prompt) <= 2000),
@@ -263,14 +304,19 @@ alter table public.study_focus enable row level security;
 alter table public.study_threads enable row level security;
 alter table public.study_messages enable row level security;
 alter table public.study_ai_log enable row level security;
+alter table public.study_cards enable row level security;
+alter table public.study_practice enable row level security;
 
 revoke all on public.study_assignments, public.study_documents, public.study_sources,
   public.study_notes, public.study_tasks, public.study_focus, public.study_threads,
-  public.study_messages, public.study_ai_log from anon, authenticated;
+  public.study_messages, public.study_ai_log, public.study_cards, public.study_practice
+  from anon, authenticated;
 
 grant select, insert, update, delete on public.study_assignments, public.study_documents,
   public.study_sources, public.study_notes, public.study_tasks to authenticated;
 grant select, insert, delete on public.study_focus to authenticated;
+grant select, insert, update, delete on public.study_cards to authenticated;
+grant select, insert on public.study_practice to authenticated;
 grant select, delete on public.study_threads to authenticated;
 grant select on public.study_messages, public.study_ai_log to authenticated;
 
@@ -309,6 +355,16 @@ create policy "study_tasks: own" on public.study_tasks for all to authenticated
   with check (user_id = auth.uid() and public._study_mine(assignment_id));
 
 create policy "study_focus: own" on public.study_focus for all to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid()
+              and (assignment_id is null or public._study_mine(assignment_id)));
+
+create policy "study_cards: own" on public.study_cards for all to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid()
+              and (assignment_id is null or public._study_mine(assignment_id)));
+
+create policy "study_practice: own" on public.study_practice for all to authenticated
   using (user_id = auth.uid())
   with check (user_id = auth.uid()
               and (assignment_id is null or public._study_mine(assignment_id)));
@@ -817,6 +873,8 @@ set search_path = public
 as $$
 begin
   delete from public.study_focus where user_id = p_user;
+  delete from public.study_cards where user_id = p_user;
+  delete from public.study_practice where user_id = p_user;
   delete from public.study_assignments where user_id = p_user;
 end;
 $$;

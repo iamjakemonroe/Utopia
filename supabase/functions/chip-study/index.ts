@@ -1,13 +1,19 @@
-// Chip Study's brain (study.kaivon.app): Chip as a study partner, answered
-// by Claude. Two jobs:
+// Chip Study's brain (study.kaivon.app): Chip as a tutor, answered by
+// Claude. Learning comes first: Chip guides the student to understanding,
+// checks their own work and says why, and turns what they study into
+// practice; with an assignment, it helps them plan it, understand it and
+// write it in their own words. Two jobs:
 //
-//   chat  - a message to Chip about one assignment, in one of six modes
-//           (explain, plan, write, check, cite, quiz), streamed back as
-//           server-sent events. Chip sees the brief, rubric, due date,
-//           sources and readings, the conversation so far, and the
-//           student's document and selection as they are now. Both sides
-//           of the conversation are saved, and every answer goes in the
-//           assignment's AI-use record.
+//   chat  - a message to Chip in one study space (something the student is
+//           learning, or an assignment), in one of seven modes (guide,
+//           explain, check, quiz, plan, write, cite), streamed back as
+//           server-sent events. Chip sees what the space is about (an
+//           assignment's brief, rubric and due date), its sources, readings
+//           and notes, the conversation so far, and the student's document
+//           and selection as they are now. Both sides of the conversation
+//           are saved, and every answer goes in the space's AI-use record.
+//           With again: true, the thread's last question is answered afresh,
+//           in place of its answer.
 //   setup - reads an assignment sheet (the text the app took out of a PDF
 //           or Word file, or the file itself when it's a scan or a photo)
 //           and answers its title, course, due date, word target, brief,
@@ -40,13 +46,14 @@ const FAST_MODEL = Deno.env.get("STUDY_FAST_MODEL") ?? "claude-haiku-5-5";
 const anthropic = new Anthropic();
 
 type Kind = "best" | "fast";
-type Mode = "explain" | "plan" | "write" | "check" | "cite" | "quiz";
-const MODES: Mode[] = ["explain", "plan", "write", "check", "cite", "quiz"];
+type Mode = "guide" | "explain" | "plan" | "write" | "check" | "cite" | "quiz";
+const MODES: Mode[] = ["guide", "explain", "plan", "write", "check", "cite", "quiz"];
 
 /** How long each mode's answers can run, and how hard the best model
  * thinks for them. */
 const SHAPES: Record<Mode, { maxTokens: number; effort: "low" | "medium" }> = {
-  explain: { maxTokens: 8000, effort: "low" },
+  guide: { maxTokens: 8000, effort: "medium" },
+  explain: { maxTokens: 8000, effort: "medium" },
   plan: { maxTokens: 10000, effort: "medium" },
   write: { maxTokens: 12000, effort: "medium" },
   check: { maxTokens: 12000, effort: "medium" },
@@ -56,9 +63,9 @@ const SHAPES: Record<Mode, { maxTokens: number; effort: "low" | "medium" }> = {
 
 /** How much of the student's work Chip reads, by model: the document, the
  * readings together, and the conversation so far (characters). */
-const READS: Record<Kind, { doc: number; readings: number; history: number }> = {
-  fast: { doc: 16000, readings: 20000, history: 16000 },
-  best: { doc: 60000, readings: 80000, history: 40000 },
+const READS: Record<Kind, { doc: number; readings: number; notes: number; history: number }> = {
+  fast: { doc: 16000, readings: 20000, notes: 6000, history: 16000 },
+  best: { doc: 60000, readings: 80000, notes: 20000, history: 40000 },
 };
 
 /** Refusal fallback: if a safety classifier declines, the API retries on
@@ -224,35 +231,39 @@ async function spend(
 
 // ── What Chip is ───────────────────────────────────────────────────────
 
-const STUDY_SYSTEM = `You are Chip, the study partner inside Chip Study, made by Kaivon. You help one student with one assignment: you tutor, plan, check and write with them. You're warm, calm and clear, like a brilliant tutor who's on their side. You never leave them knowing less than when they asked.
+const STUDY_SYSTEM = `You are Chip, the tutor inside Chip Study, made by Kaivon. Students come here to really learn: to understand things, practise until they stick, and do their assignments well and honestly. You're warm, calm and clear, like the best tutor they've ever had, and you're on their side. Success is the student understanding more and doing more of the thinking themselves, not you producing answers.
 
-What you see: the assignment (its brief, rubric, due date, word target, sources and any readings the student added), your conversation so far, and with each message the mode they picked, today's date, their document as it is now, and any text they've selected in it.
+What you see: one study space, either something the student is learning (a topic) or an assignment (with its brief, rubric, due date and word target); its sources, any readings and notes the student added; your conversation so far; and with each message the mode they picked, today's date, their document as it is now, and any text they've selected in it.
 
-How you work
-- Teach before you tell. When they're stuck, find out what they already think, then build from there. Short explanations, concrete examples, one idea at a time.
-- Ground everything in their brief and rubric. Say which part of the rubric something serves.
-- Their voice matters. When you write with them, keep their style and level; suggest, don't take over. Encourage them to rewrite your words in their own.
+How you teach
+- Find out what they already know and think before you explain. Build from there, one idea at a time, with concrete examples.
+- Make them do the thinking: a question back, a hint, a nudge towards the next step. Give the whole answer when they've had a real go, when they ask you to just explain, or when they're clearly stuck.
+- Check understanding as you go, and end a longer explanation with one short question that checks the key idea.
+- When they show you their work, find what's right first, then what's wrong and exactly why, and how to put it right. Don't silently rewrite it for them.
+- Ground everything in their material: their notes, readings, brief and rubric. Say which part of the rubric something serves.
 - Be honest about what you don't know. Never invent quotes, statistics, page numbers, sources or results. If you aren't sure, say so.
-- Respect their course's rules. If the brief or rubric says AI may not write for them, don't draft text for submission: explain, plan and give feedback instead, and say why in one line.
-- Don't do a live exam or test for them. If it looks like they're sitting one now, gently decline.
+- Their voice matters. When you write with them, keep their style and level, and encourage them to put your words into their own.
+- Respect their course's rules. If the brief or rubric says AI may not write for them, don't draft text for submission: teach, plan and give feedback instead, and say why in one line.
+- Don't do a live exam or test for them. If it looks like they're sitting one now, gently decline and offer to help them revise afterwards.
 - Write in the language the student writes to you in (and drafts in the assignment's language).
-- Keep it calm and readable: short paragraphs, a few bullet points where they help, headings only for long answers. Use Markdown. Math in LaTeX: $x^2$ inline, $$\\int_0^1 x\\,dx$$ on its own line. Code in fenced blocks with the language.
-- Everything you give them, and anything they put into their document from you, goes in their AI-use record, which they can export as a declaration. You don't need to mention it unless they ask.
+- Keep it calm and readable: short paragraphs, a few bullet points where they help, headings only for long answers. Use Markdown. Math in LaTeX: $x^2$ inline, $$\\int_0^1 x\\,dx$$ on its own line. Show working step by step for maths, science and code. Code in fenced blocks with the language.
+- Everything you give them, and anything they put into their document from you, goes in the space's AI-use record, which they can export as a declaration. You don't need to mention it unless they ask.
 
 Modes (follow the one the student picked):
-- explain: help them understand. Socratic when they're working something out: a question back, a hint, then the explanation. If they ask you to check their understanding, end with a quiz block of 3 questions.
-- plan: an outline for the work (sections, what each must do for the rubric, rough word counts that add up to the target), then a schedule from today to the due date, as a tasks block. Leave a buffer before the deadline.
-- write: draft or improve text with them. If they selected text, work on that selection (rewrite, tighten, extend, fix) and keep its meaning. Put the text meant for their document in one draft block; say anything else briefly outside it. Match their document's style, level and citation style.
-- check: mark their document against the rubric, criterion by criterion, as a rubric block, then the two or three changes that would raise the mark most. Be specific (quote short phrases) and kind, not vague.
+- guide (the default): Socratic tutoring. Ask what they think, give hints and the next small step, and let them get there. Short turns; usually end with a question for them. If they say they're stuck after trying, show the next step worked through, then hand it back.
+- explain: they want it explained now. A clear explanation, step by step, with an example; then one quick question to check they've got it. If they ask you to check their understanding, end with a quiz block of 3 questions.
+- check: check their own work: an answer, a solution, a paragraph, code, or their whole document. Say what's right, then each mistake, why it's wrong, and a hint to fix it (not the fixed version, unless they ask). For an assignment draft with a rubric, give a rubric block, then the two or three changes that would raise the mark most.
+- quiz: practice. Questions from their notes, readings and what you've covered together (a quiz block, multiple choice, by default), or a cards block of flashcards if they ask for them. Pitch it at their level and mix easier and harder questions.
+- plan: for an assignment, an outline (sections, what each must do for the rubric, rough word counts that add up to the target), then a schedule from today to the due date as a tasks block, with a buffer before the deadline. For a topic, a study plan: what to learn in what order, with practice and review along the way, as a tasks block.
+- write: help them write in their own words. Prefer feedback, questions and outlines that let them write it; when they ask you to draft or improve text, work on their selection if there is one, keep their meaning and voice, and put the text meant for their document in one draft block. Say anything else briefly outside it.
 - cite: help with sources and referencing in their style (APA 7th or Harvard). When you can search the web, find real, reputable sources and give them as a sources block with their links. When you can't, say so in one line, format what they give you, and suggest where and what to search; anything you name from memory is marked "verified": false.
-- quiz: test what they know about the assignment's topic or their readings: a quiz block (multiple choice) by default, or a cards block if they ask for flashcards.
 
 Blocks: the app turns these fenced blocks into cards. Write valid JSON exactly in these shapes, with nothing after the closing fence of the block:
 
 \`\`\`tasks
 [{"title": "Read chapters 2 and 3", "due": "2026-11-02"}]
 \`\`\`
-(3 to 10 tasks, due dates as YYYY-MM-DD between today and the due date.)
+(3 to 10 tasks, due dates as YYYY-MM-DD from today; for an assignment, before its due date.)
 
 \`\`\`quiz
 {"questions": [{"q": "Question?", "options": ["A", "B", "C", "D"], "answer": 0, "why": "Why A is right."}]}
@@ -262,6 +273,7 @@ Blocks: the app turns these fenced blocks into cards. Write valid JSON exactly i
 \`\`\`cards
 [{"front": "Term or question", "back": "Definition or answer"}]
 \`\`\`
+(Short fronts, clear backs that can be learned; 5 to 20 cards.)
 
 \`\`\`rubric
 {"criteria": [{"name": "Argument", "band": "Good", "score": 7, "out_of": 10, "feedback": "What works and what doesn't.", "next": "The one change that would help most."}], "overall": "One or two sentences."}
@@ -279,32 +291,59 @@ The draft block is Markdown, not JSON:
 The text for their document.
 \`\`\``;
 
-/** The assignment, its sources and readings, for the start of every call. */
+/** The study space, its sources, readings and notes, for the start of every
+ * call. */
 async function assignmentContext(
   db: Db,
   assignmentId: string,
-  reads: { readings: number },
+  reads: { readings: number; notes: number },
 ): Promise<{ text: string; title: string } | null> {
   const { data: a } = await db
     .from("study_assignments")
-    .select("id, title, course, brief, rubric, due_at, word_target, style")
+    .select("id, title, course, brief, rubric, due_at, word_target, style, kind")
     .eq("id", assignmentId)
     .maybeSingle();
   if (!a) return null;
+  const topic = a.kind === "topic";
   const { data: sources } = await db
     .from("study_sources")
     .select("kind, data, note, content, file_name")
     .eq("assignment_id", assignmentId)
     .order("created_at");
+  const { data: notes } = await db
+    .from("study_notes")
+    .select("body, pinned, created_at")
+    .eq("assignment_id", assignmentId)
+    .order("pinned", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(40);
+  const tag = topic ? "topic" : "assignment";
   const lines: string[] = [];
-  lines.push(`<assignment>`);
-  lines.push(`Title: ${a.title}`);
+  lines.push(`<${tag}>`);
+  lines.push(`${topic ? "What they're learning" : "Assignment"}: ${a.title}`);
   if (a.course) lines.push(`Course: ${a.course}`);
-  if (a.due_at) lines.push(`Due: ${a.due_at}`);
-  if (a.word_target) lines.push(`Word target: ${a.word_target}`);
+  if (a.due_at) lines.push(`${topic ? "Learning it by" : "Due"}: ${a.due_at}`);
+  if (a.word_target && !topic) lines.push(`Word target: ${a.word_target}`);
   lines.push(`Citation style: ${a.style === "harvard" ? "Harvard" : "APA 7th"}`);
-  lines.push(`\n<brief>\n${a.brief || "(none given yet)"}\n</brief>`);
-  lines.push(`\n<rubric>\n${a.rubric || "(none given yet)"}\n</rubric>`);
+  if (topic) {
+    if (a.brief) lines.push(`\n<goal>\n${a.brief}\n</goal>`);
+  } else {
+    lines.push(`\n<brief>\n${a.brief || "(none given yet)"}\n</brief>`);
+    lines.push(`\n<rubric>\n${a.rubric || "(none given yet)"}\n</rubric>`);
+  }
+  // deno-lint-ignore no-explicit-any
+  const kept = ((notes ?? []) as any[]).filter((n) => String(n.body).trim());
+  if (kept.length > 0) {
+    let room = reads.notes;
+    lines.push(`\n<notes>`);
+    for (const n of kept) {
+      const body = clip(n.body, 2000);
+      if (body.length > room) break;
+      room -= body.length;
+      lines.push(`- ${body.replace(/\n+/g, " ")}`);
+    }
+    lines.push(`</notes>`);
+  }
   // deno-lint-ignore no-explicit-any
   const list = (sources ?? []) as any[];
   if (list.length > 0) {
@@ -329,7 +368,7 @@ async function assignmentContext(
       lines.push(`\n<reading title="${clip(s.data?.title || s.file_name || "Reading", 200).replace(/"/g, "'")}">\n${part}\n</reading>`);
     }
   }
-  lines.push(`</assignment>`);
+  lines.push(`</${tag}>`);
   return { text: lines.join("\n"), title: a.title };
 }
 
@@ -368,18 +407,19 @@ function searchTool(model: string) {
 }
 
 const ACTION_SUMMARY: Record<Mode, string> = {
+  guide: "Worked through it with Chip guiding",
   explain: "Asked Chip to explain",
   plan: "Asked Chip to plan",
   write: "Asked Chip to write or improve text",
-  check: "Asked Chip to check the work against the rubric",
+  check: "Asked Chip to check their work",
   cite: "Asked Chip for help with sources and referencing",
-  quiz: "Asked Chip to quiz them",
+  quiz: "Practised with Chip's questions or flashcards",
 };
 
 // ── chat ───────────────────────────────────────────────────────────────
 
 async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal): Promise<Response> {
-  const mode = MODES.includes(body.mode as Mode) ? body.mode as Mode : "explain";
+  const mode = MODES.includes(body.mode as Mode) ? body.mode as Mode : "guide";
   const text = clip(body.text, 8000);
   const assignmentId = clip(body.assignment, 64);
   if (!text) return json({ error: "Say something to Chip" }, 400);
@@ -410,6 +450,25 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
   const context = await assignmentContext(who.db, assignmentId, reads);
   if (!context) return json({ error: "That assignment isn't yours" }, 404);
   const past = threadId ? await history(who.db, threadId, reads.history) : [];
+  // Asked again: the last question gets a new answer in place of the last one (the record
+  // keeps both).
+  let again: { id: string } | null = null;
+  if (body.again === true && threadId) {
+    const { data: last } = await who.db
+      .from("study_messages")
+      .select("id, created_at")
+      .eq("thread_id", threadId)
+      .eq("role", "user")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (last) {
+      again = { id: last.id as string };
+      while (past.length > 0 && past[past.length - 1].role === "assistant") past.pop();
+      if (past.length > 0) past.pop();
+      await admin().from("study_messages").delete().eq("thread_id", threadId).eq("role", "chip").gt("created_at", last.created_at);
+    }
+  }
 
   const service = admin();
   if (!threadId) {
@@ -424,20 +483,24 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
     await service.from("study_threads").update({ updated_at: new Date().toISOString() }).eq("id", threadId);
   }
   const selection = clip(body.selection, 6000);
-  const { data: asked, error: askError } = await service
-    .from("study_messages")
-    .insert({
-      thread_id: threadId,
-      assignment_id: assignmentId,
-      user_id: who.userId,
-      role: "user",
-      mode,
-      content: text,
-      meta: selection ? { selection: clip(selection, 600) } : {},
-    })
-    .select("id")
-    .single();
-  if (askError) throw askError;
+  let asked = again;
+  if (!asked) {
+    const { data, error: askError } = await service
+      .from("study_messages")
+      .insert({
+        thread_id: threadId,
+        assignment_id: assignmentId,
+        user_id: who.userId,
+        role: "user",
+        mode,
+        content: text,
+        meta: selection ? { selection: clip(selection, 600) } : {},
+      })
+      .select("id")
+      .single();
+    if (askError) throw askError;
+    asked = { id: data.id as string };
+  }
 
   const today = /^\d{4}-\d{2}-\d{2}$/.test(String(body.today)) ? String(body.today) : new Date().toISOString().slice(0, 10);
   const doc = typeof body.doc === "string" ? tail(body.doc, reads.doc) : "";

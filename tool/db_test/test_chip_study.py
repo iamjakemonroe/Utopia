@@ -1,5 +1,6 @@
-"""Chip Study (20261028140000_chip_study.sql): each student's assignments,
-documents, sources, notes, tasks and focus sessions are theirs alone;
+"""Chip Study (20261028140000_chip_study.sql): each student's study spaces
+(topics and assignments), documents, sources, notes, tasks, focus sessions,
+review deck and practice results are theirs alone;
 Chip's conversations and the AI-use record are written by the server and
 can't be edited by the student; saving a document checks its version; the
 allowance is held before each call and settled after, by tier (free, Pro
@@ -303,6 +304,39 @@ check("and can have its note changed",
 make_pro(dan)
 check("Pro's readings can be longer",
       not str(attempt(dan, "insert into study_sources (assignment_id, content) values (%s, repeat('a', 300000)) returning id", ad)).startswith("ERROR"))
+
+# ── Learning: topics, the review deck, practice ───────────────────────
+eve = harness.new_user(db, "eve@example.com")
+topic = attempt(eve, "insert into study_assignments (title, kind) values ('Organic chemistry: mechanisms', 'topic') returning id")
+check("a study space can be something to learn", count("select kind from study_assignments where id = %s", topic) == "topic")
+check("an assignment by default", count("select kind from study_assignments where id = %s", ad) == "assignment")
+check("only those two kinds", err(attempt(eve, "insert into study_assignments (title, kind) values ('x', 'course')")))
+c1 = attempt(eve, "insert into study_cards (assignment_id, front, back, created_by) values (%s, 'SN2', 'One step, backside attack', 'chip') returning id", topic)
+check("a flashcard goes in the deck", c1 and not str(c1).startswith("ERROR"), c1)
+check("due straight away", count("select due_at <= now() and interval_days = 0 and ease = 2.5 from study_cards where id = %s", c1) is True)
+check("the student moves it on as they review it",
+      attempt(eve, "update study_cards set interval_days = 3, ease = 2.6, reps = 1, due_at = now() + interval '3 days', reviewed_at = now() where id = %s returning interval_days", c1) == 3)
+check("within sensible bounds", err(attempt(eve, "update study_cards set ease = 9 where id = %s", c1)))
+check("someone else's deck isn't seen", attempt(ben, "select count(*) from study_cards") == 0)
+check("or changed", attempt(ben, "update study_cards set front = 'x' where id = %s returning 1", c1) is None)
+check("a card can't be filed under someone else's space",
+      err(attempt(ben, "insert into study_cards (assignment_id, front, back) values (%s, 'a', 'b')", topic), "row-level security"))
+check("a card needs both sides", err(attempt(eve, "insert into study_cards (front, back) values ('', 'b')")))
+check("practice results are kept",
+      not str(attempt(eve, "insert into study_practice (assignment_id, kind, correct, total) values (%s, 'quiz', 4, 5) returning id", topic)).startswith("ERROR"))
+check("never more right than asked", err(attempt(eve, "insert into study_practice (kind, correct, total) values ('review', 6, 5)")))
+check("and can't be edited afterwards", err(attempt(eve, "update study_practice set correct = 5"), "permission denied"))
+check("someone else's results aren't seen", attempt(ben, "select count(*) from study_practice") == 0)
+attempt(eve, "delete from study_assignments where id = %s", topic)
+check("cards outlive the space they came from", count("select count(*) from study_cards where user_id = %s and assignment_id is null", eve) == 1)
+check("so do results", count("select count(*) from study_practice where user_id = %s and assignment_id is null", eve) == 1)
+harness.as_admin(db)
+th2 = one("insert into study_threads (assignment_id, user_id) values (%s, %s) returning id", ad, dan)
+check("Chip has a guiding mode", one("insert into study_messages (thread_id, assignment_id, user_id, role, mode, content) values (%s, %s, %s, 'chip', 'guide', 'What do you think?') returning mode", th2, ad, dan) == "guide")
+check("and the record knows it", one("insert into study_ai_log (assignment_id, user_id, action) values (%s, %s, 'guide') returning action", ad, dan) == "guide")
+check("forgetting takes the deck and the results", ok(attempt(eve, "select study_forget_me()"))
+      and count("select count(*) from study_cards where user_id = %s", eve) == 0
+      and count("select count(*) from study_practice where user_id = %s", eve) == 0)
 
 # ── Forgetting ─────────────────────────────────────────────────────────
 before = usage(amy)
