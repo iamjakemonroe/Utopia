@@ -1,8 +1,8 @@
 // Deletes the signed-in player's account (Settings > Delete account).
 //
 // 1. Forgets everything personal (anonymize_account: name, username,
-//    picture, friends, chats, invites, notifications...), and the
-//    pictures Chip drew from their photos.
+//    picture, friends, chats, invites, notifications...), the pictures
+//    Chip drew from their photos, and their Chip Study work (study_forget).
 // 2. Removes their pictures and report screenshots from storage.
 // 3. Deletes the sign-in itself. It's a soft delete: the email and every
 //    way to sign in are gone for good, while the anonymous row stays for
@@ -67,6 +67,10 @@ Deno.serve(async (req) => {
 
   // Pictures Chip drew from their photos are theirs alone: gone with them.
   await admin.from("coloring_pages").delete().eq("owner", user.id);
+
+  // Their Chip Study assignments, writing and conversations with Chip.
+  const { error: studyError } = await admin.rpc("study_forget", { p_user: user.id });
+  if (studyError) console.error("study_forget", studyError);
 
   // Their files: profile pictures, bug-report screenshots, portrait line
   // art and their sketchbook live in a folder named after them.

@@ -1,4 +1,4 @@
-// Talking to Flutterwave about coins bought on the web.
+// Talking to Flutterwave about coins and subscriptions bought on the web.
 //
 //   FLW_SECRET_KEY: the secret key (Settings > API keys). A test key
 //     (FLWSECK_TEST-...) makes test payments, recorded as sandbox.
@@ -50,8 +50,11 @@ export async function hostedCheckout(p: {
   name?: string;
   title: string;
   description: string;
+  logo?: string;
   redirectUrl: string;
   meta: Record<string, unknown>;
+  /** A Flutterwave payment plan: the card is charged again each period. */
+  paymentPlan?: string;
 }): Promise<string> {
   const data = await call("/payments", {
     method: "POST",
@@ -64,12 +67,44 @@ export async function hostedCheckout(p: {
       customizations: {
         title: p.title,
         description: p.description,
-        logo: "https://utopia.kaivon.app/logo.png",
+        logo: p.logo ?? "https://utopia.kaivon.app/logo.png",
       },
       meta: p.meta,
+      ...(p.paymentPlan ? { payment_plan: p.paymentPlan, payment_options: "card" } : {}),
     }),
   });
   return String(data.link);
+}
+
+/** A payment plan charging [amount] [currency] every [interval]: its id. */
+export async function createPlan(p: {
+  name: string;
+  amount: number;
+  currency: string;
+  interval: "weekly" | "monthly";
+}): Promise<string> {
+  const data = await call("/payment-plans", {
+    method: "POST",
+    body: JSON.stringify({ name: p.name, amount: p.amount, currency: p.currency, interval: p.interval }),
+  });
+  return String(data.id);
+}
+
+/** Cancels [email]'s active subscriptions on plan [plan]: how many. */
+export async function cancelSubscriptions(email: string, plan: string): Promise<number> {
+  const res = await fetch(
+    `${API}/subscriptions?email=${encodeURIComponent(email)}&plan=${encodeURIComponent(plan)}&status=active`,
+    { headers: { Authorization: `Bearer ${secretKey()}` } },
+  );
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok || body.status !== "success") {
+    throw new Error(`flutterwave /subscriptions ${res.status}: ${body.message ?? "no answer"}`);
+  }
+  const subs = (Array.isArray(body.data) ? body.data : []) as { id: number | string }[];
+  for (const sub of subs) {
+    await call(`/subscriptions/${encodeURIComponent(String(sub.id))}/cancel`, { method: "PUT" });
+  }
+  return subs.length;
 }
 
 export type Transaction = {
@@ -78,17 +113,24 @@ export type Transaction = {
   status: string;
   amount: number;
   currency: string;
+  /** The payment plan a subscription's charge was for, and its email. */
+  plan: string | null;
+  email: string | null;
 };
 
 /** Transaction [id], as Flutterwave has it now. */
 export async function transaction(id: string): Promise<Transaction> {
   const data = await call(`/transactions/${encodeURIComponent(id)}/verify`);
+  const customer = (data.customer ?? {}) as Record<string, unknown>;
+  const plan = data.plan ?? data.payment_plan;
   return {
     id: String(data.id),
     ref: String(data.tx_ref),
     status: String(data.status),
     amount: Number(data.amount),
     currency: String(data.currency),
+    plan: plan == null || plan === "" ? null : String(plan),
+    email: typeof customer.email === "string" ? customer.email : null,
   };
 }
 
@@ -108,6 +150,55 @@ export async function credit(t: Transaction): Promise<Record<string, unknown>> {
   });
   if (error) throw new Error(`credit ${t.ref}: ${error.message}`);
   return data as Record<string, unknown>;
+}
+
+function admin() {
+  return createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    { auth: { persistSession: false } },
+  );
+}
+
+/** A subscription's payment, confirmed and successful: its first one (by
+ * checkout reference) or a renewal (by plan and email). Once each. */
+export async function creditSubscription(t: Transaction): Promise<Record<string, unknown>> {
+  const { data, error } = t.ref.startsWith("kaivon-sub-")
+    ? await admin().rpc("credit_web_subscription", {
+      p_ref: t.ref,
+      p_provider_id: t.id,
+      p_amount: t.amount,
+      p_currency: t.currency,
+      p_environment: environment(),
+    })
+    : await admin().rpc("renew_web_subscription", {
+      p_flw_plan_id: t.plan,
+      p_email: t.email,
+      p_provider_id: t.id,
+      p_amount: t.amount,
+      p_currency: t.currency,
+      p_environment: environment(),
+    });
+  if (error) throw new Error(`subscription ${t.ref}: ${error.message}`);
+  return data as Record<string, unknown>;
+}
+
+/** A subscription cancelled (with Flutterwave already): paid-up time is kept. */
+export async function endSubscription(plan: string, email: string): Promise<Record<string, unknown>> {
+  const { data, error } = await admin().rpc("end_web_subscription", { p_flw_plan_id: plan, p_email: email });
+  if (error) throw new Error(`end subscription ${plan}: ${error.message}`);
+  return data as Record<string, unknown>;
+}
+
+/** The web-pay function made a payment plan for [plan]'s price in [currency]. */
+export async function keepPlan(plan: string, currency: string, flwPlan: string, ref: string) {
+  const { error } = await admin().rpc("web_plan_flw", {
+    p_plan: plan,
+    p_currency: currency,
+    p_flw_plan_id: flwPlan,
+    p_ref: ref,
+  });
+  if (error) throw new Error(`keep plan ${plan}: ${error.message}`);
 }
 
 /** Whether [given] is the webhook's secret hash (compared in constant time). */
