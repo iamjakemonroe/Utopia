@@ -72,6 +72,13 @@ class _FakeRepo implements DoodleGameRepository {
   @override
   Stream<DoodleGame?> watchGame(String gameId) => game.stream;
 
+  /// The game as the database has it (when set): what a fetch finds,
+  /// whether or not its live update came.
+  DoodleGame? serverGame;
+
+  @override
+  Future<DoodleGame?> fetchGame(String gameId) async => serverGame;
+
   @override
   Stream<List<DoodlePlayer>> watchPlayers(String gameId) => players.stream;
 
@@ -316,6 +323,41 @@ void main() {
     repo.game.add(_game(phase: DoodlePhase.choosing, drawer: 'mia'));
     await _settle(tester);
     expect(find.text('Mia is picking a word'), findsOneWidget);
+    await _finish(tester);
+  });
+
+  testWidgets('a guesser who missed the drawing starting catches up', (
+    tester,
+  ) async {
+    final repo = await _pump(tester);
+    repo.players.add([_player('me'), _player('mia', seq: 2)]);
+    repo.game.add(_game(phase: DoodlePhase.choosing, drawer: 'mia'));
+    await _settle(tester);
+    expect(find.text('Mia is picking a word'), findsOneWidget);
+    // Mia picked and is drawing; the live update never came to this
+    // phone, only her ink.
+    repo.serverGame = _game(
+      phase: DoodlePhase.drawing,
+      drawer: 'mia',
+      mask: '___',
+    );
+    repo.link.onEvent!('ink', {
+      'by': 'mia',
+      'turn': 1,
+      'epoch': 0,
+      'sid': 1,
+      'tool': 'marker',
+      'c': 0xFF1F1E1B,
+      'w': 12,
+      'from': 0,
+      'p': [100, 100, 12, 140, 120, 12],
+    });
+    await _settle(tester);
+    expect(find.text('Mia is picking a word'), findsNothing);
+    final ctrl = ProviderScope.containerOf(
+      tester.element(find.byType(GuessDoodleScreen)),
+    ).read(doodleGameControllerProvider('g1').notifier);
+    expect(ctrl.state.game!.phase, DoodlePhase.drawing);
     await _finish(tester);
   });
 

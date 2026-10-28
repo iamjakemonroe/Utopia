@@ -137,7 +137,10 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
   }
 
   void _start() {
-    _gameSub = _repo.watchGame(gameId).listen(_onGame, onError: (_) {});
+    _gameSub = _repo.watchGame(gameId).listen((game) {
+      _liveUpdates++;
+      _onGame(game);
+    }, onError: (_) {});
     _playersSub = _repo.watchPlayers(gameId).listen((players) {
       if (_disposed) return;
       // Shown straight away the first time; after that a live update only
@@ -155,6 +158,7 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
 
     _link = _repo.inkLink(gameId)
       ..listen((event, data) {
+        _checkBehind(data);
         switch (event) {
           case 'ink':
             _onInk(data);
@@ -198,8 +202,57 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
     } catch (_) {}
   }
 
+  /// The game's live updates seen, so a fetch one overtook is dropped (it
+  /// could be the older of the two).
+  int _liveUpdates = 0;
+  Timer? _gameTimer;
+
+  /// The game from the database. Its live updates didn't always arrive: a
+  /// phone that missed the move from choosing to drawing kept the dark
+  /// veil of "choosing a word" over the paper, and the drawing went on
+  /// under it, the screen all but black. Every tick (and any sign it's
+  /// behind) catches it up.
+  Future<void> _refreshGame() async {
+    final seen = _liveUpdates;
+    try {
+      final game = await _repo.fetchGame(gameId);
+      if (_disposed || game == null || seen != _liveUpdates) return;
+      final now = state.game;
+      if (now != null && _sameGame(now, game)) return;
+      _onGame(game);
+    } catch (_) {}
+  }
+
+  static bool _sameGame(DoodleGame a, DoodleGame b) =>
+      a.phase == b.phase &&
+      a.turn == b.turn &&
+      a.round == b.round &&
+      a.drawerId == b.drawerId &&
+      a.phaseEndsAt == b.phaseEndsAt &&
+      a.wordMask == b.wordMask &&
+      a.revealedWord == b.revealedWord &&
+      a.canvasEpoch == b.canvasEpoch &&
+      a.canvasRev == b.canvasRev;
+
+  /// Ink for a turn this phone hasn't reached, or for this turn while it
+  /// still thinks the word's being chosen: it missed the game moving on.
+  void _checkBehind(Map<String, dynamic> p) {
+    final game = state.game;
+    final turn = (p['turn'] as num?)?.toInt();
+    if (_disposed || game == null || turn == null || isDrawer) return;
+    final behind =
+        turn > game.turn ||
+        (turn == game.turn && game.phase != DoodlePhase.drawing);
+    if (!behind || (_gameTimer?.isActive ?? false)) return;
+    _gameTimer = Timer(
+      const Duration(milliseconds: 300),
+      () => unawaited(_refreshGame()),
+    );
+  }
+
   Future<void> _tick() async {
     unawaited(_refreshPlayers());
+    unawaited(_refreshGame());
     try {
       final now = await _repo.tick(gameId);
       if (_disposed || now == null) return;
@@ -644,6 +697,7 @@ class DoodleGameController extends StateNotifier<DoodleGameState> {
     _gameSub?.cancel();
     _playersSub?.cancel();
     _playersTimer?.cancel();
+    _gameTimer?.cancel();
     _messagesSub?.cancel();
     _heartbeat?.cancel();
     _deadline?.cancel();

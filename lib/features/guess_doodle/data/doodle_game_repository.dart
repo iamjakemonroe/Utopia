@@ -197,6 +197,16 @@ class DoodleGameRepository {
 
   // ── streams ──────────────────────────────────────────────────────────────
 
+  /// The game as it is now (null: gone, or not this player's).
+  Future<DoodleGame?> fetchGame(String gameId) async {
+    final row = await _client
+        .from('doodle_games')
+        .select()
+        .eq('id', gameId)
+        .maybeSingle();
+    return row == null ? null : DoodleGame.fromRow(row);
+  }
+
   Stream<DoodleGame?> watchGame(String gameId) => _client
       .from('doodle_games')
       .stream(primaryKey: ['id'])
