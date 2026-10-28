@@ -1,5 +1,6 @@
-// Coins bought on the web, through Flutterwave: in the web game's coin shop,
-// and in Chip Rizz (the same Kaivon account and coins).
+// Coins and subscriptions bought on the web, through Flutterwave: in the web
+// game's coin shop, in Chip Rizz (the same Kaivon account and coins) and in
+// Chip Study (Chip Study Pro).
 //
 //   { action: "status" }: { on, test } whether payments are switched on,
 //     and whether they're Flutterwave's test mode (no real money).
@@ -7,7 +8,7 @@
 //     pack, in the player's currency where it has a price
 //     (web_checkout_start), and answers { link } to Flutterwave's checkout
 //     page, which comes back to the app it was started from ("utopia", the
-//     default, or "chip"). Accounts only.
+//     default, "chip" or "study"). Accounts only.
 //   { action: "subscribe", plan, currency, app }: starts a subscription
 //     (web_subscribe_start): Flutterwave's payment plan for its price (made
 //     the first time), and { link } to checkout, which charges the card again
@@ -18,7 +19,8 @@
 //     { status: "paid", coins } for coins, { status: "paid", product, until }
 //     for a subscription, or { status } as Flutterwave has it.
 //   { action: "cancel", product }: cancels the member's own subscription to
-//     "maestro" or "rizz_pro" with Flutterwave; they keep what they paid for.
+//     "maestro", "rizz_pro" or "study_pro" with Flutterwave; they keep what
+//     they paid for.
 //
 // 503 { error: "off" } until the Flutterwave keys are set
 // (tool/push_payment_keys.sh).
@@ -52,7 +54,18 @@ const APPS = {
     description: (coins: string) => `${coins} coins for your Kaivon account (Chip Rizz and Utopia)`,
     logo: "https://chip.kaivon.app/icon-192.png",
   },
+  study: {
+    returnUrl: Deno.env.get("STUDY_RETURN_URL") ?? "https://study.kaivon.app/app/plan",
+    title: "Chip Study",
+    description: (coins: string) => `${coins} coins for your Kaivon account`,
+    logo: "https://study.kaivon.app/icon-192.png",
+  },
 };
+
+/** Which app a checkout was started from. */
+function appOf(value: unknown): keyof typeof APPS {
+  return value === "chip" || value === "study" ? value : "utopia";
+}
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -107,7 +120,7 @@ Deno.serve(async (req: Request) => {
       const start = data as Record<string, unknown>;
       if (!user.email) return json({ error: "account" }, 400);
       const coins = Number(start.coins).toLocaleString("en-US");
-      const app = body.app === "chip" ? "chip" : "utopia";
+      const app = appOf(body.app);
       const look = APPS[app];
       const link = await hostedCheckout({
         ref: String(start.ref),
@@ -151,7 +164,7 @@ Deno.serve(async (req: Request) => {
         });
         await keepPlan(String(start.plan), currency, flwPlan, String(start.ref));
       }
-      const app = body.app === "chip" ? "chip" : "utopia";
+      const app = appOf(body.app);
       const look = APPS[app];
       const link = await hostedCheckout({
         ref: String(start.ref),
@@ -188,7 +201,7 @@ Deno.serve(async (req: Request) => {
     if (body.action === "cancel") {
       if (!Deno.env.get("FLW_SECRET_KEY")) throw new PaymentsOff();
       const { data } = await player.rpc("web_subscription_mine", {
-        p_product: body.product === "maestro" ? "maestro" : "rizz_pro",
+        p_product: body.product === "maestro" || body.product === "study_pro" ? body.product : "rizz_pro",
       });
       const mine = data as Record<string, unknown> | null;
       if (!mine?.flw_plan_id) return json({ status: "none" });
