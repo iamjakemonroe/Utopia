@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../settings/gameplay_settings.dart';
 import 'room_sound.dart';
+import 'voice_out.dart';
 import 'web_audio.dart';
 import '../theme/theme_controller.dart';
 
@@ -267,6 +268,8 @@ class GameAudio {
           if (!sfx.file.startsWith('holo_amb') && !sfx.file.startsWith('wn_'))
             _effectAsset(sfx),
       ]);
+      // Voice notes have their own player, started by the same first touch.
+      VoiceOut.prime();
     }
   }
 
@@ -335,6 +338,35 @@ class GameAudio {
   void reclaimSession() {
     _contextReady = false;
     _guard(_ensureContext);
+  }
+
+  bool _voice = false;
+
+  /// While someone's voice note plays on an iPhone or iPad: heard with the
+  /// silent switch on, as a message app's are (the relaxed setup games use
+  /// is silenced by it, and the notes went with it), other apps' sound
+  /// dipping meanwhile. Off: the relaxed setup back.
+  Future<void> voiceSession(bool on) async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    if (_voice == on) return;
+    _voice = on;
+    if (!on) return reclaimSession();
+    // The Music world's play-and-record setup plays through the switch
+    // already.
+    if (RoomSound.listening) return;
+    _contextReady = true;
+    try {
+      await AudioPlayer.global.setAudioContext(
+        AudioContext(
+          iOS: AudioContextIOS(
+            category: AVAudioSessionCategory.playback,
+            options: const {AVAudioSessionOptions.duckOthers},
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('GameAudio: $e');
+    }
   }
 
   void updateSettings(SoundSettings settings) {

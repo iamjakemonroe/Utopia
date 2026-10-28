@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -13,6 +12,7 @@ import 'package:record/record.dart';
 import '../../../core/platform/recording_bytes.dart';
 import '../../../core/audio/game_audio.dart';
 import '../../../core/audio/room_sound.dart';
+import '../../../core/audio/voice_out.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/utopia_toast.dart';
@@ -35,18 +35,18 @@ class VoicePlaybackState {
 class VoicePlayback extends StateNotifier<VoicePlaybackState> {
   VoicePlayback(this._repo, this._audio) : super(const VoicePlaybackState()) {
     _subs = [
-      _player.onPositionChanged.listen((p) {
+      _player.position.listen((p) {
         if (mounted && state.playing != null) {
           state = VoicePlaybackState(playing: state.playing, position: p);
         }
       }),
-      _player.onPlayerComplete.listen((_) => _finished()),
+      _player.completed.listen((_) => _finished()),
     ];
   }
 
   final ChatRepository _repo;
   final GameAudio _audio;
-  final AudioPlayer _player = AudioPlayer(playerId: 'utopia-voice');
+  final VoiceOut _player = VoiceOut();
   final Map<String, String> _urls = {};
   late final List<StreamSubscription<Object?>> _subs;
 
@@ -65,7 +65,9 @@ class VoicePlayback extends StateNotifier<VoicePlaybackState> {
     try {
       final url = _urls[note.path] ??= await _repo.voiceUrl(note.path);
       if (!mounted || state.playing != note.path) return;
-      await _player.play(UrlSource(url));
+      await _audio.voiceSession(true);
+      if (!mounted || state.playing != note.path) return;
+      await _player.play(url);
     } catch (_) {
       _finished();
     }
@@ -78,6 +80,7 @@ class VoicePlayback extends StateNotifier<VoicePlaybackState> {
 
   void _finished() {
     _audio.duck(false);
+    unawaited(_audio.voiceSession(false));
     if (mounted) state = const VoicePlaybackState();
   }
 
@@ -87,6 +90,7 @@ class VoicePlayback extends StateNotifier<VoicePlaybackState> {
       s.cancel();
     }
     _audio.duck(false);
+    unawaited(_audio.voiceSession(false));
     _player.dispose();
     super.dispose();
   }
