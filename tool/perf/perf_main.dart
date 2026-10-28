@@ -7,11 +7,17 @@
 //   then open /?scene=world|cards|chess|checkers|ludo|eights|notifications
 //   &world=<theme id> [&pieces=<set>]. "notifications" is home's cards with
 //   window.__push() opening the notifications (20 of every kind) over them.
+//   Any scene: window.__menu() opens the side menu, window.__go('/store')
+//   (or /collection, /profile) goes where it does, window.__back() closes.
 //   "ludo" and "eights" are offline tables where bots play every seat.
 //   "chipshow" is Chip going through his moods; "chipdraws" is Chip
 //   drawing an airplane in "Chip draws, you guess" (both for filming).
+//   Pool: "pool" (two players, one phone), "pooltable" (Chip at a coin
+//   table, refereed in the page), "poollobby", and "cues" (every cue
+//   moving); &cue=<cue id>&level=<n> picks the player's cue.
 //   (tool/perf/measure.mjs measures it in a throttled browser)
 import 'dart:async';
+import 'dart:convert';
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
@@ -48,12 +54,25 @@ import 'package:utopia/features/auth/presentation/providers/auth_providers.dart'
 import 'package:utopia/features/coins/presentation/providers/coin_balance_provider.dart';
 import 'package:utopia/features/friends/data/presence.dart';
 import 'package:utopia/features/home/data/active_game.dart';
+import 'package:utopia/features/collection/presentation/collection_screen.dart';
 import 'package:utopia/features/home/presentation/screens/home_screen.dart';
+import 'package:utopia/features/home/presentation/widgets/side_menu.dart';
+import 'package:utopia/features/profile/presentation/screens/profile_screen.dart';
+import 'package:utopia/features/store/presentation/store_screen.dart';
 import 'package:utopia/features/eights/presentation/controllers/eights_match_controller.dart';
 import 'package:utopia/features/eights/presentation/screens/eights_match_screen.dart';
 import 'package:utopia/features/ludo/domain/ludo_engine.dart';
 import 'package:utopia/features/ludo/presentation/controllers/ludo_match_controller.dart';
 import 'package:utopia/features/ludo/presentation/screens/ludo_match_screen.dart';
+import 'package:utopia/features/pool/data/pool_repository.dart';
+import 'package:utopia/features/pool/domain/pool_cues.dart';
+import 'package:utopia/features/pool/domain/pool_physics.dart';
+import 'package:utopia/features/pool/domain/pool_referee.dart';
+import 'package:utopia/features/pool/presentation/pool_cue_art.dart';
+import 'package:utopia/features/pool/presentation/pool_lobby_screen.dart';
+import 'package:utopia/features/pool/presentation/pool_match_screen.dart';
+import 'package:utopia/features/pool/presentation/pool_names.dart';
+import 'package:utopia/features/pool/presentation/pool_providers.dart';
 
 import 'cinema.dart';
 
@@ -137,6 +156,10 @@ Future<void> main() async {
         ),
       ),
     ),
+    'pool' => const PoolMatchScreen.friends(),
+    'pooltable' => const PoolMatchScreen.table(gameId: 'local'),
+    'poollobby' => const PoolLobbyScreen(),
+    'cues' => const _Cues(),
     'eights' => EightsMatchScreen(
       matchId: startLocalEights(
         LocalEightsSetup(
@@ -154,10 +177,25 @@ Future<void> main() async {
         goRouterProvider.overrideWith((ref) {
           final router = GoRouter(
             routes: [
-              GoRoute(path: '/', builder: (_, _) => scene),
+              GoRoute(path: '/', builder: (_, _) => _Hooks(child: scene)),
               GoRoute(
                 path: '/notifications',
                 builder: (_, _) => const NotificationsScreen(),
+              ),
+              // Where the side menu goes (tool/perf/journey.mjs).
+              GoRoute(
+                path: '/profile',
+                builder: (_, _) => const ProfileScreen(),
+              ),
+              GoRoute(
+                path: '/store',
+                builder: (_, state) => StoreScreen(
+                  initialTab: state.uri.queryParameters['tab'] == 'pool' ? 4 : 0,
+                ),
+              ),
+              GoRoute(
+                path: '/collection',
+                builder: (_, _) => const CollectionScreen(),
               ),
               GoRoute(
                 path: '/settings',
@@ -190,8 +228,28 @@ Future<void> main() async {
               ),
             );
           }).toJS;
+          // window.__poolReferee(json): the pool referee, as this build runs
+          // it (to check it plays shots exactly as the server's does).
+          globalContext['__poolReferee'] = ((JSString ask) => jsonEncode(
+            poolReferee((jsonDecode(ask.toDart) as Map).cast<String, Object?>()),
+          ).toJS).toJS;
           globalContext['__push'] = (() {
             router.push('/notifications');
+          }).toJS;
+          // window.__go(path) opens a screen as the side menu does (closing
+          // the menu, if it's open, as the screen opens); window.__back()
+          // closes the top one.
+          globalContext['__go'] = ((JSString path) {
+            final navigator = router.routerDelegate.navigatorKey.currentState;
+            if (navigator != null && navigator.canPop() && _menuOpen) {
+              _menuOpen = false;
+              navigator.pop();
+            }
+            router.push(path.toDart);
+          }).toJS;
+          globalContext['__back'] = (() {
+            _menuOpen = false;
+            router.routerDelegate.navigatorKey.currentState?.maybePop();
           }).toJS;
           return router;
         }),
@@ -221,6 +279,11 @@ Future<void> main() async {
               },
         ),
         coinBalanceProvider.overrideWith((ref) => Stream.value(2500)),
+        poolRepositoryProvider.overrideWithValue(_LocalPool(_perfCue, _perfLevel)),
+        myPoolCueProvider.overrideWithValue((cue: _perfCue, level: _perfLevel, upgradable: true)),
+        poolCueLevelsProvider.overrideWith((ref) async => {_perfCue.id: _perfLevel}),
+        poolTablesProvider.overrideWith((ref) async => kPoolTables),
+        activePoolGameProvider.overrideWith((ref) async => null),
         activeGameProvider.overrideWith((ref) async => null),
         friendsOnlineProvider.overrideWith((ref) => Stream.value(const {})),
         chipDoodleRepositoryProvider.overrideWithValue(_Airplane()),
@@ -235,6 +298,33 @@ Future<void> main() async {
 }
 
 const _perfUser = '00000000-0000-4000-8000-000000000001';
+
+bool _menuOpen = false;
+
+/// window.__menu() opens the side menu over the scene, as home's menu
+/// button does.
+class _Hooks extends ConsumerStatefulWidget {
+  const _Hooks({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_Hooks> createState() => _HooksState();
+}
+
+class _HooksState extends ConsumerState<_Hooks> {
+  @override
+  void initState() {
+    super.initState();
+    globalContext['__menu'] = (() {
+      _menuOpen = true;
+      showSideMenu(context, ref);
+    }).toJS;
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
 
 String _midGame() {
   const id = 'local-midgame';
@@ -440,4 +530,146 @@ List<AppNotification> _fakeNotifications() {
         createdAt: now.subtract(Duration(hours: i * 3)),
       ),
   ];
+}
+
+
+/// The player's cue in the pool scenes (&cue=, &level=).
+PoolCue get _perfCue => poolCue(Uri.base.queryParameters['cue'] ?? 'cue_galaxy');
+int get _perfLevel =>
+    (int.tryParse(Uri.base.queryParameters['level'] ?? '') ?? 7).clamp(1, _perfCue.maxLevel);
+
+/// The pool-table function, in the page: every shot through the referee,
+/// the game kept as the server keeps it.
+class _LocalPool extends PoolRepository {
+  _LocalPool(this.cue, this.level) : super(Supabase.instance.client) {
+    _rack();
+  }
+
+  final PoolCue cue;
+  final int level;
+  late Map<String, Object?> _state;
+  int _shots = 0;
+  String _status = 'active';
+  int _seed = 1;
+
+  void _rack() {
+    _state = (poolReferee({'do': 'rack', 'seed': 2})['state']! as Map).cast<String, Object?>();
+    _shots = 0;
+    _status = 'active';
+  }
+
+  PoolTableGame get _table => PoolTableGame.fromRow({
+    'id': 'local',
+    'table_id': 'neon',
+    'entry': 5000,
+    'prize': 9500,
+    'bot': 'hard',
+    'bot_cue': 'cue_carbon',
+    'bot_cue_level': 4,
+    'cue_id': cue.id,
+    'cue_level': level,
+    'state': _state,
+    'shots': _shots,
+    'status': _status,
+  });
+
+  @override
+  Future<PoolTableGame> game(String id) async => _table;
+
+  @override
+  Future<PoolTableGame?> activeGame() async => null;
+
+  @override
+  Future<PoolTableGame> start(String table) async {
+    _rack();
+    return _table;
+  }
+
+  @override
+  Future<PoolRuling> shoot({
+    required String gameId,
+    required int shots,
+    required PoolShot shot,
+    (double, double)? place,
+    int? called,
+  }) async => _record(
+    poolReferee({
+      'do': 'shot',
+      'state': _state,
+      'shot': shot.toJson(),
+      'place': place == null ? null : {'x': place.$1, 'y': place.$2},
+      'called': called,
+      'cue': cue.id,
+      'level': level,
+    }),
+  );
+
+  @override
+  Future<PoolRuling> chip({required String gameId, required int shots}) async => _record(
+    poolReferee({
+      'do': 'chip',
+      'state': _state,
+      'bot': 'hard',
+      'seed': _seed++,
+      'cue': 'cue_carbon',
+      'level': 4,
+    }),
+  );
+
+  PoolRuling _record(Map<String, Object?> r) {
+    if (r['legal'] != true) throw PoolRefused('${r['reason']}');
+    _shots++;
+    _state = (r['state']! as Map).cast<String, Object?>();
+    final over = r['over'] as Map?;
+    if (over != null) _status = over['winner'] == 0 ? 'won' : 'lost';
+    return PoolRuling.fromJson({
+      'state': _state,
+      'shots': _shots,
+      'status': _status,
+      'prize': _status == 'won' ? 9500 : 0,
+      'move': r['move'],
+    });
+  }
+}
+
+/// Every cue, moving, at its top level: for looking at them all.
+class _Cues extends StatelessWidget {
+  const _Cues();
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBackground(
+      child: SafeArea(
+        child: GridView.count(
+          padding: const EdgeInsets.all(12),
+          crossAxisCount: 2,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 1.25,
+          children: [
+            for (final cue in kPoolCues)
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: cueTierColor(cue.tier).withValues(alpha: 0.7)),
+                ),
+                child: Column(
+                  children: [
+                    Expanded(child: CuePreview(cue: cue, level: cue.maxLevel, angle: -0.5)),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        '${cueName(cue)} · ${cueTierName(cue.tier)}',
+                        style: AppTextStyles.body(fontSize: 12, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }
