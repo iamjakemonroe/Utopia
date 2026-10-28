@@ -15,11 +15,15 @@
 //   Pool: "pool" (two players, one phone), "pooltable" (Chip at a coin
 //   table, refereed in the page), "poollobby", and "cues" (every cue
 //   moving); &cue=<cue id>&level=<n> picks the player's cue.
+//   "ludoseats" is the Ludo table with every seat talking (&seats=6 for
+//   the six-seat board), for checking its layout at any size; "voice" is
+//   the browser's voice note player (window.__voicePlay(url)).
 //   (tool/perf/measure.mjs measures it in a throttled browser)
 import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +31,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:utopia/app.dart';
+import 'package:utopia/core/audio/voice_out.dart';
 import 'package:utopia/core/bots/bots.dart';
 import 'package:utopia/core/config/env.dart';
 import 'package:utopia/core/router/app_router.dart';
@@ -64,6 +69,11 @@ import 'package:utopia/features/eights/presentation/screens/eights_match_screen.
 import 'package:utopia/features/ludo/domain/ludo_engine.dart';
 import 'package:utopia/features/ludo/presentation/controllers/ludo_match_controller.dart';
 import 'package:utopia/features/ludo/presentation/screens/ludo_match_screen.dart';
+import 'package:utopia/features/ludo/presentation/widgets/ludo_board.dart';
+import 'package:utopia/features/ludo/presentation/widgets/ludo_board_geometry.dart';
+import 'package:utopia/features/ludo/presentation/widgets/ludo_dice.dart';
+import 'package:utopia/features/ludo/presentation/widgets/ludo_seat_panel.dart';
+import 'package:utopia/features/ludo/presentation/widgets/ludo_table.dart';
 import 'package:utopia/features/pool/data/pool_repository.dart';
 import 'package:utopia/features/pool/domain/pool_cues.dart';
 import 'package:utopia/features/pool/domain/pool_physics.dart';
@@ -160,6 +170,15 @@ Future<void> main() async {
     'pooltable' => const PoolMatchScreen.table(gameId: 'local'),
     'poollobby' => const PoolLobbyScreen(),
     'cues' => const _Cues(),
+    // The browser's voice note player: window.__voicePlay(url) plays one
+    // (with no touch, once the page has had one) and window.__voiceLog()
+    // says what happened.
+    'voice' => const _Voice(),
+    // The Ludo table's layout with every seat talking (&seats=6: the
+    // six-seat board).
+    'ludoseats' => _LudoSeats(
+      seats: int.tryParse(query['seats'] ?? '') ?? 4,
+    ),
     'eights' => EightsMatchScreen(
       matchId: startLocalEights(
         LocalEightsSetup(
@@ -672,4 +691,104 @@ class _Cues extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The Ludo table with every seat talking: a line, a voice note, a
+/// sticker, and the first seat's die under a line of its own.
+class _LudoSeats extends StatelessWidget {
+  const _LudoSeats({required this.seats});
+
+  final int seats;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = LudoColor.values.take(seats).toList();
+    final game = LudoState.initial(colors);
+    final g = LudoGeometry.of(game.board);
+    final rotation = g.viewRotation(colors.first);
+    final half = g.halfExtent(rotation);
+    const lines = [
+      'Watch this six, coming right up!',
+      'voice:none|6200|2468975312468975',
+      'chip:excited',
+      'gg',
+      'Nooo my piece',
+      'chip:happy',
+    ];
+    final table = <LudoSeat>[];
+    for (final color in colors) {
+      final a = g.yardAngle(g.rules.seatOf(color)) + rotation;
+      table.add((color: color, x: math.cos(a), y: math.sin(a)));
+    }
+    return Scaffold(
+      body: AppBackground(
+        child: SafeArea(
+          child: LudoTable(
+            seats: table,
+            boardAspect: (half.width + 0.45) / (half.height + 0.45),
+            board: LudoBoardView(
+              game: game,
+              myColor: colors.first,
+              movableTokens: const [],
+              onTokenTap: (_) {},
+              pieceSets: {for (final c in colors) c: pieceSetFor(null)},
+            ),
+            panel: (color, {required mirrored}) => LudoSeatPanel(
+              color: color,
+              userId: kLudoBots[color.index % kLudoBots.length].id,
+              isMe: color == colors.first,
+              isTurn: color == colors.first,
+              left: false,
+              home: color.index % 3,
+              mirrored: mirrored,
+              speech: lines[color.index],
+              onAvatarTap: () {},
+              dice: color == colors.first
+                  ? LudoDice(
+                      rollSeq: 0,
+                      value: 6,
+                      enabled: true,
+                      onRoll: () {},
+                      size: 44,
+                    )
+                  : null,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Voice extends StatefulWidget {
+  const _Voice();
+
+  @override
+  State<_Voice> createState() => _VoiceState();
+}
+
+class _VoiceState extends State<_Voice> {
+  final _out = VoiceOut();
+  final _log = <String>[];
+
+  @override
+  void initState() {
+    super.initState();
+    VoiceOut.prime();
+    _out.position.listen((p) => _log.add('at ${p.inMilliseconds}'));
+    _out.completed.listen((_) => _log.add('done'));
+    globalContext['__voicePlay'] = ((JSString url) {
+      _out
+          .play(url.toDart)
+          .then(
+            (_) => _log.add('playing'),
+            onError: (Object e) => _log.add('error $e'),
+          );
+    }).toJS;
+    globalContext['__voiceLog'] = (() => _log.join('\n').toJS).toJS;
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      const AppBackground(child: SizedBox.expand());
 }

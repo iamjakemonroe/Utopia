@@ -80,10 +80,12 @@ class _FloatingChipState extends ConsumerState<FloatingChip>
     if (path.startsWith('/sketchbook/')) return false;
     // Live games: the board needs the whole screen.
     if (RegExp(r'^/(chess|checkers)/[^/]+$').hasMatch(path)) return false;
-    if (RegExp(r'^/ludo/[^/]+$').hasMatch(path) &&
-        !path.startsWith('/ludo/room')) {
+    if (RegExp(r'^/(ludo|eights)/[^/]+$').hasMatch(path) &&
+        !path.startsWith(RegExp('/(ludo|eights)/room'))) {
       return false;
     }
+    // A pool table (two on one phone, or Chip's coin tables).
+    if (RegExp(r'^/pool/[^/]+$').hasMatch(path)) return false;
     // Guess My Doodle: he'd sit on the chat and the guess box.
     if (path.startsWith('/doodle-game/')) return false;
     return true;
