@@ -442,7 +442,14 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
     if (!t) threadId = null;
   }
 
-  const allowance = await allow(who, want, "ask");
+  // Files attached to this message: scans and photos come for Chip to read now (an upload); the
+  // documents with text were saved as readings first, and come in the materials.
+  const files = filesOf(body);
+  const attached = [
+    ...(Array.isArray(body.attached) ? body.attached : []).map((n) => clip(n, 120)).filter(Boolean),
+    ...files.map((f) => f.name).filter(Boolean),
+  ].slice(0, 20);
+  const allowance = files.length ? await allow(who, want, "upload", bytesOf(files)) : await allow(who, want, "ask");
   if (!allowance.ok) return refused(allowance);
   const kind = allowance.model;
   const reads = READS[kind];
@@ -495,7 +502,7 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
         role: "user",
         mode,
         content: text,
-        meta: selection ? { selection: clip(selection, 600) } : {},
+        meta: { ...(selection ? { selection: clip(selection, 600) } : {}), ...(attached.length ? { files: attached } : {}) },
       })
       .select("id")
       .single();
@@ -515,12 +522,19 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
     `<document>\n${doc || "(empty so far)"}\n</document>`,
   ];
   if (selection) now.push(`<selection>\n${selection}\n</selection>`);
+  if (attached.length) {
+    now.push(
+      `<attached>\nThe student attached: ${attached.join(", ")}.${
+        files.length ? " The scans and photos are with this message;" : ""
+      } any documents with text are in their readings above.\n</attached>`,
+    );
+  }
   now.push(text);
 
   const messages: Anthropic.Beta.BetaMessageParam[] = [
     { role: "user", content: [{ type: "text", text: context.text, cache_control: { type: "ephemeral" } }] },
     ...past,
-    { role: "user", content: now.join("\n") },
+    { role: "user", content: files.length ? [...files.map(blockOf), { type: "text", text: now.join("\n") }] : now.join("\n") },
   ];
   // The conversation so far is cached too, up to its last answer.
   for (let i = messages.length - 2; i > 0; i--) {
@@ -666,6 +680,39 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
   });
 }
 
+// ── files ──────────────────────────────────────────────────────────────
+
+const FILE_TYPES = ["application/pdf", "image/png", "image/jpeg", "image/webp", "image/gif"];
+// The most files that come at once (the app asks for 3 on the free plan, 10 with Pro); their size
+// together is held to the student's upload limit by study_allow.
+const MOST_FILES = 10;
+
+type Attached = { name: string; media: string; data: string };
+
+/** The scans, photos and PDFs a request brings Chip to read itself: `files`, or one as `file`. */
+function filesOf(body: Record<string, unknown>): Attached[] {
+  const given = Array.isArray(body.files) ? body.files : body.file ? [body.file] : [];
+  return given.slice(0, MOST_FILES).map((f) => {
+    const file = (f ?? {}) as Record<string, unknown>;
+    return {
+      name: clip(file.name, 120),
+      media: typeof file.media_type === "string" ? file.media_type : "",
+      data: typeof file.data === "string" ? file.data.replace(/\s/g, "") : "",
+    };
+  }).filter((f) => FILE_TYPES.includes(f.media) && f.data);
+}
+
+const bytesOf = (files: Attached[]) => files.reduce((n, f) => n + Math.floor((f.data.length * 3) / 4), 0);
+
+function blockOf({ media, data }: Attached): Anthropic.Beta.BetaContentBlockParam {
+  return media === "application/pdf"
+    ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } }
+    : {
+      type: "image",
+      source: { type: "base64", media_type: media as "image/png" | "image/jpeg" | "image/webp" | "image/gif", data },
+    };
+}
+
 // ── setup ──────────────────────────────────────────────────────────────
 
 const SETUP_SYSTEM = `You read an assignment sheet a student has been given and set the assignment up for them in Chip Study. Copy, don't invent: take the title, course, due date, word target, brief and marking rubric from the sheet. Leave a field empty (or 0) when the sheet doesn't say. Then suggest 3 to 8 tasks that would get the work done on time, spread from today to the due date (each due as YYYY-MM-DD; none when there's no due date).`;
@@ -693,36 +740,16 @@ const setupSchema = {
   additionalProperties: false,
 };
 
-const FILE_TYPES = ["application/pdf", "image/png", "image/jpeg", "image/webp", "image/gif"];
-// The most files one sheet comes in (the app asks for 3 on the free plan, 10 with Pro); their
-// size together is held to the student's upload limit by study_allow.
-const MOST_FILES = 10;
-
 async function setup(who: Who, body: Record<string, unknown>): Promise<Response> {
   const text = clip(body.text, 60000);
-  const given = Array.isArray(body.files) ? body.files : body.file ? [body.file] : [];
-  const files = given.slice(0, MOST_FILES).map((f) => {
-    const file = (f ?? {}) as Record<string, unknown>;
-    return {
-      media: typeof file.media_type === "string" ? file.media_type : "",
-      data: typeof file.data === "string" ? file.data.replace(/\s/g, "") : "",
-    };
-  }).filter((f) => FILE_TYPES.includes(f.media) && f.data);
+  const files = filesOf(body);
   if (!text && !files.length) return json({ error: "Nothing to read" }, 400);
-  const bytes = files.reduce((n, f) => n + Math.floor((f.data.length * 3) / 4), 0);
 
-  const allowance = files.length ? await allow(who, "fast", "upload", bytes) : await allow(who, "fast", "ask");
+  const allowance = files.length ? await allow(who, "fast", "upload", bytesOf(files)) : await allow(who, "fast", "ask");
   if (!allowance.ok) return refused(allowance);
 
   const today = /^\d{4}-\d{2}-\d{2}$/.test(String(body.today)) ? String(body.today) : new Date().toISOString().slice(0, 10);
-  const content: Anthropic.Beta.BetaContentBlockParam[] = files.map(({ media, data }) =>
-    media === "application/pdf"
-      ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } }
-      : {
-        type: "image",
-        source: { type: "base64", media_type: media as "image/png" | "image/jpeg" | "image/webp" | "image/gif", data },
-      }
-  );
+  const content: Anthropic.Beta.BetaContentBlockParam[] = files.map(blockOf);
   const parts = files.length > 1 ? ` in ${files.length} parts (pages or files, in order)` : "";
   content.push({
     type: "text",
