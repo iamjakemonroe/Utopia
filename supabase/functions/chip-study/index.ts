@@ -14,10 +14,11 @@
 //           are saved, and every answer goes in the space's AI-use record.
 //           With again: true, the thread's last question is answered afresh,
 //           in place of its answer.
-//   setup - reads an assignment sheet (the text the app took out of a PDF
-//           or Word file, or the file itself when it's a scan or a photo)
-//           and answers its title, course, due date, word target, brief,
-//           rubric and a first few tasks, as JSON.
+//   setup - reads an assignment sheet (the text the app took out of PDFs
+//           or Word files, and the files themselves when they're scans or
+//           photos: several at once, say the pages of a printed sheet) and
+//           answers its title, course, due date, word target, brief, rubric
+//           and a first few tasks, as JSON.
 //
 // The Anthropic key lives only here (ANTHROPIC_API_KEY). Every call is held
 // against the student's allowance first (study_allow: dollars of model
@@ -693,36 +694,44 @@ const setupSchema = {
 };
 
 const FILE_TYPES = ["application/pdf", "image/png", "image/jpeg", "image/webp", "image/gif"];
+// The most files one sheet comes in (the app asks for 3 on the free plan, 10 with Pro); their
+// size together is held to the student's upload limit by study_allow.
+const MOST_FILES = 10;
 
 async function setup(who: Who, body: Record<string, unknown>): Promise<Response> {
   const text = clip(body.text, 60000);
-  const file = (body.file ?? null) as Record<string, unknown> | null;
-  const media = typeof file?.media_type === "string" ? file.media_type : "";
-  const data = typeof file?.data === "string" ? file.data.replace(/\s/g, "") : "";
-  if (!text && !(FILE_TYPES.includes(media) && data)) return json({ error: "Nothing to read" }, 400);
-  const bytes = Math.floor((data.length * 3) / 4);
+  const given = Array.isArray(body.files) ? body.files : body.file ? [body.file] : [];
+  const files = given.slice(0, MOST_FILES).map((f) => {
+    const file = (f ?? {}) as Record<string, unknown>;
+    return {
+      media: typeof file.media_type === "string" ? file.media_type : "",
+      data: typeof file.data === "string" ? file.data.replace(/\s/g, "") : "",
+    };
+  }).filter((f) => FILE_TYPES.includes(f.media) && f.data);
+  if (!text && !files.length) return json({ error: "Nothing to read" }, 400);
+  const bytes = files.reduce((n, f) => n + Math.floor((f.data.length * 3) / 4), 0);
 
-  const allowance = file && data ? await allow(who, "fast", "upload", bytes) : await allow(who, "fast", "ask");
+  const allowance = files.length ? await allow(who, "fast", "upload", bytes) : await allow(who, "fast", "ask");
   if (!allowance.ok) return refused(allowance);
 
   const today = /^\d{4}-\d{2}-\d{2}$/.test(String(body.today)) ? String(body.today) : new Date().toISOString().slice(0, 10);
-  const content: Anthropic.Beta.BetaContentBlockParam[] = [];
-  if (data) {
-    content.push(
-      media === "application/pdf"
-        ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } }
-        : {
-          type: "image",
-          source: { type: "base64", media_type: media as "image/png" | "image/jpeg" | "image/webp" | "image/gif", data },
-        },
-    );
-  }
+  const content: Anthropic.Beta.BetaContentBlockParam[] = files.map(({ media, data }) =>
+    media === "application/pdf"
+      ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } }
+      : {
+        type: "image",
+        source: { type: "base64", media_type: media as "image/png" | "image/jpeg" | "image/webp" | "image/gif", data },
+      }
+  );
+  const parts = files.length > 1 ? ` in ${files.length} parts (pages or files, in order)` : "";
   content.push({
     type: "text",
     text: `Today: ${today}\n${
-      text
+      text && files.length
+        ? `The sheet comes in pieces: attached${parts}, and the text of the rest below. Copy its brief and its rubric (marking criteria) word for word, from all of them.\n\n<sheet>\n${text}\n</sheet>`
+        : text
         ? `The sheet's text is below. Leave "brief" empty: the app keeps the whole text as the brief. Copy the rubric (marking criteria) word for word if there is one.\n\n<sheet>\n${text}\n</sheet>`
-        : `The sheet is attached. Copy its brief and its rubric (marking criteria) word for word.`
+        : `The sheet is attached${parts}. Copy its brief and its rubric (marking criteria) word for word.`
     }`,
   });
 
