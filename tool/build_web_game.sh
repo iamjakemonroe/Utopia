@@ -5,7 +5,10 @@
 #   cd ../utopia-landingpage && npm run build && npx wrangler deploy
 set -euo pipefail
 cd "$(dirname "$0")/.."
-SITE=../utopia-landingpage
+# The landing page sits beside the repository's main checkout, whether this
+# runs there or in a worktree.
+MAIN=$(cd "$(git rev-parse --git-common-dir)/.." && pwd)
+SITE=$MAIN/../utopia-landingpage
 # --wasm: Chrome, Edge, Safari and every iPhone and iPad browser run the
 # faster WebAssembly build, others the JavaScript one (web/flutter_bootstrap.js
 # tells the loader; ?js forces JavaScript). The engine files are served from
