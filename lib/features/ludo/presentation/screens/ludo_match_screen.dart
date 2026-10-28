@@ -38,9 +38,9 @@ import '../widgets/ludo_pieces.dart';
 import '../widgets/ludo_player_card.dart';
 import '../widgets/ludo_rules_sheet.dart';
 import '../widgets/ludo_seat_panel.dart';
+import '../widgets/ludo_table.dart';
 import '../../../chat/presentation/voice_notes.dart';
 import '../../../events/presentation/events_controller.dart';
-import '../../../../core/layout/game_stage.dart';
 import '../../../../l10n/strings.dart';
 
 class LudoMatchScreen extends ConsumerStatefulWidget {
@@ -373,12 +373,15 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
     );
   }
 
-  /// A player's name for a banner: theirs, or their color offline.
+  /// A player's name, as their seat shows it (a bot's and a friend's
+  /// sharing the phone too), for the banners and the line under the
+  /// board; their color only for a seat no one's in. Called while
+  /// building.
   String _nameFor(LudoMatchState state, LudoColor color) {
     final id = state.userFor(color);
-    if (state.isLocal || id == null) return ludoColorName(color);
+    if (id == null) return ludoColorName(color);
     return profileDisplayName(
-      ref.read(profileByIdProvider(id)).valueOrNull,
+      ref.watch(profileByIdProvider(id)).valueOrNull,
       id,
     );
   }
@@ -516,38 +519,14 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
       );
     }
 
-    // Seat each player's panel in the corner their yard is drawn in.
+    // Seat each player's panel by the corner their yard is drawn in.
     final g = LudoGeometry.of(game.board);
     final rotation = g.viewRotation(state.myColor);
-    final top = <(double, LudoColor)>[];
-    final bottom = <(double, LudoColor)>[];
+    final half = g.halfExtent(rotation);
+    final seats = <LudoSeat>[];
     for (final color in game.players) {
       final a = g.yardAngle(g.rules.seatOf(color)) + rotation;
-      (math.sin(a) < 0 ? top : bottom).add((math.cos(a), color));
-    }
-
-    Widget row(List<(double, LudoColor)> seats) {
-      LudoColor? at(bool Function(double) where) =>
-          seats.where((s) => where(s.$1)).map((s) => s.$2).firstOrNull;
-      final left = at((x) => x < -0.3);
-      final middle = at((x) => x >= -0.3 && x <= 0.3);
-      final right = at((x) => x > 0.3);
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            left == null
-                ? const SizedBox(width: 110)
-                : panel(left, mirrored: false),
-            if (middle != null) panel(middle, mirrored: false),
-            right == null
-                ? const SizedBox(width: 110)
-                : panel(right, mirrored: true),
-          ],
-        ),
-      );
+      seats.add((color: color, x: math.cos(a), y: math.sin(a)));
     }
 
     return LeaveGuard(
@@ -558,8 +537,8 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
         child: Scaffold(
           body: AppBackground(
             child: SafeArea(
-              child: GameStage(
-                above: [
+              child: Column(
+                children: [
                   _TopBar(
                     pot: state.pot,
                     friends: state.isFriendsGame,
@@ -573,54 +552,60 @@ class _LudoMatchScreenState extends ConsumerState<LudoMatchScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
-                  row(top),
-                ],
-                board: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned.fill(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xs,
-                          vertical: 4,
-                        ),
-                        child: LudoBoardView(
-                          game: game,
-                          myColor: state.myColor,
-                          movableTokens: state.movableTokens,
-                          onTokenTap: controller.selectToken,
-                          pieceSets: pieceSets,
-                          reactions: state.reactions,
-                          anchors: anchors,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                      ),
+                      child: LudoTable(
+                        seats: seats,
+                        panel: panel,
+                        // The board's own margin, as it draws itself.
+                        boardAspect: (half.width + 0.45) / (half.height + 0.45),
+                        board: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Positioned.fill(
+                              child: LudoBoardView(
+                                game: game,
+                                myColor: state.myColor,
+                                movableTokens: state.movableTokens,
+                                onTokenTap: controller.selectToken,
+                                pieceSets: pieceSets,
+                                reactions: state.reactions,
+                                anchors: anchors,
+                              ),
+                            ),
+                            if (_finishBanner case (
+                              final who,
+                              final place,
+                              final at,
+                            ) when DateTime.now().difference(at) < _bannerFor)
+                              Positioned(
+                                top: 6,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: _FinishBanner(
+                                    key: ValueKey('${who.name}$place'),
+                                    color: who,
+                                    place: place,
+                                    name:
+                                        state.playsHere(who) &&
+                                            who == state.myColor
+                                        ? null
+                                        : _nameFor(state, who),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ),
-                    if (_finishBanner case (
-                      final who,
-                      final place,
-                      final at,
-                    ) when DateTime.now().difference(at) < _bannerFor)
-                      Positioned(
-                        top: 6,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: _FinishBanner(
-                            key: ValueKey('${who.name}$place'),
-                            color: who,
-                            place: place,
-                            name: state.playsHere(who) && who == state.myColor
-                                ? null
-                                : _nameFor(state, who),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                below: [
-                  row(bottom),
+                  ),
                   _StatusLine(
                     state: state,
+                    nameOf: (color) => _nameFor(state, color),
                     onLeave: () => _confirmLeave(state),
                   ),
                   const SizedBox(height: AppSpacing.xs),
@@ -811,9 +796,16 @@ class _RoundButton extends StatelessWidget {
 }
 
 class _StatusLine extends StatelessWidget {
-  const _StatusLine({required this.state, required this.onLeave});
+  const _StatusLine({
+    required this.state,
+    required this.nameOf,
+    required this.onLeave,
+  });
 
   final LudoMatchState state;
+
+  /// Each player's name ("Mia is playing", not "Green is playing").
+  final String Function(LudoColor color) nameOf;
 
   /// Leaving, for someone who's finished and is watching.
   final VoidCallback onLeave;
@@ -835,25 +827,25 @@ class _StatusLine extends StatelessWidget {
       );
     } else if (sentHome.isNotEmpty && !state.isMyTurn) {
       text = passing
-          ? strings.ludoMatchSentHomeTapThePiece(ludoColorName(sentHome.first))
+          ? strings.ludoMatchSentHomeTapThePiece(nameOf(sentHome.first))
           : strings.ludoMatchSentHomeTapYourPiece;
     } else if (state.choosingReaction) {
       text = passing
           ? strings.ludoMatchCapturedTapThePieceTo(
-              ludoColorName(state.pendingReaction!.capture.by),
+              nameOf(state.pendingReaction!.capture.by),
             )
           : strings.ludoMatchCapturedTapYourPieceTo;
     } else if (state.isMyTurn && state.movableTokens.isNotEmpty) {
       text = passing
-          ? strings.ludoMatchTapAGlowingPiece(ludoColorName(game.turn))
+          ? strings.ludoMatchTapAGlowingPiece(nameOf(game.turn))
           : strings.ludoMatchTapAGlowingPieceTo;
     } else if (state.isMyTurn) {
       // Passing the phone round: say whose hands it should be in.
       text = passing
-          ? strings.ludoMatchSTurnTapTheDie(ludoColorName(game.turn))
+          ? strings.ludoMatchSTurnTapTheDie(nameOf(game.turn))
           : strings.ludoMatchYourTurnTapTheDie;
     } else {
-      text = strings.ludoMatchIsPlaying(ludoColorName(game.turn));
+      text = strings.ludoMatchIsPlaying(nameOf(game.turn));
     }
     if (text.isEmpty) return const SizedBox(height: 30);
     return AnimatedSwitcher(

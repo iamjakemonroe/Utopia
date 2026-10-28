@@ -107,17 +107,22 @@ class LudoSeatPanel extends ConsumerWidget {
       ),
     );
 
-    final diceSlot = SizedBox(
-      width: 64,
-      height: 64,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 420),
-        switchInCurve: Curves.elasticOut,
-        transitionBuilder: (child, animation) =>
-            ScaleTransition(scale: animation, child: child),
-        child: dice == null
-            ? const SizedBox.shrink(key: ValueKey('none'))
-            : KeyedSubtree(key: const ValueKey('dice'), child: dice!),
+    final diceSlot = _SpeechAnchor(
+      speech: speech,
+      mirrored: mirrored,
+      passTaps: dice != null,
+      child: SizedBox(
+        width: 64,
+        height: 64,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 420),
+          switchInCurve: Curves.elasticOut,
+          transitionBuilder: (child, animation) =>
+              ScaleTransition(scale: animation, child: child),
+          child: dice == null
+              ? const SizedBox.shrink(key: ValueKey('none'))
+              : KeyedSubtree(key: const ValueKey('dice'), child: dice!),
+        ),
       ),
     );
 
@@ -198,18 +203,64 @@ class LudoSeatPanel extends ConsumerWidget {
       ],
     );
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        panel,
-        if (speech != null)
-          Positioned(
-            left: mirrored ? null : 0,
-            right: mirrored ? 0 : null,
-            bottom: 70,
-            child: _SpeechBubble(text: speech!, mirrored: mirrored),
-          ),
-      ],
+    return panel;
+  }
+}
+
+/// The die's slot, with the player's latest chat line popping up over it:
+/// its tail toward the avatar, reaching in toward the board. Drawn above
+/// the whole table, so a neighbouring seat never covers it; taps go
+/// through it to the die while there is one.
+class _SpeechAnchor extends StatefulWidget {
+  const _SpeechAnchor({
+    required this.speech,
+    required this.mirrored,
+    required this.passTaps,
+    required this.child,
+  });
+
+  final String? speech;
+  final bool mirrored;
+  final bool passTaps;
+  final Widget child;
+
+  @override
+  State<_SpeechAnchor> createState() => _SpeechAnchorState();
+}
+
+class _SpeechAnchorState extends State<_SpeechAnchor> {
+  final _portal = OverlayPortalController();
+  final _link = LayerLink();
+
+  @override
+  void initState() {
+    super.initState();
+    _portal.show();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final speech = widget.speech;
+    final side = widget.mirrored ? Alignment.centerRight : Alignment.centerLeft;
+    return OverlayPortal(
+      controller: _portal,
+      overlayChildBuilder: (context) => speech == null
+          ? const SizedBox.shrink()
+          : Align(
+              alignment: Alignment.topLeft,
+              child: CompositedTransformFollower(
+                link: _link,
+                showWhenUnlinked: false,
+                targetAnchor: side,
+                followerAnchor: side,
+                offset: Offset(widget.mirrored ? 6 : -6, 0),
+                child: IgnorePointer(
+                  ignoring: widget.passTaps,
+                  child: _SpeechBubble(text: speech, mirrored: widget.mirrored),
+                ),
+              ),
+            ),
+      child: CompositedTransformTarget(link: _link, child: widget.child),
     );
   }
 }
@@ -413,6 +464,47 @@ class _SpeechBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final voice = VoiceNote.isVoice(text) ? VoiceNote.parse(text) : null;
+    Widget bubble = voice != null
+        ? VoiceSpeechChip(note: voice)
+        : VoiceNote.isVoice(text)
+        ? const SizedBox.shrink()
+        : isChatSticker(text)
+        ? ChatSticker(id: text, size: 48)
+        : ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 170),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: const [
+                  BoxShadow(color: Color(0x55000000), blurRadius: 6),
+                ],
+              ),
+              child: Text(
+                text,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.body(
+                  fontSize: 12,
+                  color: AppColors.faceInk,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          );
+    // A white bubble (a line, a voice note) points at the avatar.
+    if (voice != null || !isChatSticker(text)) {
+      final tail = CustomPaint(
+        size: const Size(7, 12),
+        painter: _TailPainter(mirrored: mirrored),
+      );
+      bubble = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: mirrored ? [bubble, tail] : [tail, bubble],
+      );
+    }
     return TweenAnimationBuilder<double>(
       key: ValueKey(text),
       tween: Tween(begin: 0, end: 1),
@@ -420,46 +512,34 @@ class _SpeechBubble extends StatelessWidget {
       curve: Curves.elasticOut,
       builder: (context, v, child) => Transform.scale(
         scale: v,
-        alignment: mirrored ? Alignment.bottomRight : Alignment.bottomLeft,
+        alignment: mirrored ? Alignment.centerRight : Alignment.centerLeft,
         child: child,
       ),
-      child: VoiceNote.isVoice(text)
-          ? (VoiceNote.parse(text) == null
-                ? const SizedBox.shrink()
-                : VoiceSpeechChip(note: VoiceNote.parse(text)!))
-          : isChatSticker(text)
-          ? ChatSticker(id: text, size: 48)
-          : ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 170),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(14),
-                    topRight: const Radius.circular(14),
-                    bottomLeft: Radius.circular(mirrored ? 14 : 2),
-                    bottomRight: Radius.circular(mirrored ? 2 : 14),
-                  ),
-                  boxShadow: const [
-                    BoxShadow(color: Color(0x55000000), blurRadius: 6),
-                  ],
-                ),
-                child: Text(
-                  text,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.body(
-                    fontSize: 12,
-                    color: AppColors.faceInk,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
+      child: bubble,
     );
   }
+}
+
+/// A speech bubble's tail: a small white point, toward the avatar.
+class _TailPainter extends CustomPainter {
+  const _TailPainter({required this.mirrored});
+
+  final bool mirrored;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final tip = mirrored ? size.width : 0.0;
+    final base = mirrored ? -1.0 : size.width + 1;
+    canvas.drawPath(
+      Path()
+        ..moveTo(base, 0)
+        ..lineTo(tip, size.height / 2)
+        ..lineTo(base, size.height)
+        ..close(),
+      Paint()..color = Colors.white,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_TailPainter old) => old.mirrored != mirrored;
 }
