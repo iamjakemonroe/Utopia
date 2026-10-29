@@ -91,12 +91,12 @@ guest = harness.new_user(db)
 
 # ── The plan ───────────────────────────────────────────────────────────
 shop = attempt(amy, "select json_agg(s) from web_plan_shop('USD') s where s.product = 'study_pro'")
-check("Chip Study Pro is on sale at $4.99 a month",
-      shop and shop[0]["plan_id"] == "study.pro.monthly" and float(shop[0]["amount"]) == 4.99
+check("Chip Study Pro is on sale at $7.99 a month",
+      shop and shop[0]["plan_id"] == "study.pro.monthly" and float(shop[0]["amount"]) == 7.99
       and shop[0]["period"] == "monthly" and shop[0]["until"] is None, shop)
 start = attempt(amy, "select web_subscribe_start('study.pro.monthly', 'USD')")
 check("an account can start subscribing to it", isinstance(start, dict) and start["product"] == "study_pro"
-      and start["ref"].startswith("kaivon-sub-") and float(start["amount"]) == 4.99, start)
+      and start["ref"].startswith("kaivon-sub-") and float(start["amount"]) == 7.99, start)
 check("a guest can't", err(attempt(guest, "select web_subscribe_start('study.pro.monthly', 'USD')"),
                            "save your account"))
 check("a pending checkout isn't Pro", attempt(amy, "select study_me() ->> 'tier'") == "free")
@@ -237,7 +237,7 @@ check("a free account's day can be used up", r and r["ok"] is False and r["why"]
 me = attempt(ben, "select study_me()")
 check("study_me: a free account's allowance",
       me and me["tier"] == "free" and float(me["fast"]["cap"]) == 0.03 and me["best"] is None
-      and me["uploads"]["max_mb"] == 4 and me["readings"]["cap"] == 3 and float(me["price"]["amount"]) == 4.99, me)
+      and me["uploads"]["max_mb"] == 4 and me["readings"]["cap"] == 3 and float(me["price"]["amount"]) == 7.99, me)
 check("study_me needs a signed-in student", err(attempt("anon", "select study_me()")))
 
 harness.as_admin(db)
@@ -265,23 +265,23 @@ attempt("service", "select study_spend(%s, %s, 'best', 0.05, 'plan', 'claude-opu
 check("Pro's cost is the Pro tier's", count("select tier from study_costs where feature = 'plan'") == "pro")
 check("settled", abs(usage(cat)[1] - 0.031) < 1e-9, usage(cat))
 harness.as_admin(db)
-one("update study_usage set best_usd = 0.40 where user_id = %s returning 1", cat)
+one("update study_usage set best_usd = 0.60 where user_id = %s returning 1", cat)
 r = attempt(cat, "select study_allow('best')")
 check("past the best model's day, Pro carries on with Fast", r and r["ok"] and r["model"] == "fast"
       and r["note"] == "best_used", r)
 one("update study_usage set best_usd = 0.10, day = day - 3 where user_id = %s returning 1", cat)
-one("insert into study_usage (user_id, day, best_usd) values (%s, (now() at time zone 'utc')::date - 10, 2.95) returning 1", cat)
+one("insert into study_usage (user_id, day, best_usd) values (%s, (now() at time zone 'utc')::date - 10, 4.45) returning 1", cat)
 r = attempt(cat, "select study_allow('best')")
 check("and past the period's", r and r["model"] == "fast" and r["note"] == "best_used", r)
 one("delete from study_usage where user_id = %s and day < (now() at time zone 'utc')::date - 5 returning 1", cat)
 r = attempt(cat, "select study_allow('best')")
 check("what was spent before the period started doesn't count", r and r["model"] == "best", r)
 me = attempt(cat, "select study_me()")
-check("study_me: Pro's allowance", me["tier"] == "pro" and me["pro_until"] and float(me["best"]["cap"]) == 0.4
-      and float(me["best"]["period_cap"]) == 3.0 and float(me["fast"]["cap"]) == 0.05
+check("study_me: Pro's allowance", me["tier"] == "pro" and me["pro_until"] and float(me["best"]["cap"]) == 0.6
+      and float(me["best"]["period_cap"]) == 4.5 and float(me["fast"]["cap"]) == 0.06
       and me["uploads"]["max_mb"] == 20 and me["readings"]["cap"] == 30, me)
 check("Pro can upload a bigger file", attempt(cat, "select study_allow('fast', 'upload', 15 * 1048576)")["ok"] is True)
-one("update study_usage set fast_usd = 0.05 where user_id = %s and day = (now() at time zone 'utc')::date returning 1", cat)
+one("update study_usage set fast_usd = 0.06 where user_id = %s and day = (now() at time zone 'utc')::date returning 1", cat)
 r = attempt(cat, "select study_allow('fast')")
 check("Pro's Fast has its own day", r and r["why"] == "limit", r)
 r = attempt(cat, "select study_allow('best')")

@@ -32,6 +32,7 @@ create schema if not exists auth;
 create table if not exists auth.users (
   id uuid primary key default gen_random_uuid(),
   email text,
+  email_confirmed_at timestamptz,
   is_anonymous boolean default false,
   raw_user_meta_data jsonb default '{}'::jsonb,
   created_at timestamptz default now()
@@ -159,8 +160,10 @@ def as_admin(db):
 def new_user(db, email=None):
     as_admin(db)
     with db.cursor() as c:
-        c.execute("insert into auth.users (email, is_anonymous) values (%s, %s) returning id",
-                  (email, email is None))
+        # Signing in by an emailed code confirms the email, as it does live.
+        c.execute("insert into auth.users (email, email_confirmed_at, is_anonymous) "
+                  "values (%s, case when %s::text is null then null else now() end, %s) returning id",
+                  (email, email, email is None))
         return str(c.fetchone()[0])
 
 

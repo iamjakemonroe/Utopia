@@ -12,7 +12,8 @@
 //   { action: "subscribe", plan, currency, app }: starts a subscription
 //     (web_subscribe_start): Flutterwave's payment plan for its price (made
 //     the first time), and { link } to checkout, which charges the card again
-//     each period. Accounts only, and not while already a member.
+//     each period. Accounts only, and not while already a member. Chip
+//     Study's student plan only for a confirmed school email ("school").
 //   { action: "confirm", ref, transaction_id }: back from checkout, the
 //     app asks: Flutterwave is asked about the payment, and a successful one
 //     is paid out (once: the webhook may have done it already). Answers
@@ -148,6 +149,8 @@ Deno.serve(async (req: Request) => {
           ? "account"
           : error.message.includes("already a member")
           ? "member"
+          : error.message.includes("not a school email")
+          ? "school"
           : "plan";
         return json({ error: why }, 400);
       }

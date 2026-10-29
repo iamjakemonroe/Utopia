@@ -1,11 +1,11 @@
-# Pricing: Utopia, Chip Rizz and Wavee
+# Pricing: Utopia, Chip Rizz, Chip Study and Wavee
 
 Every price here is set so the product pays for itself. That holds even at
 its daily or monthly limit, after Flutterwave's fees, except where noted.
 The prices live in database tables, so they can change without a release
 (see "Changing a price" below).
 
-**Everything is priced and charged in US dollars**, in all three apps.
+**Everything is priced and charged in US dollars**, in every app.
 Flutterwave converts for cards in other currencies (a Nigerian card pays the
 dollar price in naira at its bank's rate). Margins below assume Flutterwave's
 international card fee on every payment, the worst case.
@@ -32,6 +32,7 @@ These are estimates per use, from the prompts in the code:
 | set of Chip Rizz replies (text or 1–2 screenshots) | $0.0005 | $0.011 |
 | chat Chip learns (an export, up to ~25k tokens) | $0.003 | $0.058 |
 | Utopia Chip chat (Opus for Maestro today) | $0.0005 | $0.010 (Opus ≈ $0.019) |
+| Chip Study message (Chip Fast / Chip's best, Opus) | $0.00125 | Opus ≈ $0.03 for an in-depth one |
 
 The real cost of each call is logged in `chip_costs`. The daily totals are in
 the `chip_spend` view: check them weekly.
@@ -84,6 +85,39 @@ Chip Maestro's fair use per day is now 60 chats, 6 drawings and 40 colorings
   - If `chip_spend` shows heavy members, add a monthly cap the way Chip Rizz
     Pro has one.
 
+## Chip Study
+
+Chip's time is an allowance in dollars of model time (`study_settings`),
+held before each message and settled after (`study_allow`, `study_spend`), so
+a plan's allowance is the most a member can cost. A message to the best model
+costs about $0.03, so $0.60 is about 20 in-depth messages.
+
+| Who | Chip Fast (Haiku) | Chip's best (Opus) | Most it can cost us |
+| --- | --- | --- | --- |
+| Free | $0.03 a day (about 20–30 messages) | none | $0.93 a month |
+| **Pro** | $0.06 a day (about 45) | $0.60 a day, $4.50 a month (about 20 a day, 150 a month) | $6.36 a month |
+| **Pro for students** | $0.06 a day (about 45) | $0.45 a day, $3.30 a month (about 15 a day, 110 a month) | $5.16 a month |
+
+All free accounts together stop at **$15 a day**
+(`study_settings.daily_free_usd`).
+
+| Plan | Price | What we keep after fees | At the limit | Typical use* |
+| --- | --- | --- | --- | --- |
+| Pro (`study.pro.monthly`) | **$7.99** | $7.58 | +$1.22 (16%) | +$5.22 (69%) |
+| Pro for students (`study.pro.student.monthly`) | **$5.99** (25% off) | $5.68 | +$0.52 (9%) | +$3.32 (58%) |
+
+\* Typical: about 60 in-depth messages and 15 quick ones a day in a month
+($2.36).
+
+The student plan is only for an account with a confirmed school email
+(`_study_school_email`: .edu, .edu.xx, .ac.xx, and universities on their own
+domains in `study_school_domains`). It still makes money at the limit, so an
+alumni or staff email that slips through costs nothing. To add a university
+on its own domain: `insert into study_school_domains values ('uni.example');`
+
+(Before 2026-10-29, Pro was $4.99 with $3.00 of the best model a month: about
+100 messages, and only +$0.18 at the limit.)
+
 ## Wavee
 
 | Product | Price | What it costs us | Margin |
@@ -107,7 +141,8 @@ the amounts here:
 - Domains.
 
 For example, with $60 a month of fixed costs, about 8 Chip Rizz Pro monthly
-members, or 13 Wavee Artist Pro members, cover them. Everything after that is
+members, 12 Chip Study Pro members at typical use, or 13 Wavee Artist Pro
+members, cover them. Everything after that is
 profit.
 
 ## Changing a price
@@ -120,6 +155,9 @@ update web_plan_prices set amount = 12.99, flw_plan_id = null
  where plan_id = 'rizz.pro.monthly' and currency = 'USD';
 update chip_settings set rizz_coins = 400;          -- coins for one set
 update chip_settings set daily_free_usd = 30;       -- free users' daily budget
+update web_plan_prices set amount = 6.49, flw_plan_id = null
+ where plan_id = 'study.pro.student.monthly' and currency = 'USD';
+update study_settings set student_best_period_usd = 3.60;  -- students' best model a month
 
 -- Wavee project
 update boost_prices set amount = 3.49 where pack = 'wavee.boost.100' and currency = 'USD';

@@ -53,8 +53,8 @@ cy = harness.new_user(db, "cy@example.com")
 # The shop.
 as_(ada)
 rows = q("select plan_id, currency, amount, until from web_plan_shop('USD')")
-check("four plans, in dollars", [r[0] for r in rows] == ["utopia.maestro.monthly", "rizz.pro.weekly", "rizz.pro.monthly", "study.pro.monthly"]
-      and [float(r[2]) for r in rows] == [7.99, 3.99, 9.99, 4.99] and all(r[1] == "USD" for r in rows), rows)
+check("five plans, in dollars", [r[0] for r in rows] == ["utopia.maestro.monthly", "rizz.pro.weekly", "rizz.pro.monthly", "study.pro.monthly", "study.pro.student.monthly"]
+      and [float(r[2]) for r in rows] == [7.99, 3.99, 9.99, 7.99, 5.99] and all(r[1] == "USD" for r in rows), rows)
 check("asking in naira still gets dollars", all(r[1] == "USD" for r in q("select plan_id, currency from web_plan_shop('NGN')")))
 check("coins are in dollars too", admin("select count(*) from web_coin_prices where currency <> 'USD'")[0][0] == 0)
 
