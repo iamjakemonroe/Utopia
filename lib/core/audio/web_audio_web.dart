@@ -10,6 +10,13 @@ import 'package:web/web.dart' as web;
 /// looping buffer through its own volume. A browser keeps sound off until
 /// the page is touched: the first touch or key turns it on (from the
 /// browser's own event, the only place Safari allows it).
+///
+/// The audio context is made at that first touch, not before. Making one
+/// holds the page up while the browser starts its sound: Chrome took 1 to
+/// 3.6 seconds the first time, freezing the welcome screen as it opened.
+/// Until then, sounds are decoded on an offline context (no speakers, made
+/// at once), and Chrome's sound is started in the background ([_warm]), so
+/// by the first touch making the context takes a moment.
 class WebAudio {
   WebAudio._();
 
@@ -21,19 +28,39 @@ class WebAudio {
   final _buffers = <String, Future<web.AudioBuffer?>>{};
   Iterable<String> _preload = const [];
   bool _unlocked = false;
+  final _firstTouch = Completer<void>();
   final _touched = <void Function()>[];
+  bool _listening = false;
 
-  web.AudioContext get context {
-    final existing = _context;
-    if (existing != null) return existing;
-    final context = _context = web.AudioContext();
+  /// Decodes sounds before there's an audio context (and after: one
+  /// decoder for all). Buffers play in any context.
+  late final web.OfflineAudioContext _decoder = web.OfflineAudioContext(
+    2.toJS,
+    1,
+    48000,
+  );
+
+  /// The audio context: made at the first touch (see the class), and only
+  /// used from then on.
+  web.AudioContext get context => _context ??= web.AudioContext();
+
+  /// Waits for the page's first touch, from then on sound can play.
+  Future<void> get touched => _firstTouch.future;
+
+  /// Listens for the first touch or key (and every one after, for
+  /// [onTouch]), and starts warming Chrome's sound meanwhile.
+  void _listen() {
+    if (_listening) return;
+    _listening = true;
     void unlock(web.Event _) {
+      final context = this.context;
       if (context.state != 'running') context.resume();
       for (final action in List.of(_touched)) {
         action();
       }
       if (!_unlocked) {
         _unlocked = true;
+        _firstTouch.complete();
         unawaited(_trickle());
       }
     }
@@ -46,10 +73,29 @@ class WebAudio {
         web.AddEventListenerOptions(capture: true, passive: true),
       );
     }
-    return context;
+    _warm();
   }
 
-  bool get _running => context.state == 'running';
+  /// Starts Chrome's (and Edge's) sound without holding the page up: asking
+  /// for the list of audio devices (with no permission: no names, and no
+  /// prompt) starts what making an audio context would otherwise wait for,
+  /// in the background. A muted clip can't: before a touch it's refused.
+  /// Only there: Safari makes a context at once.
+  void _warm() {
+    if (web.window.navigator.vendor != 'Google Inc.') return;
+    try {
+      unawaited(
+        web.window.navigator.mediaDevices.enumerateDevices().toDart.then(
+          (_) {},
+          onError: (_) {},
+        ),
+      );
+    } catch (_) {
+      // No warming: the context is made at the first touch all the same.
+    }
+  }
+
+  bool get _running => _context?.state == 'running';
 
   /// After the first touch, sound the browser has put to sleep since (Safari
   /// after a call or another app's sound, a long pause) is woken as soon as
@@ -73,7 +119,7 @@ class WebAudio {
           final bytes = Uint8List.fromList(
             data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
           );
-          return await context.decodeAudioData(bytes.buffer.toJS).toDart;
+          return await _decoder.decodeAudioData(bytes.buffer.toJS).toDart;
         } catch (_) {
           unawaited(_buffers.remove(asset));
           return null;
@@ -87,7 +133,7 @@ class WebAudio {
   /// Runs [action] on every touch or key (from the browser's own event,
   /// where it may turn sound on), until [offTouch].
   void onTouch(void Function() action) {
-    context;
+    _listen();
     if (!_touched.contains(action)) _touched.add(action);
   }
 
@@ -97,7 +143,7 @@ class WebAudio {
   /// the moment it's asked for.
   void preloadOnUnlock(Iterable<String> assets) {
     _preload = assets;
-    context;
+    _listen();
     if (_unlocked) unawaited(_trickle());
   }
 
@@ -230,6 +276,8 @@ class WebMusic {
     final awake = _audio._wake();
     final buffer = await _audio.buffer(asset);
     await awake;
+    // Before the first touch it waits for it: there's no context yet.
+    await _audio.touched;
     if (buffer == null || turn != _turn) return;
     _stop();
     final ctx = _audio.context;

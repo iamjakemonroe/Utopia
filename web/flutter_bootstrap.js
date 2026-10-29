@@ -34,8 +34,16 @@ if (!useJs) {
   }, 25000);
 }
 
+// Where the WebAssembly build draws: on a background thread (the page is
+// isolated so it can), which keeps the page's own thread free for touches
+// and scrolling. ?draw=page draws on the page's thread instead, for checking.
+var onPage = new URLSearchParams(location.search).get('draw') === 'page';
+
 _flutter.loader.load({
   config: useJs
     ? { renderer: 'canvaskit' }
-    : { wasmAllowList: { blink: true, webkit: true } },
+    : {
+        wasmAllowList: { blink: true, webkit: true },
+        forceSingleThreadedSkwasm: onPage,
+      },
 });
