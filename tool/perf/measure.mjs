@@ -12,6 +12,7 @@
 //   SELF=n     the n functions with the most time of their own
 //   TOP=n      the n with the most in all (INCL=<regex> to pick which)
 //   FOCUS=f    what f's time goes on; CALLERS=f who calls f
+//   SIZE=WxH@dpr   the window (default 390x844@3, a phone)
 //   ISOLATE=credentialless|require-corp   serve it isolated, as the site
 //     does (Flutter then draws on a background thread)
 // skwasm's own functions are named from canvaskit/skwasm.js.symbols.
@@ -25,6 +26,8 @@ const scenes = (process.argv[3] ?? 'world').split(',');
 const world = process.argv[4] ?? 'utopia';
 const slow = Number(process.argv[5] ?? 4);
 const extra = process.argv[6] ?? '';
+const [, w = '390', h = '844', dpr = '3'] = /^(\d+)x(\d+)@([\d.]+)$/.exec(process.env.SIZE ?? '') ?? [];
+const size = { w: Number(w), h: Number(h), dpr: Number(dpr), phone: Number(w) < 600 };
 
 const types = {
   '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript',
@@ -54,10 +57,11 @@ const browser = await chromium.launch({
 });
 for (const scene of scenes) {
   const context = await browser.newContext({
-    viewport: { width: 390, height: 844 },
-    deviceScaleFactor: 3,
-    isMobile: true,
-    hasTouch: true,
+    // SIZE=1440x900@2 for a laptop (default: a phone, 390x844@3).
+    viewport: { width: size.w, height: size.h },
+    deviceScaleFactor: size.dpr,
+    isMobile: size.phone,
+    hasTouch: size.phone,
   });
   const page = await context.newPage();
   const errors = [];

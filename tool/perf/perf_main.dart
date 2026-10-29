@@ -15,6 +15,8 @@
 //   Pool: "pool" (two players, one phone), "pooltable" (Chip at a coin
 //   table, refereed in the page), "poollobby", and "cues" (every cue
 //   moving); &cue=<cue id>&level=<n> picks the player's cue.
+//   "welcome" is the first screen a visitor sees (Play now / Log in);
+//   "welcomefan" and "welcomehero" are its games and its Chip alone.
 //   "ludoseats" is the Ludo table with every seat talking (&seats=6 for
 //   the six-seat board), for checking its layout at any size; "voice" is
 //   the browser's voice note player (window.__voicePlay(url)).
@@ -56,6 +58,9 @@ import 'package:utopia/features/settings/presentation/settings_screen.dart';
 import 'package:utopia/features/welcome/presentation/welcome_week.dart';
 import 'package:utopia/core/profiles/profile_providers.dart';
 import 'package:utopia/features/auth/presentation/providers/auth_providers.dart';
+import 'package:utopia/features/auth/presentation/screens/auth_choice_screen.dart';
+import 'package:utopia/features/auth/presentation/widgets/auth_world.dart';
+import 'package:utopia/features/auth/presentation/widgets/game_fan.dart';
 import 'package:utopia/features/coins/presentation/providers/coin_balance_provider.dart';
 import 'package:utopia/features/friends/data/presence.dart';
 import 'package:utopia/features/home/data/active_game.dart';
@@ -127,6 +132,16 @@ Future<void> main() async {
       mySide: CheckersSide.dark,
     ),
     'cards' || 'notifications' => const _Cards(),
+    // The first screen a visitor sees: the world, Chip at the gateway, the
+    // games fanned out and the frosted buttons.
+    'welcome' => const AuthChoiceScreen(),
+    // Its parts alone over the world, to see what each costs.
+    'welcomefan' => const AppBackground(
+      child: Center(child: GameFan(height: 236)),
+    ),
+    'welcomehero' => const AppBackground(
+      child: Align(alignment: Alignment(0, -0.8), child: AuthHero(size: 116)),
+    ),
     'chipshow' => const _ChipShow(),
     // For filming: Chip in one mood (&mood=), big; one game's diorama
     // (&game=) filling the screen.
