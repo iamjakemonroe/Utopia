@@ -13447,6 +13447,66 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'legendary'**
   String get poolChipMaster;
+
+  /// features/maestro/presentation/maestro_sheet.dart (web)
+  ///
+  /// In en, this message translates to:
+  /// **'Renews every month until you cancel, any time, with Manage your plan. Paid securely with Flutterwave.'**
+  String get maestroRenewsOnTheWeb;
+
+  /// features/maestro/presentation/maestro_sheet.dart (web)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Chip Maestro?'**
+  String get maestroCancelTitle;
+
+  /// features/maestro/presentation/maestro_sheet.dart (web)
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing more is charged, and your plan lasts until {date}.'**
+  String maestroCancelBody(String date);
+
+  /// features/maestro/presentation/maestro_sheet.dart (web)
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my plan'**
+  String get maestroKeepMyPlan;
+
+  /// features/maestro/presentation/maestro_sheet.dart (web)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel plan'**
+  String get maestroCancelPlan;
+
+  /// features/maestro/presentation/maestro_sheet.dart (web)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled. Chip Maestro lasts until {date}.'**
+  String maestroCancelledUntil(String date);
+
+  /// features/maestro/presentation/maestro_sheet.dart (web)
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan is with the App Store or Google Play: manage it there, on your phone.'**
+  String get maestroBoughtInAStore;
+
+  /// features/store/data/store_repository.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re already a Chip Maestro.'**
+  String get storeYouReAlreadyAChipMaestro;
+
+  /// features/store/presentation/store_controller.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t cancel just now. Try again.'**
+  String get storeCouldnTCancelThatTry;
+
+  /// features/store/presentation/web_payment_return.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Chip Maestro! Chip\'s at his best for you now.'**
+  String get webPaymentReturnWelcomeToChipMaestro;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

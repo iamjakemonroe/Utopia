@@ -9794,5 +9794,55 @@
   "poolBreakHint": "The break: drag the white anywhere behind the line, or just shoot",
   "@poolBreakHint": {"description": "A tip shown as a pool game begins."},
   "poolChipMaster": "legendary",
-  "@poolChipMaster": {"description": "Chip's level at the hardest pool table (his best cue too)."}
+  "@poolChipMaster": {"description": "Chip's level at the hardest pool table (his best cue too)."},
+  "maestroRenewsOnTheWeb": "Renews every month until you cancel, any time, with Manage your plan. Paid securely with Flutterwave.",
+  "@maestroRenewsOnTheWeb": {
+    "description": "features/maestro/presentation/maestro_sheet.dart (web)"
+  },
+  "maestroCancelTitle": "Cancel Chip Maestro?",
+  "@maestroCancelTitle": {
+    "description": "features/maestro/presentation/maestro_sheet.dart (web)"
+  },
+  "maestroCancelBody": "Nothing more is charged, and your plan lasts until {date}.",
+  "@maestroCancelBody": {
+    "description": "features/maestro/presentation/maestro_sheet.dart (web)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "maestroKeepMyPlan": "Keep my plan",
+  "@maestroKeepMyPlan": {
+    "description": "features/maestro/presentation/maestro_sheet.dart (web)"
+  },
+  "maestroCancelPlan": "Cancel plan",
+  "@maestroCancelPlan": {
+    "description": "features/maestro/presentation/maestro_sheet.dart (web)"
+  },
+  "maestroCancelledUntil": "Cancelled. Chip Maestro lasts until {date}.",
+  "@maestroCancelledUntil": {
+    "description": "features/maestro/presentation/maestro_sheet.dart (web)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "maestroBoughtInAStore": "Your plan is with the App Store or Google Play: manage it there, on your phone.",
+  "@maestroBoughtInAStore": {
+    "description": "features/maestro/presentation/maestro_sheet.dart (web)"
+  },
+  "storeYouReAlreadyAChipMaestro": "You're already a Chip Maestro.",
+  "@storeYouReAlreadyAChipMaestro": {
+    "description": "features/store/data/store_repository.dart"
+  },
+  "storeCouldnTCancelThatTry": "Couldn't cancel just now. Try again.",
+  "@storeCouldnTCancelThatTry": {
+    "description": "features/store/presentation/store_controller.dart"
+  },
+  "webPaymentReturnWelcomeToChipMaestro": "Welcome to Chip Maestro! Chip's at his best for you now.",
+  "@webPaymentReturnWelcomeToChipMaestro": {
+    "description": "features/store/presentation/web_payment_return.dart"
+  }
 }

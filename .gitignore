@@ -46,6 +46,7 @@ app.*.map.json
 
 # Utopia: env / secrets
 env/local.json
+env/local_pay.json
 env/*.env
 .env
 .env.*

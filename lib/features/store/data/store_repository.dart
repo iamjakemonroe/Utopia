@@ -153,9 +153,67 @@ class StoreRepository {
     throw WebPayException(strings.storeCouldnTStartThePayment);
   }
 
+  /// Chip Maestro's web price in [currency] (US dollars where it has none),
+  /// ready to show, or null if there's none.
+  Future<String?> webMaestroPrice(String currency) async {
+    try {
+      final rows = await _client.rpc(
+        'web_plan_shop',
+        params: {'p_currency': currency},
+      );
+      for (final r in (rows as List).cast<Map>()) {
+        if (r['plan_id'] == 'utopia.maestro.monthly') {
+          return formatMoney(
+            (r['amount'] as num).toDouble(),
+            r['currency'] as String,
+          );
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Starts a subscription to [plan] on the web: Flutterwave's checkout
+  /// page, which charges the card again each month until it's cancelled.
+  /// Throws [WebPayException] with what to tell the player.
+  Future<String> webSubscribe(String plan, String currency) async {
+    try {
+      final res = await _client.functions.invoke(
+        'web-pay',
+        body: {'action': 'subscribe', 'plan': plan, 'currency': currency},
+      );
+      final link = (res.data as Map?)?['link'];
+      if (link is String && link.startsWith('https://')) return link;
+    } on FunctionException catch (e) {
+      final why = e.details is Map ? (e.details as Map)['error'] : null;
+      throw WebPayException(switch (why) {
+        'account' => strings.storeSaveYourAccountToBuy,
+        'member' => strings.storeYouReAlreadyAChipMaestro,
+        'off' => strings.storeCoinTopUpsOnThe,
+        _ => strings.storeCouldnTStartThePayment,
+      });
+    } catch (_) {}
+    throw WebPayException(strings.storeCouldnTStartThePayment);
+  }
+
+  /// Cancels the player's web subscription to [product] ('maestro'):
+  /// 'cancelled' (with when it ends) or 'none' (bought in a store instead).
+  Future<({String status, DateTime? until})> webCancel(String product) async {
+    final res = await _client.functions.invoke(
+      'web-pay',
+      body: {'action': 'cancel', 'product': product},
+    );
+    final data = res.data as Map? ?? const {};
+    return (
+      status: data['status'] as String? ?? 'error',
+      until: DateTime.tryParse(data['until'] as String? ?? ''),
+    );
+  }
+
   /// Back from checkout: whether payment [ref] went through ('paid',
-  /// with its coins), as the payment service has it.
-  Future<({String status, int coins})> webConfirm(
+  /// with its coins, or the [product] it subscribed to), as the payment
+  /// service has it.
+  Future<({String status, int coins, String? product})> webConfirm(
     String ref,
     String transactionId,
   ) async {
@@ -172,9 +230,10 @@ class StoreRepository {
       return (
         status: data['status'] as String? ?? 'unknown',
         coins: (data['coins'] as num?)?.toInt() ?? 0,
+        product: data['product'] as String?,
       );
     } catch (_) {
-      return (status: 'error', coins: 0);
+      return (status: 'error', coins: 0, product: null);
     }
   }
 

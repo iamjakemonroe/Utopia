@@ -7598,4 +7598,42 @@ class L10nEn extends L10n {
 
   @override
   String get poolChipMaster => 'legendary';
+
+  @override
+  String get maestroRenewsOnTheWeb =>
+      'Renews every month until you cancel, any time, with Manage your plan. Paid securely with Flutterwave.';
+
+  @override
+  String get maestroCancelTitle => 'Cancel Chip Maestro?';
+
+  @override
+  String maestroCancelBody(String date) {
+    return 'Nothing more is charged, and your plan lasts until $date.';
+  }
+
+  @override
+  String get maestroKeepMyPlan => 'Keep my plan';
+
+  @override
+  String get maestroCancelPlan => 'Cancel plan';
+
+  @override
+  String maestroCancelledUntil(String date) {
+    return 'Cancelled. Chip Maestro lasts until $date.';
+  }
+
+  @override
+  String get maestroBoughtInAStore =>
+      'Your plan is with the App Store or Google Play: manage it there, on your phone.';
+
+  @override
+  String get storeYouReAlreadyAChipMaestro => 'You\'re already a Chip Maestro.';
+
+  @override
+  String get storeCouldnTCancelThatTry =>
+      'Couldn\'t cancel just now. Try again.';
+
+  @override
+  String get webPaymentReturnWelcomeToChipMaestro =>
+      'Welcome to Chip Maestro! Chip\'s at his best for you now.';
 }

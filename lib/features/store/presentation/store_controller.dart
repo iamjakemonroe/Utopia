@@ -370,18 +370,69 @@ class StoreController extends StateNotifier<StoreState> {
   /// Chip Maestro's price in the player's currency, once the store answers.
   String? get maestroPrice => state.products[kMaestroProductId]?.price;
 
+  /// Chip Maestro in a browser: Flutterwave's checkout, in this tab, which
+  /// charges the card each month until it's cancelled and comes back to the
+  /// game (WebPaymentReturn). Accounts only.
+  Future<void> _joinMaestroOnWeb() async {
+    if (_ref.read(isAnonymousProvider)) {
+      state = state.copyWith(message: strings.storeSaveYourAccountToBuy);
+      return;
+    }
+    state = state.copyWith(busyProduct: kMaestroProductId, clearMessage: true);
+    try {
+      final link = await _repo.webSubscribe(
+        kMaestroProductId,
+        WebPage.currency(),
+      );
+      _ref.read(analyticsProvider).log('web_maestro_checkout');
+      await launchUrl(Uri.parse(link), webOnlyWindowName: '_self');
+    } on WebPayException catch (e) {
+      if (mounted) state = state.copyWith(clearBusy: true, message: e.message);
+    } catch (_) {
+      if (mounted) {
+        state = state.copyWith(
+          clearBusy: true,
+          message: strings.storeCouldnTOpenThePayment,
+        );
+      }
+    }
+  }
+
+  /// Cancels a Chip Maestro plan bought on the web: nothing more is charged
+  /// and it lasts until [until]. Says what happened.
+  Future<void> cancelWebMaestro() async {
+    try {
+      final r = await _repo.webCancel('maestro');
+      _ref.invalidate(maestroProvider);
+      state = state.copyWith(
+        message: r.status == 'cancelled'
+            ? strings.maestroCancelledUntil(_day(r.until))
+            : r.status == 'none'
+            ? strings.maestroBoughtInAStore
+            : strings.storeCouldnTCancelThatTry,
+      );
+    } catch (_) {
+      state = state.copyWith(message: strings.storeCouldnTCancelThatTry);
+    }
+  }
+
+  static String _day(DateTime? at) {
+    if (at == null) return '';
+    final d = at.toLocal();
+    return '${d.day}/${d.month}/${d.year}';
+  }
+
   /// Starts a Chip Maestro subscription. The plan begins once the server
-  /// has checked it with the store (see [_onPurchases]).
+  /// has checked it with the store (see [_onPurchases]); on the web, once
+  /// Flutterwave has the first payment.
   Future<void> buyMaestro() async {
     if (state.busyProduct != null) return;
+    if (kIsWeb) return _joinMaestroOnWeb();
     if (!Env.realMoneyStore) {
       state = state.copyWith(message: strings.storeChipMaestroIsComingSoon);
       return;
     }
-    if (kIsWeb) {
-      state = state.copyWith(message: _onPhonesOnly);
-      return;
-    }
+    if (kIsWeb) return _joinMaestroOnWeb();
     final me = _ref.read(currentUserProvider)?.id;
     if (me == null) {
       state = state.copyWith(message: strings.storeSignInToJoinChip);
