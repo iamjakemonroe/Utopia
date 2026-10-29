@@ -130,7 +130,15 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                         ],
                       ),
                     ),
-                  if (kIsWeb ? !store.webPayments : !Env.realMoneyStore)
+                  // In a browser, what's for sale comes with whether
+                  // payments are on: until both are in, one loader, then
+                  // the packs and their prices (or "coming soon") at once.
+                  if (kIsWeb && !store.loaded)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
+                      child: UtopiaLoader(size: 64),
+                    )
+                  else if (kIsWeb ? !store.webPayments : !Env.realMoneyStore)
                     const _ComingSoon()
                   else ...[
                     if (isGuest)

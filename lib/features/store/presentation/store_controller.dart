@@ -43,6 +43,7 @@ class StoreState {
     this.coinsAdded,
     this.webPrices = const {},
     this.webPayments = false,
+    this.webMaestroPrice,
   });
 
   /// In a browser: each coin pack's price on the web, ready to show.
@@ -50,6 +51,11 @@ class StoreState {
 
   /// In a browser: whether coins can be bought here yet.
   final bool webPayments;
+
+  /// In a browser: Chip Maestro's price, ready to show (null while payments
+  /// are off). Loaded with the coin packs' prices, so the shop and the
+  /// Maestro sheet show what's for sale all at once ([loaded]).
+  final String? webMaestroPrice;
 
   /// Item ids this player owns (free items are owned implicitly).
   final Set<String> owned;
@@ -129,10 +135,12 @@ class StoreState {
     bool clearCoinsAdded = false,
     Map<String, String>? webPrices,
     bool? webPayments,
+    String? webMaestroPrice,
   }) {
     return StoreState(
       webPrices: webPrices ?? this.webPrices,
       webPayments: webPayments ?? this.webPayments,
+      webMaestroPrice: webMaestroPrice ?? this.webMaestroPrice,
       owned: owned ?? this.owned,
       coinPrices: coinPrices ?? this.coinPrices,
       rentals: rentals ?? this.rentals,
@@ -277,21 +285,32 @@ class StoreController extends StateNotifier<StoreState> {
       : state.products[pack.id]?.price ?? pack.fallbackPrice;
 
   /// A browser's shop: whether payments are on, the prices in the player's
-  /// currency, and whether the starter pack is still theirs to buy.
+  /// currency (the coin packs' and Chip Maestro's), and whether the starter
+  /// pack is still theirs to buy. Asked for together, when home opens, so
+  /// the shop shows it all at once.
   Future<void> _refreshWeb() async {
     final on = await _repo.webPaymentsOn();
     var prices = const <String, String>{};
+    String? maestro;
     var starter = false;
     if (on) {
+      final currency = WebPage.currency();
+      final maestroPrice = _repo.webMaestroPrice(currency);
       try {
-        prices = await _repo.webCoinShop(WebPage.currency());
-        starter = await _repo.starterOffer();
+        final (coinShop, starterOffer) = await (
+          _repo.webCoinShop(currency),
+          _repo.starterOffer(),
+        ).wait;
+        prices = coinShop;
+        starter = starterOffer;
       } catch (_) {}
+      maestro = await maestroPrice;
     }
     if (!mounted) return;
     state = state.copyWith(
       webPayments: on && prices.isNotEmpty,
       webPrices: prices,
+      webMaestroPrice: maestro,
       starterOffer: starter,
       loaded: true,
     );

@@ -97,13 +97,13 @@ class StoreRepository {
   }
 
   /// Whether this player can still buy the starter pack.
-  /// Whether coins can be bought on the web yet (Flutterwave set up).
+  /// Whether coins can be bought on the web yet (Flutterwave set up). Not
+  /// answered within a few seconds: no (the shop never waits on it).
   Future<bool> webPaymentsOn() async {
     try {
-      final res = await _client.functions.invoke(
-        'web-pay',
-        body: {'action': 'status'},
-      );
+      final res = await _client.functions
+          .invoke('web-pay', body: {'action': 'status'})
+          .timeout(const Duration(seconds: 6));
       final data = res.data;
       return data is Map && data['on'] == true;
     } catch (_) {

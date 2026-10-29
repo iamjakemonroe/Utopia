@@ -99,10 +99,12 @@ class _MaestroSheet extends ConsumerWidget {
         : ref.watch(profileByIdProvider(me)).valueOrNull;
     final name = profile?['display_name'] as String? ?? 'U';
     final member = status?.active ?? false;
-    final price = kIsWeb
-        ? ref.watch(webMaestroPriceProvider).valueOrNull
-        : controller.maestroPrice;
-    final canBuy = kIsWeb || Env.realMoneyStore;
+    final price = kIsWeb ? store.webMaestroPrice : controller.maestroPrice;
+    // In a browser the price comes with the shop's: until it has, the
+    // button waits (no label changing under the player's finger), and
+    // with payments off there's nothing to buy yet.
+    final waiting = kIsWeb && !store.loaded;
+    final canBuy = kIsWeb ? waiting || price != null : Env.realMoneyStore;
     final busy = store.busyProduct == kMaestroProductId;
 
     ref.listen(storeControllerProvider.select((s) => s.message), (_, next) {
@@ -195,8 +197,8 @@ class _MaestroSheet extends ConsumerWidget {
                         : price == null
                         ? strings.maestroJoinChipMaestro
                         : strings.maestroJoinForAMonth(price),
-                    isLoading: busy,
-                    onPressed: !canBuy || busy
+                    isLoading: busy || waiting,
+                    onPressed: !canBuy || busy || waiting
                         ? null
                         : () {
                             HapticFeedback.mediumImpact();
