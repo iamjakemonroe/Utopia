@@ -459,3 +459,8 @@ verify_jwt = false
 # The house league: called by pg_cron; all it can do is play due moves.
 [functions.house-league]
 verify_jwt = false
+
+# Chip in Kaivon Code: signing in happens here, before there's a token. Every
+# other job checks the token itself.
+[functions.chip-code]
+verify_jwt = false
