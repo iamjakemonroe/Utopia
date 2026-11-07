@@ -6,7 +6,7 @@
 -- which can't pay in dollars. Buyers in Nigeria now pay in naira.
 --
 -- Each naira price is the dollar price's digits times 1,000: $7.99 is
--- N7,990 and $0.99 is N990. The apps pick naira for Nigeria; everyone else
+-- N7,990. The apps pick naira for Nigeria; everyone else
 -- still pays in dollars. Flutterwave payment plans for naira are made on
 -- first use, as the dollar ones were.
 

@@ -50,6 +50,10 @@ naira = {r[0]: (r[1], float(r[2]), r[3]) for r in q("select * from web_coin_shop
 check("asked in naira, prices in naira", naira["utopia.coins.sack"] == ("NGN", 4990.0, 55000), naira.get("utopia.coins.sack"))
 cedi = {r[0]: r[1] for r in q("select * from web_coin_shop('GHS')")}
 check("dollars everywhere else", cedi["utopia.coins.sack"] == "USD")
+dollars = {r[0]: float(r[2]) for r in q("select * from web_coin_shop('USD')")}
+check("no pack under a dollar: Flutterwave refuses dollar charges under $1",
+      min(dollars.values()) >= 1 and dollars["utopia.coins.starter"] == 1.0 and dollars["utopia.coins.pouch"] == 1.0, dollars)
+check("and the smallest naira price is N1,000", naira["utopia.coins.pouch"][1] == 1000.0, naira.get("utopia.coins.pouch"))
 
 harness.as_user(db, guest)
 check("guests can't buy", raises("select web_checkout_start('utopia.coins.sack', 'USD')") == "save your account first")
@@ -73,7 +77,7 @@ check("the payment shows as paid",
 
 harness.as_user(db, buyer)
 starter = q("select web_checkout_start('utopia.coins.starter', 'USD')")[0][0]
-admin("select credit_web_payment(%s, 'flw-2', 0.99, 'USD')", starter["ref"])
+admin("select credit_web_payment(%s, 'flw-2', 1.00, 'USD')", starter["ref"])
 harness.as_user(db, buyer)
 check("the starter pack once", raises("select web_checkout_start('utopia.coins.starter', 'USD')") == "starter pack already bought")
 
