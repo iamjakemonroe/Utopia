@@ -472,3 +472,8 @@ verify_jwt = false
 # posts its own signed token (checked against its keys), not a Supabase one.
 [functions.study-lti]
 verify_jwt = false
+
+# Chip Study rooms: the room server's door into the database, checked by
+# its shared secret (ROOM_SERVER_SECRET), never by a person's sign-in.
+[functions.study-rooms]
+verify_jwt = false

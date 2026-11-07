@@ -217,6 +217,58 @@ check("members can't end a room", "not allowed" in (refused(sue, "select study_r
 run(None, "select study_room_close(%s)", room2["id"])
 check("users can't close rooms through the room server's door", refused(ben, "select study_room_close(%s)", room2["id"]) is not None)
 
+# ── The room server's roster ──────────────────────────────────────────────
+cr2 = run(tom, "select study_room_open(%s, %s)", assignment(tom, "Lesson 2"), inst)
+run(tom, "select study_room_invite(%s, array[%s]::uuid[])", cr2["id"], hist["id"])
+run(sue, "select study_room_join(%s)", cr2["token"])
+run(tom, "select study_room_member_set(%s, %s, p_can_edit => true)", cr2["id"], sue)
+roster = run(None, "select study_room_roster(%s)", cr2["id"])
+check("the room server sees everyone and what they may do",
+      roster["live"] and [(m["role"], m["can_edit"]) for m in roster["members"]] == [("host", True), ("member", True)], roster)
+run(tom, "select study_room_member_set(%s, %s, 'removed')", cr2["id"], sue)
+check("and sees who was taken out", [m["state"] for m in run(None, "select study_room_roster(%s)", cr2["id"])["members"]] == ["in", "removed"])
+check("users can't read the roster", refused(sue, "select study_room_roster(%s)", cr2["id"]) is not None)
+
+# ── Chip in a room ────────────────────────────────────────────────────────
+cr3 = run(tom, "select study_room_open(%s, %s)", assignment(tom, "Lesson 3"), inst)
+run(tom, "select study_room_invite(%s, array[%s]::uuid[])", cr3["id"], hist["id"])
+run(teen, "select study_room_join(%s)", cr3["token"])
+thread = run(None, "insert into study_threads (assignment_id, user_id, title) values (%s, %s, 'Room') returning id",
+             run(None, "select assignment_id from study_rooms where id = %s", cr3["id"]), tom)
+run(None, "update study_rooms set chip_thread = %s where id = %s", thread, cr3["id"])
+msg = run(None, "insert into study_messages (thread_id, assignment_id, user_id, role, mode, content) "
+                "select %s, assignment_id, %s, 'chip', 'explain', 'Gutenberg...' from study_rooms where id = %s returning id",
+          thread, tom, cr3["id"])
+check("someone who can't edit can't record putting Chip's words in",
+      "not allowed" in (refused(teen, "select study_room_log_use(%s, 'inserted', %s, 12)", cr3["id"], msg) or ""))
+run(tom, "select study_room_member_set(%s, %s, p_can_edit => true)", cr3["id"], teen)
+run(teen, "select study_room_log_use(%s, 'inserted', %s, 12, 'Gutenberg')", cr3["id"], msg)
+rec = run(None, "select row_to_json(l) from study_ai_log l where room_id = %s", cr3["id"])
+check("an editor's use is recorded under their name, on the host's assignment, in the room",
+      rec["user_id"] == str(teen) and rec["summary"].endswith("(in a study room)") and rec["words"] == 12, rec)
+check("the host sees it on their own assignment's record",
+      run(tom, "select count(*) from study_ai_log where room_id = %s", cr3["id"]) == 1)
+check("and so does whoever did it", run(teen, "select count(*) from study_ai_log where room_id = %s", cr3["id"]) == 1)
+check("nobody else does", run(sue, "select count(*) from study_ai_log where room_id = %s", cr3["id"]) == 0)
+other_msg = run(None, "insert into study_messages (thread_id, assignment_id, user_id, role, content) "
+                      "select id, assignment_id, user_id, 'chip', 'x' from study_threads where id <> %s limit 1 returning id", thread)
+if other_msg:
+    check("only Chip's messages from this room count",
+          "unknown message" in (refused(teen, "select study_room_log_use(%s, 'inserted', %s)", cr3["id"], other_msg) or ""))
+check("no course-tutor rules when the host's assignment isn't linked to a class",
+      run(teen, "select study_room_tutor(%s)", cr3["id"]) is None)
+check("strangers get no tutor rules", run(amy, "select study_room_tutor(%s)", cr3["id"]) is None)
+adult(sue)
+run(tom, "select study_room_member_set(%s, %s, 'in')", cr2["id"], sue)
+essay = assignment(sue, "My HIST essay")
+run(sue, "select study_assignment_set_class(%s, %s)", essay, hist["id"])
+run(tom, "select study_class_tutor_set(%s, 'Primary sources only.', 'hints', 'No full paragraphs.')", hist["id"])
+pr = run(sue, "select study_room_open(%s)", essay)
+run(ben, "select study_room_join(%s)", pr["token"])
+tut = run(ben, "select study_room_tutor(%s)", pr["id"])
+check("a friend in a student's room gets the class's course-tutor rules",
+      tut and tut["class"] == "HIST 210" and tut["help_level"] == "hints" and tut["course_brief"] == "Primary sources only.", tut)
+
 print()
 print("All room checks passed." if not fails else f"{len(fails)} failed")
 sys.exit(1 if fails else 0)

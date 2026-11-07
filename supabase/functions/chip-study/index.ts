@@ -299,6 +299,7 @@ async function assignmentContext(
   db: Db,
   assignmentId: string,
   reads: { readings: number; notes: number },
+  tutorOf?: () => Promise<{ data: unknown }>,
 ): Promise<{ text: string; title: string } | null> {
   const { data: a } = await db
     .from("study_assignments")
@@ -373,7 +374,7 @@ async function assignmentContext(
   lines.push(`</${tag}>`);
   // The lecturer's version of Chip, when the assignment is linked to a class
   // the student is in (study_assignment_tutor checks that).
-  const { data: tutor } = await db.rpc("study_assignment_tutor", { p_assignment: assignmentId });
+  const { data: tutor } = tutorOf ? await tutorOf() : await db.rpc("study_assignment_tutor", { p_assignment: assignmentId });
   if (tutor) {
     const t = tutor as Record<string, string>;
     lines.push(`\n<course_tutor>`);
@@ -384,6 +385,29 @@ async function assignmentContext(
     lines.push(`</course_tutor>`);
   }
   return { text: lines.join("\n"), title: a.title };
+}
+
+/** A study room's one Chip conversation, on the host's assignment: made the
+ * first time someone asks (two first questions at once share one). */
+async function roomThread(service: Db, roomId: string, assignmentId: string, host: string, title: string): Promise<string> {
+  const { data: r } = await service.from("study_rooms").select("chip_thread").eq("id", roomId).single();
+  if (r?.chip_thread) return r.chip_thread as string;
+  const { data: t, error } = await service
+    .from("study_threads")
+    .insert({ assignment_id: assignmentId, user_id: host, title: clip(`Study room: ${title}`, 80) })
+    .select("id")
+    .single();
+  if (error) throw error;
+  const { data: won } = await service
+    .from("study_rooms")
+    .update({ chip_thread: t.id })
+    .eq("id", roomId)
+    .is("chip_thread", null)
+    .select("chip_thread");
+  if (won?.length) return t.id as string;
+  await service.from("study_threads").delete().eq("id", t.id);
+  const { data: again } = await service.from("study_rooms").select("chip_thread").eq("id", roomId).single();
+  return again!.chip_thread as string;
 }
 
 /** The conversation so far, newest last, within [room] characters. */
@@ -435,16 +459,35 @@ const ACTION_SUMMARY: Record<Mode, string> = {
 async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal): Promise<Response> {
   const mode = MODES.includes(body.mode as Mode) ? body.mode as Mode : "guide";
   const text = clip(body.text, 8000);
-  const assignmentId = clip(body.assignment, 64);
+  let assignmentId = clip(body.assignment, 64);
   if (!text) return json({ error: "Say something to Chip" }, 400);
+
+  // In a study room: the room's assignment (the host's), checked as the
+  // asker; the asker is charged and named in the AI-use record, and the
+  // conversation is the room's, kept on the host's assignment.
+  const roomId = clip(body.room, 64);
+  let room: { id: string; host: string; name: string } | null = null;
+  if (roomId) {
+    if (!/^[0-9a-f-]{36}$/.test(roomId)) return json({ error: "Which room?" }, 400);
+    const { data: acc, error: accError } = await who.db.rpc("study_room_access", { p_room: roomId });
+    // deno-lint-ignore no-explicit-any
+    const a = acc as any;
+    if (accError || !a || a.state !== "in" || !a.live) return json({ error: "You're not in this room any more." }, 403);
+    assignmentId = String(a.assignment_id);
+    room = { id: roomId, host: String(a.host_id), name: clip(a.name, 80) || "Someone" };
+  }
   if (!/^[0-9a-f-]{36}$/.test(assignmentId)) return json({ error: "Which assignment?" }, 400);
 
   const want: Kind = body.model === "best" ? "best" : "fast";
   // The assignment is checked before anything is spent.
-  const probe = await who.db.from("study_assignments").select("id").eq("id", assignmentId).maybeSingle();
-  if (!probe.data) return json({ error: "That assignment isn't yours" }, 404);
+  if (!room) {
+    const probe = await who.db.from("study_assignments").select("id").eq("id", assignmentId).maybeSingle();
+    if (!probe.data) return json({ error: "That assignment isn't yours" }, 404);
+  }
+  // Whose rows these are: the asker's, or in a room the host's.
+  const owner = room ? room.host : who.userId;
 
-  let threadId = typeof body.thread === "string" ? body.thread : null;
+  let threadId = room ? null : typeof body.thread === "string" ? body.thread : null;
   if (threadId) {
     const { data: t } = await who.db
       .from("study_threads")
@@ -468,13 +511,21 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
   const reads = READS[kind];
   const model = kind === "best" ? BEST_MODEL : FAST_MODEL;
 
-  const context = await assignmentContext(who.db, assignmentId, reads);
+  const service = admin();
+  const db = room ? service : who.db;
+  const context = await assignmentContext(
+    db,
+    assignmentId,
+    reads,
+    room ? () => who.db.rpc("study_room_tutor", { p_room: room.id }) : undefined,
+  );
   if (!context) return json({ error: "That assignment isn't yours" }, 404);
-  const past = threadId ? await history(who.db, threadId, reads.history) : [];
+  if (room) threadId = await roomThread(service, room.id, assignmentId, owner, context.title);
+  const past = threadId ? await history(db, threadId, reads.history) : [];
   // Asked again: the last question gets a new answer in place of the last one (the record
   // keeps both).
   let again: { id: string } | null = null;
-  if (body.again === true && threadId) {
+  if (body.again === true && threadId && !room) {
     const { data: last } = await who.db
       .from("study_messages")
       .select("id, created_at")
@@ -491,11 +542,10 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
     }
   }
 
-  const service = admin();
   if (!threadId) {
     const { data: t, error } = await service
       .from("study_threads")
-      .insert({ assignment_id: assignmentId, user_id: who.userId, title: clip(text, 80) })
+      .insert({ assignment_id: assignmentId, user_id: owner, title: clip(text, 80) })
       .select("id")
       .single();
     if (error) throw error;
@@ -511,11 +561,15 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
       .insert({
         thread_id: threadId,
         assignment_id: assignmentId,
-        user_id: who.userId,
+        user_id: owner,
         role: "user",
         mode,
         content: text,
-        meta: { ...(selection ? { selection: clip(selection, 600) } : {}), ...(attached.length ? { files: attached } : {}) },
+        meta: {
+          ...(selection ? { selection: clip(selection, 600) } : {}),
+          ...(attached.length ? { files: attached } : {}),
+          ...(room ? { asked_by: { id: who.userId, name: room.name } } : {}),
+        },
       })
       .select("id")
       .single();
@@ -531,6 +585,7 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
     `Mode: ${mode}`,
     `Today: ${today}`,
     `Web search: ${searching ? "available" : "not available"}`,
+    ...(room ? [`Room: a shared study room; ${room.name} asked this, and everyone in the room sees your answer.`] : []),
     `</now>`,
     `<document>\n${doc || "(empty so far)"}\n</document>`,
   ];
@@ -646,7 +701,7 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
         .insert({
           thread_id: threadId,
           assignment_id: assignmentId,
-          user_id: who.userId,
+          user_id: owner,
           role: "chip",
           mode,
           content: content.slice(0, 120000),
@@ -663,6 +718,7 @@ async function chat(who: Who, body: Record<string, unknown>, signal: AbortSignal
       await service.from("study_ai_log").insert({
         assignment_id: assignmentId,
         user_id: who.userId,
+        room_id: room?.id ?? null,
         message_id: saved?.id ?? null,
         action: mode,
         summary: `${ACTION_SUMMARY[mode]}${selection ? " (about a selection of their text)" : ""}${
