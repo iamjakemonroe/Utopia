@@ -467,3 +467,8 @@ verify_jwt = false
 
 [functions.kaivon-ready]
 verify_jwt = false
+
+# Chip Study from Moodle, Canvas, Blackboard and Brightspace: the platform
+# posts its own signed token (checked against its keys), not a Supabase one.
+[functions.study-lti]
+verify_jwt = false
