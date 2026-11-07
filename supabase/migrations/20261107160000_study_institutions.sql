@@ -239,6 +239,35 @@ as $$
 $$;
 revoke all on function public._study_tier(uuid) from public, anon, authenticated;
 
+-- The monthly cap on Chip's best model is counted over a paid plan's
+-- period. Pro through an institution has no such period, so it's counted
+-- by calendar month (UTC); without this it would have no monthly cap.
+-- Grants (tool/sql/give_study_pro.sql) still have only the daily cap.
+create or replace function public._study_period_best(p_user uuid)
+returns numeric
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  with plan as (
+    select s.period_end, p.days
+      from public.web_subscriptions s join public.web_plans p on p.id = s.plan_id
+     where s.user_id = p_user and p.product = 'study_pro'
+       and s.status in ('active', 'cancelled') and s.period_end > now()
+     order by s.period_end desc limit 1
+  )
+  select coalesce(
+    (select sum(u.best_usd) from public.study_usage u, plan
+      where u.user_id = p_user
+        and u.day > ((plan.period_end - make_interval(days => plan.days + 1)) at time zone 'utc')::date),
+    case when not exists (select 1 from plan) and public._study_institution_pro(p_user)
+      then (select coalesce(sum(u.best_usd), 0) from public.study_usage u
+             where u.user_id = p_user and u.day >= date_trunc('month', now() at time zone 'utc')::date) end,
+    0);
+$$;
+revoke all on function public._study_period_best(uuid) from public, anon, authenticated;
+
 -- ── Signing up and seeing your institutions ─────────────────────────────
 
 create function public.study_institution_register(

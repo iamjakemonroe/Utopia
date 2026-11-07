@@ -168,6 +168,11 @@ check("the overview counts this week's activity",
       ov["week"]["active_students"] == 1 and ov["week"]["focus_minutes"] == 25 and ov["week"]["practice_score"] == 80
       and ov["counts"]["students"] == 4 and len(ov["weeks"]) == 8, ov["week"])
 
+# ── The monthly cap on the best model ────────────────────────────────────
+run(None, "insert into study_usage (user_id, day, best_usd) values (%s, date_trunc('month', now())::date, 3.10), (%s, (date_trunc('month', now()) - interval '3 days')::date, 9)", s1, s1)
+check("institution Pro counts the best model by calendar month", float(run(None, "select public._study_period_best(%s)", s1)) == 3.10)
+check("someone with neither a plan nor an institution counts nothing", float(run(None, "select public._study_period_best(%s)", nosy)) == 0)
+
 # ── Who may do what ───────────────────────────────────────────────────────
 check("a teacher can't invite teachers",
       "not allowed" in (refused(tom, "select * from study_institution_invite(%s, array['x@y.com'], 'teacher', %s)", inst, klass["id"]) or ""))
