@@ -30,7 +30,7 @@
 //     study_lti_pending_peek(token) says what it's for.
 //   #error=<code>   unknown_platform, bad_login, expired, bad_token,
 //     unknown_deployment, unsupported, anonymous, no_seats, inactive,
-//     linked_elsewhere, failed.
+//     linked_elsewhere, under_18, failed.
 //
 // Supabase serves HTML from functions as plain text, so every page is Chip
 // Study's; this only redirects.
@@ -129,6 +129,7 @@ function dbFail(e: { message?: string } | null, fallback = "failed"): Response {
   if (m.includes("no seats left")) return fail("no_seats");
   if (m.includes("institution not active")) return fail("inactive");
   if (m.includes("linked to another account")) return fail("linked_elsewhere");
+  if (m.includes("under 18 not allowed here")) return fail("under_18");
   return fail(fallback, e);
 }
 

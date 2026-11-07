@@ -83,6 +83,13 @@ inv3 = run(kaivon, "select study_staff_invoice_create(%s, 'Mistake', 10, 1, 'USD
 run(kaivon, "select study_staff_invoice_void(%s)", inv3["id"])
 check("a void invoice can't be paid", "invoice not open" in (refused(None, "select credit_institution_invoice(%s, 'flw-3', 10, 'USD', 'production')", inv3["ref"]) or ""))
 
+gbp = run(kaivon, "select study_staff_invoice_create(%s, 'Year 1: 60 students', 60, 12, 'GBP', 2160)", inst)
+check("invoices can be in pounds", gbp["currency"] == "GBP", gbp)
+check("and in euros", run(kaivon, "select study_staff_invoice_create(%s, 'x', 50, 12, 'EUR', 2100)", inst)["currency"] == "EUR")
+check("but not any currency", refused(kaivon, "select study_staff_invoice_create(%s, 'x', 50, 12, 'JPY', 1)", inst) is not None)
+check("admins see their own under-18 setting",
+      run(ada, "select study_institution_overview(%s)", inst)["institution"]["minors_consent"] is False)
+
 print()
 print("All invoice checks passed." if not fails else f"{len(fails)} failed")
 sys.exit(1 if fails else 0)
