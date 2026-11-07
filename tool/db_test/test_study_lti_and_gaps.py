@@ -74,6 +74,15 @@ check("staff can remove a confirmed domain", run(None, "select email_domain from
 run(kaivon, "select study_staff_review(%s, 'approved', p_email_domain => 'uni.edu')", inst)
 run(sue, "select study_class_join(%s)", klass["code"])
 check("sue is a student", run(None, "select role from study_institution_members where user_id = %s", sue) == "student")
+old_code = klass["code"]
+check("a student can't change the class code", "not allowed" in (refused(sue, "select study_class_new_code(%s)", klass["id"]) or ""))
+check("nor can an outsider", "not allowed" in (refused(eve, "select study_class_new_code(%s)", klass["id"]) or ""))
+new_code = run(tom, "select study_class_new_code(%s)", klass["id"])
+check("the class's teacher can give it a new code", new_code and new_code != old_code and len(new_code) == 6, new_code)
+check("the old code stops working", run(eve, "select study_class_peek(%s)", old_code) == {"found": False})
+check("the new one works", run(eve, "select study_class_peek(%s)", new_code)["class"] == "HIST 210")
+check("and everyone stays in the class", run(None, "select count(*) from study_class_members where class_id = %s and user_id = %s", klass["id"], sue) == 1)
+check("admins can too", len(run(ada, "select study_class_new_code(%s)", klass["id"])) == 6)
 run(None, "select study_forget(%s)", sue)
 check("deleting study data takes a student out of institutions and classes",
       run(None, "select count(*) from study_institution_members where user_id = %s", sue) == 0
