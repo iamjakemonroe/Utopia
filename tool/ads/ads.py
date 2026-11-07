@@ -1,6 +1,6 @@
 """Utopia's ads: the main one ("there's more to Utopia than you think") and
 short ones, each on one part of the game, cut from the game itself filmed
-in Chrome (tool/ads/shoot.sh). Written to ~/Desktop/Utopia Ads.
+in Chrome (tool/ads/shoot.sh). Written to ~/Desktop/Kaivon Growth/Utopia/Ads.
 
   python3 -m venv .venv && .venv/bin/pip install imageio-ffmpeg pillow
   tool/ads/shoot.sh                  # films every shot into build/ads/raw
@@ -12,7 +12,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from compose import render  # noqa: E402
 
-OUT = os.path.expanduser('~/Desktop/Utopia Ads')
+OUT = os.path.expanduser('~/Desktop/Kaivon Growth/Utopia/Ads')
 
 WORLDS = ['utopia_halloween', 'utopia_winter', 'utopia_music', 'utopia_heaven', 'utopia_hell',
           'utopia_dojo', 'utopia_deep', 'utopia_alien', 'utopia_birthday', 'utopia_zombie']

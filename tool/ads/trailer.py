@@ -7,7 +7,7 @@ games, into the dark where something is watching, and back to the gate.
 Over it: titles, an original score (tool/ads/score.py), the worlds' own
 sounds, and, in one version, a narrator talking to you (tool/ads/voice.py).
 
-  python tool/ads/trailer.py   # -> ~/Desktop/Utopia Ads: narrated, and music only
+  python tool/ads/trailer.py   # -> ~/Desktop/Kaivon Growth/Utopia/Ads: narrated, and music only
 """
 import os
 import subprocess
@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from compose import FF, GOLD, H, RAW, SFX, W, font  # noqa: E402
 from voice import LINES  # noqa: E402
 
-OUT = os.path.expanduser('~/Desktop/Utopia Ads')
+OUT = os.path.expanduser('~/Desktop/Kaivon Growth/Utopia/Ads')
 WORK = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
                     'build', 'ads', 'trailer')
 LENGTH = 76.0
