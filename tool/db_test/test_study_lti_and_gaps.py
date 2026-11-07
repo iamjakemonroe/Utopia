@@ -169,6 +169,30 @@ check("waiting launches expire after an hour", "link expired" in (refused(gus, "
 run(None, "select study_lti_pending_add(%s, 'sub-z', null, false, null, null)", plat)
 check("and old ones are cleared away", run(None, "select count(*) from study_lti_pending where token = %s", tok2) == 0)
 
+# ── Under-18s ─────────────────────────────────────────────────────────────
+uni2 = run(eve, "select study_institution_register('Night College', 'GB', 'college')")
+run(kaivon, "select study_staff_review(%s, 'approved', 10)", uni2)
+cls2 = run(eve, "select study_class_create(%s, 'ESL 1')", uni2)
+minor = harness.new_user(db, "minor@x.com")
+run(minor, "select study_age_confirm('guardian')")
+check("an under-18 can't join an institution that didn't allow under-18s",
+      "under 18 not allowed here" in (refused(minor, "select study_class_join(%s)", cls2["code"]) or ""))
+check("staff see the setting when they review",
+      [i["minors_consent"] for i in run(kaivon, "select study_staff_institutions('all')") if i["id"] == str(uni2)] == [False])
+check("only its admin can turn it on", "not allowed" in (refused(minor, "select study_institution_minors(%s, true)", uni2) or ""))
+run(eve, "select study_institution_minors(%s, true)", uni2)
+run(minor, "select study_class_join(%s)", cls2["code"])
+check("once its admin confirms parents' consent, they can",
+      run(None, "select role from study_institution_members where user_id = %s and institution_id = %s", minor, uni2) == "student")
+grown = harness.new_user(db, "grown@x.com")
+run(grown, "select study_age_confirm('adult')")
+run(eve, "select study_institution_minors(%s, false)", uni2)
+run(grown, "select study_class_join(%s)", cls2["code"])
+check("adults join either way", run(None, "select role from study_institution_members where user_id = %s", grown) == "student")
+sch = run(eve, "select study_institution_register('Hill School', 'GB', 'school', p_minors_consent => true)")
+run(kaivon, "select study_staff_review(%s, 'approved', 10)", sch)
+check("a school can't turn it off", "schools need it" in (refused(eve, "select study_institution_minors(%s, false)", sch) or ""))
+
 print()
 print("All platform and gap checks passed." if not fails else f"{len(fails)} failed")
 sys.exit(1 if fails else 0)
