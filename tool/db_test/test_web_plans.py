@@ -55,8 +55,18 @@ as_(ada)
 rows = q("select plan_id, currency, amount, until from web_plan_shop('USD')")
 check("five plans, in dollars", [r[0] for r in rows] == ["utopia.maestro.monthly", "rizz.pro.weekly", "rizz.pro.monthly", "study.pro.monthly", "study.pro.student.monthly"]
       and [float(r[2]) for r in rows] == [7.99, 3.99, 9.99, 7.99, 5.99] and all(r[1] == "USD" for r in rows), rows)
-check("asking in naira still gets dollars", all(r[1] == "USD" for r in q("select plan_id, currency from web_plan_shop('NGN')")))
-check("coins are in dollars too", admin("select count(*) from web_coin_prices where currency <> 'USD'")[0][0] == 0)
+# Buyers in Nigeria pay in naira: the dollar price's digits times 1,000
+# (20261107120000_naira_prices.sql).
+naira = q("select plan_id, currency, amount from web_plan_shop('NGN')")
+check("asking in naira gets naira, the dollar digits times 1,000",
+      all(r[1] == "NGN" for r in naira) and [float(r[2]) for r in naira] == [7990, 3990, 9990, 7990, 5990], naira)
+check("other currencies still get dollars", all(r[1] == "USD" for r in q("select plan_id, currency from web_plan_shop('EUR')")))
+check("every coin pack has a naira price, the dollar digits times 1,000",
+      admin("""select count(*) from web_coin_prices u join web_coin_prices n
+                 on n.product_id = u.product_id and n.currency = 'NGN'
+                where u.currency = 'USD' and n.amount = round(u.amount * 1000)""")[0][0]
+      == admin("select count(*) from web_coin_prices where currency = 'USD'")[0][0])
+check("and only dollars and naira", admin("select count(*) from web_coin_prices where currency not in ('USD', 'NGN')")[0][0] == 0)
 
 check("nobody's a member yet", all(r[3] is None for r in rows))
 

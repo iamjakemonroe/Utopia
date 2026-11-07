@@ -45,9 +45,11 @@ guest = harness.new_user(db)
 
 harness.as_user(db, buyer)
 naira = {r[0]: (r[1], float(r[2]), r[3]) for r in q("select * from web_coin_shop('ngn')")}
-check("prices in dollars, even asked in naira (Flutterwave converts)", naira["utopia.coins.sack"] == ("USD", 4.99, 55000), naira.get("utopia.coins.sack"))
+# Buyers in Nigeria pay in naira: the dollar digits times 1,000
+# (20261107120000_naira_prices.sql).
+check("asked in naira, prices in naira", naira["utopia.coins.sack"] == ("NGN", 4990.0, 55000), naira.get("utopia.coins.sack"))
 cedi = {r[0]: r[1] for r in q("select * from web_coin_shop('GHS')")}
-check("dollars everywhere", cedi["utopia.coins.sack"] == "USD")
+check("dollars everywhere else", cedi["utopia.coins.sack"] == "USD")
 
 harness.as_user(db, guest)
 check("guests can't buy", raises("select web_checkout_start('utopia.coins.sack', 'USD')") == "save your account first")
