@@ -464,3 +464,6 @@ verify_jwt = false
 # other job checks the token itself.
 [functions.chip-code]
 verify_jwt = false
+
+[functions.kaivon-ready]
+verify_jwt = false
