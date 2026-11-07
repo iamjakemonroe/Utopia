@@ -70,7 +70,13 @@ export async function hostedCheckout(p: {
         logo: p.logo ?? "https://utopia.kaivon.app/logo.png",
       },
       meta: p.meta,
-      ...(p.paymentPlan ? { payment_plan: p.paymentPlan, payment_options: "card" } : {}),
+      // Subscriptions renew on a card. A one-time payment in naira can also be
+      // a bank transfer or USSD, for buyers whose cards won't work.
+      ...(p.paymentPlan
+        ? { payment_plan: p.paymentPlan, payment_options: "card" }
+        : p.currency === "NGN"
+        ? { payment_options: "card, banktransfer, ussd" }
+        : {}),
     }),
   });
   return String(data.link);

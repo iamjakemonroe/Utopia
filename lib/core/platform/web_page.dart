@@ -25,7 +25,10 @@ abstract final class WebPage {
 
   static void releaseLoading() => impl.pageEvent('utopia-ready');
 
-  /// The currency prices are shown and charged in: US dollars, everywhere.
-  /// Flutterwave converts for cards in other currencies.
-  static String currency() => 'USD';
+  /// The currency prices are shown and charged in: naira for buyers in
+  /// Nigeria (the browser's time zone), US dollars everywhere else. Dollar
+  /// cards from US banks refuse Nigerian processors, and Verve cards can't
+  /// pay in dollars, so Nigeria pays in naira (supabase/migrations/
+  /// 20261107120000_naira_prices.sql).
+  static String currency() => impl.timeZone() == 'Africa/Lagos' ? 'NGN' : 'USD';
 }
