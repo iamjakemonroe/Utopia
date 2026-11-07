@@ -19,6 +19,10 @@
 //     is paid out (once: the webhook may have done it already). Answers
 //     { status: "paid", coins } for coins, { status: "paid", product, until }
 //     for a subscription, or { status } as Flutterwave has it.
+//   { action: "invoice", invoice_id }: an institution's admin pays a
+//     Chip Study invoice Kaivon issued (study_invoice_checkout_start):
+//     answers { link } to checkout, which comes back to the institution's
+//     page. Paid in full, the institution moves to paid seats.
 //   { action: "cancel", product }: cancels the member's own subscription to
 //     "maestro", "rizz_pro" or "study_pro" with Flutterwave; they keep what
 //     they paid for.
@@ -30,6 +34,7 @@ import {
   cancelSubscriptions,
   createPlan,
   credit,
+  creditInvoice,
   creditSubscription,
   endSubscription,
   environment,
@@ -185,12 +190,37 @@ Deno.serve(async (req: Request) => {
       return json({ link, ref: start.ref });
     }
 
+    if (body.action === "invoice") {
+      if (!Deno.env.get("FLW_SECRET_KEY")) throw new PaymentsOff();
+      const { data, error } = await player.rpc("study_invoice_checkout_start", { p_invoice: String(body.invoice_id ?? "") });
+      if (error) return json({ error: error.message.includes("not open") ? "paid" : "invoice" }, 400);
+      const inv = data as Record<string, unknown>;
+      if (!user.email) return json({ error: "account" }, 400);
+      const base = (Deno.env.get("STUDY_RETURN_URL") ?? "https://study.kaivon.app/app/plan").replace(/\/app\/plan$/, "");
+      const link = await hostedCheckout({
+        ref: String(inv.ref),
+        amount: Number(inv.amount),
+        currency: String(inv.currency),
+        email: user.email,
+        title: `Chip Study for ${String(inv.institution).slice(0, 60)}`,
+        description: String(inv.label),
+        logo: APPS.study.logo,
+        redirectUrl: `${base}/app/institution/${inv.institution_id}?invoice=1`,
+        meta: { user_id: user.id, invoice: String(body.invoice_id), app: "study" },
+      });
+      return json({ link, ref: inv.ref });
+    }
+
     if (body.action === "confirm") {
       const id = String(body.transaction_id ?? "");
       if (!/^\d+$/.test(id)) return json({ status: "unknown" });
       const t = await transaction(id);
       if (t.ref !== body.ref) return json({ status: "unknown" });
       if (t.status !== "successful") return json({ status: t.status });
+      if (t.ref.startsWith("kaivon-inv-")) {
+        const paid = await creditInvoice(t);
+        return json({ status: "paid", product: "institution", until: paid.paid_until });
+      }
       if (t.ref.startsWith("kaivon-sub-")) {
         const paid = await creditSubscription(t);
         if (paid.user_id !== user.id) return json({ status: "other" });

@@ -218,3 +218,17 @@ export function webhookHashMatches(given: string | null): boolean {
   for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
   return diff === 0;
 }
+
+/** An institution's Chip Study invoice, paid in full (credit_institution_invoice
+ * checks the amount and currency, and credits it once). */
+export async function creditInvoice(t: Transaction): Promise<Record<string, unknown>> {
+  const { data, error } = await admin().rpc("credit_institution_invoice", {
+    p_ref: t.ref,
+    p_provider_id: t.id,
+    p_amount: t.amount,
+    p_currency: t.currency,
+    p_environment: environment(),
+  });
+  if (error) throw new Error(`invoice ${t.ref}: ${error.message}`);
+  return data as Record<string, unknown>;
+}

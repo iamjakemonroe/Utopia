@@ -12,6 +12,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import {
   credit,
+  creditInvoice,
   creditSubscription,
   endSubscription,
   PaymentsOff,
@@ -76,6 +77,7 @@ Deno.serve(async (req: Request) => {
     }
     if (t.status === "successful") {
       if (t.ref.startsWith("utopia-")) await credit(t);
+      else if (t.ref.startsWith("kaivon-inv-")) await creditInvoice(t);
       else if (t.ref.startsWith("kaivon-sub-") || (t.plan && t.email)) await creditSubscription(t);
     }
     return new Response("ok", { status: 200 });

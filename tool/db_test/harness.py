@@ -111,8 +111,11 @@ def fresh(repo=REPO, upto=None):
     file named [upto], if given). Returns an autocommit connection."""
     global _server
     if _server is None:
+        # "delete": the throwaway database goes when the test ends. With
+        # "stop" each run left its data folder behind (176 of them filled the
+        # disk on 2026-11-07).
         _server = pgserver.get_server(tempfile.mkdtemp(prefix="utopia_pg_"),
-                                      cleanup_mode="stop")
+                                      cleanup_mode="delete")
     name = "t%d" % os.getpid()
     admin = psycopg2.connect(_server.get_uri())
     admin.autocommit = True
