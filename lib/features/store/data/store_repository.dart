@@ -311,8 +311,12 @@ class WebPayException implements Exception {
   final String message;
 }
 
+/// Currencies whose prices always show their pennies: '£1.00' next to
+/// '£3.99', not '£1'. Naira (and the rest) drop them when there are none.
+const _withPennies = {'USD', 'GBP', 'EUR', 'GHS', 'ZAR'};
+
 /// [amount] in [currency] the way people write it: '₦7,500', '\$4.99',
-/// 'GH₵15'.
+/// '£1.00', '€4.49', 'GH₵15.00'.
 String formatMoney(double amount, String currency) {
   final symbols = {
     'USD': r'$',
@@ -324,7 +328,9 @@ String formatMoney(double amount, String currency) {
     'ZAR': 'R',
   };
   final whole = amount == amount.roundToDouble();
-  final fixed = whole ? amount.round().toString() : amount.toStringAsFixed(2);
+  final fixed = whole && !_withPennies.contains(currency)
+      ? amount.round().toString()
+      : amount.toStringAsFixed(2);
   final parts = fixed.split('.');
   final grouped = parts[0].replaceAllMapped(
     RegExp(r'\B(?=(\d{3})+(?!\d))'),

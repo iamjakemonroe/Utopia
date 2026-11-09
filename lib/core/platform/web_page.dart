@@ -1,3 +1,4 @@
+import 'currency_rule.dart';
 import 'web_page_native.dart'
     if (dart.library.js_interop) 'web_page_web.dart'
     as impl;
@@ -25,10 +26,21 @@ abstract final class WebPage {
 
   static void releaseLoading() => impl.pageEvent('utopia-ready');
 
-  /// The currency prices are shown and charged in: naira for buyers in
-  /// Nigeria (the browser's time zone), US dollars everywhere else. Dollar
-  /// cards from US banks refuse Nigerian processors, and Verve cards can't
-  /// pay in dollars, so Nigeria pays in naira (supabase/migrations/
-  /// 20261107120000_naira_prices.sql).
-  static String currency() => impl.timeZone() == 'Africa/Lagos' ? 'NGN' : 'USD';
+  static Future<String>? _currency;
+
+  /// The currency prices are shown and charged in ([currencyFor]): from the
+  /// buyer's country (GET /api/geo on this site, Cloudflare's answer, given
+  /// 1.5 seconds), or from the browser's time zone when that isn't there
+  /// (running locally). Asked once a session.
+  static Future<String> currency() => _currency ??= _pickCurrency();
+
+  static Future<String> _pickCurrency() async {
+    String? country;
+    try {
+      country = await impl.geoCountry().timeout(
+        const Duration(milliseconds: 1500),
+      );
+    } catch (_) {}
+    return currencyFor(country: country, timeZone: impl.timeZone());
+  }
 }

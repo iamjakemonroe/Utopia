@@ -289,12 +289,14 @@ class StoreController extends StateNotifier<StoreState> {
   /// pack is still theirs to buy. Asked for together, when home opens, so
   /// the shop shows it all at once.
   Future<void> _refreshWeb() async {
+    // The buyer's currency is looked up (once) while payments are asked about.
+    final currencyFor = WebPage.currency();
     final on = await _repo.webPaymentsOn();
     var prices = const <String, String>{};
     String? maestro;
     var starter = false;
     if (on) {
-      final currency = WebPage.currency();
+      final currency = await currencyFor;
       final maestroPrice = _repo.webMaestroPrice(currency);
       try {
         final (coinShop, starterOffer) = await (
@@ -326,7 +328,7 @@ class StoreController extends StateNotifier<StoreState> {
     }
     state = state.copyWith(busyProduct: pack.id, clearMessage: true);
     try {
-      final link = await _repo.webCheckout(pack.id, WebPage.currency());
+      final link = await _repo.webCheckout(pack.id, await WebPage.currency());
       _ref.read(analyticsProvider).log('web_checkout', {'pack': pack.id});
       // Off to the checkout page, in this tab; it comes back to the game.
       await launchUrl(Uri.parse(link), webOnlyWindowName: '_self');
@@ -401,7 +403,7 @@ class StoreController extends StateNotifier<StoreState> {
     try {
       final link = await _repo.webSubscribe(
         kMaestroProductId,
-        WebPage.currency(),
+        await WebPage.currency(),
       );
       _ref.read(analyticsProvider).log('web_maestro_checkout');
       await launchUrl(Uri.parse(link), webOnlyWindowName: '_self');

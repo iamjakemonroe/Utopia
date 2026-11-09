@@ -5,3 +5,5 @@ void clearPageQuery() {}
 void pageEvent(String name) {}
 
 String timeZone() => '';
+
+Future<String?> geoCountry() async => null;
