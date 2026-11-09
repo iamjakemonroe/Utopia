@@ -17,8 +17,10 @@
 //   { action: "confirm", ref, transaction_id }: back from checkout, the
 //     app asks: Flutterwave is asked about the payment, and a successful one
 //     is paid out (once: the webhook may have done it already). Answers
-//     { status: "paid", coins } for coins, { status: "paid", product, until }
-//     for a subscription, or { status } as Flutterwave has it.
+//     { status: "paid", coins, balance, amount, currency } for coins,
+//     { status: "paid", product, until, amount, currency } for a
+//     subscription, or { status } as Flutterwave has it. Crediting also
+//     writes the buyer's purchase notification (in the SQL, once).
 //   { action: "invoice", invoice_id }: an institution's admin pays a
 //     Chip Study invoice Kaivon issued (study_invoice_checkout_start):
 //     answers { link } to checkout, which comes back to the institution's
@@ -114,6 +116,8 @@ Deno.serve(async (req: Request) => {
       const { data, error } = await player.rpc("web_checkout_start", {
         p_product: String(body.product ?? ""),
         p_currency: String(body.currency ?? "USD"),
+        // Which app it's bought in, for the buyer's purchase notification.
+        p_app: appOf(body.app),
       });
       if (error) {
         const why = error.message.includes("save your account")
@@ -224,11 +228,24 @@ Deno.serve(async (req: Request) => {
       if (t.ref.startsWith("kaivon-sub-")) {
         const paid = await creditSubscription(t);
         if (paid.user_id !== user.id) return json({ status: "other" });
-        return json({ status: "paid", product: paid.product, until: paid.until });
+        return json({
+          status: "paid",
+          product: paid.product,
+          until: paid.until,
+          amount: paid.amount ?? t.amount,
+          currency: paid.currency ?? t.currency,
+        });
       }
       const paid = await credit(t);
       if (paid.user_id !== user.id) return json({ status: "other" });
-      return json({ status: "paid", coins: paid.coins, balance: paid.balance });
+      return json({
+        status: "paid",
+        coins: paid.coins,
+        balance: paid.balance,
+        // The price asked, in the currency it was paid in.
+        amount: paid.amount ?? t.amount,
+        currency: paid.currency ?? t.currency,
+      });
     }
 
     if (body.action === "cancel") {
