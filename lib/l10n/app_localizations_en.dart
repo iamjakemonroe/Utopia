@@ -4808,20 +4808,6 @@ class L10nEn extends L10n {
       'Test top-ups aren\'t available on this server.';
 
   @override
-  String get storeYourPaymentIsStillGoing =>
-      'Your payment is still going through. Chip Maestro starts as soon as it does.';
-
-  @override
-  String get storeYourPaymentIsStillGoing2 =>
-      'Your payment is still going through. Your coins arrive as soon as it does.';
-
-  @override
-  String get storeThePurchaseDidnTGo => 'The purchase didn\'t go through.';
-
-  @override
-  String get storeWelcomeToChipMaestro => 'Welcome to Chip Maestro!';
-
-  @override
   String get storeYourChipMaestroPlanIs => 'Your Chip Maestro plan is back.';
 
   @override
@@ -4829,20 +4815,8 @@ class L10nEn extends L10n {
       'That Chip Maestro plan belongs to another Utopia account.';
 
   @override
-  String get storePaymentReceivedChipMaestroWill =>
-      'Payment received. Chip Maestro will start the next time you open Utopia.';
-
-  @override
   String get storeThoseCoinsWentToThe =>
       'Those coins went to the account that bought them.';
-
-  @override
-  String get storeThatPaymentWasCancelledSo =>
-      'That payment was cancelled, so no coins were added.';
-
-  @override
-  String get storePaymentReceivedYourCoinsWill =>
-      'Payment received. Your coins will arrive the next time you open Utopia.';
 
   @override
   String get storeNotEnoughCoinsYet => 'Not enough coins yet.';
@@ -6565,23 +6539,6 @@ class L10nEn extends L10n {
   String get voiceNotesSend => 'Send';
 
   @override
-  String get webPaymentReturnThePaymentDidnTGo =>
-      'The payment didn\'t go through, so nothing was charged.';
-
-  @override
-  String webPaymentReturnPaymentReceivedCoinsAdded(Object value) {
-    return 'Payment received: $value coins added!';
-  }
-
-  @override
-  String get webPaymentReturnYourPaymentIsBeingConfirmed =>
-      'Your payment is being confirmed. Your coins will arrive in a moment.';
-
-  @override
-  String get webPaymentReturnWeCouldnTConfirmThat =>
-      'We couldn\'t confirm that payment yet. If you were charged, your coins will arrive shortly.';
-
-  @override
   String get timeControlBullet => 'Bullet';
 
   @override
@@ -7634,6 +7591,101 @@ class L10nEn extends L10n {
       'Couldn\'t cancel just now. Try again.';
 
   @override
-  String get webPaymentReturnWelcomeToChipMaestro =>
-      'Welcome to Chip Maestro! Chip\'s at his best for you now.';
+  String get purchaseResultPaymentReceived => 'Payment received!';
+
+  @override
+  String purchaseResultYouPaid(Object price) {
+    return 'You paid $price';
+  }
+
+  @override
+  String get purchaseResultNewBalance => 'New balance';
+
+  @override
+  String get purchaseResultLovely => 'Lovely!';
+
+  @override
+  String get purchaseResultWelcomeToMaestro => 'Welcome to Chip Maestro!';
+
+  @override
+  String get purchaseResultMaestroBody => 'Chip\'s at his best for you now.';
+
+  @override
+  String purchaseResultMaestroPrice(Object price) {
+    return '$price a month, until you cancel';
+  }
+
+  @override
+  String get purchaseResultLetsCreate => 'Let\'s create';
+
+  @override
+  String get purchaseResultConfirming => 'Confirming your payment…';
+
+  @override
+  String get purchaseResultConfirmingBody =>
+      'This usually takes a few seconds.';
+
+  @override
+  String get purchaseResultClose => 'Close';
+
+  @override
+  String get purchaseResultStillConfirming => 'Still confirming';
+
+  @override
+  String get purchaseResultWaitingCoinsWeb =>
+      'We\'ll add your coins as soon as Flutterwave confirms. You\'ll get a notification.';
+
+  @override
+  String get purchaseResultWaitingMaestroWeb =>
+      'We\'ll start Chip Maestro as soon as Flutterwave confirms. You\'ll get a notification.';
+
+  @override
+  String get purchaseResultStillGoingThrough => 'Still going through';
+
+  @override
+  String get purchaseResultWaitingCoinsStore =>
+      'Your payment is still going through. We\'ll add your coins as soon as it does, and you\'ll get a notification.';
+
+  @override
+  String get purchaseResultWaitingMaestroStore =>
+      'Your payment is still going through. Chip Maestro starts as soon as it does, and you\'ll get a notification.';
+
+  @override
+  String get purchaseResultOk => 'OK';
+
+  @override
+  String get purchaseResultDidntGoThrough => 'Payment didn\'t go through';
+
+  @override
+  String get purchaseResultNothingCharged =>
+      'The payment didn\'t go through. Nothing was charged.';
+
+  @override
+  String get purchaseResultTryAgain => 'Try again';
+
+  @override
+  String get purchaseResultCouldntConfirm => 'We couldn\'t confirm it yet';
+
+  @override
+  String get purchaseResultCouldntConfirmCoins =>
+      'We couldn\'t confirm this payment just now. If you were charged, your coins will still be added, and it will show in your notifications.';
+
+  @override
+  String get purchaseResultCouldntConfirmMaestro =>
+      'We couldn\'t confirm this payment just now. If you were charged, Chip Maestro will still start, and it will show in your notifications.';
+
+  @override
+  String get purchaseResultCouldntConfirmStoreCoins =>
+      'The store couldn\'t confirm this payment just now. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.';
+
+  @override
+  String get purchaseResultCouldntConfirmStoreMaestro =>
+      'The store couldn\'t confirm this payment just now. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.';
+
+  @override
+  String get purchaseResultOtherAccount =>
+      'This payment was made on another Kaivon account, so that\'s where it went. Sign in to that account to see it.';
+
+  @override
+  String get purchaseResultSomewhereElse => 'Paid on another account';
 }

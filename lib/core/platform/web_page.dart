@@ -7,17 +7,31 @@ import 'web_page_native.dart'
 abstract final class WebPage {
   static Map<String, String> _query = const {};
 
+  /// A payment coming back from checkout says so in these.
+  static const paymentKeys = {'status', 'tx_ref', 'transaction_id'};
+
   /// What the address said when the game opened (?install=1, or a
   /// payment coming back: ?status=…&tx_ref=…&transaction_id=…). Empty in
   /// the apps.
   static Map<String, String> get query => _query;
 
   /// Reads the address's query, then takes it out of the address, so a
-  /// refresh doesn't act on it twice. Call once, at startup.
+  /// refresh doesn't act on it twice. A payment coming back stays in the
+  /// address until it's been shown ([clearPaymentQuery]), so a refresh
+  /// before then still shows it. Call once, at startup.
   static void captureQuery() {
     _query = impl.pageQuery();
-    if (_query.isNotEmpty) impl.clearPageQuery();
+    if (_query.isEmpty) return;
+    impl.setPageQuery({
+      if (_query.containsKey('tx_ref'))
+        for (final e in _query.entries)
+          if (paymentKeys.contains(e.key)) e.key: e.value,
+    });
   }
+
+  /// The payment coming back has been shown: out of the address, so a
+  /// refresh doesn't show it again.
+  static void clearPaymentQuery() => impl.setPageQuery(const {});
 
   /// The loading page (web/index.html) stays up past the game's first
   /// frame, until [releaseLoading]: the splash draws everything once out

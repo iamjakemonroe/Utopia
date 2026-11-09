@@ -9,7 +9,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/coin_buddy.dart';
-import '../../../core/widgets/confetti_burst.dart';
 import '../../../core/widgets/utopia_icons.dart';
 import '../../../core/widgets/utopia_loader.dart';
 import '../../../core/widgets/utopia_toast.dart';
@@ -20,16 +19,25 @@ import 'coin_pack_art.dart';
 import 'store_controller.dart';
 import '../../../l10n/strings.dart';
 
+/// How many coin shops are open (one, nearly always), so a purchase's
+/// "Try again" goes back to the one that's open instead of opening another.
+final coinShopOpen = ValueNotifier<int>(0);
+
 /// Opens the coin shop. [needed] explains why it opened (a game the player
 /// can't afford yet).
-Future<void> showCoinShop(BuildContext context, {int? needed}) {
+Future<void> showCoinShop(BuildContext context, {int? needed}) async {
   ProviderScope.containerOf(context).read(gameAudioProvider).play(Sfx.drawer);
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => _CoinShopSheet(needed: needed),
-  );
+  coinShopOpen.value++;
+  try {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _CoinShopSheet(needed: needed),
+    );
+  } finally {
+    coinShopOpen.value--;
+  }
 }
 
 class _CoinShopSheet extends ConsumerStatefulWidget {
@@ -42,9 +50,6 @@ class _CoinShopSheet extends ConsumerStatefulWidget {
 }
 
 class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
-  int? _celebrating;
-  int _celebrationKey = 0;
-
   @override
   Widget build(BuildContext context) {
     final store = ref.watch(storeControllerProvider);
@@ -53,18 +58,9 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
     final packs = controller.packsOnSale;
     final isGuest = ref.watch(isAnonymousProvider);
 
+    // A purchase's result (paid, or not) is its own modal, over this
+    // (PurchaseResultHost); anything else the store says is a toast here.
     ref.listen(storeControllerProvider, (prev, next) {
-      final added = next.coinsAdded;
-      if (added != null && added != prev?.coinsAdded) {
-        setState(() {
-          _celebrating = added;
-          _celebrationKey++;
-        });
-        controller.clearCoinsAdded();
-        Future.delayed(const Duration(milliseconds: 2600), () {
-          if (mounted) setState(() => _celebrating = null);
-        });
-      }
       final message = next.message;
       if (message != null && message != prev?.message) {
         showUtopiaToast(context, message);
@@ -199,13 +195,6 @@ class _CoinShopSheetState extends ConsumerState<_CoinShopSheet> {
                 ],
               ),
             ),
-            if (_celebrating != null)
-              Positioned.fill(
-                child: _Celebration(
-                  key: ValueKey(_celebrationKey),
-                  coins: _celebrating!,
-                ),
-              ),
           ],
         ),
       ),
@@ -543,64 +532,6 @@ class _PriceButton extends StatelessWidget {
                 style: AppTextStyles.display(fontSize: 16, color: Colors.white),
               ),
             ),
-    );
-  }
-}
-
-class _Celebration extends StatelessWidget {
-  const _Celebration({super.key, required this.coins});
-
-  final int coins;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Stack(
-        children: [
-          const Positioned.fill(child: ConfettiBurst(pieces: 90)),
-          Center(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: 1),
-              duration: const Duration(milliseconds: 900),
-              curve: Curves.elasticOut,
-              builder: (context, v, child) =>
-                  Transform.scale(scale: v, child: child),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 14,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(26),
-                  border: Border.all(
-                    color: AppColors.goldBorderBright,
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.goldBorderBright.withValues(alpha: 0.5),
-                      blurRadius: 30,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const CoinBuddy(mood: BuddyMood.happy, size: 64),
-                    CoinAmount(
-                      coins,
-                      prefix: '+',
-                      size: 28,
-                      color: AppColors.readable(AppColors.coinGoldBright),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

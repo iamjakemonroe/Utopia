@@ -20,6 +20,8 @@ import '../../maestro/presentation/maestro_providers.dart';
 import '../data/store_repository.dart';
 import '../domain/store_catalog.dart';
 import '../../../core/analytics/analytics.dart';
+import 'purchase_result.dart';
+import 'web_payment_return.dart';
 import '../../../l10n/strings.dart';
 
 final storeRepositoryProvider = Provider<StoreRepository>(
@@ -40,7 +42,7 @@ class StoreState {
     this.message,
     this.justUnlocked,
     this.unlockedFocus,
-    this.coinsAdded,
+    this.result,
     this.webPrices = const {},
     this.webPayments = false,
     this.webMaestroPrice,
@@ -101,8 +103,9 @@ class StoreState {
   /// (one world of a pack), so "Travel there" goes to that world.
   final String? unlockedFocus;
 
-  /// Coins just added by a purchase, for the celebration.
-  final int? coinsAdded;
+  /// How a purchase with money just went (paid, or not), for its modal
+  /// (PurchaseResultHost shows it, then clears it).
+  final PurchaseResult? result;
 
   /// Free, bought, or rented and still within the rental.
   bool isOwned(StoreItem item) =>
@@ -131,8 +134,8 @@ class StoreState {
     StoreProduct? justUnlocked,
     String? unlockedFocus,
     bool clearUnlocked = false,
-    int? coinsAdded,
-    bool clearCoinsAdded = false,
+    PurchaseResult? result,
+    bool clearResult = false,
     Map<String, String>? webPrices,
     bool? webPayments,
     String? webMaestroPrice,
@@ -154,7 +157,7 @@ class StoreState {
       unlockedFocus: clearUnlocked
           ? null
           : (unlockedFocus ?? this.unlockedFocus),
-      coinsAdded: clearCoinsAdded ? null : (coinsAdded ?? this.coinsAdded),
+      result: clearResult ? null : (result ?? this.result),
     );
   }
 }
@@ -328,10 +331,20 @@ class StoreController extends StateNotifier<StoreState> {
     }
     state = state.copyWith(busyProduct: pack.id, clearMessage: true);
     try {
-      final link = await _repo.webCheckout(pack.id, await WebPage.currency());
+      final checkout = await _repo.webCheckout(
+        pack.id,
+        await WebPage.currency(),
+      );
       _ref.read(analyticsProvider).log('web_checkout', {'pack': pack.id});
+      // What it was for, to say so when it comes back (WebPaymentReturn).
+      rememberWebCheckout(
+        _ref.read(sharedPreferencesProvider),
+        ref: checkout.ref,
+        coins: pack.coins,
+        price: state.webPrices[pack.id],
+      );
       // Off to the checkout page, in this tab; it comes back to the game.
-      await launchUrl(Uri.parse(link), webOnlyWindowName: '_self');
+      await launchUrl(Uri.parse(checkout.link), webOnlyWindowName: '_self');
     } on WebPayException catch (e) {
       if (mounted) state = state.copyWith(clearBusy: true, message: e.message);
     } catch (_) {
@@ -401,12 +414,17 @@ class StoreController extends StateNotifier<StoreState> {
     }
     state = state.copyWith(busyProduct: kMaestroProductId, clearMessage: true);
     try {
-      final link = await _repo.webSubscribe(
+      final checkout = await _repo.webSubscribe(
         kMaestroProductId,
         await WebPage.currency(),
       );
       _ref.read(analyticsProvider).log('web_maestro_checkout');
-      await launchUrl(Uri.parse(link), webOnlyWindowName: '_self');
+      rememberWebCheckout(
+        _ref.read(sharedPreferencesProvider),
+        ref: checkout.ref,
+        price: state.webMaestroPrice,
+      );
+      await launchUrl(Uri.parse(checkout.link), webOnlyWindowName: '_self');
     } on WebPayException catch (e) {
       if (mounted) state = state.copyWith(clearBusy: true, message: e.message);
     } catch (_) {
@@ -517,8 +535,14 @@ class StoreController extends StateNotifier<StoreState> {
               'p_verification': 'debug-unlock',
             },
           );
-      state = state.copyWith(clearBusy: true, coinsAdded: pack.coins);
-      _ref.read(gameAudioProvider).play(Sfx.purchase);
+      state = state.copyWith(
+        clearBusy: true,
+        result: PurchaseResult(
+          stage: PurchaseStage.paid,
+          via: PurchaseVia.store,
+          coins: pack.coins,
+        ),
+      );
     } catch (_) {
       state = state.copyWith(
         clearBusy: true,
@@ -527,7 +551,7 @@ class StoreController extends StateNotifier<StoreState> {
     }
   }
 
-  void clearCoinsAdded() => state = state.copyWith(clearCoinsAdded: true);
+  void clearResult() => state = state.copyWith(clearResult: true);
 
   Future<void> _onPurchases(List<PurchaseDetails> purchases) async {
     for (final p in purchases) {
@@ -536,6 +560,9 @@ class StoreController extends StateNotifier<StoreState> {
         ...StoreCatalog.coinPacks,
       ].where((x) => x.id == p.productID).firstOrNull;
       final maestro = p.productID.startsWith('utopia.maestro.');
+      // Bought just now, on this screen (not one the store hands back at
+      // launch): its outcome gets the result modal.
+      final mine = state.busyProduct == p.productID;
       switch (p.status) {
         case PurchaseStatus.purchased || PurchaseStatus.restored:
           // Anything else (an old world bought with money) has nothing to
@@ -543,20 +570,32 @@ class StoreController extends StateNotifier<StoreState> {
           if (maestro && !await _checkMaestro(p)) continue;
           if (pack != null && !await _check(p, pack)) continue;
         case PurchaseStatus.pending:
+          // Ask to Buy, or Google's cash and bank payments: the store
+          // sends it again once the money's in.
           state = state.copyWith(
             clearBusy: true,
-            message: maestro
-                ? strings.storeYourPaymentIsStillGoing
-                : strings.storeYourPaymentIsStillGoing2,
+            result: mine
+                ? PurchaseResult(
+                    stage: PurchaseStage.waiting,
+                    via: PurchaseVia.store,
+                    plan: maestro,
+                    coins: pack?.coins,
+                  )
+                : null,
           );
           continue;
-        case PurchaseStatus.error:
+        case PurchaseStatus.error || PurchaseStatus.canceled:
           state = state.copyWith(
             clearBusy: true,
-            message: strings.storeThePurchaseDidnTGo,
+            result: mine
+                ? PurchaseResult(
+                    stage: PurchaseStage.failed,
+                    via: PurchaseVia.store,
+                    plan: maestro,
+                    coins: pack?.coins,
+                  )
+                : null,
           );
-        case PurchaseStatus.canceled:
-          state = state.copyWith(clearBusy: true);
       }
       if (p.pendingCompletePurchase) {
         try {
@@ -586,16 +625,21 @@ class StoreController extends StateNotifier<StoreState> {
       switch (status) {
         case 'active':
           _ref.invalidate(maestroProvider);
-          state = state.copyWith(
-            clearBusy: true,
-            message: fresh
-                ? strings.storeWelcomeToChipMaestro
-                : strings.storeYourChipMaestroPlanIs,
-          );
-          if (fresh) {
-            _ref.read(gameAudioProvider).play(Sfx.purchase);
-            _ref.read(analyticsProvider).log('maestro_joined');
-          }
+          state = fresh
+              ? state.copyWith(
+                  clearBusy: true,
+                  result: PurchaseResult(
+                    stage: PurchaseStage.paid,
+                    via: PurchaseVia.store,
+                    plan: true,
+                    paid: state.products[kMaestroProductId]?.price,
+                  ),
+                )
+              : state.copyWith(
+                  clearBusy: true,
+                  message: strings.storeYourChipMaestroPlanIs,
+                );
+          if (fresh) _ref.read(analyticsProvider).log('maestro_joined');
           return true;
         case 'expired':
           _ref.invalidate(maestroProvider);
@@ -613,7 +657,13 @@ class StoreController extends StateNotifier<StoreState> {
         default:
           state = state.copyWith(
             clearBusy: true,
-            message: strings.storePaymentReceivedChipMaestroWill,
+            result: fresh
+                ? const PurchaseResult(
+                    stage: PurchaseStage.unconfirmed,
+                    via: PurchaseVia.store,
+                    plan: true,
+                  )
+                : null,
           );
           return false;
       }
@@ -637,19 +687,34 @@ class StoreController extends StateNotifier<StoreState> {
         purchaseId: id,
       );
       if (!mounted) return false;
+      final fresh = p.status == PurchaseStatus.purchased;
       switch (result) {
-        case CoinPurchaseCredited(:final coins, :final mine):
+        case CoinPurchaseCredited(
+          :final coins,
+          :final mine,
+          :final credited,
+          :final balance,
+        ):
           if (mine) {
+            // Paid out just now (or bought just now): the result modal. One
+            // the server had already paid out, handed back again, isn't news.
+            final news = coins > 0 && (credited || fresh);
             state = state.copyWith(
               clearBusy: true,
-              coinsAdded: coins > 0 ? coins : null,
+              result: news
+                  ? PurchaseResult(
+                      stage: PurchaseStage.paid,
+                      via: PurchaseVia.store,
+                      coins: coins,
+                      paid: state.products[pack.id]?.price,
+                      balance: balance,
+                    )
+                  : null,
               starterOffer: pack.id == StoreCatalog.starterPack.id
                   ? false
                   : null,
             );
-            // The balance on screen follows by itself (it's live).
-            if (coins > 0) _ref.read(gameAudioProvider).play(Sfx.purchase);
-            if (coins > 0) {
+            if (news) {
               _ref.read(analyticsProvider).log('coin_purchase', {
                 'pack': pack.id,
               });
@@ -664,19 +729,40 @@ class StoreController extends StateNotifier<StoreState> {
         case CoinPurchasePending():
           state = state.copyWith(
             clearBusy: true,
-            message: strings.storeYourPaymentIsStillGoing2,
+            result: fresh
+                ? PurchaseResult(
+                    stage: PurchaseStage.waiting,
+                    via: PurchaseVia.store,
+                    coins: pack.coins,
+                  )
+                : null,
           );
           return false;
+        // One handed back at launch that's void, or still can't be
+        // checked, is settled (or tried again) quietly: the modal is for
+        // what was bought just now.
         case CoinPurchaseVoid():
           state = state.copyWith(
             clearBusy: true,
-            message: strings.storeThatPaymentWasCancelledSo,
+            result: fresh
+                ? PurchaseResult(
+                    stage: PurchaseStage.failed,
+                    via: PurchaseVia.store,
+                    coins: pack.coins,
+                  )
+                : null,
           );
           return true;
         case CoinPurchaseRetry():
           state = state.copyWith(
             clearBusy: true,
-            message: strings.storePaymentReceivedYourCoinsWill,
+            result: fresh
+                ? PurchaseResult(
+                    stage: PurchaseStage.unconfirmed,
+                    via: PurchaseVia.store,
+                    coins: pack.coins,
+                  )
+                : null,
           );
           return false;
       }

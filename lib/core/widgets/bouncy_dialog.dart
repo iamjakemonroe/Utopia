@@ -27,6 +27,13 @@ Future<T?> showBouncyDialog<T>({
     pageBuilder: (context, _, _) =>
         SafeArea(child: Center(child: builder(context))),
     transitionBuilder: (context, animation, _, child) {
+      // Reduced motion: no spring, just there.
+      if (MediaQuery.disableAnimationsOf(context)) {
+        return Frosted(
+          sigma: 6,
+          child: FadeTransition(opacity: animation, child: child),
+        );
+      }
       final pop = animation.status == AnimationStatus.reverse
           ? Curves.easeInBack.transform(animation.value)
           : Curves.elasticOut.transform(animation.value);

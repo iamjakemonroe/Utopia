@@ -27,18 +27,27 @@ const _termsUrl =
     'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 const _privacyUrl = 'https://utopia.kaivon.app/privacy.html';
 
+/// How many Chip Maestro sheets are open (one, nearly always), so a
+/// purchase's "Try again" goes back to the one that's open.
+final maestroSheetOpen = ValueNotifier<int>(0);
+
 /// Opens Chip Maestro: what the plan gives, and joining (or, for members,
 /// where their plan stands).
-Future<void> showMaestroSheet(BuildContext context) {
+Future<void> showMaestroSheet(BuildContext context) async {
   final container = ProviderScope.containerOf(context);
   container.read(gameAudioProvider).play(Sfx.drawer);
   container.invalidate(maestroProvider);
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => const _MaestroSheet(),
-  );
+  maestroSheetOpen.value++;
+  try {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _MaestroSheet(),
+    );
+  } finally {
+    maestroSheetOpen.value--;
+  }
 }
 
 class _MaestroSheet extends ConsumerWidget {

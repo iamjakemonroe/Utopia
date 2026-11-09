@@ -6384,22 +6384,6 @@
   "@storeTestTopUpsArenT": {
     "description": "features/store/presentation/store_controller.dart"
   },
-  "storeYourPaymentIsStillGoing": "Your payment is still going through. Chip Maestro starts as soon as it does.",
-  "@storeYourPaymentIsStillGoing": {
-    "description": "features/store/presentation/store_controller.dart"
-  },
-  "storeYourPaymentIsStillGoing2": "Your payment is still going through. Your coins arrive as soon as it does.",
-  "@storeYourPaymentIsStillGoing2": {
-    "description": "features/store/presentation/store_controller.dart"
-  },
-  "storeThePurchaseDidnTGo": "The purchase didn't go through.",
-  "@storeThePurchaseDidnTGo": {
-    "description": "features/store/presentation/store_controller.dart"
-  },
-  "storeWelcomeToChipMaestro": "Welcome to Chip Maestro!",
-  "@storeWelcomeToChipMaestro": {
-    "description": "features/store/presentation/store_controller.dart"
-  },
   "storeYourChipMaestroPlanIs": "Your Chip Maestro plan is back.",
   "@storeYourChipMaestroPlanIs": {
     "description": "features/store/presentation/store_controller.dart"
@@ -6408,20 +6392,8 @@
   "@storeThatChipMaestroPlanBelongs": {
     "description": "features/store/presentation/store_controller.dart"
   },
-  "storePaymentReceivedChipMaestroWill": "Payment received. Chip Maestro will start the next time you open Utopia.",
-  "@storePaymentReceivedChipMaestroWill": {
-    "description": "features/store/presentation/store_controller.dart"
-  },
   "storeThoseCoinsWentToThe": "Those coins went to the account that bought them.",
   "@storeThoseCoinsWentToThe": {
-    "description": "features/store/presentation/store_controller.dart"
-  },
-  "storeThatPaymentWasCancelledSo": "That payment was cancelled, so no coins were added.",
-  "@storeThatPaymentWasCancelledSo": {
-    "description": "features/store/presentation/store_controller.dart"
-  },
-  "storePaymentReceivedYourCoinsWill": "Payment received. Your coins will arrive the next time you open Utopia.",
-  "@storePaymentReceivedYourCoinsWill": {
     "description": "features/store/presentation/store_controller.dart"
   },
   "storeNotEnoughCoinsYet": "Not enough coins yet.",
@@ -8757,27 +8729,6 @@
   "@voiceNotesSend": {
     "description": "features/chat/presentation/voice_notes.dart"
   },
-  "webPaymentReturnThePaymentDidnTGo": "The payment didn't go through, so nothing was charged.",
-  "@webPaymentReturnThePaymentDidnTGo": {
-    "description": "features/store/presentation/web_payment_return.dart"
-  },
-  "webPaymentReturnPaymentReceivedCoinsAdded": "Payment received: {value} coins added!",
-  "@webPaymentReturnPaymentReceivedCoinsAdded": {
-    "description": "features/store/presentation/web_payment_return.dart",
-    "placeholders": {
-      "value": {
-        "type": "Object"
-      }
-    }
-  },
-  "webPaymentReturnYourPaymentIsBeingConfirmed": "Your payment is being confirmed. Your coins will arrive in a moment.",
-  "@webPaymentReturnYourPaymentIsBeingConfirmed": {
-    "description": "features/store/presentation/web_payment_return.dart"
-  },
-  "webPaymentReturnWeCouldnTConfirmThat": "We couldn't confirm that payment yet. If you were charged, your coins will arrive shortly.",
-  "@webPaymentReturnWeCouldnTConfirmThat": {
-    "description": "features/store/presentation/web_payment_return.dart"
-  },
   "timeControlBullet": "Bullet",
   "@timeControlBullet": {
     "description": "features/chess/domain/time_control.dart"
@@ -9841,8 +9792,126 @@
   "@storeCouldnTCancelThatTry": {
     "description": "features/store/presentation/store_controller.dart"
   },
-  "webPaymentReturnWelcomeToChipMaestro": "Welcome to Chip Maestro! Chip's at his best for you now.",
-  "@webPaymentReturnWelcomeToChipMaestro": {
-    "description": "features/store/presentation/web_payment_return.dart"
+  "purchaseResultPaymentReceived": "Payment received!",
+  "@purchaseResultPaymentReceived": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultYouPaid": "You paid {price}",
+  "@purchaseResultYouPaid": {
+    "description": "features/store/presentation/purchase_result.dart",
+    "placeholders": {
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "purchaseResultNewBalance": "New balance",
+  "@purchaseResultNewBalance": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultLovely": "Lovely!",
+  "@purchaseResultLovely": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultWelcomeToMaestro": "Welcome to Chip Maestro!",
+  "@purchaseResultWelcomeToMaestro": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultMaestroBody": "Chip's at his best for you now.",
+  "@purchaseResultMaestroBody": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultMaestroPrice": "{price} a month, until you cancel",
+  "@purchaseResultMaestroPrice": {
+    "description": "features/store/presentation/purchase_result.dart",
+    "placeholders": {
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "purchaseResultLetsCreate": "Let's create",
+  "@purchaseResultLetsCreate": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultConfirming": "Confirming your payment…",
+  "@purchaseResultConfirming": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultConfirmingBody": "This usually takes a few seconds.",
+  "@purchaseResultConfirmingBody": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultClose": "Close",
+  "@purchaseResultClose": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultStillConfirming": "Still confirming",
+  "@purchaseResultStillConfirming": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultWaitingCoinsWeb": "We'll add your coins as soon as Flutterwave confirms. You'll get a notification.",
+  "@purchaseResultWaitingCoinsWeb": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultWaitingMaestroWeb": "We'll start Chip Maestro as soon as Flutterwave confirms. You'll get a notification.",
+  "@purchaseResultWaitingMaestroWeb": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultStillGoingThrough": "Still going through",
+  "@purchaseResultStillGoingThrough": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultWaitingCoinsStore": "Your payment is still going through. We'll add your coins as soon as it does, and you'll get a notification.",
+  "@purchaseResultWaitingCoinsStore": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultWaitingMaestroStore": "Your payment is still going through. Chip Maestro starts as soon as it does, and you'll get a notification.",
+  "@purchaseResultWaitingMaestroStore": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultOk": "OK",
+  "@purchaseResultOk": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultDidntGoThrough": "Payment didn't go through",
+  "@purchaseResultDidntGoThrough": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultNothingCharged": "The payment didn't go through. Nothing was charged.",
+  "@purchaseResultNothingCharged": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultTryAgain": "Try again",
+  "@purchaseResultTryAgain": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultCouldntConfirm": "We couldn't confirm it yet",
+  "@purchaseResultCouldntConfirm": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultCouldntConfirmCoins": "We couldn't confirm this payment just now. If you were charged, your coins will still be added, and it will show in your notifications.",
+  "@purchaseResultCouldntConfirmCoins": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultCouldntConfirmMaestro": "We couldn't confirm this payment just now. If you were charged, Chip Maestro will still start, and it will show in your notifications.",
+  "@purchaseResultCouldntConfirmMaestro": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultCouldntConfirmStoreCoins": "The store couldn't confirm this payment just now. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.",
+  "@purchaseResultCouldntConfirmStoreCoins": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultCouldntConfirmStoreMaestro": "The store couldn't confirm this payment just now. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.",
+  "@purchaseResultCouldntConfirmStoreMaestro": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultOtherAccount": "This payment was made on another Kaivon account, so that's where it went. Sign in to that account to see it.",
+  "@purchaseResultOtherAccount": {
+    "description": "features/store/presentation/purchase_result.dart"
+  },
+  "purchaseResultSomewhereElse": "Paid on another account",
+  "@purchaseResultSomewhereElse": {
+    "description": "features/store/presentation/purchase_result.dart"
   }
 }

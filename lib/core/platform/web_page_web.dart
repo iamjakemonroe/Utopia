@@ -11,10 +11,13 @@ Map<String, String> pageQuery() {
   }
 }
 
-void clearPageQuery() {
+/// The address with only [query] after the path (none when it's empty),
+/// without a reload or a new history entry.
+void setPageQuery(Map<String, String> query) {
   try {
     final l = web.window.location;
-    web.window.history.replaceState(null, '', '${l.pathname}${l.hash}');
+    final search = query.isEmpty ? '' : '?${Uri(queryParameters: query).query}';
+    web.window.history.replaceState(null, '', '${l.pathname}$search${l.hash}');
   } catch (_) {}
 }
 

@@ -54,6 +54,8 @@ class StoreRepository {
         return CoinPurchaseCredited(
           coins: (data['coins'] as num?)?.toInt() ?? 0,
           mine: data['mine'] != false,
+          credited: data['credited'] != false,
+          balance: (data['balance'] as num?)?.toInt(),
         );
       }
       if (data is Map && data['status'] == 'pending') {
@@ -127,9 +129,13 @@ class StoreRepository {
     };
   }
 
-  /// Starts paying for [productId] on the web: the checkout page's link.
-  /// Throws [WebPayException] with what to tell the player.
-  Future<String> webCheckout(String productId, String currency) async {
+  /// Starts paying for [productId] on the web: the checkout page's link,
+  /// and the reference the payment goes by. Throws [WebPayException] with
+  /// what to tell the player.
+  Future<({String link, String? ref})> webCheckout(
+    String productId,
+    String currency,
+  ) async {
     try {
       final res = await _client.functions.invoke(
         'web-pay',
@@ -137,10 +143,14 @@ class StoreRepository {
           'action': 'checkout',
           'product': productId,
           'currency': currency,
+          'app': 'utopia',
         },
       );
-      final link = (res.data as Map?)?['link'];
-      if (link is String && link.startsWith('https://')) return link;
+      final data = res.data as Map?;
+      final link = data?['link'];
+      if (link is String && link.startsWith('https://')) {
+        return (link: link, ref: data?['ref'] as String?);
+      }
     } on FunctionException catch (e) {
       final why = e.details is Map ? (e.details as Map)['error'] : null;
       throw WebPayException(switch (why) {
@@ -174,16 +184,28 @@ class StoreRepository {
   }
 
   /// Starts a subscription to [plan] on the web: Flutterwave's checkout
-  /// page, which charges the card again each month until it's cancelled.
-  /// Throws [WebPayException] with what to tell the player.
-  Future<String> webSubscribe(String plan, String currency) async {
+  /// page, which charges the card again each month until it's cancelled,
+  /// and the reference it goes by. Throws [WebPayException] with what to
+  /// tell the player.
+  Future<({String link, String? ref})> webSubscribe(
+    String plan,
+    String currency,
+  ) async {
     try {
       final res = await _client.functions.invoke(
         'web-pay',
-        body: {'action': 'subscribe', 'plan': plan, 'currency': currency},
+        body: {
+          'action': 'subscribe',
+          'plan': plan,
+          'currency': currency,
+          'app': 'utopia',
+        },
       );
-      final link = (res.data as Map?)?['link'];
-      if (link is String && link.startsWith('https://')) return link;
+      final data = res.data as Map?;
+      final link = data?['link'];
+      if (link is String && link.startsWith('https://')) {
+        return (link: link, ref: data?['ref'] as String?);
+      }
     } on FunctionException catch (e) {
       final why = e.details is Map ? (e.details as Map)['error'] : null;
       throw WebPayException(switch (why) {
@@ -210,13 +232,9 @@ class StoreRepository {
     );
   }
 
-  /// Back from checkout: whether payment [ref] went through ('paid',
-  /// with its coins, or the [product] it subscribed to), as the payment
-  /// service has it.
-  Future<({String status, int coins, String? product})> webConfirm(
-    String ref,
-    String transactionId,
-  ) async {
+  /// Back from checkout: whether payment [ref] went through, as the
+  /// payment service has it ([WebConfirmation]).
+  Future<WebConfirmation> webConfirm(String ref, String transactionId) async {
     try {
       final res = await _client.functions.invoke(
         'web-pay',
@@ -226,14 +244,9 @@ class StoreRepository {
           'transaction_id': transactionId,
         },
       );
-      final data = res.data as Map? ?? const {};
-      return (
-        status: data['status'] as String? ?? 'unknown',
-        coins: (data['coins'] as num?)?.toInt() ?? 0,
-        product: data['product'] as String?,
-      );
+      return WebConfirmation.fromJson(res.data as Map? ?? const {});
     } catch (_) {
-      return (status: 'error', coins: 0, product: null);
+      return const WebConfirmation(status: 'error');
     }
   }
 
@@ -283,10 +296,21 @@ sealed class CoinPurchaseResult {
 /// for another account signed in on this phone earlier, which got the
 /// coins instead.
 class CoinPurchaseCredited extends CoinPurchaseResult {
-  const CoinPurchaseCredited({required this.coins, required this.mine});
+  const CoinPurchaseCredited({
+    required this.coins,
+    required this.mine,
+    this.credited = true,
+    this.balance,
+  });
 
   final int coins;
   final bool mine;
+
+  /// Paid out by this check (false: it already had been, before).
+  final bool credited;
+
+  /// The buyer's balance after (only for their own purchase).
+  final int? balance;
 }
 
 /// The store is still waiting for the money (a cash or bank payment).
@@ -302,6 +326,49 @@ class CoinPurchaseVoid extends CoinPurchaseResult {
 /// Couldn't be checked right now: keep it and try again later.
 class CoinPurchaseRetry extends CoinPurchaseResult {
   const CoinPurchaseRetry();
+}
+
+/// What the payment service said about a web payment, back from checkout.
+class WebConfirmation {
+  const WebConfirmation({
+    required this.status,
+    this.coins = 0,
+    this.balance,
+    this.product,
+    this.amount,
+    this.currency,
+  });
+
+  factory WebConfirmation.fromJson(Map data) => WebConfirmation(
+    status: data['status'] as String? ?? 'unknown',
+    coins: (data['coins'] as num?)?.toInt() ?? 0,
+    balance: (data['balance'] as num?)?.toInt(),
+    product: data['product'] as String?,
+    amount: (data['amount'] as num?)?.toDouble(),
+    currency: data['currency'] as String?,
+  );
+
+  /// 'paid'; Flutterwave's own word while it isn't ('pending', 'failed',
+  /// 'cancelled'); 'other' (paid, by another account); 'unknown' (no such
+  /// payment); or 'error' (the service couldn't be reached).
+  final String status;
+
+  /// The coins it added (a coin pack), and the balance after.
+  final int coins;
+  final int? balance;
+
+  /// The plan it started ('maestro'), for a subscription.
+  final String? product;
+
+  /// What was paid, in the currency it was paid in (an older web-pay
+  /// doesn't say).
+  final double? amount;
+  final String? currency;
+
+  /// [amount] ready to show ('£3.99'), when it's known.
+  String? get paid => amount == null || currency == null
+      ? null
+      : formatMoney(amount!, currency!);
 }
 
 /// Why a web payment couldn't start, in the player's words.

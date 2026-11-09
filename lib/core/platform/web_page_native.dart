@@ -1,6 +1,6 @@
 Map<String, String> pageQuery() => const {};
 
-void clearPageQuery() {}
+void setPageQuery(Map<String, String> query) {}
 
 void pageEvent(String name) {}
 

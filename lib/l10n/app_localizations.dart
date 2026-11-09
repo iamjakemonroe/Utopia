@@ -8477,30 +8477,6 @@ abstract class L10n {
   /// features/store/presentation/store_controller.dart
   ///
   /// In en, this message translates to:
-  /// **'Your payment is still going through. Chip Maestro starts as soon as it does.'**
-  String get storeYourPaymentIsStillGoing;
-
-  /// features/store/presentation/store_controller.dart
-  ///
-  /// In en, this message translates to:
-  /// **'Your payment is still going through. Your coins arrive as soon as it does.'**
-  String get storeYourPaymentIsStillGoing2;
-
-  /// features/store/presentation/store_controller.dart
-  ///
-  /// In en, this message translates to:
-  /// **'The purchase didn\'t go through.'**
-  String get storeThePurchaseDidnTGo;
-
-  /// features/store/presentation/store_controller.dart
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to Chip Maestro!'**
-  String get storeWelcomeToChipMaestro;
-
-  /// features/store/presentation/store_controller.dart
-  ///
-  /// In en, this message translates to:
   /// **'Your Chip Maestro plan is back.'**
   String get storeYourChipMaestroPlanIs;
 
@@ -8513,26 +8489,8 @@ abstract class L10n {
   /// features/store/presentation/store_controller.dart
   ///
   /// In en, this message translates to:
-  /// **'Payment received. Chip Maestro will start the next time you open Utopia.'**
-  String get storePaymentReceivedChipMaestroWill;
-
-  /// features/store/presentation/store_controller.dart
-  ///
-  /// In en, this message translates to:
   /// **'Those coins went to the account that bought them.'**
   String get storeThoseCoinsWentToThe;
-
-  /// features/store/presentation/store_controller.dart
-  ///
-  /// In en, this message translates to:
-  /// **'That payment was cancelled, so no coins were added.'**
-  String get storeThatPaymentWasCancelledSo;
-
-  /// features/store/presentation/store_controller.dart
-  ///
-  /// In en, this message translates to:
-  /// **'Payment received. Your coins will arrive the next time you open Utopia.'**
-  String get storePaymentReceivedYourCoinsWill;
 
   /// features/store/presentation/store_controller.dart
   ///
@@ -11612,30 +11570,6 @@ abstract class L10n {
   /// **'Send'**
   String get voiceNotesSend;
 
-  /// features/store/presentation/web_payment_return.dart
-  ///
-  /// In en, this message translates to:
-  /// **'The payment didn\'t go through, so nothing was charged.'**
-  String get webPaymentReturnThePaymentDidnTGo;
-
-  /// features/store/presentation/web_payment_return.dart
-  ///
-  /// In en, this message translates to:
-  /// **'Payment received: {value} coins added!'**
-  String webPaymentReturnPaymentReceivedCoinsAdded(Object value);
-
-  /// features/store/presentation/web_payment_return.dart
-  ///
-  /// In en, this message translates to:
-  /// **'Your payment is being confirmed. Your coins will arrive in a moment.'**
-  String get webPaymentReturnYourPaymentIsBeingConfirmed;
-
-  /// features/store/presentation/web_payment_return.dart
-  ///
-  /// In en, this message translates to:
-  /// **'We couldn\'t confirm that payment yet. If you were charged, your coins will arrive shortly.'**
-  String get webPaymentReturnWeCouldnTConfirmThat;
-
   /// features/chess/domain/time_control.dart
   ///
   /// In en, this message translates to:
@@ -13502,11 +13436,173 @@ abstract class L10n {
   /// **'Couldn\'t cancel just now. Try again.'**
   String get storeCouldnTCancelThatTry;
 
-  /// features/store/presentation/web_payment_return.dart
+  /// features/store/presentation/purchase_result.dart
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Chip Maestro! Chip\'s at his best for you now.'**
-  String get webPaymentReturnWelcomeToChipMaestro;
+  /// **'Payment received!'**
+  String get purchaseResultPaymentReceived;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You paid {price}'**
+  String purchaseResultYouPaid(Object price);
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'New balance'**
+  String get purchaseResultNewBalance;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Lovely!'**
+  String get purchaseResultLovely;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Chip Maestro!'**
+  String get purchaseResultWelcomeToMaestro;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip\'s at his best for you now.'**
+  String get purchaseResultMaestroBody;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{price} a month, until you cancel'**
+  String purchaseResultMaestroPrice(Object price);
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s create'**
+  String get purchaseResultLetsCreate;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming your payment…'**
+  String get purchaseResultConfirming;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'This usually takes a few seconds.'**
+  String get purchaseResultConfirmingBody;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get purchaseResultClose;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Still confirming'**
+  String get purchaseResultStillConfirming;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll add your coins as soon as Flutterwave confirms. You\'ll get a notification.'**
+  String get purchaseResultWaitingCoinsWeb;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll start Chip Maestro as soon as Flutterwave confirms. You\'ll get a notification.'**
+  String get purchaseResultWaitingMaestroWeb;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Still going through'**
+  String get purchaseResultStillGoingThrough;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment is still going through. We\'ll add your coins as soon as it does, and you\'ll get a notification.'**
+  String get purchaseResultWaitingCoinsStore;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment is still going through. Chip Maestro starts as soon as it does, and you\'ll get a notification.'**
+  String get purchaseResultWaitingMaestroStore;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get purchaseResultOk;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Payment didn\'t go through'**
+  String get purchaseResultDidntGoThrough;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The payment didn\'t go through. Nothing was charged.'**
+  String get purchaseResultNothingCharged;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get purchaseResultTryAgain;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm it yet'**
+  String get purchaseResultCouldntConfirm;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm this payment just now. If you were charged, your coins will still be added, and it will show in your notifications.'**
+  String get purchaseResultCouldntConfirmCoins;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm this payment just now. If you were charged, Chip Maestro will still start, and it will show in your notifications.'**
+  String get purchaseResultCouldntConfirmMaestro;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The store couldn\'t confirm this payment just now. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.'**
+  String get purchaseResultCouldntConfirmStoreCoins;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'The store couldn\'t confirm this payment just now. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.'**
+  String get purchaseResultCouldntConfirmStoreMaestro;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'This payment was made on another Kaivon account, so that\'s where it went. Sign in to that account to see it.'**
+  String get purchaseResultOtherAccount;
+
+  /// features/store/presentation/purchase_result.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Paid on another account'**
+  String get purchaseResultSomewhereElse;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
