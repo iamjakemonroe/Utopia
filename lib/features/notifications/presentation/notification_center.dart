@@ -18,6 +18,8 @@ import '../../../core/widgets/utopia_icons.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import '../../chess/domain/time_control.dart';
 import '../../friends/presentation/providers/friends_providers.dart';
+import '../../store/data/store_repository.dart';
+import '../../store/presentation/purchase_result.dart';
 import '../data/notification_repository.dart';
 import 'answer_buttons.dart';
 import 'notification_actions.dart';
@@ -43,7 +45,12 @@ class NotificationLook {
   final IconData icon;
   final Color color;
 
-  /// Who news from Utopia itself (a report fixed) comes from: Chip.
+  /// Whether [n] is news from Utopia itself (a report fixed, a purchase)
+  /// rather than from another player.
+  static bool fromUtopia(AppNotification n) =>
+      n.kind == 'report_update' || n.kind == 'purchase';
+
+  /// Who news from Utopia itself comes from: Chip.
   static final utopia = <String, dynamic>{
     'display_name': strings.notificationCenterUtopia,
     'avatar_kind': 'chip',
@@ -120,6 +127,8 @@ class NotificationLook {
           Icons.celebration_rounded,
           const Color(0xFFFFD166),
         );
+      case 'purchase':
+        return _purchase(PurchaseNews(n.data));
       default:
         return NotificationLook(
           name,
@@ -129,6 +138,114 @@ class NotificationLook {
         );
     }
   }
+
+  /// "You bought 20,000 coins · ₦1,000", "Chip Maestro is on · £6.49 a
+  /// month", "Chip Maestro renewed", "Chip Study Pro is on".
+  static NotificationLook _purchase(PurchaseNews p) {
+    final price = p.price;
+    final coins = p.coins;
+    if (coins != null) {
+      final count = formatCoins(coins);
+      final app = p.appName;
+      return NotificationLook(
+        switch ((app, price)) {
+          (null, null) => strings.notificationCenterYouBoughtCoins(count),
+          (null, final price?) => strings.notificationCenterYouBoughtCoinsPrice(
+            count,
+            price,
+          ),
+          (final app?, null) => strings.notificationCenterYouBoughtCoinsIn(
+            count,
+            app,
+          ),
+          (final app?, final price?) =>
+            strings.notificationCenterYouBoughtCoinsInPrice(count, app, price),
+        },
+        strings.notificationCenterCoinsInYourBalance,
+        Icons.monetization_on_rounded,
+        AppColors.coinGold,
+      );
+    }
+    final plan = p.planName;
+    final weekly = p.period == 'weekly';
+    final title = p.renewal
+        ? (price == null
+              ? strings.notificationCenterPlanRenewed(plan)
+              : strings.notificationCenterPlanRenewedPrice(plan, price))
+        : price == null
+        ? strings.notificationCenterPlanOn(plan)
+        : weekly
+        ? strings.notificationCenterPlanOnWeekly(plan, price)
+        : strings.notificationCenterPlanOnMonthly(plan, price);
+    final subtitle = p.renewal
+        ? (weekly
+              ? strings.notificationCenterAnotherWeekPaid
+              : strings.notificationCenterAnotherMonthPaid)
+        : p.app == 'utopia'
+        ? strings.notificationCenterMaestroIsOn
+        : strings.notificationCenterReadyIn(p.appName ?? plan);
+    return NotificationLook(
+      title,
+      subtitle,
+      Icons.auto_awesome_rounded,
+      const Color(0xFFFF5C9C),
+    );
+  }
+}
+
+/// A purchase notification's data (see the purchase notifications
+/// migration): what was bought, where, and what was paid.
+class PurchaseNews {
+  const PurchaseNews(this.data);
+
+  final Map<String, dynamic> data;
+
+  /// 'utopia', 'chip' or 'study'.
+  String get app => data['app'] as String? ?? 'utopia';
+
+  String get productId => data['product_id'] as String? ?? '';
+
+  /// A coin pack's coins (null for a plan).
+  int? get coins => (data['coins'] as num?)?.toInt();
+
+  bool get renewal => data['renewal'] == true;
+
+  /// 'weekly' or 'monthly', for a plan.
+  String? get period => data['period'] as String?;
+
+  /// What was paid, ready to show ('£3.99'); null when the store didn't
+  /// say (the App Store and Google Play keep the price to themselves).
+  String? get price {
+    final amount = (data['amount'] as num?)?.toDouble();
+    final currency = data['currency'] as String?;
+    return amount == null || currency == null
+        ? null
+        : formatMoney(amount, currency);
+  }
+
+  /// The app, named when it isn't Utopia ('Chip Rizz', 'Chip Study').
+  String? get appName => switch (app) {
+    'chip' => strings.notificationCenterChipRizz,
+    'study' => strings.notificationCenterChipStudy,
+    _ => null,
+  };
+
+  /// The plan's name ('Chip Maestro', 'Chip Rizz Pro', 'Chip Study Pro').
+  String get planName {
+    if (productId.startsWith('utopia.maestro.')) {
+      return strings.maestroChipMaestro;
+    }
+    if (productId.startsWith('rizz.pro.')) {
+      return strings.notificationCenterChipRizzPro;
+    }
+    if (productId.startsWith('study.pro.')) {
+      return strings.notificationCenterChipStudyPro;
+    }
+    return data['title'] as String? ?? strings.maestroChipMaestro;
+  }
+
+  /// Chip Maestro (Utopia's plan), rather than coins or another app's plan.
+  bool get maestro => productId.startsWith('utopia.maestro.');
 }
 
 /// Watches the player's notifications for the whole session. A new one pops
@@ -221,6 +338,11 @@ class _NotificationCenterState extends ConsumerState<NotificationCenter>
       for (final n in list.reversed)
         if (n.id > baseline && n.unread) n,
     ];
+    // A purchase whose result is on screen (or just was) is news already;
+    // it's in the list all the same.
+    if (PurchaseResults.quiet) {
+      fresh.removeWhere((n) => n.kind == 'purchase');
+    }
     if (newest > baseline) _baseline = newest;
     if (fresh.isEmpty) return;
 
@@ -399,7 +521,7 @@ class _BannerState extends ConsumerState<_Banner> {
   Widget build(BuildContext context) {
     final n = widget.notification;
     final actor = n.actorId;
-    final fromUtopia = n.kind == 'report_update';
+    final fromUtopia = NotificationLook.fromUtopia(n);
     final profile = fromUtopia
         ? NotificationLook.utopia
         : actor == null

@@ -13603,6 +13603,136 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Paid on another account'**
   String get purchaseResultSomewhereElse;
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You bought {coins} coins'**
+  String notificationCenterYouBoughtCoins(Object coins);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You bought {coins} coins · {price}'**
+  String notificationCenterYouBoughtCoinsPrice(Object coins, Object price);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You bought {coins} coins in {app}'**
+  String notificationCenterYouBoughtCoinsIn(Object coins, Object app);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'You bought {coins} coins in {app} · {price}'**
+  String notificationCenterYouBoughtCoinsInPrice(
+    Object coins,
+    Object app,
+    Object price,
+  );
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{plan} is on'**
+  String notificationCenterPlanOn(Object plan);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{plan} is on · {price} a month'**
+  String notificationCenterPlanOnMonthly(Object plan, Object price);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{plan} is on · {price} a week'**
+  String notificationCenterPlanOnWeekly(Object plan, Object price);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{plan} renewed'**
+  String notificationCenterPlanRenewed(Object plan);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'{plan} renewed · {price}'**
+  String notificationCenterPlanRenewedPrice(Object plan, Object price);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'They\'re in your balance. Have fun!'**
+  String get notificationCenterCoinsInYourBalance;
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip\'s at his best for you now.'**
+  String get notificationCenterMaestroIsOn;
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Ready in {app}.'**
+  String notificationCenterReadyIn(Object app);
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Another month, paid. Thank you!'**
+  String get notificationCenterAnotherMonthPaid;
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Another week, paid. Thank you!'**
+  String get notificationCenterAnotherWeekPaid;
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip Rizz'**
+  String get notificationCenterChipRizz;
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip Study'**
+  String get notificationCenterChipStudy;
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip Rizz Pro'**
+  String get notificationCenterChipRizzPro;
+
+  /// features/notifications/presentation/notification_center.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Chip Study Pro'**
+  String get notificationCenterChipStudyPro;
+
+  /// features/notifications/presentation/notifications_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Coin shop'**
+  String get notificationsCoinShop;
+
+  /// features/notifications/presentation/notifications_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan'**
+  String get notificationsYourPlan;
+
+  /// features/notifications/presentation/notifications_screen.dart
+  ///
+  /// In en, this message translates to:
+  /// **'Open {app}'**
+  String notificationsOpenApp(Object app);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

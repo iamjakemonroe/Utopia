@@ -9913,5 +9913,165 @@
   "purchaseResultSomewhereElse": "Paid on another account",
   "@purchaseResultSomewhereElse": {
     "description": "features/store/presentation/purchase_result.dart"
+  },
+  "notificationCenterYouBoughtCoins": "You bought {coins} coins",
+  "@notificationCenterYouBoughtCoins": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "coins": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterYouBoughtCoinsPrice": "You bought {coins} coins · {price}",
+  "@notificationCenterYouBoughtCoinsPrice": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "coins": {
+        "type": "Object"
+      },
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterYouBoughtCoinsIn": "You bought {coins} coins in {app}",
+  "@notificationCenterYouBoughtCoinsIn": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "coins": {
+        "type": "Object"
+      },
+      "app": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterYouBoughtCoinsInPrice": "You bought {coins} coins in {app} · {price}",
+  "@notificationCenterYouBoughtCoinsInPrice": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "coins": {
+        "type": "Object"
+      },
+      "app": {
+        "type": "Object"
+      },
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterPlanOn": "{plan} is on",
+  "@notificationCenterPlanOn": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "plan": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterPlanOnMonthly": "{plan} is on · {price} a month",
+  "@notificationCenterPlanOnMonthly": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "plan": {
+        "type": "Object"
+      },
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterPlanOnWeekly": "{plan} is on · {price} a week",
+  "@notificationCenterPlanOnWeekly": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "plan": {
+        "type": "Object"
+      },
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterPlanRenewed": "{plan} renewed",
+  "@notificationCenterPlanRenewed": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "plan": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterPlanRenewedPrice": "{plan} renewed · {price}",
+  "@notificationCenterPlanRenewedPrice": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "plan": {
+        "type": "Object"
+      },
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterCoinsInYourBalance": "They're in your balance. Have fun!",
+  "@notificationCenterCoinsInYourBalance": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterMaestroIsOn": "Chip's at his best for you now.",
+  "@notificationCenterMaestroIsOn": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterReadyIn": "Ready in {app}.",
+  "@notificationCenterReadyIn": {
+    "description": "features/notifications/presentation/notification_center.dart",
+    "placeholders": {
+      "app": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationCenterAnotherMonthPaid": "Another month, paid. Thank you!",
+  "@notificationCenterAnotherMonthPaid": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterAnotherWeekPaid": "Another week, paid. Thank you!",
+  "@notificationCenterAnotherWeekPaid": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterChipRizz": "Chip Rizz",
+  "@notificationCenterChipRizz": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterChipStudy": "Chip Study",
+  "@notificationCenterChipStudy": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterChipRizzPro": "Chip Rizz Pro",
+  "@notificationCenterChipRizzPro": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationCenterChipStudyPro": "Chip Study Pro",
+  "@notificationCenterChipStudyPro": {
+    "description": "features/notifications/presentation/notification_center.dart"
+  },
+  "notificationsCoinShop": "Coin shop",
+  "@notificationsCoinShop": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsYourPlan": "Your plan",
+  "@notificationsYourPlan": {
+    "description": "features/notifications/presentation/notifications_screen.dart"
+  },
+  "notificationsOpenApp": "Open {app}",
+  "@notificationsOpenApp": {
+    "description": "features/notifications/presentation/notifications_screen.dart",
+    "placeholders": {
+      "app": {
+        "type": "Object"
+      }
+    }
   }
 }

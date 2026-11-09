@@ -7688,4 +7688,97 @@ class L10nEn extends L10n {
 
   @override
   String get purchaseResultSomewhereElse => 'Paid on another account';
+
+  @override
+  String notificationCenterYouBoughtCoins(Object coins) {
+    return 'You bought $coins coins';
+  }
+
+  @override
+  String notificationCenterYouBoughtCoinsPrice(Object coins, Object price) {
+    return 'You bought $coins coins · $price';
+  }
+
+  @override
+  String notificationCenterYouBoughtCoinsIn(Object coins, Object app) {
+    return 'You bought $coins coins in $app';
+  }
+
+  @override
+  String notificationCenterYouBoughtCoinsInPrice(
+    Object coins,
+    Object app,
+    Object price,
+  ) {
+    return 'You bought $coins coins in $app · $price';
+  }
+
+  @override
+  String notificationCenterPlanOn(Object plan) {
+    return '$plan is on';
+  }
+
+  @override
+  String notificationCenterPlanOnMonthly(Object plan, Object price) {
+    return '$plan is on · $price a month';
+  }
+
+  @override
+  String notificationCenterPlanOnWeekly(Object plan, Object price) {
+    return '$plan is on · $price a week';
+  }
+
+  @override
+  String notificationCenterPlanRenewed(Object plan) {
+    return '$plan renewed';
+  }
+
+  @override
+  String notificationCenterPlanRenewedPrice(Object plan, Object price) {
+    return '$plan renewed · $price';
+  }
+
+  @override
+  String get notificationCenterCoinsInYourBalance =>
+      'They\'re in your balance. Have fun!';
+
+  @override
+  String get notificationCenterMaestroIsOn =>
+      'Chip\'s at his best for you now.';
+
+  @override
+  String notificationCenterReadyIn(Object app) {
+    return 'Ready in $app.';
+  }
+
+  @override
+  String get notificationCenterAnotherMonthPaid =>
+      'Another month, paid. Thank you!';
+
+  @override
+  String get notificationCenterAnotherWeekPaid =>
+      'Another week, paid. Thank you!';
+
+  @override
+  String get notificationCenterChipRizz => 'Chip Rizz';
+
+  @override
+  String get notificationCenterChipStudy => 'Chip Study';
+
+  @override
+  String get notificationCenterChipRizzPro => 'Chip Rizz Pro';
+
+  @override
+  String get notificationCenterChipStudyPro => 'Chip Study Pro';
+
+  @override
+  String get notificationsCoinShop => 'Coin shop';
+
+  @override
+  String get notificationsYourPlan => 'Your plan';
+
+  @override
+  String notificationsOpenApp(Object app) {
+    return 'Open $app';
+  }
 }

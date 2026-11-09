@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/profiles/profile_providers.dart';
 import '../../../core/profiles/profile_repository.dart';
@@ -20,6 +21,8 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import '../../chess/presentation/controllers/chess_match_controller.dart';
 import '../../friends/presentation/providers/friends_providers.dart';
 import '../../friends/presentation/widgets/friends_popup.dart';
+import '../../maestro/presentation/maestro_sheet.dart';
+import '../../store/presentation/coin_shop.dart';
 import '../data/notification_repository.dart';
 import 'answer_buttons.dart';
 import 'notification_actions.dart';
@@ -98,7 +101,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final actorIds = {
       for (final n in list)
         if (n.actorId != null &&
-            n.kind != 'report_update' &&
+            !NotificationLook.fromUtopia(n) &&
             !isBotId(n.actorId))
           n.actorId!,
     }.toList()..sort();
@@ -280,6 +283,32 @@ class _RowState extends ConsumerState<_Row> {
     });
   }
 
+  /// A purchase, tapped: where more of it is (the coin shop, Chip Maestro),
+  /// or the app it was bought in.
+  void _openPurchase() {
+    final p = PurchaseNews(widget.notification.data);
+    if (p.coins != null) {
+      showCoinShop(context);
+    } else if (p.maestro) {
+      showMaestroSheet(context);
+    } else {
+      final url = _appUrls[p.app];
+      if (url != null) {
+        launchUrl(
+          Uri.parse(url),
+          mode: LaunchMode.externalApplication,
+        ).ignore();
+      }
+    }
+  }
+
+  /// Each app's front door (not its plan page: from the App Store build
+  /// that would be a way to pay outside the store).
+  static const _appUrls = {
+    'chip': 'https://chip.kaivon.app/',
+    'study': 'https://study.kaivon.app/',
+  };
+
   /// A profile already loaded (a friend's, a computer player's), without
   /// asking the server for it: everyone's fetched together.
   Map<String, dynamic>? _known(String id) {
@@ -292,7 +321,7 @@ class _RowState extends ConsumerState<_Row> {
   Widget build(BuildContext context) {
     final n = widget.notification;
     final actor = n.actorId;
-    final fromUtopia = n.kind == 'report_update';
+    final fromUtopia = NotificationLook.fromUtopia(n);
     final profile = fromUtopia
         ? NotificationLook.utopia
         : actor == null
@@ -305,159 +334,195 @@ class _RowState extends ConsumerState<_Row> {
         : profileDisplayName(profile, actor);
     final look = NotificationLook.of(n, name);
     final open = widget.open && _answered == null;
+    final purchase = n.kind == 'purchase' ? PurchaseNews(n.data) : null;
 
     return Arrive(
       duration: Duration(milliseconds: 350 + widget.index.clamp(0, 8) * 70),
       fade: Curves.easeOutCubic,
       child: Padding(
         padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-        child: PopCard(
-          borderRadius: 22,
-          tint: n.unread ? look.color : null,
-          glow: n.unread ? look.color : null,
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      UserAvatar.fromProfile(
-                        profile,
-                        fallbackInitial: name,
-                        radius: 22,
-                      ),
-                      Positioned(
-                        right: -4,
-                        bottom: -4,
-                        child: Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: look.color,
-                            border: Border.all(
-                              color: AppColors.surface,
-                              width: 2,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: purchase == null ? null : _openPurchase,
+          child: PopCard(
+            borderRadius: 22,
+            tint: n.unread ? look.color : null,
+            glow: n.unread ? look.color : null,
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        UserAvatar.fromProfile(
+                          profile,
+                          fallbackInitial: name,
+                          radius: 22,
+                        ),
+                        Positioned(
+                          right: -4,
+                          bottom: -4,
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: look.color,
+                              border: Border.all(
+                                color: AppColors.surface,
+                                width: 2,
+                              ),
+                            ),
+                            child: Icon(
+                              look.icon,
+                              size: 12,
+                              color: Colors.white,
                             ),
                           ),
-                          child: Icon(look.icon, size: 12, color: Colors.white),
                         ),
+                      ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            look.title,
+                            style: AppTextStyles.body(
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            look.subtitle,
+                            style: AppTextStyles.body(
+                              fontSize: 12.5,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          if (look.quote != null) ...[
+                            const SizedBox(height: 6),
+                            GiftNote(look.quote!),
+                          ],
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          look.title,
+                          _ago(n.createdAt),
                           style: AppTextStyles.body(
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          look.subtitle,
-                          style: AppTextStyles.body(
-                            fontSize: 12.5,
+                            fontSize: 11,
                             color: AppColors.textSecondary,
                           ),
                         ),
-                        if (look.quote != null) ...[
+                        if (n.unread) ...[
                           const SizedBox(height: 6),
-                          GiftNote(look.quote!),
+                          Container(
+                            width: 9,
+                            height: 9,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: look.color,
+                            ),
+                          ),
                         ],
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        _ago(n.createdAt),
-                        style: AppTextStyles.body(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      if (n.unread) ...[
-                        const SizedBox(height: 6),
-                        Container(
-                          width: 9,
-                          height: 9,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: look.color,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-              if (open &&
-                  (n.kind == 'friend_request' || n.kind == 'game_invite'))
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: AnswerButtons(
-                    busy: _busy,
-                    acceptLabel: n.kind == 'game_invite'
-                        ? strings.notificationsPlay
-                        : strings.notificationsAccept,
-                    onDecline: () => _answer(false),
-                    onAccept: () => _answer(true),
-                  ),
-                )
-              else if (_answered != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      _answered!,
-                      style: AppTextStyles.body(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.readable(AppColors.success),
-                      ),
-                    ),
-                  ),
-                )
-              else if (n.kind == 'friend_birthday' &&
-                  n.createdAt.isAfter(
-                    DateTime.now().subtract(const Duration(days: 1)),
-                  ))
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: look.color,
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: _busy ? null : _wish,
-                      icon: const Icon(Icons.cake_rounded, size: 18),
-                      label: Text(strings.notificationsWishHappyBirthday),
-                    ),
-                  ),
-                )
-              else if (n.kind == 'friend_accepted')
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton.icon(
-                      onPressed: () => context.push('/chess'),
-                      icon: const Icon(Icons.extension_rounded, size: 18),
-                      label: Text(strings.notificationsPlayAGame),
-                    ),
-                  ),
+                  ],
                 ),
-            ],
+                if (open &&
+                    (n.kind == 'friend_request' || n.kind == 'game_invite'))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: AnswerButtons(
+                      busy: _busy,
+                      acceptLabel: n.kind == 'game_invite'
+                          ? strings.notificationsPlay
+                          : strings.notificationsAccept,
+                      onDecline: () => _answer(false),
+                      onAccept: () => _answer(true),
+                    ),
+                  )
+                else if (_answered != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        _answered!,
+                        style: AppTextStyles.body(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.readable(AppColors.success),
+                        ),
+                      ),
+                    ),
+                  )
+                else if (n.kind == 'friend_birthday' &&
+                    n.createdAt.isAfter(
+                      DateTime.now().subtract(const Duration(days: 1)),
+                    ))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: look.color,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: _busy ? null : _wish,
+                        icon: const Icon(Icons.cake_rounded, size: 18),
+                        label: Text(strings.notificationsWishHappyBirthday),
+                      ),
+                    ),
+                  )
+                else if (n.kind == 'friend_accepted')
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        onPressed: () => context.push('/chess'),
+                        icon: const Icon(Icons.extension_rounded, size: 18),
+                        label: Text(strings.notificationsPlayAGame),
+                      ),
+                    ),
+                  )
+                else if (purchase != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        onPressed: _openPurchase,
+                        icon: Icon(
+                          purchase.coins != null
+                              ? Icons.storefront_rounded
+                              : purchase.maestro
+                              ? Icons.auto_awesome_rounded
+                              : Icons.open_in_new_rounded,
+                          size: 18,
+                        ),
+                        label: Text(
+                          purchase.coins != null
+                              ? strings.notificationsCoinShop
+                              : purchase.maestro
+                              ? strings.notificationsYourPlan
+                              : strings.notificationsOpenApp(
+                                  purchase.appName ?? purchase.planName,
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
