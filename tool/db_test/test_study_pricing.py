@@ -78,8 +78,9 @@ check("study_me tells a school email it gets the student price",
       me["student"] == {"eligible": True, "domain": "strath.ac.uk"} and float(me["student_price"]["amount"]) == 5.99
       and float(me["price"]["amount"]) == 7.99 and me["plan"] is None, me)
 prices = (attempt(student, "select study_me() -> 'prices'"), attempt(student, "select study_me() -> 'student_prices'"))
-check("study_me lists Pro's price in dollars and naira",
-      prices[0] == {"USD": 7.99, "NGN": 7990} and prices[1] == {"USD": 5.99, "NGN": 5990}, prices)
+check("study_me lists Pro's price in dollars, naira, pounds and euros",
+      prices[0] == {"USD": 7.99, "NGN": 7990, "GBP": 6.49, "EUR": 7.49}
+      and prices[1] == {"USD": 5.99, "NGN": 5990, "GBP": 4.99, "EUR": 5.49}, prices)
 me = attempt(pro, "select study_me()")
 check("and anyone else that they don't", me["student"] == {"eligible": False, "domain": "gmail.com"}, me["student"])
 check("an unconfirmed school email doesn't count",

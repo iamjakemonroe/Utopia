@@ -60,13 +60,31 @@ check("five plans, in dollars", [r[0] for r in rows] == ["utopia.maestro.monthly
 naira = q("select plan_id, currency, amount from web_plan_shop('NGN')")
 check("asking in naira gets naira, the dollar digits times 1,000",
       all(r[1] == "NGN" for r in naira) and [float(r[2]) for r in naira] == [7990, 3990, 9990, 7990, 5990], naira)
-check("other currencies still get dollars", all(r[1] == "USD" for r in q("select plan_id, currency from web_plan_shop('EUR')")))
+check("other currencies still get dollars", all(r[1] == "USD" for r in q("select plan_id, currency from web_plan_shop('CHF')")))
 check("every coin pack has a naira price, the dollar digits times 1,000",
       admin("""select count(*) from web_coin_prices u join web_coin_prices n
                  on n.product_id = u.product_id and n.currency = 'NGN'
                 where u.currency = 'USD' and n.amount = round(u.amount * 1000)""")[0][0]
       == admin("select count(*) from web_coin_prices where currency = 'USD'")[0][0])
-check("and only dollars and naira", admin("select count(*) from web_coin_prices where currency not in ('USD', 'NGN')")[0][0] == 0)
+check("and only dollars, naira, pounds and euros",
+      admin("select count(*) from web_coin_prices where currency not in ('USD', 'NGN', 'GBP', 'EUR')")[0][0] == 0)
+# Buyers in the UK pay in pounds, at prices the founder set
+# (20261109120000_pound_and_euro_prices.sql).
+pounds = q("select plan_id, currency, amount from web_plan_shop('GBP')")
+check("asking in pounds gets pounds", all(r[1] == "GBP" for r in pounds)
+      and {r[0]: float(r[2]) for r in pounds} == {"utopia.maestro.monthly": 6.49, "rizz.pro.weekly": 2.99,
+                                                  "rizz.pro.monthly": 7.99, "study.pro.monthly": 6.49,
+                                                  "study.pro.student.monthly": 4.99}, pounds)
+check("…in lower case too", all(r[1] == "GBP" for r in q("select plan_id, currency from web_plan_shop('gbp')")))
+# Buyers in the euro countries pay in euros: about 93% of the dollar price,
+# rounded to .49 or .99.
+euros = q("select plan_id, currency, amount from web_plan_shop('EUR')")
+check("asking in euros gets euros", all(r[1] == "EUR" for r in euros)
+      and {r[0]: float(r[2]) for r in euros} == {"utopia.maestro.monthly": 7.49, "rizz.pro.weekly": 3.49,
+                                                 "rizz.pro.monthly": 9.49, "study.pro.monthly": 7.49,
+                                                 "study.pro.student.monthly": 5.49}, euros)
+check("pound and euro plans are made with Flutterwave on first use",
+      admin("select count(*) from web_plan_prices where currency in ('GBP', 'EUR') and flw_plan_id is not null")[0][0] == 0)
 
 check("nobody's a member yet", all(r[3] is None for r in rows))
 
@@ -78,6 +96,13 @@ start = one("select web_subscribe_start('rizz.pro.monthly', 'USD')")
 check("an account can", start["ref"].startswith("kaivon-sub-") and float(start["amount"]) == 9.99
       and start["currency"] == "USD" and start["email"] == "ada@example.com" and start["flw_plan_id"] is None, start)
 check("unknown plans are refused", raises("select web_subscribe_start('nope', 'USD')") == "unknown plan")
+gbp_start = one("select web_subscribe_start('rizz.pro.weekly', 'GBP')")
+check("subscribing in pounds", gbp_start["currency"] == "GBP" and float(gbp_start["amount"]) == 2.99
+      and gbp_start["flw_plan_id"] is None, gbp_start)
+eur_start = one("select web_subscribe_start('rizz.pro.weekly', 'EUR')")
+check("subscribing in euros", eur_start["currency"] == "EUR" and float(eur_start["amount"]) == 3.49, eur_start)
+check("…and a currency without a price is charged in dollars",
+      one("select web_subscribe_start('rizz.pro.weekly', 'CHF')")["currency"] == "USD")
 check("players can't read subscriptions directly", raises("select * from web_subscriptions") is not None)
 
 # The function makes Flutterwave's plan and pays.

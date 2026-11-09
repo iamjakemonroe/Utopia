@@ -54,6 +54,24 @@ dollars = {r[0]: float(r[2]) for r in q("select * from web_coin_shop('USD')")}
 check("no pack under a dollar: Flutterwave refuses dollar charges under $1",
       min(dollars.values()) >= 1 and dollars["utopia.coins.starter"] == 1.0 and dollars["utopia.coins.pouch"] == 1.0, dollars)
 check("and the smallest naira price is N1,000", naira["utopia.coins.pouch"][1] == 1000.0, naira.get("utopia.coins.pouch"))
+# Buyers in the UK pay in pounds, at prices the founder set
+# (20261109120000_pound_and_euro_prices.sql).
+pounds = {r[0]: (r[1], float(r[2])) for r in q("select * from web_coin_shop('GBP')")}
+check("asked in pounds, prices in pounds",
+      pounds == {"utopia.coins.starter": ("GBP", 1.0), "utopia.coins.pouch": ("GBP", 1.0),
+                 "utopia.coins.sack": ("GBP", 3.99), "utopia.coins.chest": ("GBP", 7.99),
+                 "utopia.coins.vault": ("GBP", 15.99), "utopia.coins.mountain": ("GBP", 39.99),
+                 "utopia.coins.hoard": ("GBP", 79.99)}, pounds)
+check("every pack sold in dollars is sold in pounds", set(pounds) == set(dollars), (set(pounds), set(dollars)))
+# And in the euro countries, in euros: about 93% of the dollar price,
+# rounded to .49 or .99, at least EUR 1.
+euros = {r[0]: (r[1], float(r[2])) for r in q("select * from web_coin_shop('EUR')")}
+check("asked in euros, prices in euros",
+      euros == {"utopia.coins.starter": ("EUR", 1.0), "utopia.coins.pouch": ("EUR", 1.0),
+                "utopia.coins.sack": ("EUR", 4.49), "utopia.coins.chest": ("EUR", 9.49),
+                "utopia.coins.vault": ("EUR", 18.49), "utopia.coins.mountain": ("EUR", 46.49),
+                "utopia.coins.hoard": ("EUR", 92.99)}, euros)
+check("a currency without prices still gets dollars", all(r[1] == "USD" for r in q("select * from web_coin_shop('CHF')")))
 
 harness.as_user(db, guest)
 check("guests can't buy", raises("select web_checkout_start('utopia.coins.sack', 'USD')") == "save your account first")
@@ -88,5 +106,24 @@ check("a refund takes the coins back", balance(buyer) == coins - 55000)
 harness.as_user(db, buyer)
 check("players can't credit themselves",
       raises("select credit_web_payment('x', 'y', 1, 'USD')") is not None)
+
+# Paying in pounds.
+quid = q("select web_checkout_start('utopia.coins.chest', 'GBP')")[0][0]
+check("a checkout in pounds", quid["currency"] == "GBP" and float(quid["amount"]) == 7.99 and quid["coins"] == 120000, quid)
+check("…isn't paid in dollars",
+      (harness.as_admin(db), raises("select credit_web_payment(%s, 'flw-gbp', 7.99, 'USD')", quid["ref"]))[1] is not None)
+before = balance(buyer)
+paid = admin("select credit_web_payment(%s, 'flw-gbp', 7.99, 'GBP')", quid["ref"])[0][0]
+check("…and is paid in pounds", paid["credited"] is True and balance(buyer) == before + 120000, paid)
+
+# Paying in euros.
+harness.as_user(db, buyer)
+euro = q("select web_checkout_start('utopia.coins.sack', 'EUR')")[0][0]
+check("a checkout in euros", euro["currency"] == "EUR" and float(euro["amount"]) == 4.49, euro)
+check("…isn't paid short",
+      (harness.as_admin(db), raises("select credit_web_payment(%s, 'flw-eur', 4.00, 'EUR')", euro["ref"]))[1] is not None)
+before = balance(buyer)
+paid = admin("select credit_web_payment(%s, 'flw-eur', 4.49, 'EUR')", euro["ref"])[0][0]
+check("…and is paid in euros", paid["credited"] is True and balance(buyer) == before + 55000, paid)
 
 sys.exit(1 if fails else 0)

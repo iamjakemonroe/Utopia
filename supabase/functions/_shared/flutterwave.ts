@@ -71,11 +71,16 @@ export async function hostedCheckout(p: {
       },
       meta: p.meta,
       // Subscriptions renew on a card. A one-time payment in naira can also be
-      // a bank transfer or USSD, for buyers whose cards won't work.
+      // a bank transfer or USSD, for buyers whose cards won't work. Pounds
+      // and euros are card only: Flutterwave's other ways to pay are for
+      // African currencies, and offering them to a buyer in Europe only
+      // fails later.
       ...(p.paymentPlan
         ? { payment_plan: p.paymentPlan, payment_options: "card" }
         : p.currency === "NGN"
         ? { payment_options: "card, banktransfer, ussd" }
+        : p.currency === "GBP" || p.currency === "EUR"
+        ? { payment_options: "card" }
         : {}),
     }),
   });
