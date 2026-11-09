@@ -190,10 +190,8 @@ void main() {
       tester,
       const PurchaseResult(stage: PurchaseStage.failed, coins: 20000),
     );
-    expect(
-      find.text("The payment didn't go through. Nothing was charged."),
-      findsOneWidget,
-    );
+    expect(find.text("The payment didn't go through"), findsOneWidget);
+    expect(find.text('Nothing was charged.'), findsOneWidget);
     expect(card.ears.heard, [Sfx.toggleOff]);
     await tester.tap(find.text('Try again'));
     expect(card.triedAgain, 1);

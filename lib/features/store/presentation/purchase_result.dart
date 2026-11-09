@@ -308,7 +308,7 @@ class _PurchaseResultViewState extends ConsumerState<PurchaseResultView> {
         );
       case PurchaseStage.confirming:
         return _Body(
-          hero: const UtopiaLoader(size: 64),
+          hero: const UtopiaLoader(size: 52),
           title: strings.purchaseResultConfirming,
           lines: [strings.purchaseResultConfirmingBody],
           secondary: strings.purchaseResultClose,
@@ -420,8 +420,7 @@ class _Body extends StatelessWidget {
         if (secondary != null) ...[
           if (primary != null) const SizedBox(height: AppSpacing.xs),
           TextButton(onPressed: onSecondary, child: Text(secondary!)),
-        ] else
-          const SizedBox(height: AppSpacing.sm),
+        ],
       ],
     );
   }

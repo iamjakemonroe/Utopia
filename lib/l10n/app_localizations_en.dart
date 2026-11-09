@@ -7654,11 +7654,10 @@ class L10nEn extends L10n {
   String get purchaseResultOk => 'OK';
 
   @override
-  String get purchaseResultDidntGoThrough => 'Payment didn\'t go through';
+  String get purchaseResultDidntGoThrough => 'The payment didn\'t go through';
 
   @override
-  String get purchaseResultNothingCharged =>
-      'The payment didn\'t go through. Nothing was charged.';
+  String get purchaseResultNothingCharged => 'Nothing was charged.';
 
   @override
   String get purchaseResultTryAgain => 'Try again';
@@ -7668,19 +7667,19 @@ class L10nEn extends L10n {
 
   @override
   String get purchaseResultCouldntConfirmCoins =>
-      'We couldn\'t confirm this payment just now. If you were charged, your coins will still be added, and it will show in your notifications.';
+      'If you were charged, your coins will still be added, and it will show in your notifications.';
 
   @override
   String get purchaseResultCouldntConfirmMaestro =>
-      'We couldn\'t confirm this payment just now. If you were charged, Chip Maestro will still start, and it will show in your notifications.';
+      'If you were charged, Chip Maestro will still start, and it will show in your notifications.';
 
   @override
   String get purchaseResultCouldntConfirmStoreCoins =>
-      'The store couldn\'t confirm this payment just now. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.';
+      'The store hasn\'t confirmed it yet. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.';
 
   @override
   String get purchaseResultCouldntConfirmStoreMaestro =>
-      'The store couldn\'t confirm this payment just now. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.';
+      'The store hasn\'t confirmed it yet. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.';
 
   @override
   String get purchaseResultOtherAccount =>

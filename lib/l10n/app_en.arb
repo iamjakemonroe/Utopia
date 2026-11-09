@@ -9874,11 +9874,11 @@
   "@purchaseResultOk": {
     "description": "features/store/presentation/purchase_result.dart"
   },
-  "purchaseResultDidntGoThrough": "Payment didn't go through",
+  "purchaseResultDidntGoThrough": "The payment didn't go through",
   "@purchaseResultDidntGoThrough": {
     "description": "features/store/presentation/purchase_result.dart"
   },
-  "purchaseResultNothingCharged": "The payment didn't go through. Nothing was charged.",
+  "purchaseResultNothingCharged": "Nothing was charged.",
   "@purchaseResultNothingCharged": {
     "description": "features/store/presentation/purchase_result.dart"
   },
@@ -9890,19 +9890,19 @@
   "@purchaseResultCouldntConfirm": {
     "description": "features/store/presentation/purchase_result.dart"
   },
-  "purchaseResultCouldntConfirmCoins": "We couldn't confirm this payment just now. If you were charged, your coins will still be added, and it will show in your notifications.",
+  "purchaseResultCouldntConfirmCoins": "If you were charged, your coins will still be added, and it will show in your notifications.",
   "@purchaseResultCouldntConfirmCoins": {
     "description": "features/store/presentation/purchase_result.dart"
   },
-  "purchaseResultCouldntConfirmMaestro": "We couldn't confirm this payment just now. If you were charged, Chip Maestro will still start, and it will show in your notifications.",
+  "purchaseResultCouldntConfirmMaestro": "If you were charged, Chip Maestro will still start, and it will show in your notifications.",
   "@purchaseResultCouldntConfirmMaestro": {
     "description": "features/store/presentation/purchase_result.dart"
   },
-  "purchaseResultCouldntConfirmStoreCoins": "The store couldn't confirm this payment just now. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.",
+  "purchaseResultCouldntConfirmStoreCoins": "The store hasn't confirmed it yet. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.",
   "@purchaseResultCouldntConfirmStoreCoins": {
     "description": "features/store/presentation/purchase_result.dart"
   },
-  "purchaseResultCouldntConfirmStoreMaestro": "The store couldn't confirm this payment just now. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.",
+  "purchaseResultCouldntConfirmStoreMaestro": "The store hasn't confirmed it yet. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.",
   "@purchaseResultCouldntConfirmStoreMaestro": {
     "description": "features/store/presentation/purchase_result.dart"
   },

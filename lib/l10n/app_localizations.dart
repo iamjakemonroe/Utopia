@@ -13547,13 +13547,13 @@ abstract class L10n {
   /// features/store/presentation/purchase_result.dart
   ///
   /// In en, this message translates to:
-  /// **'Payment didn\'t go through'**
+  /// **'The payment didn\'t go through'**
   String get purchaseResultDidntGoThrough;
 
   /// features/store/presentation/purchase_result.dart
   ///
   /// In en, this message translates to:
-  /// **'The payment didn\'t go through. Nothing was charged.'**
+  /// **'Nothing was charged.'**
   String get purchaseResultNothingCharged;
 
   /// features/store/presentation/purchase_result.dart
@@ -13571,25 +13571,25 @@ abstract class L10n {
   /// features/store/presentation/purchase_result.dart
   ///
   /// In en, this message translates to:
-  /// **'We couldn\'t confirm this payment just now. If you were charged, your coins will still be added, and it will show in your notifications.'**
+  /// **'If you were charged, your coins will still be added, and it will show in your notifications.'**
   String get purchaseResultCouldntConfirmCoins;
 
   /// features/store/presentation/purchase_result.dart
   ///
   /// In en, this message translates to:
-  /// **'We couldn\'t confirm this payment just now. If you were charged, Chip Maestro will still start, and it will show in your notifications.'**
+  /// **'If you were charged, Chip Maestro will still start, and it will show in your notifications.'**
   String get purchaseResultCouldntConfirmMaestro;
 
   /// features/store/presentation/purchase_result.dart
   ///
   /// In en, this message translates to:
-  /// **'The store couldn\'t confirm this payment just now. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.'**
+  /// **'The store hasn\'t confirmed it yet. If you were charged, your coins arrive the next time you open Utopia, and it will show in your notifications.'**
   String get purchaseResultCouldntConfirmStoreCoins;
 
   /// features/store/presentation/purchase_result.dart
   ///
   /// In en, this message translates to:
-  /// **'The store couldn\'t confirm this payment just now. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.'**
+  /// **'The store hasn\'t confirmed it yet. If you were charged, Chip Maestro starts the next time you open Utopia, and it will show in your notifications.'**
   String get purchaseResultCouldntConfirmStoreMaestro;
 
   /// features/store/presentation/purchase_result.dart
