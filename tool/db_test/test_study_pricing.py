@@ -9,7 +9,7 @@ import harness
 db = harness.fresh()
 fails = []
 
-# Flutterwave's worst-case fee (international cards: 4.8% + VAT), docs/PRICING.md.
+# Flutterwave's worst-case fee (international cards: 4.8% + VAT).
 FEE = 0.0516
 
 

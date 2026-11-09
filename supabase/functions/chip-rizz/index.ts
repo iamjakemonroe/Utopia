@@ -18,7 +18,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 // Which brain: Smart Chip (the stronger model) for Chip Rizz Pro members
 // and sets paid for with coins; Quick Chip (the fast one, about 20 times
-// cheaper) for guests' and free accounts' daily sets. See docs/PRICING.md.
+// cheaper) for guests' and free accounts' daily sets.
 const SMART_MODEL = Deno.env.get("RIZZ_SMART_MODEL") ?? "claude-sonnet-5-5";
 const QUICK_MODEL = Deno.env.get("RIZZ_QUICK_MODEL") ?? "claude-haiku-5-5";
 

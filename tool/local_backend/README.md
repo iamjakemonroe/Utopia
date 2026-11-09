@@ -103,4 +103,4 @@ Not now, only when you say so:
    `FLW_WEBHOOK_HASH` and `SUPABASE_SERVICE_ROLE_KEY`.
 5. Deploy Chip Rizz to chip.kaivon.app.
 
-Prices and margins are in `docs/PRICING.md`.
+Prices live in the `web_coin_prices` and `web_plan_prices` tables.
